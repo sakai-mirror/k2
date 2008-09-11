@@ -25,6 +25,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
 /**
@@ -33,6 +34,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="url")
+@PrimaryKeyJoinColumn(name="oid")
 public class UrlDb extends ListFieldDb implements Url {
   @Basic
   @Column(name="link_text")

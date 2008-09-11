@@ -23,22 +23,35 @@ import org.apache.shindig.social.opensocial.model.ListField;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Table;
 
 @MappedSuperclass
+@Table(name="list_field")
+@Inheritance(strategy=InheritanceType.JOINED)
+@DiscriminatorColumn(name="list_field_type", length=30, discriminatorType=DiscriminatorType.STRING)
+@DiscriminatorValue(value="ListFieldDb")
 public class ListFieldDb implements ListField, DbObject {
   @Id
   @GeneratedValue(strategy=IDENTITY)
   @Column(name="oid")
   protected long objectId;
+  
   @Basic
   @Column(name="field_type", length=255)
   protected String type;
+  
   @Basic
   @Column(name="field_value", length=255)
   protected String value;
+  
   @Basic
   @Column(name="primary")
   protected Boolean primary;

@@ -24,10 +24,12 @@ import org.apache.shindig.social.opensocial.model.Message;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.PostLoad;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name="message")
@@ -36,15 +38,20 @@ public class MessageDb implements Message, DbObject {
   @GeneratedValue(strategy=IDENTITY)
   @Column(name="oid")
   protected long objectId;
+  
   @Basic
   @Column(name="body", length=255)
   protected String body;
+  
   @Basic
   @Column(name="title", length=255)
   protected String title;
+  
   @Basic
-  @Enumerated
   @Column(name="message_type")
+  protected String typeDb;
+  
+  @Transient
   protected Type type;
 
   public MessageDb() {
@@ -97,4 +104,14 @@ public class MessageDb implements Message, DbObject {
   public void setObjectId(long objectId) {
     this.objectId = objectId;
   }
+  @PrePersist
+  public void populateDbFields() {
+    typeDb = type.toString();
+  }
+
+  @PostLoad
+  public void loadTransientFields() {
+    type = Type.valueOf(typeDb);
+  }
+
 }

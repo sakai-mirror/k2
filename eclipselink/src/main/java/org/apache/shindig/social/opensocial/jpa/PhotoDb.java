@@ -22,6 +22,7 @@ import org.apache.shindig.social.opensocial.model.Person;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
 /**
@@ -29,6 +30,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="photo")
+@PrimaryKeyJoinColumn(name="oid")
 public class PhotoDb extends ListFieldDb {
 
   @ManyToOne(targetEntity=PersonDb.class)

@@ -24,9 +24,13 @@ import org.apache.shindig.social.opensocial.model.Person;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -34,6 +38,9 @@ import java.util.List;
 
 @Entity
 @Table(name="address")
+@Inheritance(strategy=InheritanceType.JOINED)
+@DiscriminatorColumn(name="address_usage")
+@DiscriminatorValue(value="sharedaddress")
 public class AddressDb implements Address, DbObject {
   @Id
   @GeneratedValue(strategy=IDENTITY)

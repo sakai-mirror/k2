@@ -21,6 +21,7 @@ import org.apache.shindig.social.opensocial.model.Person;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -36,6 +37,7 @@ import javax.persistence.SecondaryTable;
  */
 @Entity
 @SecondaryTable(name="person_organization", pkJoinColumns=@PrimaryKeyJoinColumn(name="organization_id", referencedColumnName="oid"))
+@DiscriminatorValue("shared")
 public class PersonOrganizationDb extends OrganizationDb {
   @Basic
   @Column(name="primary", table="person_organization")

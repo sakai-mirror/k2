@@ -141,9 +141,6 @@ public class ActivityDb implements Activity, DbObject {
   @Column(name = "user_id", length = 255)
   protected String userId;
 
-  @OneToMany(targetEntity = OrganizationAddressDb.class)
-  protected Collection<OrganizationAddressDb> organizations;
-
   public ActivityDb() {
   }
 

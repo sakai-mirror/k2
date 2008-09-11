@@ -21,6 +21,7 @@ import org.apache.shindig.social.opensocial.model.Organization;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -36,12 +37,13 @@ import javax.persistence.SecondaryTable;
  */
 @Entity
 @SecondaryTable(name="organizational_address", pkJoinColumns=@PrimaryKeyJoinColumn(name="address_id", referencedColumnName="oid"))
+@DiscriminatorValue(value="sharedaddress") // this is the same as others since we want to share the data.
 public class OrganizationAddressDb extends AddressDb {
   @Basic
   @Column(name="primary", table="organizational_address")
   private Boolean primary;
   
-  @ManyToOne
+  @ManyToOne(targetEntity=OrganizationDb.class)
   @JoinColumn(name="organization_id", referencedColumnName="oid")
   private Organization organization;
   

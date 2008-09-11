@@ -24,10 +24,15 @@ import org.apache.shindig.social.opensocial.model.Organization;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -36,45 +41,60 @@ import java.util.Date;
 
 @Entity
 @Table(name="organization")
+@Inheritance(strategy=InheritanceType.JOINED)
+@DiscriminatorColumn(name="org_usage")
+@DiscriminatorValue("shared")
 public class OrganizationDb implements Organization, DbObject {
   @Id
   @GeneratedValue(strategy=IDENTITY)
   @Column(name="oid")
   private long objectId;
-  @OneToMany(targetEntity=OrganizationAddressDb.class, mappedBy="organization")
+  
+  @OneToOne(targetEntity=OrganizationAddressDb.class, mappedBy="organization")
   private Address address;
+  
   @Basic
   @Column(name="description", length=255)
   private String description;
+  
   @Basic
   @Column(name="endDate")
   @Temporal(TemporalType.DATE)
   private Date endDate;
+  
   @Basic
   @Column(name="field", length=255)
   private String field;
+  
   @Basic
   @Column(name="name", length=255)
   private String name;
+  
   @Basic
   @Column(name="salary", length=255)
   private String salary;
+  
   @Basic
   @Column(name="start_date")
   @Temporal(TemporalType.DATE)
   private Date startDate;
+  
   @Basic
   @Column(name="sub_field", length=255)
   private String subField;
+  
   @Basic
   @Column(name="title", length=255)
   private String title;
+  
   @Basic
   @Column(name="webpage", length=255)
   private String webpage;
+  
   @Basic
   @Column(name="type", length=255)
   private String type;
+  
   @Basic
   @Column(name="primary")
   private Boolean primary;

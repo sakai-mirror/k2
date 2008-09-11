@@ -46,18 +46,23 @@ public class NameDb implements Name, DbObject {
   @Basic
   @Column(name="additional_name", length=255)
   private String additionalName;
+  
   @Basic
   @Column(name="family_name", length=255)
   private String familyName;
+  
   @Basic
   @Column(name="given_name", length=255)
   private String givenName;
+  
   @Basic
   @Column(name="honorific_prefix", length=255)
   private String honorificPrefix;
+  
   @Basic
   @Column(name="honorific_suffix", length=255)
   private String honorificSuffix;
+  
   @Basic
   @Column(name="unstructured", length=255)
   private String unstructured;

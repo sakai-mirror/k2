@@ -33,10 +33,8 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.TRANSACTI
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-import org.apache.derby.impl.sql.execute.DDLConstantAction;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.TargetServer;
-import org.eclipse.persistence.internal.jpa.deployment.xml.parser.PersistenceContentHandler;
 
 import javax.persistence.Persistence;
 import javax.persistence.spi.PersistenceUnitTransactionType;

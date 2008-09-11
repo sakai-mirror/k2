@@ -21,11 +21,13 @@ import org.apache.shindig.social.opensocial.model.Person;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
+import javax.persistence.Table;
 
 /**
  *
@@ -36,12 +38,13 @@ import javax.persistence.SecondaryTable;
  */
 @Entity
 @SecondaryTable(name="person_account", pkJoinColumns=@PrimaryKeyJoinColumn(name="account_id", referencedColumnName="oid"))
+@DiscriminatorValue("sharedaccount")
 public class PersonAccountDb extends AccountDb {
   @Basic
   @Column(name="primary", table="person_account")
   private Boolean primary;
   
-  @ManyToOne
+  @ManyToOne(targetEntity=PersonDb.class)
   @JoinColumn(name="person_id", referencedColumnName="oid")
   private Person person;
   

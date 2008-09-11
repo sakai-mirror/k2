@@ -21,6 +21,7 @@ import org.apache.shindig.social.opensocial.model.Person;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -36,12 +37,13 @@ import javax.persistence.SecondaryTable;
  */
 @Entity
 @SecondaryTable(name="person_address", pkJoinColumns=@PrimaryKeyJoinColumn(name="address_id", referencedColumnName="oid"))
+@DiscriminatorValue(value="sharedaddress")
 public class PersonAddressDb extends AddressDb {
   @Basic
   @Column(name="primary", table="person_address")
   private Boolean primary;
   
-  @ManyToOne
+  @ManyToOne(targetEntity=PersonDb.class)
   @JoinColumn(name="person_id", referencedColumnName="oid")
   private Person person;
   

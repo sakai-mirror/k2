@@ -17,7 +17,6 @@
  */
 package org.apache.shindig.social.opensocial.jpa.test;
 
-import static org.junit.Assert.*;
 import eclipselink.Bootstrap;
 
 import org.junit.Test;

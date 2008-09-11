@@ -25,11 +25,13 @@ import org.apache.shindig.social.opensocial.model.MediaItem;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.PostLoad;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import java.util.List;
 
@@ -45,18 +47,24 @@ public class MediaItemDb implements MediaItem, DbObject {
   @GeneratedValue(strategy=IDENTITY)
   @Column(name="oid")
   private long objectId;
+  
   /*
    * The mapping for this is in ActivityDb. 
    */
   @ManyToMany(targetEntity=ActivityDb.class, mappedBy = "mediaItems")
   protected List<Activity> activities;
+  
   @Basic
   @Column(name="mime_type", length=255)
   private String mimeType;
+  
   @Basic
-  @Enumerated
   @Column(name="media_type")
+  private String typeDb;
+  
+  @Transient
   private Type type;
+  
   @Basic
   @Column(name="url", length=255)
   private String url;
@@ -106,5 +114,15 @@ public class MediaItemDb implements MediaItem, DbObject {
    */
   public void setObjectId(long objectId) {
     this.objectId = objectId;
+  }
+  
+  @PrePersist
+  public void populateDbFields() {
+    typeDb = type.toString();
+  }
+
+  @PostLoad
+  public void loadTransientFields() {
+    type = Type.valueOf(typeDb);
   }
 }

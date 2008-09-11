@@ -21,25 +21,35 @@ import org.apache.shindig.social.opensocial.model.Account;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 import javax.persistence.GeneratedValue;
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Table(name="account")
+@Inheritance(strategy=InheritanceType.JOINED)
+@DiscriminatorColumn(name="account_usage")
+@DiscriminatorValue(value="sharedaccount")
 public class AccountDb implements Account, DbObject {
   @Id
   @GeneratedValue(strategy=IDENTITY)
   @Column(name="oid")
   protected long objectId;
+  
   @Basic
   @Column(name="domain", length=255)
   protected String domain;
+  
   @Basic
   @Column(name="user_id", length=255)
   protected String userId;
+  
   @Basic
   @Column(name="username", length=255)
   protected String username;
