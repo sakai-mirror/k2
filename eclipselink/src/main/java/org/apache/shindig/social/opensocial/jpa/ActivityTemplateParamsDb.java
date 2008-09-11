@@ -44,12 +44,15 @@ public class ActivityTemplateParamsDb {
   @ManyToOne(targetEntity=ActivityDb.class)
   @JoinColumn(name="activity_id",referencedColumnName="oid")
   protected Collection<Activity> activities;
+  
   @Basic
   @Column(name="template_name")
   protected String name;
+  
   @Basic
   @Column(name="template_value")
   protected String value;
+  
   @Id
   @GeneratedValue(strategy=IDENTITY)
   @Column(name="oid")

@@ -62,37 +62,37 @@ import java.util.Map.Entry;
 @Table(name = "person")
 public class PersonDb implements Person, DbObject {
 
-  private static final String LOOKING_FOR_PROPERTY = null;
+  private static final String LOOKING_FOR_PROPERTY = "looking-for";
 
-  private static final String ACTIVITIES_PROPERTYy = null;
+  private static final String ACTIVITIES_PROPERTY = "activity";
 
-  private static final String BOOKS_PROPERTY = null;
+  private static final String BOOKS_PROPERTY = "book";
 
-  private static final String CARS_PROPERTY = null;
+  private static final String CARS_PROPERTY = "car";
 
-  private static final String HEROES_PROPERTY = null;
+  private static final String HEROES_PROPERTY = "hero";
 
-  private static final String INTERESTS_PROPERTY = null;
+  private static final String INTERESTS_PROPERTY = "interest";
 
-  private static final String LANGUAGES_PROPERTY = null;
+  private static final String LANGUAGES_PROPERTY = "language";
 
-  private static final String MOVIES_PROPERTY = null;
+  private static final String MOVIES_PROPERTY = "movie";
 
-  private static final String MUSIC_PROPERTY = null;
+  private static final String MUSIC_PROPERTY = "music";
 
-  private static final String FOOD_PROPERTY = null;
+  private static final String FOOD_PROPERTY = "food";
 
-  private static final String QUOTES_PROPERTY = null;
+  private static final String QUOTES_PROPERTY = "quotes";
 
-  private static final String SPORTS_PROPERTY = null;
+  private static final String SPORTS_PROPERTY = "sport";
 
-  private static final String TAGS_PROPERTY = null;
+  private static final String TAGS_PROPERTY = "tag";
 
-  private static final String TURNOFFS_PROPERTY = null;
+  private static final String TURNOFFS_PROPERTY = "turnoff";
 
-  private static final String TURNONS_PROPERTY = null;
+  private static final String TURNONS_PROPERTY = "turnon";
 
-  private static final String TVSHOWS_PROPERTY = null;
+  private static final String TVSHOWS_PROPERTY = "tvshow";
 
   @Id
   @GeneratedValue(strategy = IDENTITY)
@@ -814,7 +814,7 @@ public class PersonDb implements Person, DbObject {
     }
     Map<String, List<String>> toSave = new HashMap<String, List<String>>();
     toSave.put(LOOKING_FOR_PROPERTY, lookingFor);
-    toSave.put(ACTIVITIES_PROPERTYy, this.activities);
+    toSave.put(ACTIVITIES_PROPERTY, this.activities);
     toSave.put(BOOKS_PROPERTY, this.books);
     toSave.put(CARS_PROPERTY, this.cars);
     toSave.put(FOOD_PROPERTY, this.food);
@@ -888,7 +888,7 @@ public class PersonDb implements Person, DbObject {
     Map<String, List<String>> toSave = new HashMap<String, List<String>>();
     
     toSave.put(LOOKING_FOR_PROPERTY, lookingFor);
-    toSave.put(ACTIVITIES_PROPERTYy, this.activities);
+    toSave.put(ACTIVITIES_PROPERTY, this.activities);
     toSave.put(BOOKS_PROPERTY, this.books);
     toSave.put(CARS_PROPERTY, this.cars);
     toSave.put(FOOD_PROPERTY, this.food);

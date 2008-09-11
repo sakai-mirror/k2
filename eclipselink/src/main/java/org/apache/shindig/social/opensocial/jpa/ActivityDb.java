@@ -37,6 +37,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,22 +59,28 @@ public class ActivityDb implements Activity, DbObject {
   @Basic
   @Column(name = "app_id", length = 255)
   protected String appId;
+  
   @Basic
   @Column(name = "body", length = 255)
   protected String body;
+  
   @Basic
   @Column(name = "body_id", length = 255)
   protected String bodyId;
+  
   @Basic
   @Column(name = "external_id", length = 255)
   protected String externalId;
+  
   @Basic
   @Column(name = "activity_id", length = 255)
   protected String id;
+  
   @Basic
   @Column(name = "updated")
   @Temporal(TemporalType.TIMESTAMP)
   protected Date updated;
+  
 
   /*
    * Do a many to many join using table activity_media
@@ -81,24 +88,31 @@ public class ActivityDb implements Activity, DbObject {
   @ManyToMany(targetEntity = MediaItemDb.class)
   @JoinTable(name = "activity_media", joinColumns = @JoinColumn(name = "activity_id", referencedColumnName = "oid"), inverseJoinColumns = @JoinColumn(name = "media_id", referencedColumnName = "oid"))
   protected List<MediaItem> mediaItems;
+  
   @Basic
   @Column(name = "posted_time")
   protected Long postedTime;
+  
   @Basic
   @Column(name = "priority")
   protected Float priority;
+  
   @Basic
-  @Column(name = "stream_favicon_url", length = 255)
+  @Column(name = "stream_favicon_url", length= 255)
   protected String streamFaviconUrl;
+  
   @Basic
   @Column(name = "stream_source_url", length = 255)
   protected String streamSourceUrl;
+  
   @Basic
   @Column(name = "stream_title", length = 255)
   protected String streamTitle;
+  
   @Basic
   @Column(name = "stream_url", length = 255)
   protected String streamUrl;
+  
   /*
    * Create map using ActivityTemplateParamsDb such that ActivityTemplateParams are joined on oid ->
    * activity_id and then the name value becomes the key, and the value becomes the value
@@ -107,16 +121,22 @@ public class ActivityDb implements Activity, DbObject {
   @OneToMany(targetEntity = ActivityTemplateParamsDb.class, mappedBy = "activities")
   @MapKey(name = "name")
   protected Map<String, ActivityTemplateParamsDb> templateParamsDb;
+  
+  @Transient
   protected Map<String, String> templateParams;
+  
   @Basic
   @Column(name = "title", length = 255)
   protected String title;
+  
   @Basic
   @Column(name = "title_id", length = 255)
   protected String titleId;
+  
   @Basic
   @Column(name = "url", length = 255)
   protected String url;
+  
   @Basic
   @Column(name = "user_id", length = 255)
   protected String userId;

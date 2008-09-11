@@ -51,18 +51,23 @@ public class BodyTypeDb implements BodyType, DbObject {
   @Basic
   @Column(name="build", length=255)
   private String build;
+  
   @Basic
   @Column(name="eye_color", length=255)
   private String eyeColor;
+  
   @Basic
   @Column(name="hair_color", length=255)
   private String hairColor;
+  
   @Basic
   @Column(name="height", length=255)
   private String height;
+  
   @Basic
   @Column(name="weight", length=255)
   private String weight;
+  
 
   public String getBuild() {
     return build;

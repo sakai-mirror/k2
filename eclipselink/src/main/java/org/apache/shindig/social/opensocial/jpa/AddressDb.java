@@ -46,30 +46,39 @@ public class AddressDb implements Address, DbObject {
   @Basic
   @Column(name="country", length=255)
   private String country;
+  
   @Basic
   @Column(name="latitude")
   private Float latitude;
+  
   @Basic
   @Column(name="longitude")
   private Float longitude;
+  
   @Basic
   @Column(name="locality", length=255)
   private String locality;
+  
   @Basic
   @Column(name="postal_code", length=255)
   private String postalCode;
+  
   @Basic
   @Column(name="region", length=255)
   private String region;
+  
   @Basic
   @Column(name="street_address", length=255)
   private String streetAddress;
+  
   @Basic
   @Column(name="type", length=255)
   private String type;
+  
   @Basic
   @Column(name="formatted", length=255)
   private String formatted;
+  
   @Basic
   @Column(name="primary")
   private Boolean primary;
