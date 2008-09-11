@@ -29,6 +29,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 
 import java.util.List;
 
@@ -38,6 +39,7 @@ import java.util.List;
  *
  */
 @Entity
+@Table(name="media_item")
 public class MediaItemDb implements MediaItem, DbObject {
   @Id
   @GeneratedValue(strategy=IDENTITY)

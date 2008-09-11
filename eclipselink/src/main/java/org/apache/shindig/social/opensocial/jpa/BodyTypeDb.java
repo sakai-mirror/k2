@@ -20,12 +20,17 @@ package org.apache.shindig.social.opensocial.jpa;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import org.apache.shindig.social.opensocial.model.BodyType;
+import org.apache.shindig.social.opensocial.model.Person;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import java.util.List;
 
 /**
  * see
@@ -33,11 +38,16 @@ import javax.persistence.Id;
  *
  */
 @Entity
+@Table(name="body_type")
 public class BodyTypeDb implements BodyType, DbObject {
   @Id
   @GeneratedValue(strategy=IDENTITY)
   @Column(name="oid")
   private long objectId;
+  
+  @OneToMany(targetEntity=PersonDb.class,mappedBy="bodyType")
+  private List<Person> persons;
+
   @Basic
   @Column(name="build", length=255)
   private String build;
@@ -106,5 +116,19 @@ public class BodyTypeDb implements BodyType, DbObject {
    */
   public void setObjectId(long objectId) {
     this.objectId = objectId;
+  }
+
+  /**
+   * @return the persons
+   */
+  public List<Person> getPersons() {
+    return persons;
+  }
+
+  /**
+   * @param persons the persons to set
+   */
+  public void setPersons(List<Person> persons) {
+    this.persons = persons;
   }
 }

@@ -20,19 +20,29 @@ package org.apache.shindig.social.opensocial.jpa;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import org.apache.shindig.social.opensocial.model.Name;
+import org.apache.shindig.social.opensocial.model.Person;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import java.util.List;
 
 @Entity
+@Table(name="name")
 public class NameDb implements Name, DbObject {
   @Id
   @GeneratedValue(strategy=IDENTITY)
   @Column(name="oid")
   private long objectId;
+  
+  @OneToMany(targetEntity=PersonDb.class,mappedBy="name")
+  private List<Person> persons;
+
   @Basic
   @Column(name="additional_name", length=255)
   private String additionalName;
@@ -119,5 +129,19 @@ public class NameDb implements Name, DbObject {
    */
   public void setObjectId(long objectId) {
     this.objectId = objectId;
+  }
+
+  /**
+   * @return the persons
+   */
+  public List<Person> getPersons() {
+    return persons;
+  }
+
+  /**
+   * @param persons the persons to set
+   */
+  public void setPersons(List<Person> persons) {
+    this.persons = persons;
   }
 }

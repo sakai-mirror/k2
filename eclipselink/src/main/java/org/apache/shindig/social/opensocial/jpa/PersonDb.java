@@ -17,8 +17,6 @@
  */
 package org.apache.shindig.social.opensocial.jpa;
 
-import static javax.persistence.CascadeType.ALL;
-import static javax.persistence.EnumType.STRING;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import org.apache.shindig.social.opensocial.model.Account;
@@ -30,92 +28,228 @@ import org.apache.shindig.social.opensocial.model.Name;
 import org.apache.shindig.social.opensocial.model.Organization;
 import org.apache.shindig.social.opensocial.model.Person;
 import org.apache.shindig.social.opensocial.model.Url;
+import org.apache.shindig.social.opensocial.model.Enum.LookingFor;
 
 import com.google.common.collect.Lists;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.PostLoad;
+import javax.persistence.PrePersist;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Default Implementation of the Person object in the org.apache.shindig.social.opensocial.jpa.
  */
 @Entity
+@Table(name = "person")
 public class PersonDb implements Person, DbObject {
+
+  private static final String LOOKING_FOR_PROPERTY = null;
+
+  private static final String ACTIVITIES_PROPERTYy = null;
+
+  private static final String BOOKS_PROPERTY = null;
+
+  private static final String CARS_PROPERTY = null;
+
+  private static final String HEROES_PROPERTY = null;
+
+  private static final String INTERESTS_PROPERTY = null;
+
+  private static final String LANGUAGES_PROPERTY = null;
+
+  private static final String MOVIES_PROPERTY = null;
+
+  private static final String MUSIC_PROPERTY = null;
+
+  private static final String FOOD_PROPERTY = null;
+
+  private static final String QUOTES_PROPERTY = null;
+
+  private static final String SPORTS_PROPERTY = null;
+
+  private static final String TAGS_PROPERTY = null;
+
+  private static final String TURNOFFS_PROPERTY = null;
+
+  private static final String TURNONS_PROPERTY = null;
+
+  private static final String TVSHOWS_PROPERTY = null;
+
   @Id
-  @GeneratedValue(strategy=IDENTITY)
-  @Column(name="oid")
+  @GeneratedValue(strategy = IDENTITY)
+  @Column(name = "oid")
   private long objectId;
-  protected long oid;
+
+  @Basic
+  @Column(name = "about_me", length = 255)
   protected String aboutMe;
+
+  @OneToMany(mappedBy = "person")
+  protected List<PersonPropertiesDb> properties;
+
+  @OneToMany(targetEntity = PersonAccountDb.class, mappedBy = "person")
   protected List<Account> accounts;
+
+  @Transient
   protected List<String> activities;
+  @OneToMany(targetEntity = PersonAddressDb.class, mappedBy = "person")
   protected List<Address> addresses;
+  @Basic
+  @Column(name = "age")
   protected Integer age;
+  @ManyToOne(targetEntity = BodyTypeDb.class)
+  @JoinColumn(name = "body_type_id", referencedColumnName = "oid")
   protected BodyType bodyType;
+  @Transient
   protected List<String> books;
+  @Transient
   protected List<String> cars;
+  @Basic
+  @Column(name = "children", length = 255)
   protected String children;
+  @ManyToOne(targetEntity = AddressDb.class)
+  @JoinColumn(name = "address_id", referencedColumnName = "oid")
   protected Address currentLocation;
+  @Basic
+  @Column(name = "birthday")
+  @Temporal(TemporalType.DATE)
   protected Date birthday;
+  @Basic
+  @Column(name = "drinker", length = 255)
+  @Enumerated
   protected Enum<Enum.Drinker> drinker;
+  @OneToMany(targetEntity = EmailDb.class, mappedBy = "person")
   protected List<ListField> emails;
+  @Basic
+  @Column(name = "ethnicity", length = 255)
   protected String ethnicity;
+  @Basic
+  @Column(name = "fashion", length = 255)
   protected String fashion;
+  @Transient
   protected List<String> food;
+  @Basic
+  @Column(name = "gender", length = 255)
+  @Enumerated
   protected Gender gender;
+  @Basic
+  @Column(name = "happiest_when", length = 255)
   protected String happiestWhen;
   protected Boolean hasApp;
+  @Transient
   protected List<String> heroes;
+  @Basic
+  @Column(name = "humor", length = 255)
   protected String humor;
+  @Basic
+  @Column(name = "person_id", length = 255)
   protected String id;
+  @OneToMany(targetEntity = ImDb.class, mappedBy = "person")
   protected List<ListField> ims;
+  @Transient
   protected List<String> interests;
+  @Basic
+  @Column(name = "job_interests", length = 255)
   protected String jobInterests;
+  @Transient
   protected List<String> languagesSpoken;
+  @Basic
+  @Column(name = "updated")
+  @Temporal(TemporalType.TIMESTAMP)
   protected Date updated;
+  @Basic
+  @Column(name = "living_arrangement", length = 255)
   protected String livingArrangement;
+  @Transient
+  // stored as a property, processed on get,set
   protected List<Enum<Enum.LookingFor>> lookingFor;
+  @Transient
   protected List<String> movies;
+  @Transient
   protected List<String> music;
+  @ManyToOne(targetEntity = NameDb.class)
+  @JoinColumn(name = "name_id", referencedColumnName = "oid")
   protected Name name;
+  @Basic
+  @Column(name = "network_presence", length = 255)
+  @Enumerated
   protected Enum<Enum.NetworkPresence> networkPresence;
+  @Basic
+  @Column(name = "nickname", length = 255)
   protected String nickname;
+  @OneToMany(targetEntity = PersonOrganizationDb.class, mappedBy = "person")
   protected List<Organization> organizations;
+  @Basic
+  @Column(name = "pets", length = 255)
   protected String pets;
+  @OneToMany(targetEntity = PhoneDb.class, mappedBy = "person")
   protected List<ListField> phoneNumbers;
+  @OneToMany(targetEntity = PhotoDb.class, mappedBy = "person")
   protected List<ListField> photos;
+  @Basic
+  @Column(name = "political_views", length = 255)
   protected String politicalViews;
+  @Transient
   protected Url profileSong;
+  @Transient
   protected Url profileVideo;
+  @Transient
   protected List<String> quotes;
+  @Basic
+  @Column(name = "relationship_status", length = 255)
   protected String relationshipStatus;
+  @Basic
+  @Column(name = "religion", length = 255)
   protected String religion;
+  @Basic
+  @Column(name = "romance", length = 255)
   protected String romance;
+  @Basic
+  @Column(name = "scared_of", length = 255)
   protected String scaredOf;
+  @Basic
+  @Column(name = "sexual_orientation", length = 255)
   protected String sexualOrientation;
+  @Basic
+  @Column(name = "smoker", length = 255)
+  @Enumerated
   protected Enum<Enum.Smoker> smoker;
+  @Transient
   protected List<String> sports;
+  @Basic
+  @Column(name = "status", length = 255)
   protected String status;
+  @Transient
   protected List<String> tags;
+  @Basic
+  @Column(name = "utc_offset")
   protected Long utcOffset;
+  @Transient
   protected List<String> turnOffs;
+  @Transient
   protected List<String> turnOns;
+  @Transient
   protected List<String> tvShows;
+  @OneToMany(targetEntity = UrlDb.class, mappedBy = "person")
   protected List<Url> urls;
 
   // Note: Not in the opensocial js person object directly
@@ -670,5 +804,117 @@ public class PersonDb implements Person, DbObject {
    */
   public void setObjectId(long objectId) {
     this.objectId = objectId;
+  }
+
+  @PrePersist
+  public void populateDbFields() {
+    List<String> lookingFor = new ArrayList<String>();
+    for ( Enum<Enum.LookingFor> np : this.lookingFor ) {
+      lookingFor.add(np.toString());
+    }
+    Map<String, List<String>> toSave = new HashMap<String, List<String>>();
+    toSave.put(LOOKING_FOR_PROPERTY, lookingFor);
+    toSave.put(ACTIVITIES_PROPERTYy, this.activities);
+    toSave.put(BOOKS_PROPERTY, this.books);
+    toSave.put(CARS_PROPERTY, this.cars);
+    toSave.put(FOOD_PROPERTY, this.food);
+    toSave.put(HEROES_PROPERTY, this.heroes);
+    toSave.put(INTERESTS_PROPERTY, this.interests);
+    toSave.put(LANGUAGES_PROPERTY, this.languagesSpoken);
+    toSave.put(MOVIES_PROPERTY, this.movies);
+    toSave.put(MUSIC_PROPERTY, this.music);
+    toSave.put(QUOTES_PROPERTY, this.quotes);
+    toSave.put(SPORTS_PROPERTY, this.sports);
+    toSave.put(TAGS_PROPERTY, this.tags);
+    toSave.put(TURNOFFS_PROPERTY, this.turnOffs);
+    toSave.put(TURNONS_PROPERTY, this.turnOns);
+    toSave.put(TVSHOWS_PROPERTY, this.tvShows);
+    
+    for (Entry<String, List<String>> e : toSave.entrySet()) {
+      // add new entries
+      for (String v : e.getValue()) {
+        boolean present = false;
+        for (PersonPropertiesDb pp : properties) {
+          if (e.getKey().equals(pp.getType()) && v.equals(pp.getValue())) {
+            present = true;
+            break;
+          }
+        }
+        if (!present) {
+          PersonPropertiesDb pp = new PersonPropertiesDb();
+          pp.setType(e.getKey());
+          pp.setValue(v);
+        }
+      }
+      // remove missing entries
+      List<PersonPropertiesDb> toRemove = new ArrayList<PersonPropertiesDb>();
+      for (PersonPropertiesDb pp : properties) {
+        if (e.getKey().equals(pp.getType())) {
+          boolean present = false;
+          for (String v : e.getValue()) {
+            if (pp.getValue().equals(v)) {
+              present = true;
+              break;
+            }
+          }
+          if ( !present ) {
+            toRemove.add(pp);
+          }
+        }
+      }
+      properties.removeAll(toRemove);
+    }
+  }
+
+  @PostLoad
+  public void loadTransientFields() {
+    List<String> lookingFor = new ArrayList<String>();
+    this.activities = new ArrayList<String>();
+    this.books = new ArrayList<String>();
+    this.cars = new ArrayList<String>();
+    this.food = new ArrayList<String>();
+    this.heroes = new ArrayList<String>();
+    this.interests = new ArrayList<String>();
+    this.languagesSpoken = new ArrayList<String>();
+    this.movies = new ArrayList<String>();
+    this.music = new ArrayList<String>();
+    this.quotes = new ArrayList<String>();
+    this.sports = new ArrayList<String>();
+    this.tags = new ArrayList<String>();
+    this.turnOffs = new ArrayList<String>();
+    this.turnOns = new ArrayList<String>();
+    this.tvShows = new ArrayList<String>();
+    
+    Map<String, List<String>> toSave = new HashMap<String, List<String>>();
+    
+    toSave.put(LOOKING_FOR_PROPERTY, lookingFor);
+    toSave.put(ACTIVITIES_PROPERTYy, this.activities);
+    toSave.put(BOOKS_PROPERTY, this.books);
+    toSave.put(CARS_PROPERTY, this.cars);
+    toSave.put(FOOD_PROPERTY, this.food);
+    toSave.put(HEROES_PROPERTY, this.heroes);
+    toSave.put(INTERESTS_PROPERTY, this.interests);
+    toSave.put(LANGUAGES_PROPERTY, this.languagesSpoken);
+    toSave.put(MOVIES_PROPERTY, this.movies);
+    toSave.put(MUSIC_PROPERTY, this.music);
+    toSave.put(QUOTES_PROPERTY, this.quotes);
+    toSave.put(SPORTS_PROPERTY, this.sports);
+    toSave.put(TAGS_PROPERTY, this.tags);
+    toSave.put(TURNOFFS_PROPERTY, this.turnOffs);
+    toSave.put(TURNONS_PROPERTY, this.turnOns);
+    toSave.put(TVSHOWS_PROPERTY, this.tvShows);
+    
+    for ( PersonPropertiesDb pp : properties ) {
+      List<String>  l = toSave.get(pp.type);
+      if ( l != null ) {
+        l.add(pp.getValue());
+      }
+    }
+    
+    this.lookingFor = new ArrayList<Enum<LookingFor>>();
+    for ( String lf : lookingFor ) {
+      this.lookingFor.add(new EnumDb<LookingFor>(LookingFor.valueOf(lf)));
+    }
+    
   }
 }

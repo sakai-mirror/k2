@@ -27,8 +27,10 @@ import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="message")
 public class MessageDb implements Message, DbObject {
   @Id
   @GeneratedValue(strategy=IDENTITY)

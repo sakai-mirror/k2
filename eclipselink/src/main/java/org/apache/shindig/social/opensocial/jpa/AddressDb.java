@@ -20,19 +20,28 @@ package org.apache.shindig.social.opensocial.jpa;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import org.apache.shindig.social.opensocial.model.Address;
+import org.apache.shindig.social.opensocial.model.Person;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import java.util.List;
 
 @Entity
+@Table(name="address")
 public class AddressDb implements Address, DbObject {
   @Id
   @GeneratedValue(strategy=IDENTITY)
   @Column(name="oid")
   private long objectId;
+  
+  @OneToMany(targetEntity=PersonDb.class,mappedBy="currentLocation")
+  private List<Person> atLocation;
   
   @Basic
   @Column(name="country", length=255)
@@ -163,5 +172,19 @@ public class AddressDb implements Address, DbObject {
    */
   public void setObjectId(long objectId) {
     this.objectId = objectId;
+  }
+
+  /**
+   * @return the atLocation
+   */
+  public List<Person> getAtLocation() {
+    return atLocation;
+  }
+
+  /**
+   * @param atLocation the atLocation to set
+   */
+  public void setAtLocation(List<Person> atLocation) {
+    this.atLocation = atLocation;
   }
 }

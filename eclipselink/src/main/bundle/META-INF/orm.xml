@@ -32,4 +32,20 @@
   </entity>
   <entity class="org.apache.shindig.social.opensocial.jpa.OrganizationAddressDb">
   </entity>
+  <entity class="org.apache.shindig.social.opensocial.jpa.EmailDb">
+  </entity>
+  <entity class="org.apache.shindig.social.opensocial.jpa.ImDb">
+  </entity>
+  <entity class="org.apache.shindig.social.opensocial.jpa.PersonAccountDb">
+  </entity>
+  <entity class="org.apache.shindig.social.opensocial.jpa.PersonAddressDb">
+  </entity>
+  <entity class="org.apache.shindig.social.opensocial.jpa.PersonOrganizationDb">
+  </entity>
+  <entity class="org.apache.shindig.social.opensocial.jpa.PhoneDb">
+  </entity>
+  <entity class="org.apache.shindig.social.opensocial.jpa.PhotoDb">
+  </entity>
+  <entity class="org.apache.shindig.social.opensocial.jpa.PersonPropertiesDb">
+  </entity>
 </entity-mappings>

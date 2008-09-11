@@ -17,7 +17,7 @@
  */
 package org.apache.shindig.social.opensocial.jpa;
 
-import org.apache.shindig.social.opensocial.model.Organization;
+import org.apache.shindig.social.opensocial.model.Person;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -35,22 +35,22 @@ import javax.persistence.SecondaryTable;
  * defining the organizations relationship with the address
  */
 @Entity
-@SecondaryTable(name="organizational_address", pkJoinColumns=@PrimaryKeyJoinColumn(name="address_id", referencedColumnName="oid"))
-public class OrganizationAddressDb extends AddressDb {
+@SecondaryTable(name="person_organization", pkJoinColumns=@PrimaryKeyJoinColumn(name="organization_id", referencedColumnName="oid"))
+public class PersonOrganizationDb extends OrganizationDb {
   @Basic
-  @Column(name="primary", table="organizational_address")
+  @Column(name="primary", table="person_organization")
   private Boolean primary;
   
-  @ManyToOne
-  @JoinColumn(name="organization_id", referencedColumnName="oid")
-  private Organization organization;
+  @ManyToOne(targetEntity=PersonDb.class)
+  @JoinColumn(name="person_id", referencedColumnName="oid")
+  protected Person person;
   
   @Basic
-  @Column(name="type", length=255, table="organizational_address")
+  @Column(name="type", length=255, table="person_organization")
   private String type;
 
 
-  public OrganizationAddressDb() {
+  public PersonOrganizationDb() {
     // TODO Auto-generated constructor stub
   }
 
@@ -73,20 +73,6 @@ public class OrganizationAddressDb extends AddressDb {
   }
 
 
-  /**
-   * @return the organization
-   */
-  public Organization getOrganization() {
-    return organization;
-  }
-
-
-  /**
-   * @param organization the organization to set
-   */
-  public void setOrganization(Organization organization) {
-    this.organization = organization;
-  }
 
 
 }

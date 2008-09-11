@@ -26,6 +26,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import java.util.Collection;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -34,6 +35,7 @@ import static javax.persistence.GenerationType.IDENTITY;
  *
  */
 @Entity
+@Table(name="template_params")
 public class ActivityTemplateParamsDb {
 
   /*

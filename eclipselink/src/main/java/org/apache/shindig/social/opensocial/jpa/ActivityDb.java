@@ -32,10 +32,13 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
+import javax.persistence.PostLoad;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -44,85 +47,82 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Entity
-@Table(name="activity")
+@Table(name = "activity")
 public class ActivityDb implements Activity, DbObject {
 
-
   @Id
-  @GeneratedValue(strategy=IDENTITY)
-  @Column(name="oid")
+  @GeneratedValue(strategy = IDENTITY)
+  @Column(name = "oid")
   protected long objectId;
-  
+
   @Basic
-  @Column(name="app_id", length=255)
+  @Column(name = "app_id", length = 255)
   protected String appId;
   @Basic
-  @Column(name="body", length=255)
+  @Column(name = "body", length = 255)
   protected String body;
   @Basic
-  @Column(name="body_id", length=255)
+  @Column(name = "body_id", length = 255)
   protected String bodyId;
   @Basic
-  @Column(name="external_id", length=255)
+  @Column(name = "external_id", length = 255)
   protected String externalId;
   @Basic
-  @Column(name="activity_id", length=255)
+  @Column(name = "activity_id", length = 255)
   protected String id;
   @Basic
-  @Column(name="updated")
+  @Column(name = "updated")
   @Temporal(TemporalType.TIMESTAMP)
   protected Date updated;
-  
+
   /*
    * Do a many to many join using table activity_media
    */
-  @ManyToMany(targetEntity=MediaItemDb.class)
-  @JoinTable(name="activity_media",
-      joinColumns=@JoinColumn(name="activity_id", referencedColumnName="oid"),
-      inverseJoinColumns=@JoinColumn(name="media_id", referencedColumnName="oid"))
+  @ManyToMany(targetEntity = MediaItemDb.class)
+  @JoinTable(name = "activity_media", joinColumns = @JoinColumn(name = "activity_id", referencedColumnName = "oid"), inverseJoinColumns = @JoinColumn(name = "media_id", referencedColumnName = "oid"))
   protected List<MediaItem> mediaItems;
   @Basic
-  @Column(name="posted_time")
+  @Column(name = "posted_time")
   protected Long postedTime;
   @Basic
-  @Column(name="priority")
+  @Column(name = "priority")
   protected Float priority;
   @Basic
-  @Column(name="stream_favicon_url", length=255)
+  @Column(name = "stream_favicon_url", length = 255)
   protected String streamFaviconUrl;
   @Basic
-  @Column(name="stream_source_url", length=255)
+  @Column(name = "stream_source_url", length = 255)
   protected String streamSourceUrl;
   @Basic
-  @Column(name="stream_title", length=255)
+  @Column(name = "stream_title", length = 255)
   protected String streamTitle;
   @Basic
-  @Column(name="stream_url", length=255)
+  @Column(name = "stream_url", length = 255)
   protected String streamUrl;
   /*
-   * Create map using ActivityTemplateParamsDb such that ActivityTemplateParams are joined on
-   * oid -> activity_id and then the name value becomes the key, and the value becomes the value
+   * Create map using ActivityTemplateParamsDb such that ActivityTemplateParams are joined on oid ->
+   * activity_id and then the name value becomes the key, and the value becomes the value
    * unfortunately JPA wont do Map<String,String> so this is handled in the getter and setter.
    */
-  @OneToMany(targetEntity=ActivityTemplateParamsDb.class, mappedBy="activities")
-  @MapKey(name="name")
-  protected Map<String, ActivityTemplateParamsDb> templateParams;
+  @OneToMany(targetEntity = ActivityTemplateParamsDb.class, mappedBy = "activities")
+  @MapKey(name = "name")
+  protected Map<String, ActivityTemplateParamsDb> templateParamsDb;
+  protected Map<String, String> templateParams;
   @Basic
-  @Column(name="title", length=255)
+  @Column(name = "title", length = 255)
   protected String title;
   @Basic
-  @Column(name="title_id", length=255)
+  @Column(name = "title_id", length = 255)
   protected String titleId;
   @Basic
-  @Column(name="url", length=255)
+  @Column(name = "url", length = 255)
   protected String url;
   @Basic
-  @Column(name="user_id", length=255)
+  @Column(name = "user_id", length = 255)
   protected String userId;
-  
-  @OneToMany(targetEntity=OrganizationAddressDb.class)
-  protected Collection<OrganizationAddressDb> organizations;
 
+  @OneToMany(targetEntity = OrganizationAddressDb.class)
+  protected Collection<OrganizationAddressDb> organizations;
 
   public ActivityDb() {
   }
@@ -244,31 +244,11 @@ public class ActivityDb implements Activity, DbObject {
   }
 
   public Map<String, String> getTemplateParams() {
-    Map<String, String> m = new ConcurrentHashMap<String, String>();
-    for ( Entry<String, ActivityTemplateParamsDb> e : templateParams.entrySet() ) {
-      m.put(e.getKey(), e.getValue().value);
-    }
-    return m;
+    return templateParams;
   }
 
-  public void setTemplateParams(Map<String, String> templateParamsMap) {
-    for ( Entry<String, ActivityTemplateParamsDb> e : templateParams.entrySet() ) {
-      if ( ! templateParamsMap.containsKey(e.getKey()) ) {
-        templateParams.remove(e.getKey());
-      }
-    }
-    
-    for ( Entry<String, String> e : templateParamsMap.entrySet() ) {
-      ActivityTemplateParamsDb a = templateParams.get(e.getKey());
-      if ( a == null ) {
-        a = new ActivityTemplateParamsDb();
-        a.name = e.getKey();
-        a.value = e.getValue();
-        templateParams.put(a.name,a);
-      } else {
-        a.value = e.getValue();
-      }
-    }
+  public void setTemplateParams(Map<String, String> templateParams) {
+    this.templateParams = templateParams;
   }
 
   public String getTitle() {
@@ -315,6 +295,42 @@ public class ActivityDb implements Activity, DbObject {
    */
   public void setObjectId(long objectId) {
     this.objectId = objectId;
+  }
+
+  @PrePersist
+  public void populateDbFields() {
+    // add new entries
+    for ( Entry<String,String> e : templateParams.entrySet() ) {
+       ActivityTemplateParamsDb a = templateParamsDb.get(e.getKey());
+       if ( a == null ) {
+         a = new ActivityTemplateParamsDb();
+         a.name = e.getKey();
+         a.value = e.getValue();
+         a.activities = new ArrayList<Activity>();
+         a.activities.add(this);
+         templateParamsDb.put(e.getKey(), a);
+       } else {
+         a.value = e.getValue();
+       }
+    }
+    // remove old entries
+    List<String> toRemove = new ArrayList<String>();
+    for ( Entry<String, ActivityTemplateParamsDb> e : templateParamsDb.entrySet()) {
+      if ( !templateParams.containsKey(e.getKey())) {
+        toRemove.add(e.getKey());
+      }
+    }
+    for ( String r: toRemove) {
+      templateParamsDb.remove(r);
+    }
+  }
+
+  @PostLoad
+  public void loadTransientFields() {
+    templateParams = new ConcurrentHashMap<String, String>();
+    for (Entry<String, ActivityTemplateParamsDb> e : templateParamsDb.entrySet()) {
+      templateParams.put(e.getKey(), e.getValue().value);
+    }
   }
 
 }

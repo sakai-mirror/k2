@@ -18,42 +18,21 @@
 package org.apache.shindig.social.opensocial.jpa;
 
 import org.apache.shindig.social.opensocial.model.Person;
-import org.apache.shindig.social.opensocial.model.Url;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
- * see
- * http://code.google.com/apis/opensocial/docs/0.7/reference/opensocial.Url.Field.html
+ *
  */
 @Entity
-@Table(name="url")
-public class UrlDb extends ListFieldDb implements Url {
-  @Basic
-  @Column(name="link_text")
-  private String linkText;
+@Table(name="email")
+public class EmailDb extends ListFieldDb {
 
   @ManyToOne(targetEntity=PersonDb.class)
   @JoinColumn(name="person_id", referencedColumnName="oid")
   protected Person person;
 
-  public UrlDb() { }
-
-  public UrlDb(String value, String linkText, String type) {
-    super(type, value);
-    this.linkText = linkText;
-  }
-
-  public String getLinkText() {
-    return linkText;
-  }
-
-  public void setLinkText(String linkText) {
-    this.linkText = linkText;
-  }
 }
