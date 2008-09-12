@@ -31,7 +31,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.JoinTable;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -39,13 +39,21 @@ import javax.persistence.TemporalType;
 import javax.persistence.Version;
 
 import java.util.Date;
+import static javax.persistence.CascadeType.PERSIST;
+import static javax.persistence.CascadeType.MERGE;
+import static javax.persistence.CascadeType.REFRESH;
 
 @Entity
 @Table(name="organization")
 @Inheritance(strategy=InheritanceType.JOINED)
 @DiscriminatorColumn(name="org_usage")
 @DiscriminatorValue("shared")
+@NamedQuery(name=OrganizationDb.FINDBY_NAME, query="select o from OrganizationDb o where o.name = :name ")
 public class OrganizationDb implements Organization, DbObject {
+  public static final String FINDBY_NAME = "q.organization.findbyname";
+  public static final String PARAM_NAME = "name";
+  
+
   @Id
   @GeneratedValue(strategy=IDENTITY)
   @Column(name="oid")
@@ -55,7 +63,7 @@ public class OrganizationDb implements Organization, DbObject {
   @Column(name="version")
   protected long version;
 
-  @OneToOne(targetEntity=OrganizationAddressDb.class, mappedBy="organization")
+  @OneToOne(targetEntity=OrganizationAddressDb.class, mappedBy="organization", cascade = { PERSIST, MERGE, REFRESH })
   private Address address;
   
   @Basic

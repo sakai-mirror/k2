@@ -42,6 +42,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.PostLoad;
 import javax.persistence.PrePersist;
@@ -57,13 +59,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.CascadeType.PERSIST;
+import static javax.persistence.CascadeType.REFRESH;
+import static javax.persistence.CascadeType.MERGE;
 
 /**
  * Default Implementation of the Person object in the org.apache.shindig.social.opensocial.jpa.
  */
 @Entity
 @Table(name = "person")
+@NamedQueries(value = {
+    @NamedQuery(name = PersonDb.FINDBY_PERSONID, query = "select p from PersonDb p where p.id = :id "),
+    @NamedQuery(name = PersonDb.FINDBY_LIKE_PERSONID, query = "select p from PersonDb p where p.id like :id") })
 public class PersonDb implements Person, DbObject {
+
+  public static final String FINDBY_PERSONID = "q.person.findbypersonid";
+
+  public static final String PARAM_PERSONID = "id";
+
+  public static final String FINDBY_LIKE_PERSONID = "q.person.findbylikepersonid";
 
   private static final String LOOKING_FOR_PROPERTY = "looking-for";
 
@@ -103,30 +118,30 @@ public class PersonDb implements Person, DbObject {
   private long objectId;
 
   @Version
-  @Column(name="version")
+  @Column(name = "version")
   protected long version;
 
   @Basic
   @Column(name = "about_me", length = 255)
   protected String aboutMe;
 
-  @OneToMany(targetEntity=PersonPropertiesDb.class, mappedBy = "person")
-  protected List<PersonPropertiesDb> properties;
+  @OneToMany(targetEntity = PersonPropertiesDb.class, mappedBy = "person", cascade = ALL)
+  protected List<PersonPropertiesDb> properties = new ArrayList<PersonPropertiesDb>();
 
-  @OneToMany(targetEntity = PersonAccountDb.class, mappedBy = "person")
+  @OneToMany(targetEntity = PersonAccountDb.class, mappedBy = "person", cascade = ALL)
   protected List<Account> accounts;
 
   @Transient
   protected List<String> activities;
 
-  @OneToMany(targetEntity = PersonAddressDb.class, mappedBy = "person")
+  @OneToMany(targetEntity = PersonAddressDb.class, mappedBy = "person", cascade = ALL)
   protected List<Address> addresses;
 
   @Basic
   @Column(name = "age")
   protected Integer age;
 
-  @ManyToOne(targetEntity = BodyTypeDb.class)
+  @ManyToOne(targetEntity = BodyTypeDb.class, cascade = ALL)
   @JoinColumn(name = "body_type_id", referencedColumnName = "oid")
   protected BodyType bodyType;
 
@@ -143,7 +158,7 @@ public class PersonDb implements Person, DbObject {
   /**
    * 
    */
-  @ManyToOne(targetEntity = AddressDb.class)
+  @ManyToOne(targetEntity = AddressDb.class, cascade = { PERSIST, MERGE, REFRESH })
   @JoinColumn(name = "address_id", referencedColumnName = "oid")
   protected Address currentLocation;
 
@@ -161,14 +176,14 @@ public class PersonDb implements Person, DbObject {
   @Basic
   @Column(name = "drinker", length = 255)
   protected String drinkerDb;
-  
+
   @Transient
   protected Enum<Enum.Drinker> drinker;
 
   /**
    * 
    */
-  @OneToMany(targetEntity = EmailDb.class, mappedBy = "person")
+  @OneToMany(targetEntity = EmailDb.class, mappedBy = "person", cascade= ALL)
   protected List<ListField> emails;
 
   /**
@@ -237,7 +252,7 @@ public class PersonDb implements Person, DbObject {
   /**
    * 
    */
-  @OneToMany(targetEntity = ImDb.class, mappedBy = "person")
+  @OneToMany(targetEntity = ImDb.class, mappedBy = "person", cascade = ALL)
   protected List<ListField> ims;
 
   /**
@@ -296,7 +311,7 @@ public class PersonDb implements Person, DbObject {
   /**
    * 
    */
-  @ManyToOne(targetEntity = NameDb.class)
+  @ManyToOne(targetEntity = NameDb.class, cascade = ALL)
   @JoinColumn(name = "name_id", referencedColumnName = "oid")
   protected Name name;
 
@@ -308,7 +323,7 @@ public class PersonDb implements Person, DbObject {
   protected String networkPresenceDb;
 
   @Transient
-  protected Enum<Enum.NetworkPresence> networkPresence;
+  protected Enum<Enum.NetworkPresence> networkPresence = new EnumDb<NetworkPresence>(NetworkPresence.XA);
 
   /**
    * 
@@ -320,7 +335,7 @@ public class PersonDb implements Person, DbObject {
   /**
    * 
    */
-  @OneToMany(targetEntity = PersonOrganizationDb.class, mappedBy = "person")
+  @OneToMany(targetEntity = PersonOrganizationDb.class, mappedBy = "person", cascade = { PERSIST, MERGE, REFRESH })
   protected List<Organization> organizations;
 
   /**
@@ -333,13 +348,13 @@ public class PersonDb implements Person, DbObject {
   /**
    * 
    */
-  @OneToMany(targetEntity = PhoneDb.class, mappedBy = "person")
+  @OneToMany(targetEntity = PhoneDb.class, mappedBy = "person", cascade = ALL)
   protected List<ListField> phoneNumbers;
 
   /**
    * 
    */
-  @OneToMany(targetEntity = PhotoDb.class, mappedBy = "person")
+  @OneToMany(targetEntity = PhotoDb.class, mappedBy = "person", cascade = ALL)
   protected List<ListField> photos;
   @Basic
   @Column(name = "political_views", length = 255)
@@ -404,7 +419,7 @@ public class PersonDb implements Person, DbObject {
   @Basic
   @Column(name = "smoker", length = 255)
   protected String smokerDb;
-  
+
   @Transient
   protected Enum<Enum.Smoker> smoker;
 
@@ -455,7 +470,7 @@ public class PersonDb implements Person, DbObject {
   /**
    * 
    */
-  @OneToMany(targetEntity = UrlDb.class, mappedBy = "person")
+  @OneToMany(targetEntity = UrlDb.class, mappedBy = "person", cascade = ALL)
   protected List<Url> urls;
 
   // Note: Not in the opensocial js person object directly
@@ -1021,7 +1036,7 @@ public class PersonDb implements Person, DbObject {
     genderDb = gender.toString();
     networkPresenceDb = networkPresence.toString();
     smokerDb = smoker.toString();
-    
+
     List<String> lookingFor = new ArrayList<String>();
     for (Enum<Enum.LookingFor> np : this.lookingFor) {
       lookingFor.add(np.toString());
@@ -1082,7 +1097,7 @@ public class PersonDb implements Person, DbObject {
 
   @PostLoad
   public void loadTransientFields() {
-    
+
     drinkerDb = drinker.toString();
     genderDb = gender.toString();
     networkPresenceDb = networkPresence.toString();
@@ -1092,7 +1107,7 @@ public class PersonDb implements Person, DbObject {
     gender = Gender.valueOf(genderDb);
     networkPresence = new EnumDb<NetworkPresence>(NetworkPresence.valueOf(networkPresenceDb));
     smoker = new EnumDb<Smoker>(Smoker.valueOf(smokerDb));
-    
+
     List<String> lookingFor = new ArrayList<String>();
     this.activities = new ArrayList<String>();
     this.books = new ArrayList<String>();

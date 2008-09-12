@@ -22,6 +22,7 @@ import org.apache.shindig.social.opensocial.model.Person;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
@@ -31,8 +32,11 @@ import javax.persistence.Table;
 @Entity
 @Table(name="phone")
 @PrimaryKeyJoinColumn(name="oid")
+@NamedQuery(name=PhoneDb.FINDBY_PHONE_NUMBER,query="select p from PhoneDb p where p.value = :phonenumber ")
 public class PhoneDb extends ListFieldDb {
 
+  public static final String FINDBY_PHONE_NUMBER = "q.pphone.findbynumber";
+  public static final String PARAM_PHONE_NUMBER = "phonenumber";
   @ManyToOne(targetEntity=PersonDb.class)
   @JoinColumn(name="person_id", referencedColumnName="oid")
   protected Person person;

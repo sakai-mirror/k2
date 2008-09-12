@@ -25,6 +25,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
@@ -35,7 +36,12 @@ import javax.persistence.Table;
 @Entity
 @Table(name="url")
 @PrimaryKeyJoinColumn(name="oid")
+@NamedQuery(name=UrlDb.FINDBY_URL,query="select u from UrlDb u where u.value = :url ")
 public class UrlDb extends ListFieldDb implements Url {
+  public static final String FINDBY_URL = "q.url.findbyurl";
+
+  public static final String PARAM_URL = "url";
+
   @Basic
   @Column(name="link_text")
   private String linkText;

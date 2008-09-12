@@ -25,6 +25,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 /**
@@ -37,7 +38,10 @@ import javax.persistence.Table;
 @Entity
 @Table(name="person_organization")
 @DiscriminatorValue("shared")
+@NamedQuery(name=PersonOrganizationDb.PERSON_ORG_FINDBY_NAME,query="select p from PersonOrganizationDb p where p.name = :name ")
 public class PersonOrganizationDb extends OrganizationDb {
+  public static final String PERSON_ORG_FINDBY_NAME = "q.personorganizationdb.findbyname";
+
   @Basic
   @Column(name="primary_organization", table="person_organization")
   private Boolean primary;

@@ -26,6 +26,9 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 import javax.persistence.ManyToOne;
+import static javax.persistence.CascadeType.PERSIST;
+import static javax.persistence.CascadeType.MERGE;
+import static javax.persistence.CascadeType.REFRESH;
 
 /**
  *
@@ -42,7 +45,7 @@ public class OrganizationAddressDb extends AddressDb {
   @Column(name="primary_organization")
   private Boolean primary;
   
-  @ManyToOne(targetEntity=OrganizationDb.class)
+  @ManyToOne(targetEntity=OrganizationDb.class, cascade = { PERSIST, MERGE, REFRESH })
   @JoinColumn(name="organization_id", referencedColumnName="oid")
   private Organization organization;
   

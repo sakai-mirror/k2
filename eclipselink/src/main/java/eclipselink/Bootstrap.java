@@ -67,6 +67,7 @@ public class Bootstrap {
   private String dbUser;
   private String dbUrl;
   private String dbDriver;
+  private EntityManager entityManager;
 
   @Inject
   public Bootstrap(@Named(DB_DRIVER)
@@ -102,7 +103,7 @@ public class Bootstrap {
 
     // Configure logging. FINE ensures all SQL is shown
     properties.put(LOGGING_LEVEL, "FINE");
-    properties.put(LOGGING_TIMESTAMP, "false");
+    properties.put(LOGGING_TIMESTAMP, "true");
     properties.put(LOGGING_THREAD, "false");
     properties.put(LOGGING_SESSION, "false");
 
@@ -120,14 +121,17 @@ public class Bootstrap {
     LOG.info("Starting connection manager with properties "+properties);
     
     EntityManagerFactory emFactory = Persistence.createEntityManagerFactory(unitName,properties);
-    EntityManager em = emFactory.createEntityManager();
-    EntityTransaction transaction = em.getTransaction();
-    transaction.begin();
-    EmailDb email = new EmailDb();
-    email.setType("email");
-    email.setValue("ieb@tfd.co.uk");
-    em.persist(email);
-    transaction.commit();
-    em.close();
+    entityManager = emFactory.createEntityManager();
+  }
+
+  /**
+   * @param string
+   * @return
+   */
+  public EntityManager getEntityManager(String unitName) {
+    if ( entityManager == null ) {
+      init(unitName);
+    }
+    return entityManager;
   }
 }

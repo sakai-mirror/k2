@@ -27,6 +27,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
@@ -35,7 +36,11 @@ import java.util.List;
 
 @Entity
 @Table(name="name")
+@NamedQuery(name=NameDb.FINDBY_FAMILY_NAME,query="select n from NameDb n where n.familyName = :familyName ")
 public class NameDb implements Name, DbObject {
+  public static final String FINDBY_FAMILY_NAME = "q.name.findbyfamilyname";
+  public static final String PARAM_FAMILY_NAME = "familyName";
+
   @Id
   @GeneratedValue(strategy=IDENTITY)
   @Column(name="oid")

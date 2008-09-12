@@ -27,6 +27,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
@@ -40,7 +41,12 @@ import java.util.List;
  */
 @Entity
 @Table(name="body_type")
+@NamedQuery(name=BodyTypeDb.FINDBY_HEIGHT,query="select b from BodyTypeDb b where b.height = :height ")
 public class BodyTypeDb implements BodyType, DbObject {
+  public static final String FINDBY_HEIGHT = "q.bosytype.findbyheight";
+
+  public static final String PARAM_HEIGHT = "height";
+
   @Id
   @GeneratedValue(strategy=IDENTITY)
   @Column(name="oid")

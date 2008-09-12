@@ -31,6 +31,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
@@ -42,7 +43,12 @@ import java.util.List;
 @Inheritance(strategy=InheritanceType.JOINED)
 @DiscriminatorColumn(name="address_usage")
 @DiscriminatorValue(value="sharedaddress")
+@NamedQuery(name=AddressDb.FINDBY_POSTCODE,query="select a from AddressDb a where a.postalCode = :postalcode ")
 public class AddressDb implements Address, DbObject {
+  public static final String FINDBY_POSTCODE = "q.address.findbypostcode";
+
+  public static final String PARAM_POSTCODE = "postalcode";
+
   @Id
   @GeneratedValue(strategy=IDENTITY)
   @Column(name="oid")

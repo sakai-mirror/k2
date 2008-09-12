@@ -41,12 +41,12 @@ import javax.persistence.Transient;
 import javax.persistence.Version;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import static javax.persistence.CascadeType.ALL;
 
 @Entity
 @Table(name = "activity")
@@ -124,7 +124,7 @@ public class ActivityDb implements Activity, DbObject {
    * activity_id and then the name value becomes the key, and the value becomes the value
    * unfortunately JPA wont do Map<String,String> so this is handled in the getter and setter.
    */
-  @OneToMany(targetEntity = ActivityTemplateParamsDb.class, mappedBy = "activities")
+  @OneToMany(targetEntity = ActivityTemplateParamsDb.class, mappedBy = "activities", cascade = ALL)
   @MapKey(name = "name")
   protected Map<String, ActivityTemplateParamsDb> templateParamsDb;
   
