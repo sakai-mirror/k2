@@ -32,6 +32,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 @MappedSuperclass
 @Table(name="list_field")
@@ -44,6 +45,11 @@ public class ListFieldDb implements ListField, DbObject {
   @Column(name="oid")
   protected long objectId;
   
+  @Version
+  @Column(name="version")
+  protected long version;
+
+  
   @Basic
   @Column(name="field_type", length=255)
   protected String type;
@@ -53,7 +59,7 @@ public class ListFieldDb implements ListField, DbObject {
   protected String value;
   
   @Basic
-  @Column(name="primary")
+  @Column(name="primary_field")
   protected Boolean primary;
 
   public ListFieldDb() { }

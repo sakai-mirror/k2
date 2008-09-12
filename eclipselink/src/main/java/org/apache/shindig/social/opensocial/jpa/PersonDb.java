@@ -49,6 +49,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.persistence.Version;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -100,6 +101,10 @@ public class PersonDb implements Person, DbObject {
   @GeneratedValue(strategy = IDENTITY)
   @Column(name = "oid")
   private long objectId;
+
+  @Version
+  @Column(name="version")
+  protected long version;
 
   @Basic
   @Column(name = "about_me", length = 255)

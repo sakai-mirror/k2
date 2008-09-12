@@ -36,6 +36,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Version;
 
 import java.util.Date;
 
@@ -50,6 +51,10 @@ public class OrganizationDb implements Organization, DbObject {
   @Column(name="oid")
   private long objectId;
   
+  @Version
+  @Column(name="version")
+  protected long version;
+
   @OneToOne(targetEntity=OrganizationAddressDb.class, mappedBy="organization")
   private Address address;
   
@@ -96,7 +101,7 @@ public class OrganizationDb implements Organization, DbObject {
   private String type;
   
   @Basic
-  @Column(name="primary")
+  @Column(name="primary_organization")
   private Boolean primary;
 
   public Address getAddress() {

@@ -29,6 +29,8 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 import javax.persistence.GeneratedValue;
+import javax.persistence.Version;
+
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -41,6 +43,10 @@ public class AccountDb implements Account, DbObject {
   @GeneratedValue(strategy=IDENTITY)
   @Column(name="oid")
   protected long objectId;
+  
+  @Version
+  @Column(name="version")
+  protected long version;
   
   @Basic
   @Column(name="domain", length=255)

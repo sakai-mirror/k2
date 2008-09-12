@@ -30,12 +30,19 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.LOGGING_T
 import static org.eclipse.persistence.config.PersistenceUnitProperties.TARGET_SERVER;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.TRANSACTION_TYPE;
 
+import org.apache.shindig.social.opensocial.jpa.EmailDb;
+
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.TargetServer;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 
@@ -53,6 +60,7 @@ public class Bootstrap {
   private static final String DB_PASSWORD = "db.password";
   private static final String DB_MIN_WRITE = "db.write.min";
   private static final String DB_MIN_NUM_READ = "db.read.min";
+  private static final Log LOG = LogFactory.getLog(Boolean.class);
   private String minWrite;
   private String minRead;
   private String dbPassword;
@@ -71,13 +79,14 @@ public class Bootstrap {
     this.dbDriver = dbDriver;
     this.dbUrl = dbUrl;
     this.dbUser = dbUser;
-    this.dbPassword = dbPassword;
+    this.dbPassword = dbPassword == null || dbPassword.length() == 0 ? " " : dbPassword;
     this.minRead = minRead;
     this.minWrite = minWrite;
 
   }
 
   public void init(String unitName) {
+    
     Map<String, String> properties = new HashMap<String, String>();
 
     // Ensure RESOURCE_LOCAL transactions is used.
@@ -100,14 +109,25 @@ public class Bootstrap {
     // Ensure that no server-platform is configured
     properties.put(TARGET_SERVER, TargetServer.None);
     
-    
-    properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
+    properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.CREATE_ONLY);
     properties.put(PersistenceUnitProperties.DROP_JDBC_DDL_FILE, "drop.sql");
     properties.put(PersistenceUnitProperties.CREATE_JDBC_DDL_FILE, "create.sql");
+    properties.put(PersistenceUnitProperties.DDL_GENERATION_MODE, PersistenceUnitProperties.DDL_BOTH_GENERATION);
 
     
-    properties.put(PersistenceUnitProperties.SESSION_CUSTOMIZER, EnableIntegrityChecker.class.getName());
+    // properties.put(PersistenceUnitProperties.SESSION_CUSTOMIZER, EnableIntegrityChecker.class.getName());
 
-    Persistence.createEntityManagerFactory(unitName, properties);
+    LOG.info("Starting connection manager with properties "+properties);
+    
+    EntityManagerFactory emFactory = Persistence.createEntityManagerFactory(unitName,properties);
+    EntityManager em = emFactory.createEntityManager();
+    EntityTransaction transaction = em.getTransaction();
+    transaction.begin();
+    EmailDb email = new EmailDb();
+    email.setType("email");
+    email.setValue("ieb@tfd.co.uk");
+    em.persist(email);
+    transaction.commit();
+    em.close();
   }
 }

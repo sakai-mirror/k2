@@ -11,13 +11,23 @@
   <!-- which is discovered automatically.                        -->                                     
   <exclude-unlisted-classes>true</exclude-unlisted-classes>
  
+  <!--  properties are set in Bootstrap no here  -->
   <properties>
+     <property name="eclipselink.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver"/>
+     <property name="eclipselink.jdbc.url" value="jdbc:derby:testdb;create=true"/>
+     <property name="eclipselink.jdbc.user" value="sa"/>
+     <property name="eclipselink.jdbc.password" value=" "/>
+     <property name="eclipselink.target-server" value="None"/>
+     
+     <property name="eclipselink.jdbc.write-connections.min" value="1"/>
+     <property name="eclipselink.jdbc.read-connections.min" value="1"/>
      <property name="eclipselink.logging.level" value="FINE" />
-     <property name="eclipselink.logging.timestamp" value="true" />
-     <property name="eclipselink.logging.session" value="true" />
-     <property name="eclipselink.logging.thread" value="true" />
-     <property name="eclipselink.logging.exceptions" value="true" />
+     <property name="eclipselink.logging.timestamp" value="false" />
+     <property name="eclipselink.logging.session" value="false" />
+     <property name="eclipselink.logging.thread" value="false" />
+     <property name="eclipselink.logging.exceptions" value="false" />
      <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+     <property name="eclipselink.ddl-generation.output-mode" value="both"/>
   </properties>
 </persistence-unit>
 </persistence>

@@ -29,6 +29,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 import java.util.List;
 
@@ -39,6 +40,11 @@ public class NameDb implements Name, DbObject {
   @GeneratedValue(strategy=IDENTITY)
   @Column(name="oid")
   private long objectId;
+
+  @Version
+  @Column(name="version")
+  protected long version;
+
   
   @OneToMany(targetEntity=PersonDb.class,mappedBy="name")
   private List<Person> persons;

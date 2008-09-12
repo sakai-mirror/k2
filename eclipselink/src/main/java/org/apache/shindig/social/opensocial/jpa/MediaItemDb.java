@@ -32,6 +32,7 @@ import javax.persistence.PostLoad;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.Version;
 
 import java.util.List;
 
@@ -48,6 +49,10 @@ public class MediaItemDb implements MediaItem, DbObject {
   @Column(name="oid")
   private long objectId;
   
+  @Version
+  @Column(name="version")
+  protected long version;
+
   /*
    * The mapping for this is in ActivityDb. 
    */

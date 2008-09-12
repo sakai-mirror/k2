@@ -38,6 +38,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.persistence.Version;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,6 +56,11 @@ public class ActivityDb implements Activity, DbObject {
   @GeneratedValue(strategy = IDENTITY)
   @Column(name = "oid")
   protected long objectId;
+  
+  @Version
+  @Column(name="version")
+  protected long version;
+
 
   @Basic
   @Column(name = "app_id", length = 255)

@@ -30,6 +30,7 @@ import javax.persistence.PostLoad;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.Version;
 
 @Entity
 @Table(name="message")
@@ -39,6 +40,10 @@ public class MessageDb implements Message, DbObject {
   @Column(name="oid")
   protected long objectId;
   
+  @Version
+  @Column(name="version")
+  protected long version;
+
   @Basic
   @Column(name="body", length=255)
   protected String body;

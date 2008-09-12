@@ -24,9 +24,8 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.Table;
 import javax.persistence.ManyToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.SecondaryTable;
 
 /**
  *
@@ -36,11 +35,11 @@ import javax.persistence.SecondaryTable;
  * defining the organizations relationship with the address
  */
 @Entity
-@SecondaryTable(name="organizational_address", pkJoinColumns=@PrimaryKeyJoinColumn(name="address_id", referencedColumnName="oid"))
+@Table(name="organizational_address")
 @DiscriminatorValue(value="sharedaddress") // this is the same as others since we want to share the data.
 public class OrganizationAddressDb extends AddressDb {
   @Basic
-  @Column(name="primary", table="organizational_address")
+  @Column(name="primary_organization")
   private Boolean primary;
   
   @ManyToOne(targetEntity=OrganizationDb.class)
@@ -48,7 +47,7 @@ public class OrganizationAddressDb extends AddressDb {
   private Organization organization;
   
   @Basic
-  @Column(name="type", length=255, table="organizational_address")
+  @Column(name="type", length=255)
   private String type;
 
 

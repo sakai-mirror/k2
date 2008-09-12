@@ -25,8 +25,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.SecondaryTable;
+import javax.persistence.Table;
 
 /**
  *
@@ -36,11 +35,11 @@ import javax.persistence.SecondaryTable;
  * defining the organizations relationship with the address
  */
 @Entity
-@SecondaryTable(name="person_organization", pkJoinColumns=@PrimaryKeyJoinColumn(name="organization_id", referencedColumnName="oid"))
+@Table(name="person_organization")
 @DiscriminatorValue("shared")
 public class PersonOrganizationDb extends OrganizationDb {
   @Basic
-  @Column(name="primary", table="person_organization")
+  @Column(name="primary_organization", table="person_organization")
   private Boolean primary;
   
   @ManyToOne(targetEntity=PersonDb.class)

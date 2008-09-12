@@ -33,6 +33,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 import java.util.List;
 
@@ -46,6 +47,11 @@ public class AddressDb implements Address, DbObject {
   @GeneratedValue(strategy=IDENTITY)
   @Column(name="oid")
   private long objectId;
+  
+  @Version
+  @Column(name="version")
+  protected long version;
+
   
   @OneToMany(targetEntity=PersonDb.class,mappedBy="currentLocation")
   private List<Person> atLocation;
@@ -87,7 +93,7 @@ public class AddressDb implements Address, DbObject {
   private String formatted;
   
   @Basic
-  @Column(name="primary")
+  @Column(name="primary_address")
   private Boolean primary;
 
   public AddressDb() { }

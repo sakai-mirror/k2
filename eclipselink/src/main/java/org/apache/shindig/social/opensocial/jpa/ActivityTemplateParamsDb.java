@@ -27,6 +27,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 import java.util.Collection;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -37,6 +38,15 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @Table(name="template_params")
 public class ActivityTemplateParamsDb {
+
+  @Id
+  @GeneratedValue(strategy=IDENTITY)
+  @Column(name="oid")
+  protected long objectId;
+  
+  @Version
+  @Column(name="version")
+  protected long version;
 
   /*
    * Create a link to the activities joining activity_id here to oid in activities
@@ -53,8 +63,5 @@ public class ActivityTemplateParamsDb {
   @Column(name="template_value")
   protected String value;
   
-  @Id
-  @GeneratedValue(strategy=IDENTITY)
-  @Column(name="oid")
-  protected long objectId;
+
 }
