@@ -99,7 +99,7 @@ public class Bootstrap {
     properties.put(JDBC_WRITE_CONNECTIONS_MIN, minWrite);
 
     // Configure logging. FINE ensures all SQL is shown
-    properties.put(LOGGING_LEVEL, "INFO");
+    properties.put(LOGGING_LEVEL, "FINE");
     properties.put(LOGGING_TIMESTAMP, "true");
     properties.put(LOGGING_THREAD, "false");
     properties.put(LOGGING_SESSION, "false");
