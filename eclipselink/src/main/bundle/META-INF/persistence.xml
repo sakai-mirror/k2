@@ -30,4 +30,35 @@
      <property name="eclipselink.ddl-generation.output-mode" value="both"/>
   </properties>
 </persistence-unit>
+
+<persistence-unit name="cayenne">
+  <provider>org.apache.cayenne.jpa.Provider</provider>
+ 
+  <!-- By default your mappings can be defined in orm.xml file, -->
+  <!-- which is discovered automatically.                        -->                                     
+  <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    <properties>
+      <property name="org.apache.cayenne.datasource.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver"/>
+      <property name="org.apache.cayenne.datasource.jdbc.url" value="jdbc:derby:cayennedb;create=true"/>
+      <property name="org.apache.cayenne.datasource.jdbc.username" value="sa"/>
+      <property name="org.apache.cayenne.datasource.jdbc.password" value=" "/>
+      <property name="org.apache.cayenne.datasource.jdbc.minConnections" value="1"/>
+      <property name="org.apache.cayenne.datasource.jdbc.maxConnections" value="2"/>
+      <property name="org.apache.cayenne.schema.create" value="true"/>
+    </properties>
+  </persistence-unit>
+<persistence-unit name="openjpa">
+  <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+ 
+  <!-- By default your mappings can be defined in orm.xml file, -->
+  <!-- which is discovered automatically.                        -->                                     
+  <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    <properties>
+      <property name="openjpa.ConnectionURL" value="jdbc:derby:openjpa;create=true"/>
+      <property name="openjpa.ConnectionDriverName" value="org.apache.derby.jdbc.EmbeddedDriver"/>
+      <property name="openjpa.ConnectionUserName" value="sa"/>
+      <property name="openjpa.ConnectionPassword" value=""/>
+      <property name="openjpa.Log" value="DefaultLevel=WARN, Tool=INFO"/>
+    </properties>
+  </persistence-unit>
 </persistence>

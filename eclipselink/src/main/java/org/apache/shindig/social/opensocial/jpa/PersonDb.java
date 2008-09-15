@@ -180,6 +180,11 @@ public class PersonDb implements Person, DbObject {
   @Transient
   protected Enum<Enum.Drinker> drinker;
 
+  
+  @Basic
+  @Column(name = "display_name", length = 255)
+  private String displayName;
+
   /**
    * 
    */
@@ -480,12 +485,14 @@ public class PersonDb implements Person, DbObject {
   @Transient
   private boolean isViewer = false;
 
+
   public PersonDb() {
   }
 
-  public PersonDb(String id, Name name) {
+  public PersonDb(String id, String displayName , Name name) {
     this.id = id;
     this.name = name;
+    this.displayName = displayName;
   }
 
   public String getAboutMe() {
@@ -1156,5 +1163,19 @@ public class PersonDb implements Person, DbObject {
       this.lookingFor.add(new EnumDb<LookingFor>(LookingFor.valueOf(lf)));
     }
 
+  }
+
+  /* (non-Javadoc)
+   * @see org.apache.shindig.social.opensocial.model.Person#getDisplayName()
+   */
+  public String getDisplayName() {
+    return displayName;
+  }
+
+  /* (non-Javadoc)
+   * @see org.apache.shindig.social.opensocial.model.Person#setDisplayName(java.lang.String)
+   */
+  public void setDisplayName(String displayName) {
+    this.displayName = displayName;    
   }
 }

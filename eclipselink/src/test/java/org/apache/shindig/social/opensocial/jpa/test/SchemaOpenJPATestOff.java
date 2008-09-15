@@ -17,10 +17,11 @@
  */
 package org.apache.shindig.social.opensocial.jpa.test;
 
+import openjpa.*;
+
 import org.apache.shindig.social.opensocial.jpa.EmailDb;
 import org.apache.shindig.social.opensocial.model.Person;
 
-import eclipselink.Bootstrap;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -34,22 +35,22 @@ import java.util.Random;
 /**
  *
  */
-public class SchemaTest {
+public class SchemaOpenJPATestOff {
   
   private static EntityManager entityManager;
 
-  @BeforeClass
+  //@BeforeClass
   public static void config() {
-    Bootstrap b = new Bootstrap("org.apache.derby.jdbc.EmbeddedDriver","jdbc:derby:testdb;create=true","sa","","1","1");
+    Bootstrap b = new Bootstrap();
     //Bootstrap b = new Bootstrap("com.mysql.jdbc.Driver","jdbc:mysql://localhost/sakaikernel?useUnicode=true&amp;characterEncoding=UTF-8","sakaikernel","sakaikernel","1","1");
-    entityManager = b.getEntityManager("default");
+    entityManager = b.getEntityManager("openjpa");
   }
   
-  @AfterClass
+  //@AfterClass
   public static void stop() {
   }
 
-  @Test
+  //@Test
   public void checkSimpleInsert() throws Exception {
     EntityTransaction transaction = entityManager.getTransaction();
     transaction.begin();
@@ -60,7 +61,7 @@ public class SchemaTest {
     transaction.commit();
   }
   
-  @Test
+  //@Test
   public void checkPersonCreate() throws Exception {
     EntityTransaction transaction = entityManager.getTransaction();
     transaction.begin();
@@ -73,7 +74,7 @@ public class SchemaTest {
     transaction.commit();
   }
 
-  @Test
+  //@Test
   public void fillDatbase() throws Exception {
     EntityTransaction transaction = entityManager.getTransaction();
     transaction.begin();

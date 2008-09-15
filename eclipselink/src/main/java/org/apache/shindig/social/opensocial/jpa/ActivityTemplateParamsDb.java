@@ -31,6 +31,7 @@ import javax.persistence.Version;
 
 import java.util.Collection;
 import static javax.persistence.GenerationType.IDENTITY;
+import static javax.persistence.CascadeType.ALL;
 
 /**
  *
@@ -47,11 +48,12 @@ public class ActivityTemplateParamsDb {
   @Version
   @Column(name="version")
   protected long version;
+  // TODO: <openjpa-1.2.0-r422266:683325 fatal user error> org.apache.openjpa.persistence.ArgumentException: The type of field "org.apache.shindig.social.opensocial.jpa.ActivityTemplateParamsDb.activities" isn't supported by declared persistence strategy "ManyToOne".  Please choose a different strategy.
 
   /*
    * Create a link to the activities joining activity_id here to oid in activities
    */
-  @ManyToOne(targetEntity=ActivityDb.class)
+  @ManyToOne(targetEntity=ActivityDb.class, cascade = ALL)
   @JoinColumn(name="activity_id",referencedColumnName="oid")
   protected Collection<Activity> activities;
   

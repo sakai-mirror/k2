@@ -15,7 +15,7 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package eclipselink;
+package openjpa;
 
 import static org.eclipse.persistence.config.PersistenceUnitProperties.JDBC_DRIVER;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.JDBC_PASSWORD;
@@ -82,42 +82,15 @@ public class Bootstrap {
     this.minWrite = minWrite;
 
   }
+  public Bootstrap() {
+    
+  }
 
   public void init(String unitName) {
     
-    Map<String, String> properties = new HashMap<String, String>();
-
-    // Ensure RESOURCE_LOCAL transactions is used.
-    properties.put(TRANSACTION_TYPE, PersistenceUnitTransactionType.RESOURCE_LOCAL.name());
-
-    // Configure the internal EclipseLink connection pool
-    properties.put(JDBC_DRIVER, dbDriver);
-    properties.put(JDBC_URL, dbUrl);
-    properties.put(JDBC_USER, dbUser);
-    properties.put(JDBC_PASSWORD, dbPassword);
-    properties.put(JDBC_READ_CONNECTIONS_MIN, minRead);
-    properties.put(JDBC_WRITE_CONNECTIONS_MIN, minWrite);
-
-    // Configure logging. FINE ensures all SQL is shown
-    properties.put(LOGGING_LEVEL, "INFO");
-    properties.put(LOGGING_TIMESTAMP, "true");
-    properties.put(LOGGING_THREAD, "false");
-    properties.put(LOGGING_SESSION, "false");
-
-    // Ensure that no server-platform is configured
-    properties.put(TARGET_SERVER, TargetServer.None);
+  
     
-    properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.CREATE_ONLY);
-    properties.put(PersistenceUnitProperties.DROP_JDBC_DDL_FILE, "drop.sql");
-    properties.put(PersistenceUnitProperties.CREATE_JDBC_DDL_FILE, "create.sql");
-    properties.put(PersistenceUnitProperties.DDL_GENERATION_MODE, PersistenceUnitProperties.DDL_BOTH_GENERATION);
-
-    
-    // properties.put(PersistenceUnitProperties.SESSION_CUSTOMIZER, EnableIntegrityChecker.class.getName());
-
-    LOG.info("Starting connection manager with properties "+properties);
-    
-    EntityManagerFactory emFactory = Persistence.createEntityManagerFactory(unitName,properties);
+    EntityManagerFactory emFactory = Persistence.createEntityManagerFactory(unitName);
     entityManager = emFactory.createEntityManager();
   }
 

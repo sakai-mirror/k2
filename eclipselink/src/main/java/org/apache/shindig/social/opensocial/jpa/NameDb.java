@@ -75,23 +75,16 @@ public class NameDb implements Name, DbObject {
   private String honorificSuffix;
   
   @Basic
-  @Column(name="unstructured", length=255)
-  private String unstructured;
+  @Column(name="formatted", length=255)
+  private String formatted;
 
   public NameDb() {
   }
 
-  public NameDb(String unstructured) {
-    this.unstructured = unstructured;
+  public NameDb(String formatted) {
+    this.formatted = formatted;
   }
 
-  public String getUnstructured() {
-    return unstructured;
-  }
-
-  public void setUnstructured(String unstructured) {
-    this.unstructured = unstructured;
-  }
 
   public String getAdditionalName() {
     return additionalName;
@@ -159,5 +152,20 @@ public class NameDb implements Name, DbObject {
    */
   public void setPersons(List<Person> persons) {
     this.persons = persons;
+   
+  }
+
+  /* (non-Javadoc)
+   * @see org.apache.shindig.social.opensocial.model.Name#getFormatted()
+   */
+  public String getFormatted() {
+    return formatted;
+  }
+
+  /* (non-Javadoc)
+   * @see org.apache.shindig.social.opensocial.model.Name#setFormatted(java.lang.String)
+   */
+  public void setFormatted(String formatted) {
+    this.formatted = formatted;
   }
 }

@@ -191,7 +191,7 @@ public class PersonPopulate {
       name.setGivenName("GivenName");
       name.setHonorificPrefix("Hprefix");
       name.setHonorificSuffix("HSufix");
-      name.setUnstructured("Unstructured");
+      name.setFormatted("formatted");
       name.setAdditionalName("Additional Names");
     }
     return name;
