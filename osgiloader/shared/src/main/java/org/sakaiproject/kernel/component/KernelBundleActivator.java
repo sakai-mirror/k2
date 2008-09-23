@@ -1,9 +1,9 @@
 package org.sakaiproject.kernel.component;
 
-import static org.apache.felix.framework.util.FelixConstants.EMBEDDED_EXECUTION_PROP;
-
 import org.apache.felix.framework.Felix;
 import org.apache.felix.framework.Logger;
+import org.apache.felix.framework.cache.BundleCache;
+import org.apache.felix.framework.util.FelixConstants;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -47,6 +47,10 @@ public class KernelBundleActivator implements BundleActivator, Kernel {
     for (Entry<?, ?> e : p.entrySet()) {
       m.put(String.valueOf(e.getKey()), String.valueOf(e.getValue()));
     }
+    m.put(BundleCache.CACHE_PROFILE_DIR_PROP, "cache");
+    // make sure Felix does not exit the VM when terminating ...
+    m.put(FelixConstants.EMBEDDED_EXECUTION_PROP, "true");
+
 
     // check for auto-start bundles
     this.setInstallBundles(m);
@@ -54,8 +58,6 @@ public class KernelBundleActivator implements BundleActivator, Kernel {
     // ensure execution environment
     this.setExecutionEnvironment(m);
 
-    // make sure Felix does not exit the VM when terminating ...
-    m.put(EMBEDDED_EXECUTION_PROP, "true");
 
     // the custom activator list just contains this servlet
     List<BundleActivator> activators = new ArrayList<BundleActivator>();
