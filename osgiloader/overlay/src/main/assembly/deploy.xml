@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<assembly>
+  <id>kernel-loader</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>src/main/configuration</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>**/*</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>server/lib/</outputDirectory>
+      <includes>
+        <include>*:jar:*</include>
+      </includes>
+      <excludes>
+        <!-- 
+          <exclude>tomcat:catalina</exclude>
+          <exclude>tomcat-temp:naming-factory</exclude>
+          <exclude>tomcat:naming-resources</exclude>
+          <exclude>javax.servlet:servlet-api</exclude>
+        -->
+        <exclude>log4j:log4j</exclude>
+        <exclude>commons-logging:commons-logging</exclude>
+      </excludes>
+      <unpack>false</unpack>
+    </dependencySet>
+  </dependencySets>
+</assembly>

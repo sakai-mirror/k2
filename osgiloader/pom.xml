@@ -10,69 +10,16 @@
     <version>1-SNAPSHOT</version>
   </parent>
 
-  <name>tomcat-context-loader</name>
+  <name>loader</name>
   <groupId>org.sakaiproject.kernel2</groupId>
-  <artifactId>tomcat-context-loader</artifactId>
+  <artifactId>loader</artifactId>
   <version>0.1-SNAPSHOT</version>
-  <packaging>jar</packaging>
-  <properties>
-    <deploy.target>server</deploy.target>
-  </properties>
-  <dependencies>
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <version>1.0.4</version>
-      <type>jar</type>
-    </dependency>
-    <dependency>
-      <groupId>tomcat</groupId>
-      <artifactId>catalina</artifactId>
-      <version>tomcat-5.5.26</version>
-      <type>jar</type>
-    </dependency>
-    <dependency>
-      <groupId>tomcat-temp</groupId>
-      <artifactId>naming-factory</artifactId>
-      <version>5.5.16</version>
-      <type>jar</type>
-    </dependency>
-    <dependency>
-      <groupId>tomcat</groupId>
-      <artifactId>naming-resources</artifactId>
-      <version>tomcat-5.5.26</version>
-      <type>jar</type>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.felix</groupId>
-      <artifactId>org.apache.felix.framework</artifactId>
-      <version>1.0.4</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.felix</groupId>
-      <artifactId>org.osgi.core</artifactId>
-      <version>1.2.0</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.felix</groupId>
-      <artifactId>org.osgi.compendium</artifactId>
-      <version>1.2.0</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>org.apache.felix</groupId>
-          <artifactId>javax.servlet</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.4</version>
-      <type>jar</type>
-    </dependency>
+  <packaging>pom</packaging>
+  <modules>
+    <module>shared</module>
+    <module>common</module>
+    <module>server</module>
+    <module>overlay</module>
+  </modules>
 
-  </dependencies>
 </project>
