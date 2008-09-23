@@ -19,6 +19,7 @@
     <module>shared</module>
     <module>common</module>
     <module>server</module>
+    <module>server-test</module>
     <module>overlay</module>
   </modules>
 
