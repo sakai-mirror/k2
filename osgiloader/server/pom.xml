@@ -15,10 +15,14 @@
   <artifactId>osgi-server</artifactId>
   <version>0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <properties>
-    <deploy.target>server</deploy.target>
-  </properties>
   <dependencies>
+    <dependency>
+      <groupId>org.sakaiproject.kernel2</groupId>
+      <artifactId>osgi-common</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+      <type>jar</type>
+    </dependency>
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
@@ -45,27 +49,6 @@
       <version>tomcat-5.5.26</version>
       <scope>provided</scope>
       <type>jar</type>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.felix</groupId>
-      <artifactId>org.apache.felix.framework</artifactId>
-      <version>1.0.4</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.felix</groupId>
-      <artifactId>org.osgi.core</artifactId>
-      <version>1.2.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.felix</groupId>
-      <artifactId>org.osgi.compendium</artifactId>
-      <version>1.2.0</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.apache.felix</groupId>
-          <artifactId>javax.servlet</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
