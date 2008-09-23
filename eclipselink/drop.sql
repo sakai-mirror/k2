@@ -16,18 +16,18 @@ ALTER TABLE person_account DROP CONSTRAINT person_account_oid
 ALTER TABLE person_account DROP CONSTRAINT prsnaccountprsonid
 ALTER TABLE url DROP CONSTRAINT FK_url_oid
 ALTER TABLE url DROP CONSTRAINT FK_url_person_id
-ALTER TABLE organizational_address DROP CONSTRAINT rgnztionaladdressd
-ALTER TABLE organizational_address DROP CONSTRAINT rgnztnlddrsrgnztnd
 ALTER TABLE email DROP CONSTRAINT FK_email_person_id
 ALTER TABLE email DROP CONSTRAINT FK_email_oid
+ALTER TABLE organizational_address DROP CONSTRAINT rgnztionaladdressd
+ALTER TABLE organizational_address DROP CONSTRAINT rgnztnlddrsrgnztnd
 ALTER TABLE photo DROP CONSTRAINT FK_photo_person_id
 ALTER TABLE photo DROP CONSTRAINT FK_photo_oid
 ALTER TABLE person_properties DROP CONSTRAINT personpropertiesid
 ALTER TABLE person_properties DROP CONSTRAINT prsnprpertiesprsnd
 DROP TABLE list_field
 DROP TABLE phone
-DROP TABLE person_address
 DROP TABLE activity
+DROP TABLE person_address
 DROP TABLE template_params
 DROP TABLE account
 DROP TABLE message
@@ -39,10 +39,10 @@ DROP TABLE person_organization
 DROP TABLE im
 DROP TABLE person_account
 DROP TABLE url
-DROP TABLE organizational_address
 DROP TABLE body_type
 DROP TABLE email
+DROP TABLE organizational_address
 DROP TABLE photo
 DROP TABLE name
-DROP TABLE person_properties
 DROP TABLE organization
+DROP TABLE person_properties
