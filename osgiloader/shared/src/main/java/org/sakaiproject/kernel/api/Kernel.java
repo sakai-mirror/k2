@@ -18,10 +18,13 @@
 package org.sakaiproject.kernel.api;
 
 /**
- *
+ * The kernel.
  */
 public interface Kernel {
 
+  /**
+   * The name of the Mbean used for kernel.
+   */
   String MBEAN_KERNEL = "Sakai:type=Kernel";
 
 }

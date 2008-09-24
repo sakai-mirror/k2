@@ -32,7 +32,7 @@ public class KernelLoader implements LifeCycle {
   /**
    * The lifecycle object.
    */
-  private CommonLifecycle kernelLifecycle;
+  private CommonLifecycle<?> kernelLifecycle;
 
   /**
    * true if failed to start.
@@ -70,7 +70,7 @@ public class KernelLoader implements LifeCycle {
    * Start the kernel.
    * @throws Exception if the lifecycle fails to respondto the start lifecycle operation.
    */
-  public final void start() throws Exception {
+  public void start() throws Exception {
     if (starting || running || started) {
       return;
     }
@@ -79,7 +79,7 @@ public class KernelLoader implements LifeCycle {
     ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
     try {
 
-      Class<CommonLifecycle> clazz = LoaderEnvironment.getLifecyleClass(currentClassLoader);
+      Class<CommonLifecycle<?>> clazz = LoaderEnvironment.getLifecyleClass(currentClassLoader);
       kernelLifecycle = clazz.newInstance();
       kernelLifecycle.start();
       failed = false;
@@ -95,7 +95,7 @@ public class KernelLoader implements LifeCycle {
    * Stop the kernel.
    * @throws Exception if there is a problem with the lifecycle stop operation.
    */
-  public final void stop() throws Exception {
+  public void stop() throws Exception {
     if (stopping) {
       return;
     }
@@ -113,42 +113,42 @@ public class KernelLoader implements LifeCycle {
   /**
    * @return true if start failed.
    */
-  public final boolean isFailed() {
+  public boolean isFailed() {
     return failed;
   }
 
   /**
    * @return true if running.
    */
-  public final boolean isRunning() {
+  public boolean isRunning() {
     return running;
   }
 
   /**
    * @return true if started.
    */
-  public final boolean isStarted() {
+  public boolean isStarted() {
    return started;
   }
 
   /**
    * @return true if starting.
    */
-  public final boolean isStarting() {
+  public boolean isStarting() {
     return starting;
   }
 
   /**
    * @return true if stopped.
    */
-  public final boolean isStopped() {
+  public boolean isStopped() {
     return stopped;
   }
 
   /**
    * @return true if stopped.
    */
-  public final boolean isStopping() {
+  public boolean isStopping() {
     return stopping;
   }
 

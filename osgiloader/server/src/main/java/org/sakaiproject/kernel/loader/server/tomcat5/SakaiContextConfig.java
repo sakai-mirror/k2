@@ -64,7 +64,7 @@ public class SakaiContextConfig extends ContextConfig {
    * @see org.apache.catalina.LifecycleListener#lifecycleEvent(org.apache.catalina.LifecycleEvent)
    * @param event the tocmat event.
    */
-  public final void lifecycleEvent(LifecycleEvent event) {
+  public void lifecycleEvent(final LifecycleEvent event) {
     String type = event.getType();
     super.lifecycleEvent(event);
 

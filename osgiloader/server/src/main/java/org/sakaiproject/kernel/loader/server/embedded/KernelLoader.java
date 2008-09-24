@@ -36,7 +36,7 @@ public class KernelLoader {
   /**
    * the Lifecycle object being loaded.
    */
-  private static CommonLifecycle kernelLifecycle;
+  private static CommonLifecycle<?> kernelLifecycle;
 
   /**
    * true if the start failed.
@@ -83,7 +83,7 @@ public class KernelLoader {
 
       try {
 
-        Class<CommonLifecycle> clazz = LoaderEnvironment.getLifecyleClass(currentClassLoader);
+        Class<CommonLifecycle<?>> clazz = LoaderEnvironment.getLifecyleClass(currentClassLoader);
         kernelLifecycle = clazz.newInstance();
         kernelLifecycle.start();
         failed = false;
@@ -101,7 +101,7 @@ public class KernelLoader {
    * Stop the kernel.
    * @throws Exception if there is a problem stopping the lifecycle.
    */
-  public final void stop() throws Exception {
+  public void stop() throws Exception {
     synchronized (LOCK) {
       if (stopping || !running || !started || starting) {
         return;
@@ -122,42 +122,42 @@ public class KernelLoader {
   /**
    * @return true if the kernel failed to start.
    */
-  public final boolean isFailed() {
+  public boolean isFailed() {
     return failed;
   }
 
   /**
    * @return true if the kernel is up and running.
    */
-  public final boolean isRunning() {
+  public boolean isRunning() {
     return running;
   }
 
   /**
    * @return true if the kernel is stated.
    */
-  public final boolean isStarted() {
+  public boolean isStarted() {
     return started;
   }
 
   /**
    * @return true if the kernel is starting.
    */
-  public final boolean isStarting() {
+  public boolean isStarting() {
     return starting;
   }
 
   /**
    * @return true if the kernel is stopped.
    */
-  public final boolean isStopped() {
+  public boolean isStopped() {
     return stopped;
   }
 
   /**
    * @return true if the kernel is stopping.
    */
-  public final boolean isStopping() {
+  public boolean isStopping() {
     return stopping;
   }
 

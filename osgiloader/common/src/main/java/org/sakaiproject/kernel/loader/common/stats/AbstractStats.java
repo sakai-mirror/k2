@@ -47,7 +47,7 @@ public abstract class AbstractStats implements MemoryStats {
   /**
    * @return a measurement
    */
-  public final String measure() {
+  public String measure() {
     if (!active) {
       return "";
     }
@@ -84,7 +84,7 @@ public abstract class AbstractStats implements MemoryStats {
   /**
    * generate the baseline measurement.
    */
-  public final void baseLine() {
+  public void baseLine() {
     try {
       MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
       System.runFinalization();

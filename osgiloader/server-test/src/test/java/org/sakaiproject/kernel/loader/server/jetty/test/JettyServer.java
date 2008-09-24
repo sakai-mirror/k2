@@ -48,7 +48,7 @@ public class JettyServer {
    * Start the jetty server up.
    * @throws Exception if the jetty server wont start.
    */
-  public final void start() throws Exception {
+  public void start() throws Exception {
     server.start();
   }
 
@@ -56,7 +56,7 @@ public class JettyServer {
    * Stop the server.
    * @throws Exception if the server fails to stop.
    */
-  public final void stop() throws Exception {
+  public void stop() throws Exception {
     server.stop();
   }
 

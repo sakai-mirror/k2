@@ -43,14 +43,14 @@ public class OldMemoryStats extends AbstractStats implements MemoryStats {
   /**
    * @return the labels to associate with the names.
    */
-  protected final String[] getLables() {
+  protected String[] getLables() {
     return LABELS;
   }
 
   /**
    * @return the JMX names
    */
-  protected final String[] getNames() {
+  protected String[] getNames() {
     return NAMES;
   }
 

@@ -27,11 +27,9 @@ import org.sakaiproject.kernel.loader.common.CommonLifecycleEvent;
 import org.sakaiproject.kernel.loader.common.CommonLifecycleListener;
 
 import javax.management.Descriptor;
-import javax.management.MBeanException;
 import javax.management.MBeanParameterInfo;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-import javax.management.RuntimeOperationsException;
 import javax.management.modelmbean.DescriptorSupport;
 import javax.management.modelmbean.ModelMBeanAttributeInfo;
 import javax.management.modelmbean.ModelMBeanInfo;
@@ -45,36 +43,65 @@ import java.util.Date;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
- * @author ieb
+ * The KernelLifecycle manages the lifecycle of Kernel.
  */
-public class KernelLifecycle implements CommonLifecycle {
+public class KernelLifecycle implements CommonLifecycle<Kernel> {
 
   /**
-   * @throws MBeanException
-   * @throws RuntimeOperationsException
+   * Create a kernel lifecycle object.
    */
-  public KernelLifecycle() throws MBeanException, RuntimeOperationsException {
+  public KernelLifecycle() {
     super();
   }
 
-  private static final Log log = LogFactory.getLog(KernelLifecycle.class);
+  /**
+   * a Logger.
+   */
+  private static final Log LOG = LogFactory.getLog(KernelLifecycle.class);
 
-  private CopyOnWriteArraySet<CommonLifecycleListener> listeners = new CopyOnWriteArraySet<CommonLifecycleListener>();
+  /**
+   * One Meg.
+   */
+  private static final long ONEM = 1024 * 1024;
 
+  /**
+   * Failure code that is used.
+   */
+  private static final int FAILURE_CODE = 10;
+
+  /**
+   * a concurrent store of listeners.
+   */
+  private CopyOnWriteArraySet<CommonLifecycleListener> listeners =
+    new CopyOnWriteArraySet<CommonLifecycleListener>();
+
+  /**
+   * the date the kernel was last loaded.
+   */
   private Date lastLoadDate;
 
+  /**
+   * how long it took to load.
+   */
   private long loadTime;
 
+  /**
+   * The managed object which is a Kernel Bundle Activator, (implementing a Kernel).
+   */
   private KernelBundleActivator kernelBundleActivator;
 
+  /**
+   * Execute the start phase of the lifecycle, creating the MBean and registering the newly started
+   * Kernel with JMX.
+   *
+   * @see org.sakaiproject.kernel.loader.common.CommonLifecycle#start()
+   */
   public void start() {
-    log
-        .info("Component Lifecycle is starting =========================================================================");
+    LOG.info("Component Lifecycle is starting ==============================================");
     try {
       long start = System.currentTimeMillis();
       lifecycleEvent(CommonLifecycleEvent.BEFORE_START);
       lastLoadDate = new Date();
-      
 
       MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
 
@@ -130,45 +157,45 @@ public class KernelLifecycle implements CommonLifecycle {
         long tenuredGenUsed = Long.parseLong(String.valueOf(tenuredGen.get("used")));
         long survivorSpaceUsed = Long.parseLong(String.valueOf(survivorSpace.get("used")));
 
-        log.info("Memory Stats after startup\n" +
-        		"\tPermgen Used " + permGenUsed / (1024 * 1024) + " MB\n" +
-        		"\tCode Cache Used " + codeCacheUsed / (1024 * 1024) + " MB\n" +
-                        "\tEden Used " + edenSpaceUsed / (1024 * 1024) + " MB\n" +
-                        "\tTenured Used " + tenuredGenUsed / (1024 * 1024) + " MB\n" +
-                        "\tSurvivour Used " + survivorSpaceUsed / (1024 * 1024) + " MB");
+        LOG.info("Memory Stats after startup\n" + "\tPermgen Used " + permGenUsed / (ONEM)
+            + " MB\n" + "\tCode Cache Used " + codeCacheUsed / (ONEM) + " MB\n" + "\tEden Used "
+            + edenSpaceUsed / (ONEM) + " MB\n" + "\tTenured Used " + tenuredGenUsed / (ONEM)
+            + " MB\n" + "\tSurvivour Used " + survivorSpaceUsed / (ONEM) + " MB");
       } catch (Exception ex2) {
-        log.info("Startup Memory Stats Not available");
+        LOG.info("Startup Memory Stats Not available");
       }
       lifecycleEvent(CommonLifecycleEvent.START);
       lifecycleEvent(CommonLifecycleEvent.AFTER_START);
       loadTime = System.currentTimeMillis() - start;
 
     } catch (Throwable ex) {
-      log.error("Failed to start Component Lifecycle ", ex);
-      System.exit(10);
+      LOG.error("Failed to start Component Lifecycle ", ex);
+      System.exit(FAILURE_CODE);
     }
-    log
-        .info("Kernel Lifecycle Start Complete =========================================================================");
+    LOG.info("Kernel Lifecycle Start Complete ===========================================");
 
   }
 
   /**
-   * @return
+   * Create the the MBean Info for the Kernel so that the methods and properties are accessable via
+   * JMX.
+   *
+   * @return a new MBeanInfo structure
    */
   private ModelMBeanInfo createMBeanInfo() {
-    Descriptor lastLoadDate = new DescriptorSupport(new String[] { "name=LastLoadDate",
+    Descriptor lastLoadDateDesc = new DescriptorSupport(new String[] {"name=LastLoadDate",
         "descriptorType=attribute", "default=0", "displayName=Last Load Date",
-        "getMethod=getLastLoadDate" });
-    Descriptor lastLoadTime = new DescriptorSupport(new String[] { "name=LastLoadTime",
+        "getMethod=getLastLoadDate"});
+    Descriptor lastLoadTimeDesc = new DescriptorSupport(new String[] {"name=LastLoadTime",
         "descriptorType=attribute", "default=0", "displayName=Last Load Time",
         "getMethod=getLoadTime" });
 
     ModelMBeanAttributeInfo[] mmbai = new ModelMBeanAttributeInfo[2];
     mmbai[0] = new ModelMBeanAttributeInfo("LastLoadDate", "java.util.Date", "Last Load Date",
-        true, false, false, lastLoadDate);
+        true, false, false, lastLoadDateDesc);
 
     mmbai[1] = new ModelMBeanAttributeInfo("LastLoadTime", "java.lang.Long", "Last Load Time",
-        true, false, false, lastLoadTime);
+        true, false, false, lastLoadTimeDesc);
 
     ModelMBeanOperationInfo[] mmboi = new ModelMBeanOperationInfo[7];
 
@@ -176,26 +203,24 @@ public class KernelLifecycle implements CommonLifecycle {
         ModelMBeanOperationInfo.ACTION);
     mmboi[1] = new ModelMBeanOperationInfo("stop", "Stop the Kernel", null, "void",
         ModelMBeanOperationInfo.ACTION);
-    mmboi[2] = new ModelMBeanOperationInfo("getKernel",
-        "Get the Current Kernel", null, Kernel.class.getName(),
-        ModelMBeanOperationInfo.INFO);
+    mmboi[2] = new ModelMBeanOperationInfo("getKernel", "Get the Current Kernel", null,
+        Kernel.class.getName(), ModelMBeanOperationInfo.INFO);
 
     mmboi[3] = new ModelMBeanOperationInfo("addKernelLifecycleListener",
         "Add a listener to the kernel lifecycle",
-        new MBeanParameterInfo[] { new MBeanParameterInfo("Lifecycle Listener",
+        new MBeanParameterInfo[] {new MBeanParameterInfo("Lifecycle Listener",
             CommonLifecycleListener.class.getName(), "The Lifecycle Listener to be added") },
         "void", ModelMBeanOperationInfo.ACTION);
     mmboi[4] = new ModelMBeanOperationInfo("removeKernelLifecycleListener",
         "Remove a listener to the kernel lifecycle",
-        new MBeanParameterInfo[] { new MBeanParameterInfo("Lifecycle Listener",
+        new MBeanParameterInfo[] {new MBeanParameterInfo("Lifecycle Listener",
             CommonLifecycleListener.class.getName(), "The Lifecycle Listener to be removed") },
         "void", ModelMBeanOperationInfo.ACTION);
     mmboi[5] = new ModelMBeanOperationInfo("getLastLoadDate",
         "The date the kernel was last loaded", null, "java.util.Date",
         ModelMBeanOperationInfo.INFO);
-    mmboi[6] = new ModelMBeanOperationInfo("getLoadTime",
-        "The time it took to load the kernel", null, "long",
-        ModelMBeanOperationInfo.INFO);
+    mmboi[6] = new ModelMBeanOperationInfo("getLoadTime", "The time it took to load the kernel",
+        null, "long", ModelMBeanOperationInfo.INFO);
 
     /*
      * mmboi[1] = new ModelMBeanOperationInfo("decPanelValue", "decrement the meter value", null,
@@ -209,73 +234,86 @@ public class KernelLifecycle implements CommonLifecycle {
      * "constructor for Model Bean Sample", null);
      */
 
-    return new ModelMBeanInfoSupport(this.getClass().getName(), "Sakai Kernel", mmbai,
-        null, mmboi, null);
+    return new ModelMBeanInfoSupport(this.getClass().getName(), "Sakai Kernel", mmbai, null,
+        mmboi, null);
   }
 
+  /**
+   * Stop the kernel.
+   */
   public void stop() {
-    log.info("Component Lifecyle is stopping");
+    LOG.info("Component Lifecyle is stopping");
     try {
       lifecycleEvent(CommonLifecycleEvent.BEFORE_STOP);
       lifecycleEvent(CommonLifecycleEvent.STOP);
       kernelBundleActivator.doStopBundle();
       lifecycleEvent(CommonLifecycleEvent.AFTER_START);
     } catch (Throwable ex) {
-      log.error("Failed to stop Component Lifecycle ", ex);
+      LOG.error("Failed to stop Component Lifecycle ", ex);
     }
 
   }
 
+  /**
+   * Destroy the kernel.
+   */
   public void destroy() {
-    log.info("Component Lifecycle is stopping");
+    LOG.info("Component Lifecycle is stopping");
     try {
       lifecycleEvent(CommonLifecycleEvent.DESTROY);
       listeners.clear();
     } catch (Throwable ex) {
-      log.error("Failed to stop Component Lifecycle ", ex);
+      LOG.error("Failed to stop Component Lifecycle ", ex);
     }
 
   }
 
-  public Object getLifecycleObject() {
-    return kernelBundleActivator;
-  }
-
-  public Kernel getKernel() {
+  /**
+   * Get the kernel. (JMX method)
+   * @return the kernel object
+   */
+  public Kernel getManagedObject() {
     return kernelBundleActivator;
   }
 
   /**
-   * Fire the lifecycle events
-   * 
-   * @param event
+   * Fire the lifecycle events.
+   *
+   * @param event the event to be sent to listeners
    */
-  protected void lifecycleEvent(CommonLifecycleEvent event) {
+  protected void lifecycleEvent(final CommonLifecycleEvent event) {
     for (CommonLifecycleListener l : listeners) {
       l.lifecycleEvent(event);
     }
   }
 
   /**
-   * @param listener
+   * Add a listener to the lifecycle.
+   * @param listener the listener to add
    */
-  public void addKernelLifecycleListener(CommonLifecycleListener listener) {
+  public void addKernelLifecycleListener(final CommonLifecycleListener listener) {
     if (!listeners.contains(listener)) {
       listeners.add(listener);
     }
   }
 
   /**
-   * @param listener
+   * @param listener the listener to add to a set of lifecycle listeners.
    */
   public void removeKernelLifecycleListener(CommonLifecycleListener listener) {
     listeners.remove(listener);
   }
 
+  /**
+   * @return the date the kernel was last loaded.
+   */
   public Date getLastLoadDate() {
     return lastLoadDate;
   }
 
+  /**
+   * @return the time taken to load last time.
+   */
   public long getLoadTime() {
     return loadTime;
   }

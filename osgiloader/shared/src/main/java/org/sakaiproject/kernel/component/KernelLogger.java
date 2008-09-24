@@ -24,40 +24,62 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 
 /**
- * 
+ * The KernelLogger unwinds bundle exceptions to make them more readable.
  */
 public class KernelLogger extends Logger {
 
+  /**
+   * The Logger.
+   */
   private static final Log LOG = LogFactory.getLog(KernelLogger.class);
 
+  /**
+   * Log a message.
+   *
+   * @param sr The service reference where the message came from
+   * @param msg the message
+   * @param level the level of logging.
+   * @param throwable an optional throwable
+   */
   @Override
-  protected void doLog(ServiceReference sr, int level, String msg, Throwable throwable) {
+  protected void doLog(final ServiceReference sr, final int level, final String msg,
+      final Throwable throwable) {
 
     // unwind throwable if it is a BundleException
+    Throwable t = throwable;
     if ((throwable instanceof BundleException)
         && (((BundleException) throwable).getNestedException() != null)) {
-      throwable = ((BundleException) throwable).getNestedException();
+      t = ((BundleException) throwable).getNestedException();
     }
 
-    String s = (sr == null) ? null : "SvcRef " + sr;
-    s = (s == null) ? msg : s + " " + msg;
-    s = (throwable == null) ? s : s + " (" + throwable + ")";
+    String s = null;
+    if (sr != null) {
+      s = "SvcRef " + sr;
+    }
+    if (s == null) {
+      s = msg;
+    } else {
+      s = s + " " + msg;
+    }
+    if (t != null) {
+      s = s + " (" + t + ")";
+    }
 
     switch (level) {
     case LOG_DEBUG:
-      LOG.debug(s,throwable);
+      LOG.debug(s, t);
       break;
     case LOG_ERROR:
-      LOG.error(s, throwable);
+      LOG.error(s, t);
       break;
     case LOG_INFO:
-      LOG.info(s, throwable);
+      LOG.info(s, t);
       break;
     case LOG_WARNING:
-      LOG.warn(s, throwable);
+      LOG.warn(s, t);
       break;
     default:
-      LOG.info(s, throwable);
+      LOG.info(s, t);
     }
   }
 

@@ -20,9 +20,9 @@ package org.sakaiproject.kernel.loader.common;
 
 /**
  * Objects that have a lifecycle and can be controlled via their lifecycle implement this interface.
- *
+ * @param <T> the type of object managed by this lifecycle.
  */
-public interface CommonLifecycle {
+public interface CommonLifecycle<T> {
 
   /**
    * Starts the object.
@@ -38,7 +38,7 @@ public interface CommonLifecycle {
    * Gets a reference to the object that is being managed inside this lifecycle.
    * @return the managed object
    */
-  Object getManagedObject();
+  T getManagedObject();
 
   /**
    * Destroy, no more life.

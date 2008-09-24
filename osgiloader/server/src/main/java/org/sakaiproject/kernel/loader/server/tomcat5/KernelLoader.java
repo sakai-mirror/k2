@@ -55,7 +55,7 @@ public class KernelLoader implements LifecycleListener {
   /**
    * The kernel lifecycle that implements a common lifecycle API.
    */
-  private CommonLifecycle kernelLifecycle;
+  private CommonLifecycle<?> kernelLifecycle;
 
   /**
    * The classloade to use to load the kernel, in tomcat 5 this is the shared classloader.
@@ -72,7 +72,7 @@ public class KernelLoader implements LifecycleListener {
    *
    * @param event the lifecycle event from tomcat.
    */
-  public final void lifecycleEvent(final LifecycleEvent event) {
+  public void lifecycleEvent(final LifecycleEvent event) {
     try {
       String type = event.getType();
       LOG.debug("At " + type);
@@ -121,7 +121,7 @@ public class KernelLoader implements LifecycleListener {
     ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
     Thread.currentThread().setContextClassLoader(sharedClassloader);
     try {
-      Class<CommonLifecycle> clazz = LoaderEnvironment.getLifecyleClass(sharedClassloader);
+      Class<CommonLifecycle<?>> clazz = LoaderEnvironment.getLifecyleClass(sharedClassloader);
       kernelLifecycle = clazz.newInstance();
       LOG.info("Starting Kernel Lifecyle " + clazz.getName());
       kernelLifecycle.start();
@@ -154,7 +154,7 @@ public class KernelLoader implements LifecycleListener {
    * @return the service
    * @throws Exception if there was a problem locating the service.
    */
-  private Service getService(ObjectName oname) throws Exception {
+  private Service getService(final ObjectName oname) throws Exception {
 
     String domain = oname.getDomain();
     Server server = ServerFactory.getServer();

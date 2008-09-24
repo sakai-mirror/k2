@@ -26,16 +26,30 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Hello world!
- * 
+ * A Kernel bundle activator brings up a bundle configured as a kernel.
+ *
  */
 public class KernelBundleActivator implements BundleActivator, Kernel {
+  /**
+   * The bundle logger.
+   */
   protected Logger logger;
+  /**
+   * The running bundle context.
+   */
   private BundleContext bundleContext;
+  /**
+   * The Felix OSGi container being used for this bundle.
+   */
   private Felix felix;
 
-  public KernelBundleActivator(Logger logger) throws IOException {
-    this.logger = logger;
+  /**
+   * Creates the bundle activator and starts it, with a logger.
+   * @param newLogger the logger to use with this bundle.
+   * @throws IOException if the properties that configure the bundle cant be opened.
+   */
+  public KernelBundleActivator(final Logger newLogger) throws IOException {
+    this.logger = newLogger;
 
     this.logger.log(Logger.LOG_INFO, "Starting POC");
 
@@ -86,10 +100,10 @@ public class KernelBundleActivator implements BundleActivator, Kernel {
    * properties or the system properties, we ensure that older settings for J2SE-1.2, J2SE-1.3 and
    * J2SE-1.4 are included. If the property is neither set in the configuration properties nor in
    * the system properties, the property is not set.
-   * 
+   *
    * @param props The configuration properties to check and optionally ammend.
    */
-  private void setExecutionEnvironment(Map<String, String> props) {
+  private void setExecutionEnvironment(final Map<String, String> props) {
     // get the current Execution Environment setting
     String ee = props.get(Constants.FRAMEWORK_EXECUTIONENVIRONMENT);
     if (ee == null) {
@@ -121,7 +135,13 @@ public class KernelBundleActivator implements BundleActivator, Kernel {
     }
   }
 
-  private void setInstallBundles(Map<String, String> props) {
+  /**
+   * Install auto start bundles based on a pattern.
+   * Searches for all sakai.install.* keys, and collect them into a single
+   * sakai.install.bundles key for installation into the map.
+   * @param props the existing properties.
+   */
+  private void setInstallBundles(final Map<String, String> props) {
     String prefix = "sakai.install.";
     Set<String> levels = new TreeSet<String>();
     for (String key : props.keySet()) {
@@ -150,17 +170,17 @@ public class KernelBundleActivator implements BundleActivator, Kernel {
    * listener for the <code>javax.servlet.Servlet</code> class and calls the
    * {@link #doStartBundle()} method for implementations to execute more startup tasks. Additionally
    * the <code>context</code> URL protocol handler is registered.
-   * 
-   * @param bundleContext The <code>BundleContext</code> of the system bundle of the OSGi
+   *
+   * @param newBundleContext The <code>BundleContext</code> of the system bundle of the OSGi
    *                framework.
    * @throws Exception May be thrown if the {@link #doStartBundle()} throws.
    */
-  public final void start(BundleContext bundleContext) throws Exception {
-    this.bundleContext = bundleContext;
+  public void start(final BundleContext newBundleContext) throws Exception {
+    this.bundleContext = newBundleContext;
 
     // register the context URL handler
     Hashtable<String, Object> props = new Hashtable<String, Object>();
-    props.put(URLConstants.URL_HANDLER_PROTOCOL, new String[] { "context" });
+    props.put(URLConstants.URL_HANDLER_PROTOCOL, new String[] {"context"});
 
     StreamHandlerService streamHandler = new StreamHandlerService();
 
@@ -174,14 +194,14 @@ public class KernelBundleActivator implements BundleActivator, Kernel {
    * Called when the OSGi framework is being shut down. This implementation first calls the
    * {@link #doStopBundle()} method method before unregistering as a service listener and ungetting
    * an servlet delegatee if one has been acquired.
-   * 
-   * @param bundleContext The <code>BundleContext</code> of the system bundle of the OSGi
+   *
+   * @param newBundleContext The <code>BundleContext</code> of the system bundle of the OSGi
    *                framework.
    */
-  public final void stop(BundleContext bundleContext) {
+  public void stop(final BundleContext newBundleContext) {
     // execute optional bundle stop tasks of an extension
     try {
-      // this.doStopBundle();
+      //this.doStopBundle();
     } catch (Exception e) {
       this.logger.log(Logger.LOG_ERROR, "Unexpected exception caught", e);
     }
@@ -195,7 +215,7 @@ public class KernelBundleActivator implements BundleActivator, Kernel {
    * <p>
    * This implementation does nothing and may be overwritten by extensions requiring additional
    * startup tasks.
-   * 
+   *
    * @throws Exception May be thrown in case of problems.
    */
   protected void doStartBundle() throws Exception {
@@ -213,6 +233,9 @@ public class KernelBundleActivator implements BundleActivator, Kernel {
   protected void doStopBundle() {
   }
 
+  /**
+   * @return the current bundle context
+   */
   public BundleContext getBundleContext() {
     return bundleContext;
   }
@@ -221,7 +244,7 @@ public class KernelBundleActivator implements BundleActivator, Kernel {
    * Destroys this servlet by shutting down the OSGi framework and hence the delegatee servlet if
    * one is set at all.
    */
-  public final void destroy() {
+  public void destroy() {
     // shutdown the Felix container
     if (felix != null) {
       logger.log(Logger.LOG_INFO, "Shutting down Sling");
