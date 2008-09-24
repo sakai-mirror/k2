@@ -19,29 +19,36 @@
 package org.sakaiproject.kernel.loader.common.stats;
 
 /**
+ * New style memory statistics.
  * @author ieb
- * 
+ *
  */
 public class NewMemoryStats extends AbstractStats implements MemoryStats {
+  /**
+   * A list of JMX names that represent the memory stats. (Sun JVM)
+   */
   private static final String[] NAMES = new String[] {
       "java.lang:type=MemoryPool,name=CMS Perm Gen", "java.lang:type=MemoryPool,name=CMS Old Gen",
       "java.lang:type=MemoryPool,name=Code Cache", "java.lang:type=MemoryPool,name=Par Eden Space",
       "java.lang:type=MemoryPool,name=Par Survivor Space" };
 
-  private static final String[] LABELS = { "        Permgen Used ", "        Tenured Used ",
+  /**
+   * The corresponding names.
+   */
+  private static final String[] LABELS = {"        Permgen Used ", "        Tenured Used ",
       "     Code Cache Used ", "           Eden Used ", "       Survivor Used " };
 
   /**
-   * @return
+   * @return the labels to associate with the names.
    */
-  protected String[] getLables() {
+  protected final String[] getLables() {
     return LABELS;
   }
 
   /**
-   * @return
+   * @return the JMX names
    */
-  protected String[] getNames() {
+  protected final String[] getNames() {
     return NAMES;
   }
 

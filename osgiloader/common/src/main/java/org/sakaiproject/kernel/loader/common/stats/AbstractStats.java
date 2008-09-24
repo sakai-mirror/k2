@@ -25,31 +25,32 @@ import javax.management.openmbean.CompositeData;
 import java.lang.management.ManagementFactory;
 
 /**
- * @author ieb
- * 
+ * Recording Statistics for Memory.
  */
 public abstract class AbstractStats implements MemoryStats {
 
-  private static long permGenUsedStart;
+  /**
+   * One K.
+   */
+  private static final long ONEK = 1024;
 
-  private static long codeCacheUsedStart;
-
-  private static long edenSpaceUsedStart;
-
-  private static long tenuredGenUsedStart;
-
-  private static long survivorSpaceUsedStart;
-
+  /**
+   * Should the Stats be active.
+   */
   private static boolean active;
 
+  /**
+   * Starting measurements.
+   */
   private static long[] statsStart;
 
   /**
-   * 
+   * @return a measurement
    */
-  public String measure() {
-    if (!active)
+  public final String measure() {
+    if (!active) {
       return "";
+    }
     try {
       MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
       System.runFinalization();
@@ -66,8 +67,8 @@ public abstract class AbstractStats implements MemoryStats {
 
       StringBuilder sb = new StringBuilder();
       for (int i = 0; i < names.length; i++) {
-        sb.append(labels[i]).append("\t").append((statsEnd[i] / (1024))).append("\t").append(
-            (statsEnd[i] - statsStart[i]) / (1024)).append("\tKB\t");
+        sb.append(labels[i]).append("\t").append((statsEnd[i] / (ONEK))).append("\t").append(
+            (statsEnd[i] - statsStart[i]) / (ONEK)).append("\tKB\t");
 
       }
       statsStart = statsEnd;
@@ -81,16 +82,15 @@ public abstract class AbstractStats implements MemoryStats {
   }
 
   /**
-   * 
+   * generate the baseline measurement.
    */
-  public void baseLine() {
+  public final void baseLine() {
     try {
       MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
       System.runFinalization();
       Runtime.getRuntime().gc();
 
       String[] names = getNames();
-      String[] labels = getLables();
       statsStart = new long[names.length];
 
       for (int i = 0; i < names.length; i++) {
@@ -105,12 +105,12 @@ public abstract class AbstractStats implements MemoryStats {
   }
 
   /**
-   * @return
+   * @return the names being used.
    */
   protected abstract String[] getNames();
 
   /**
-   * @return
+   * @return the labels to use.
    */
   protected abstract String[] getLables();
 

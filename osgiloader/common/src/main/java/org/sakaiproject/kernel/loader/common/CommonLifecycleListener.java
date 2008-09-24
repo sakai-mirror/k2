@@ -19,12 +19,16 @@
 package org.sakaiproject.kernel.loader.common;
 
 /**
- * A listener that listens for lifecycle events in the shared component manager
- * 
+ * A listener that listens for lifecycle events in the a CommonLifecycle object.
+ *
  * @author ieb
- * 
+ *
  */
 public interface CommonLifecycleListener {
+  /**
+   * Invoked when a lifecycle event appears.
+   * @param event the event
+   */
   void lifecycleEvent(CommonLifecycleEvent event);
 
 }

@@ -22,27 +22,40 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- *
+ * Test the startup.
  */
 public class JettyServerTest {
-  
+
+  /**
+   * holds the jetty server.
+   */
   private static JettyServer server;
 
+  /**
+   * create the jetty server and prepare it for use.
+   * @throws Exception when the server starts up.
+   */
   @BeforeClass
   public static void setUpOnce() throws Exception {
     server = new JettyServer();
     server.start();
   }
 
+  /**
+   * tear down the server.
+   * @throws Exception when the server failed to shutdown
+   */
   @AfterClass
   public static void tearDownOnce() throws Exception {
     server.stop();
   }
-  
-  
+
+  /**
+   * Test the startup and teardown.
+   */
   @Test
   public void testStartup() {
-    
+
   }
-  
+
 }

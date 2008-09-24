@@ -47,17 +47,17 @@ import java.util.concurrent.CopyOnWriteArraySet;
 /**
  * @author ieb
  */
-public class KernelManager implements CommonLifecycle {
+public class KernelLifecycle implements CommonLifecycle {
 
   /**
    * @throws MBeanException
    * @throws RuntimeOperationsException
    */
-  public KernelManager() throws MBeanException, RuntimeOperationsException {
+  public KernelLifecycle() throws MBeanException, RuntimeOperationsException {
     super();
   }
 
-  private static final Log log = LogFactory.getLog(KernelManager.class);
+  private static final Log log = LogFactory.getLog(KernelLifecycle.class);
 
   private CopyOnWriteArraySet<CommonLifecycleListener> listeners = new CopyOnWriteArraySet<CommonLifecycleListener>();
 
@@ -69,7 +69,7 @@ public class KernelManager implements CommonLifecycle {
 
   public void start() {
     log
-        .info("Component Manager is starting =========================================================================");
+        .info("Component Lifecycle is starting =========================================================================");
     try {
       long start = System.currentTimeMillis();
       lifecycleEvent(CommonLifecycleEvent.BEFORE_START);
@@ -144,11 +144,11 @@ public class KernelManager implements CommonLifecycle {
       loadTime = System.currentTimeMillis() - start;
 
     } catch (Throwable ex) {
-      log.error("Failed to start ComponentManager ", ex);
+      log.error("Failed to start Component Lifecycle ", ex);
       System.exit(10);
     }
     log
-        .info("Kernel Manager Start Complete =========================================================================");
+        .info("Kernel Lifecycle Start Complete =========================================================================");
 
   }
 
@@ -177,7 +177,7 @@ public class KernelManager implements CommonLifecycle {
     mmboi[1] = new ModelMBeanOperationInfo("stop", "Stop the Kernel", null, "void",
         ModelMBeanOperationInfo.ACTION);
     mmboi[2] = new ModelMBeanOperationInfo("getKernel",
-        "Get the Current Component Manager", null, Kernel.class.getName(),
+        "Get the Current Kernel", null, Kernel.class.getName(),
         ModelMBeanOperationInfo.INFO);
 
     mmboi[3] = new ModelMBeanOperationInfo("addKernelLifecycleListener",
@@ -214,25 +214,25 @@ public class KernelManager implements CommonLifecycle {
   }
 
   public void stop() {
-    log.info("Component Manager is stopping");
+    log.info("Component Lifecyle is stopping");
     try {
       lifecycleEvent(CommonLifecycleEvent.BEFORE_STOP);
       lifecycleEvent(CommonLifecycleEvent.STOP);
       kernelBundleActivator.doStopBundle();
       lifecycleEvent(CommonLifecycleEvent.AFTER_START);
     } catch (Throwable ex) {
-      log.error("Failed to stop ComponentManager ", ex);
+      log.error("Failed to stop Component Lifecycle ", ex);
     }
 
   }
 
   public void destroy() {
-    log.info("Component Manager is stopping");
+    log.info("Component Lifecycle is stopping");
     try {
       lifecycleEvent(CommonLifecycleEvent.DESTROY);
       listeners.clear();
     } catch (Throwable ex) {
-      log.error("Failed to stop ComponentManager ", ex);
+      log.error("Failed to stop Component Lifecycle ", ex);
     }
 
   }
@@ -241,7 +241,7 @@ public class KernelManager implements CommonLifecycle {
     return kernelBundleActivator;
   }
 
-  public Kernel getComponentManager() {
+  public Kernel getKernel() {
     return kernelBundleActivator;
   }
 
@@ -256,10 +256,8 @@ public class KernelManager implements CommonLifecycle {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.sakaiproject.component.loader.shared.SharedComponentManagerMBean#addComponentManagerLifecycleListener(org.sakaiproject.component.loader.common.CommonLifecycleListener)
+  /**
+   * @param listener
    */
   public void addKernelLifecycleListener(CommonLifecycleListener listener) {
     if (!listeners.contains(listener)) {
@@ -267,10 +265,8 @@ public class KernelManager implements CommonLifecycle {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.sakaiproject.component.loader.shared.SharedComponentManagerMBean#removeComponentManagerLifecycleListener(org.sakaiproject.component.loader.common.CommonLifecycleListener)
+  /**
+   * @param listener
    */
   public void removeKernelLifecycleListener(CommonLifecycleListener listener) {
     listeners.remove(listener);

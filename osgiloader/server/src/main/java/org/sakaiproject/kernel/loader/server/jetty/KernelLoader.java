@@ -25,62 +25,83 @@ import org.sakaiproject.kernel.loader.server.LoaderEnvironment;
 /**
  * A Jetty Loader, that uses a single classloader and operates as a top level Jetty Component.
  * @author ieb
- * 
+ *
  */
 public class KernelLoader implements LifeCycle {
 
-  private CommonLifecycle kernelManager;
-  
+  /**
+   * The lifecycle object.
+   */
+  private CommonLifecycle kernelLifecycle;
+
+  /**
+   * true if failed to start.
+   */
   private boolean failed = false;
 
+  /**
+   * true if running.
+   */
   private boolean running = false;
 
+  /**
+   * true if started.
+   */
   private boolean started = false;
 
+  /**
+   * true if starting.
+   */
   private boolean starting = false;
 
+  /**
+   * true if stopped.
+   */
   private boolean stopped = false;
 
+  /**
+   * true if stopping.
+   */
   private boolean stopping = false;
 
 
 
   /**
-   * Start the kernel
-   * {@inheritDoc} 
+   * Start the kernel.
+   * @throws Exception if the lifecycle fails to respondto the start lifecycle operation.
    */
-  public void start() throws Exception {
-    if ( starting || running || started ) {
+  public final void start() throws Exception {
+    if (starting || running || started) {
       return;
     }
     starting = true;
-    
-    ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();    
+
+    ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
     try {
-      
-      Class<CommonLifecycle> clazz = LoaderEnvironment.getManagerClass(currentClassLoader);
-      kernelManager = clazz.newInstance();
-      kernelManager.start();
+
+      Class<CommonLifecycle> clazz = LoaderEnvironment.getLifecyleClass(currentClassLoader);
+      kernelLifecycle = clazz.newInstance();
+      kernelLifecycle.start();
       failed = false;
       running  = true;
       started = true;
-      
+
     } finally {
       starting = false;
     }
   }
 
   /**
-   * Stop the kernel
-   * {@inheritDoc} 
+   * Stop the kernel.
+   * @throws Exception if there is a problem with the lifecycle stop operation.
    */
-  public void stop() throws Exception {
-    if ( stopping ) {
+  public final void stop() throws Exception {
+    if (stopping) {
       return;
     }
     stopping = true;
     try {
-      kernelManager.stop();
+      kernelLifecycle.stop();
       failed = false;
       running  = false;
       started = false;
@@ -90,44 +111,44 @@ public class KernelLoader implements LifeCycle {
   }
 
   /**
-   * {@inheritDoc} 
+   * @return true if start failed.
    */
-  public boolean isFailed() {
+  public final boolean isFailed() {
     return failed;
   }
 
   /**
-   * {@inheritDoc} 
+   * @return true if running.
    */
-  public boolean isRunning() {
+  public final boolean isRunning() {
     return running;
   }
 
   /**
-   * {@inheritDoc} 
+   * @return true if started.
    */
-  public boolean isStarted() {
+  public final boolean isStarted() {
    return started;
   }
 
   /**
-   * {@inheritDoc} 
+   * @return true if starting.
    */
-  public boolean isStarting() {
+  public final boolean isStarting() {
     return starting;
   }
 
   /**
-   * {@inheritDoc} 
+   * @return true if stopped.
    */
-  public boolean isStopped() {
+  public final boolean isStopped() {
     return stopped;
   }
 
   /**
-   * {@inheritDoc} 
+   * @return true if stopped.
    */
-  public boolean isStopping() {
+  public final boolean isStopping() {
     return stopping;
   }
 

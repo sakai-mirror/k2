@@ -19,9 +19,43 @@
 package org.sakaiproject.kernel.loader.common;
 
 /**
+ * This enum defines the status events that are emitted from a lifecyle object as it goes through
+ * its life.
+ *
  * @author ieb
  */
 public enum CommonLifecycleEvent {
-  INIT, BEFORE_START, START, AFTER_START, BEFORE_STOP, STOP, AFTER_STOP, DESTROY
+  /**
+   * The component is being inited.
+   */
+  INIT,
+  /**
+   * Just before the component starts.
+   */
+  BEFORE_START,
+  /**
+   * Just started.
+   */
+  START,
+  /**
+   * Just after start.
+   */
+  AFTER_START,
+  /**
+   * Just before stop.
+   */
+  BEFORE_STOP,
+  /**
+   * Stopped.
+   */
+  STOP,
+  /**
+   * Just after stop.
+   */
+  AFTER_STOP,
+  /**
+   * Destroyed.
+   */
+  DESTROY
 
 }

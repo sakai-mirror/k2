@@ -28,27 +28,52 @@ import org.sakaiproject.kernel.loader.server.LoaderEnvironment;
  */
 public class KernelLoader {
 
-  private static final Object lock = new Object();
+  /**
+   * a lock object just in case more than one thread tries to start.
+   */
+  private static final Object LOCK = new Object();
 
-  private static CommonLifecycle kernelManager;
+  /**
+   * the Lifecycle object being loaded.
+   */
+  private static CommonLifecycle kernelLifecycle;
 
+  /**
+   * true if the start failed.
+   */
   private static boolean failed = false;
 
+  /**
+   * true if running.
+   */
   private static boolean running = false;
 
+  /**
+   * true if started.
+   */
   private static boolean started = false;
 
+  /**
+   * true if starting.
+   */
   private static boolean starting = false;
 
+  /**
+   * true if stopped.
+   */
   private boolean stopped = false;
 
+  /**
+   * true if stopping.
+   */
   private boolean stopping = false;
 
   /**
-   * Start the kernel for the JVM
+   * Start the kernel for the JVM.
+   * @throws Exception if there is a problem starting the lifecycle.
    */
   public static void start() throws Exception {
-    synchronized (lock) {
+    synchronized (LOCK) {
       if (starting || running || started) {
         return;
       }
@@ -58,9 +83,9 @@ public class KernelLoader {
 
       try {
 
-        Class<CommonLifecycle> clazz = LoaderEnvironment.getManagerClass(currentClassLoader);
-        kernelManager = clazz.newInstance();
-        kernelManager.start();
+        Class<CommonLifecycle> clazz = LoaderEnvironment.getLifecyleClass(currentClassLoader);
+        kernelLifecycle = clazz.newInstance();
+        kernelLifecycle.start();
         failed = false;
         running = true;
         started = true;
@@ -73,17 +98,18 @@ public class KernelLoader {
   }
 
   /**
-   * Stop the kernel
+   * Stop the kernel.
+   * @throws Exception if there is a problem stopping the lifecycle.
    */
-  public void stop() throws Exception {
-    synchronized (lock) {
+  public final void stop() throws Exception {
+    synchronized (LOCK) {
       if (stopping || !running || !started || starting) {
         return;
       }
       stopping = true;
       System.err.println("Stopping Component Manger");
       try {
-        kernelManager.stop();
+        kernelLifecycle.stop();
         failed = false;
         running = false;
         started = false;
@@ -96,42 +122,42 @@ public class KernelLoader {
   /**
    * @return true if the kernel failed to start.
    */
-  public boolean isFailed() {
+  public final boolean isFailed() {
     return failed;
   }
 
   /**
    * @return true if the kernel is up and running.
    */
-  public boolean isRunning() {
+  public final boolean isRunning() {
     return running;
   }
 
   /**
    * @return true if the kernel is stated.
    */
-  public boolean isStarted() {
+  public final boolean isStarted() {
     return started;
   }
 
   /**
    * @return true if the kernel is starting.
    */
-  public boolean isStarting() {
+  public final boolean isStarting() {
     return starting;
   }
 
   /**
    * @return true if the kernel is stopped.
    */
-  public boolean isStopped() {
+  public final boolean isStopped() {
     return stopped;
   }
 
   /**
    * @return true if the kernel is stopping.
    */
-  public boolean isStopping() {
+  public final boolean isStopping() {
     return stopping;
   }
 

@@ -34,92 +34,97 @@ import org.sakaiproject.kernel.loader.server.LoaderEnvironment;
 import javax.management.ObjectName;
 
 /**
- * This is a loader for Tomcat5 that is deployed as a lifecycle listener inside tomcat. This needs to
- * be deployed into Server as its loaded from server. <Listener
+ * This is a loader for Tomcat5 that is deployed as a Lifecycle listener inside tomcat. This needs
+ * to be deployed into Server as its loaded from server. <Listener
  * className="org.sakaiproject.kernel.loader.server.tomcat5.KernelLoader"/>
- * 
- * 
+ *
+ *
  */
 public class KernelLoader implements LifecycleListener {
 
-  private static final Log log = LogFactory.getLog(KernelLoader.class);
+  /**
+   * the standard Logger.
+   */
+  private static final Log LOG = LogFactory.getLog(KernelLoader.class);
 
   /**
-   * The name of the container Mbean where the shared classloader comes from
+   * The name of the container Mbean where the shared classloader comes from.
    */
   private static final String MBEAN_CONTAINER = "Catalina:type=Host,host=localhost";
 
   /**
-   * The kernel manager that implements a common lifecycle API
+   * The kernel lifecycle that implements a common lifecycle API.
    */
-  private CommonLifecycle kernelManager;
+  private CommonLifecycle kernelLifecycle;
 
   /**
-   * The classloade to use to load the kernel, in tomcat 5 this is the shared classloader
+   * The classloade to use to load the kernel, in tomcat 5 this is the shared classloader.
    */
   private ClassLoader sharedClassloader;
 
   /**
-   * The parent tomcat Engine that represents this tomcat instance
+   * The parent tomcat Engine that represents this tomcat instance.
    */
   private Engine engine;
 
   /**
    * {@inheritDoc} Loads the kernel when the Container start event is emitted.
+   *
+   * @param event the lifecycle event from tomcat.
    */
-  public void lifecycleEvent(LifecycleEvent event) {
+  public final void lifecycleEvent(final LifecycleEvent event) {
     try {
       String type = event.getType();
-      log.debug("At " + type);
+      LOG.debug("At " + type);
       if (Lifecycle.INIT_EVENT.equals(type)) {
-        log.debug("INIT");
+        LOG.debug("INIT");
       } else if (Lifecycle.BEFORE_START_EVENT.equals(type)) {
-        log.debug("Before Start");
+        LOG.debug("Before Start");
         start();
       } else if (Lifecycle.START_EVENT.equals(type)) {
-        log.debug("Start");
+        LOG.debug("Start");
       } else if (Lifecycle.AFTER_START_EVENT.equals(type)) {
-        log.debug("After Start");
+        LOG.debug("After Start");
       } else if (Lifecycle.PERIODIC_EVENT.equals(type)) {
-        log.debug("Periodic");
+        LOG.debug("Periodic");
       } else if (Lifecycle.BEFORE_STOP_EVENT.equals(type)) {
-        log.debug("Before Stop");
+        LOG.debug("Before Stop");
       } else if (Lifecycle.STOP_EVENT.equals(type)) {
-        log.debug("Stop");
+        LOG.debug("Stop");
       } else if (Lifecycle.AFTER_STOP_EVENT.equals(type)) {
-        log.debug("After Stop");
+        LOG.debug("After Stop");
         stop();
       } else if (Lifecycle.DESTROY_EVENT.equals(type)) {
-        log.debug("Destroy ");
+        LOG.debug("Destroy ");
       } else {
-        log.warn("Unrecognised Container Lifecycle Event ");
+        LOG.warn("Unrecognised Container Lifecycle Event ");
       }
     } catch (Exception ex) {
-      log.error("Failed to start Component Context ", ex);
+      LOG.error("Failed to start Component Context ", ex);
     }
   }
 
   /**
    * Perform the start operation, by constructing the shared classloader and then instancing the
-   * kernel manager in that classloader and starting the kernel.
-   * 
-   * @throws Exception
+   * kernel lifecycle in that classloader and starting the kernel.
+   *
+   * @throws Exception if there is a problem with the start operation
    */
   private void start() throws Exception {
     ObjectName pname = new ObjectName(MBEAN_CONTAINER);
     Service service = getService(pname);
-    log.warn("Got service as " + service);
+    LOG.warn("Got service as " + service);
     engine = (Engine) service.getContainer();
-    log.warn("Got engine as " + engine + " with classloader " + engine.getClass().getClassLoader()
+    LOG.warn("Got engine as " + engine + " with classloader " + engine.getClass().getClassLoader()
         + " and with parent classloader " + engine.getParentClassLoader());
     sharedClassloader = engine.getParentClassLoader();
     ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
     Thread.currentThread().setContextClassLoader(sharedClassloader);
     try {
-      Class<CommonLifecycle> clazz = LoaderEnvironment.getManagerClass(sharedClassloader);
-      kernelManager = clazz.newInstance();
-      log.info("Starting Component Manager " + clazz.getName());
-      kernelManager.start();
+      Class<CommonLifecycle> clazz = LoaderEnvironment.getLifecyleClass(sharedClassloader);
+      kernelLifecycle = clazz.newInstance();
+      LOG.info("Starting Kernel Lifecyle " + clazz.getName());
+      kernelLifecycle.start();
 
     } finally {
       Thread.currentThread().setContextClassLoader(oldClassLoader);
@@ -127,25 +132,27 @@ public class KernelLoader implements LifecycleListener {
   }
 
   /**
-   * Stop the configured kernel manager
-   * @throws Exception
+   * Stop the configured kernel manager.
+   *
+   * @throws Exception if the kernel component cant be stopped
    */
   private void stop() throws Exception {
     System.err.println("Stopping Component Manger");
     ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
     Thread.currentThread().setContextClassLoader(sharedClassloader);
     try {
-      kernelManager.stop();
+      kernelLifecycle.stop();
     } finally {
       Thread.currentThread().setContextClassLoader(oldClassLoader);
     }
   }
 
   /**
-   * Get hold of the parent service
-   * @param oname
-   * @return
-   * @throws Exception
+   * Get hold of the parent service.
+   *
+   * @param oname the name of the service
+   * @return the service
+   * @throws Exception if there was a problem locating the service.
    */
   private Service getService(ObjectName oname) throws Exception {
 

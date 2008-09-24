@@ -27,10 +27,10 @@ import org.sakaiproject.kernel.loader.common.stats.OldMemoryStats;
 
 /**
  * This class needs to be attached to the Host container inside tomcat, so that it can control the
- * lifecycle of the webapps
- * 
+ * lifecycle of the webapps.
+ *
  * Needs to be deployed to server
- * 
+ *
  * <pre>
  *  &lt;Host name=&quot;localhost&quot; appBase=&quot;webapps&quot;
  *      unpackWARs=&quot;true&quot; autoDeploy=&quot;true&quot;
@@ -38,12 +38,18 @@ import org.sakaiproject.kernel.loader.common.stats.OldMemoryStats;
  *      configClass=&quot;org.sakaiproject.kernel.loader.server.tomcat5.SakaiContextConfig&quot;
  *      &gt;
  * </pre>
- * 
+ *
  * @author ieb
  */
 public class SakaiContextConfig extends ContextConfig {
 
+  /**
+   * old style memory statistics recorder.
+   */
   private static MemoryStats oldMemoryStats = new OldMemoryStats();
+  /**
+   * new style memory statistics recorder.
+   */
   private static MemoryStats newMemoryStats = new NewMemoryStats();
 
   static {
@@ -51,18 +57,14 @@ public class SakaiContextConfig extends ContextConfig {
     newMemoryStats.baseLine();
   }
 
-  /**
-   * 
-   */
-  public SakaiContextConfig() {
-  }
 
-  /*
-   * (non-Javadoc)
-   * 
+  /**
+   * Responds to a Tomcat lifecycle event, to record memory statistics.
+   *
    * @see org.apache.catalina.LifecycleListener#lifecycleEvent(org.apache.catalina.LifecycleEvent)
+   * @param event the tocmat event.
    */
-  public void lifecycleEvent(LifecycleEvent event) {
+  public final void lifecycleEvent(LifecycleEvent event) {
     String type = event.getType();
     super.lifecycleEvent(event);
 

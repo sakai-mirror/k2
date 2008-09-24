@@ -19,18 +19,17 @@
 package org.sakaiproject.kernel.loader.common.stats;
 
 /**
- * @author ieb
- * 
+ * Represents a memory measurement statistic set.
  */
 public interface MemoryStats {
 
   /**
-   * 
+   * perform the base line measurement.
    */
   void baseLine();
 
   /**
-   * @return
+   * @return generate a measurement report.
    */
   String measure();
 

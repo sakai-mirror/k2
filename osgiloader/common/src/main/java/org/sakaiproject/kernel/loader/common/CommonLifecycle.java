@@ -19,32 +19,29 @@
 package org.sakaiproject.kernel.loader.common;
 
 /**
- * Objects that have a lifecycle can implement this.
- * 
- * @author ieb
- * 
+ * Objects that have a lifecycle and can be controlled via their lifecycle implement this interface.
+ *
  */
 public interface CommonLifecycle {
 
   /**
-   * Starts the object
+   * Starts the object.
    */
   void start();
 
   /**
-   * stops the object
+   * stops the object.
    */
   void stop();
 
   /**
-   * get a reference to the object with a lifecycle
-   * 
-   * @return
+   * Gets a reference to the object that is being managed inside this lifecycle.
+   * @return the managed object
    */
-  Object getLifecycleObject();
+  Object getManagedObject();
 
   /**
-   * Destroy, no more life
+   * Destroy, no more life.
    */
   void destroy();
 }
