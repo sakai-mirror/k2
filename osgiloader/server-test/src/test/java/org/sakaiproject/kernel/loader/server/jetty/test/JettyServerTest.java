@@ -17,9 +17,13 @@
  */
 package org.sakaiproject.kernel.loader.server.jetty.test;
 
+import static org.junit.Assert.*;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.sakaiproject.kernel.api.Kernel;
+import org.sakaiproject.kernel.api.KernelConfigurationException;
+import org.sakaiproject.kernel.api.KernelManager;
 
 /**
  * Test the startup.
@@ -56,6 +60,24 @@ public class JettyServerTest {
   @Test
   public void testStartup() {
 
+  }
+  /**
+   * Test the startup and teardown.
+   * @throws KernelConfigurationException if the kernel is not available
+   */
+  @Test
+  public void testGetKernel() throws KernelConfigurationException {
+    KernelManager km = new KernelManager();
+    Kernel k = km.getKernel();
+    KernelManager km2 = new KernelManager();
+    Kernel k2 = km2.getKernel();
+    assertEquals(k, k2);
+  }
+  
+  public void testGetOSGiContainer() {
+    KernelManager km = new KernelManager();
+    Kernel k = km.getKernel();
+    
   }
 
 }

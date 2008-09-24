@@ -66,7 +66,7 @@ public class JettyServer {
    * @return the server to return.
    * @throws Exception if the server can't be created.
    */
-  private Server createServer(int port) throws Exception {
+  private Server createServer(final int port) throws Exception {
     Server newServer = new Server(port);
     KernelLoader kl = new KernelLoader();
     newServer.addLifeCycle(kl);

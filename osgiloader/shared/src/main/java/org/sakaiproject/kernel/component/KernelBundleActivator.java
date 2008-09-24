@@ -101,7 +101,7 @@ public class KernelBundleActivator implements BundleActivator, Kernel {
    * J2SE-1.4 are included. If the property is neither set in the configuration properties nor in
    * the system properties, the property is not set.
    *
-   * @param props The configuration properties to check and optionally ammend.
+   * @param props The configuration properties to check and optionally amend.
    */
   private void setExecutionEnvironment(final Map<String, String> props) {
     // get the current Execution Environment setting

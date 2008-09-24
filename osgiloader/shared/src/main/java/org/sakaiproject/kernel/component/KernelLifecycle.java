@@ -203,7 +203,7 @@ public class KernelLifecycle implements CommonLifecycle<Kernel> {
         ModelMBeanOperationInfo.ACTION);
     mmboi[1] = new ModelMBeanOperationInfo("stop", "Stop the Kernel", null, "void",
         ModelMBeanOperationInfo.ACTION);
-    mmboi[2] = new ModelMBeanOperationInfo("getKernel", "Get the Current Kernel", null,
+    mmboi[2] = new ModelMBeanOperationInfo("getManagedObject", "Get the Current Kernel", null,
         Kernel.class.getName(), ModelMBeanOperationInfo.INFO);
 
     mmboi[3] = new ModelMBeanOperationInfo("addKernelLifecycleListener",
