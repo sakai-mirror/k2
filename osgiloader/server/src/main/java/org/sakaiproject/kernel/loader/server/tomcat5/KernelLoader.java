@@ -1,23 +1,20 @@
-/**********************************************************************************
- * $URL: https://source.sakaiproject.org/svn/component/branches/SAK-12134/component-loader/tomcat5/component-loader-server/impl/src/java/org/sakaiproject/component/loader/tomcat5/server/SakaiLoader.java $
- * $Id: SakaiLoader.java 38801 2007-11-27 17:33:27Z ian@caret.cam.ac.uk $
- ***********************************************************************************
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
  *
- * Copyright (c) 2003, 2004, 2005, 2006, 2007 The Sakai Foundation.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Licensed under the Educational Community License, Version 1.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.opensource.org/licenses/ecl1.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- **********************************************************************************/
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 
 package org.sakaiproject.kernel.loader.server.tomcat5;
 
@@ -32,33 +29,44 @@ import org.apache.catalina.core.StandardService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.loader.common.CommonLifecycle;
+import org.sakaiproject.kernel.loader.server.LoaderEnvironment;
 
 import javax.management.ObjectName;
 
 /**
- * This needs to be deployed into Server as its loaded from server.
- * <Listener className="org.sakaiproject.kernel.loader.server.tomcat5.KernelLoader"/>
+ * This is a loader for Tomcat5 that is deployed as a lifecycle listener inside tomcat. This needs to
+ * be deployed into Server as its loaded from server. <Listener
+ * className="org.sakaiproject.kernel.loader.server.tomcat5.KernelLoader"/>
  * 
- * @author ieb
  * 
  */
 public class KernelLoader implements LifecycleListener {
 
   private static final Log log = LogFactory.getLog(KernelLoader.class);
 
-  // private static final String MBEAN_SHARED_CLASSLOADER =
-  // "Catalina:type=ServerClassLoader,name=shared";
-
+  /**
+   * The name of the container Mbean where the shared classloader comes from
+   */
   private static final String MBEAN_CONTAINER = "Catalina:type=Host,host=localhost";
 
-  private static final String COMPONENT_MANAGER_CLASS = "org.sakaiproject.kernel.component.KernelManager";
-
+  /**
+   * The kernel manager that implements a common lifecycle API
+   */
   private CommonLifecycle kernelManager;
 
+  /**
+   * The classloade to use to load the kernel, in tomcat 5 this is the shared classloader
+   */
   private ClassLoader sharedClassloader;
 
+  /**
+   * The parent tomcat Engine that represents this tomcat instance
+   */
   private Engine engine;
 
+  /**
+   * {@inheritDoc} Loads the kernel when the Container start event is emitted.
+   */
   public void lifecycleEvent(LifecycleEvent event) {
     try {
       String type = event.getType();
@@ -91,6 +99,12 @@ public class KernelLoader implements LifecycleListener {
     }
   }
 
+  /**
+   * Perform the start operation, by constructing the shared classloader and then instancing the
+   * kernel manager in that classloader and starting the kernel.
+   * 
+   * @throws Exception
+   */
   private void start() throws Exception {
     ObjectName pname = new ObjectName(MBEAN_CONTAINER);
     Service service = getService(pname);
@@ -102,21 +116,20 @@ public class KernelLoader implements LifecycleListener {
     ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
     Thread.currentThread().setContextClassLoader(sharedClassloader);
     try {
-      log.info("Loading " + COMPONENT_MANAGER_CLASS + " using " + sharedClassloader);
-      
-      
-      Class<CommonLifecycle> clazz = (Class<CommonLifecycle>) sharedClassloader.loadClass(COMPONENT_MANAGER_CLASS);
-      log.info("Loaded Ok ");
+      Class<CommonLifecycle> clazz = LoaderEnvironment.getManagerClass(sharedClassloader);
       kernelManager = clazz.newInstance();
       log.info("Starting Component Manager " + clazz.getName());
       kernelManager.start();
-      
-      
+
     } finally {
       Thread.currentThread().setContextClassLoader(oldClassLoader);
     }
   }
 
+  /**
+   * Stop the configured kernel manager
+   * @throws Exception
+   */
   private void stop() throws Exception {
     System.err.println("Stopping Component Manger");
     ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
@@ -128,6 +141,12 @@ public class KernelLoader implements LifecycleListener {
     }
   }
 
+  /**
+   * Get hold of the parent service
+   * @param oname
+   * @return
+   * @throws Exception
+   */
   private Service getService(ObjectName oname) throws Exception {
 
     String domain = oname.getDomain();

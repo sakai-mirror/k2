@@ -22,6 +22,6 @@ package org.sakaiproject.kernel.api;
  */
 public interface Kernel {
 
-  String MBEAN_KERNEL_BUNDLE = "Sakai:type=Kernel";
+  String MBEAN_KERNEL = "Sakai:type=Kernel";
 
 }

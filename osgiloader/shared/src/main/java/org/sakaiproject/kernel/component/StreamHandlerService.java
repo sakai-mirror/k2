@@ -17,7 +17,6 @@
  */
 package org.sakaiproject.kernel.component;
 
-import org.osgi.framework.BundleContext;
 import org.osgi.service.url.AbstractURLStreamHandlerService;
 
 import java.io.IOException;
