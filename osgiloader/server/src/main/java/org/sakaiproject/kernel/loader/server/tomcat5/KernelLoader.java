@@ -70,27 +70,27 @@ public class KernelLoader implements LifecycleListener {
   public void lifecycleEvent(LifecycleEvent event) {
     try {
       String type = event.getType();
-      log.info("At " + type);
+      log.debug("At " + type);
       if (Lifecycle.INIT_EVENT.equals(type)) {
-        log.info("INIT");
+        log.debug("INIT");
       } else if (Lifecycle.BEFORE_START_EVENT.equals(type)) {
-        log.info("Before Start");
+        log.debug("Before Start");
         start();
       } else if (Lifecycle.START_EVENT.equals(type)) {
-        log.info("Start");
+        log.debug("Start");
       } else if (Lifecycle.AFTER_START_EVENT.equals(type)) {
-        log.info("After Start");
+        log.debug("After Start");
       } else if (Lifecycle.PERIODIC_EVENT.equals(type)) {
-        log.info("Periodic");
+        log.debug("Periodic");
       } else if (Lifecycle.BEFORE_STOP_EVENT.equals(type)) {
-        System.err.println("Before Stop");
+        log.debug("Before Stop");
       } else if (Lifecycle.STOP_EVENT.equals(type)) {
-        System.err.println("Stop");
+        log.debug("Stop");
       } else if (Lifecycle.AFTER_STOP_EVENT.equals(type)) {
-        System.err.println("After Stop");
+        log.debug("After Stop");
         stop();
       } else if (Lifecycle.DESTROY_EVENT.equals(type)) {
-        System.err.println("Destroy ");
+        log.debug("Destroy ");
       } else {
         log.warn("Unrecognised Container Lifecycle Event ");
       }

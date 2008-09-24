@@ -130,11 +130,12 @@ public class KernelManager implements CommonLifecycle {
         long tenuredGenUsed = Long.parseLong(String.valueOf(tenuredGen.get("used")));
         long survivorSpaceUsed = Long.parseLong(String.valueOf(survivorSpace.get("used")));
 
-        log.info("           Permgen Used " + permGenUsed / (1024 * 1024) + " MB");
-        log.info("           Code Cache Used " + codeCacheUsed / (1024 * 1024) + " MB");
-        log.info("           Eden Used " + edenSpaceUsed / (1024 * 1024) + " MB");
-        log.info("           Tenured Used " + tenuredGenUsed / (1024 * 1024) + " MB");
-        log.info("           Survivour Used " + survivorSpaceUsed / (1024 * 1024) + " MB");
+        log.info("Memory Stats after startup\n" +
+        		"\tPermgen Used " + permGenUsed / (1024 * 1024) + " MB\n" +
+        		"\tCode Cache Used " + codeCacheUsed / (1024 * 1024) + " MB\n" +
+                        "\tEden Used " + edenSpaceUsed / (1024 * 1024) + " MB\n" +
+                        "\tTenured Used " + tenuredGenUsed / (1024 * 1024) + " MB\n" +
+                        "\tSurvivour Used " + survivorSpaceUsed / (1024 * 1024) + " MB");
       } catch (Exception ex2) {
         log.info("Startup Memory Stats Not available");
       }
