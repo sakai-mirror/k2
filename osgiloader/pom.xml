@@ -21,6 +21,7 @@
     <module>server</module>
     <module>server-test</module>
     <module>overlay</module>
+    <module>webapp-test</module>
   </modules>
 
 </project>

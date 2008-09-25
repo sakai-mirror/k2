@@ -44,7 +44,7 @@ public class KernelManager {
    * the same instance regardless of this object instance.
    *
    * @return the kernel
-   * @throws KernelConfigurationException if the kernel is not availabe.
+   * @throws KernelConfigurationException if the kernel is not available.
    */
   public Kernel getKernel() throws KernelConfigurationException {
     if (kernel == null) {

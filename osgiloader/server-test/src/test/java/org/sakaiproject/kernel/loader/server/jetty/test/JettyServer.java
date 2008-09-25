@@ -18,6 +18,8 @@
 package org.sakaiproject.kernel.loader.server.jetty.test;
 
 import org.mortbay.jetty.Server;
+import org.mortbay.jetty.servlet.Context;
+import org.mortbay.jetty.servlet.ServletHolder;
 import org.sakaiproject.kernel.loader.server.jetty.KernelLoader;
 
 /**
@@ -29,6 +31,9 @@ public class JettyServer {
    * The port to run the server on.
    */
   private static final int JETTY_PORT = 9003;
+  
+  public static final String SERVER_URL = "http://localhost:" + JETTY_PORT;
+
 
   /**
    * the jetty server.
@@ -70,6 +75,12 @@ public class JettyServer {
     Server newServer = new Server(port);
     KernelLoader kl = new KernelLoader();
     newServer.addLifeCycle(kl);
+
+    // add the test webapp, which is in the osgi-test-webapp
+    Context context = new Context(newServer, "/", Context.SESSIONS);
+    ServletHolder helloWorldHolder = new ServletHolder(new HelloWorldServlet());
+    context.addServlet(helloWorldHolder, HelloWorldServlet.DEPLOYED_URL);
+
     return newServer;
   }
 }
