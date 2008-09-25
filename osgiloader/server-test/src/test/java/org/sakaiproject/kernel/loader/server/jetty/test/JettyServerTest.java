@@ -24,6 +24,7 @@ import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.WebResponse;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -33,6 +34,8 @@ import org.junit.Test;
 import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.KernelConfigurationException;
 import org.sakaiproject.kernel.api.KernelManager;
+
+import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -104,15 +107,52 @@ public class JettyServerTest {
     webClient.setAlertHandler(alertHandler);
   }
 
+  /**
+   * Clean up after the test.
+   */
   @After
   public void tearDown() {
   }
 
+  /**
+   * Test getting the OSGi container in a servlet.
+   * @throws Exception if there was an http problem
+   */
   @Test
-  public void testGetOSGiContainer() throws KernelConfigurationException,
-      FailingHttpStatusCodeException, MalformedURLException, IOException {
+  public void testGetOSGiContainer() throws Exception {
     Page p = webClient.getPage(HelloWorldServlet.REQUEST_URL);
-    String content = p.getWebResponse().getContentAsString();
+    WebResponse r = p.getWebResponse();
+    assertEquals(200, r.getStatusCode());
+    String content = r.getContentAsString();
+    assertEquals(HelloWorldServlet.RESPONSE, content);
+  }
+
+  /**
+   * Test the default function on the servlet.
+   * @throws Exception if there was an http problem
+   */
+  @Test
+  public void testHttpGetDefault() throws Exception {
+
+    Page p = webClient.getPage(HelloWorldServlet.REQUEST_URL + "?f="
+        + HelloWorldServlet.Function.DEFAULT);
+    WebResponse r = p.getWebResponse();
+    assertEquals(HttpServletResponse.SC_OK, r.getStatusCode());
+    String content = r.getContentAsString();
+    assertEquals(HelloWorldServlet.RESPONSE, content);
+  }
+
+  /**
+   * Test the load kernel function on the servlet.
+   * @throws Exception if there was an http problem
+   */
+  @Test
+  public void testHttpGetKernel() throws Exception {
+    Page p = webClient.getPage(HelloWorldServlet.REQUEST_URL + "?f="
+        + HelloWorldServlet.Function.KERNEL);
+    WebResponse r = p.getWebResponse();
+    assertEquals(HttpServletResponse.SC_OK, r.getStatusCode());
+    String content = r.getContentAsString();
     assertEquals(HelloWorldServlet.RESPONSE, content);
 
   }

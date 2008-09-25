@@ -31,6 +31,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 
@@ -40,19 +43,36 @@ public class HelloWorldServlet extends HttpServlet {
   /**
    * 
    */
-  public enum Function {
+  public static enum Function {
     DEFAULT(""), KERNEL("k");
 
-    private String name;
+    private static Map<String, Function> table = new HashMap<String, Function>();
+    static {
+      for ( Function f : Function.values() ) {
+        table.put(f.toString(), f);
+      }
+    }
+    private final String name;
 
     private Function(String name) {
       this.name = name;
     }
 
+    @Override
     public String toString() {
       return name;
     }
-
+    
+    public static Function getValueOf(String value) {
+      Function f = DEFAULT;
+      if ( value != null ) {
+        f = table.get(value);
+        if ( f == null ) {
+          f = DEFAULT;
+        }
+      }
+      return f;
+    }
   }
 
   /**
@@ -91,18 +111,13 @@ public class HelloWorldServlet extends HttpServlet {
   @Override
   protected void doGet(final HttpServletRequest req, final HttpServletResponse resp)
       throws ServletException, IOException {
-    String func = req.getParameter("f");
-    Function f = Function.DEFAULT;
-    if (func != null) {
-      f = Function.valueOf(func);
-    }
+    Function f = Function.getValueOf(req.getParameter("f"));
     switch (f) {
     case KERNEL: {
       resp.setContentType("text/plain");
       PrintWriter w = resp.getWriter();
       w.print(RESPONSE);
-      w.print("Kernel");
-      LOG.info("Sending Response for Kernel");
+      LOG.info("Sending Response for Kernel ");
       break;
     }
     default: {
