@@ -17,6 +17,8 @@
  */
 package org.sakaiproject.kernel.api;
 
+import org.osgi.framework.BundleContext;
+
 /**
  * The kernel.
  */
@@ -26,5 +28,11 @@ public interface Kernel {
    * The name of the Mbean used for kernel.
    */
   String MBEAN_KERNEL = "Sakai:type=Kernel";
+  
+  /**
+   * Get a Context.
+   * @return
+   */
+  BundleContext getContext();
 
 }

@@ -28,10 +28,12 @@ import java.net.URLConnection;
  */
 public class StreamHandlerService extends AbstractURLStreamHandlerService {
 
+  /**
+   *
+   */
   @Override
-  public URLConnection openConnection(URL arg0) throws IOException {
-    // TODO Auto-generated method stub
-    return null;
+  public URLConnection openConnection(URL url) throws IOException {
+    return url.openConnection();
   }
 
 }

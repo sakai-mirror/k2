@@ -26,6 +26,8 @@ import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -45,6 +47,7 @@ import java.net.MalformedURLException;
  */
 public class JettyServerTest {
 
+  private static final Log LOG = LogFactory.getLog(JettyServerTest.class) ;
   /**
    * holds the jetty server.
    */
@@ -154,6 +157,20 @@ public class JettyServerTest {
     assertEquals(HttpServletResponse.SC_OK, r.getStatusCode());
     String content = r.getContentAsString();
     assertEquals(HelloWorldServlet.RESPONSE, content);
+
+  }
+  /**
+   * Test the load kernel function on the servlet.
+   * @throws Exception if there was an http problem
+   */
+  @Test
+  public void testHttpGetService() throws Exception {
+    Page p = webClient.getPage(HelloWorldServlet.REQUEST_URL + "?f="
+        + HelloWorldServlet.Function.GETSERVICE);
+    WebResponse r = p.getWebResponse();
+    assertEquals(HttpServletResponse.SC_OK, r.getStatusCode());
+    String content = r.getContentAsString();
+    LOG.info("Got "+content);
 
   }
 

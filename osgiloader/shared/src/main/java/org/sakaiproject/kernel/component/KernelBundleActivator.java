@@ -233,12 +233,6 @@ public class KernelBundleActivator implements BundleActivator, Kernel {
   protected void doStopBundle() {
   }
 
-  /**
-   * @return the current bundle context
-   */
-  public BundleContext getBundleContext() {
-    return bundleContext;
-  }
 
   /**
    * Destroys this servlet by shutting down the OSGi framework and hence the delegatee servlet if
@@ -252,6 +246,13 @@ public class KernelBundleActivator implements BundleActivator, Kernel {
       logger.log(Logger.LOG_INFO, "Sling stopped");
       felix = null;
     }
+  }
+
+  /* (non-Javadoc)
+   * @see org.sakaiproject.kernel.api.Kernel#getContext()
+   */
+  public BundleContext getContext() {
+    return bundleContext;
   }
 
 }
