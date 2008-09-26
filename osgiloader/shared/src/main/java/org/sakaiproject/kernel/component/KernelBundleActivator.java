@@ -35,6 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class KernelBundleActivator implements BundleActivator, Kernel {
   private static final Log LOG = LogFactory.getLog(KernelBundleActivator.class);
+  private static final String BOOT_DELIGATION = "org.osgi.framework.bootdelegation";
   /**
    * The bundle logger.
    */
@@ -67,7 +68,6 @@ public class KernelBundleActivator implements BundleActivator, Kernel {
       m.put(String.valueOf(e.getKey()), String.valueOf(e.getValue()));
       LOG.info("Adding Key "+e);
     }
-    m.put(BundleCache.CACHE_PROFILE_DIR_PROP, "cache");
     // make sure Felix does not exit the VM when terminating ...
     m.put(FelixConstants.EMBEDDED_EXECUTION_PROP, "true");
 
@@ -145,6 +145,7 @@ public class KernelBundleActivator implements BundleActivator, Kernel {
       this.logger.log(Logger.LOG_INFO, "Not using Execution Environment setting");
     }
   }
+
 
   /**
    * Install auto start bundles based on a pattern.
