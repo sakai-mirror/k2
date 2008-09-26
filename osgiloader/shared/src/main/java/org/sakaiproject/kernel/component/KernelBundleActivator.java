@@ -84,6 +84,9 @@ public class KernelBundleActivator implements BundleActivator, Kernel {
     List<BundleActivator> activators = new ArrayList<BundleActivator>();
     activators.add(this);
     activators.add(new AutoActivator(m));
+    
+    
+    
     //activators.add(new BootstrapInstaller(logger, resourceProvider));
 
     // create the framework and start it

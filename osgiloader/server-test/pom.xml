@@ -15,6 +15,31 @@
   <artifactId>osgi-server-test</artifactId>
   <version>0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
+
+  <!--  this is a Spring Source S3 Managed repository for OSGi artifacts, 
+  it cannot be browsed with a normal web browser, you need a tool like 
+  http://s3browse.com/explore/maven.springframework.org/osgi/org/springframework/osgi/ 
+  to view it -->
+  <repositories>
+    <repository>
+      <id>spring-osgified-artifacts</id>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <name>Springframework Maven OSGified Artifacts Repository</name>
+      <url>http://maven.springframework.org/osgi</url>
+    </repository>
+    <repository>
+      <id>spring-osgified-artifacts</id>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <name>Springframework Maven Release Repository</name>
+      <url>http://maven.springframework.org/release</url>
+    </repository>
+  </repositories>
+  
+  
   <dependencies>
     <dependency>
       <groupId>org.sakaiproject.kernel2</groupId>
@@ -79,5 +104,55 @@
       <scope>provided</scope>
       <type>jar</type>
     </dependency>
+
+    <!--  Spring DM Dependencies  -->
+    <!-- At the moment, I am pulling this live on bundle startup from the maven repo as I cant
+    see any other way of getting them in, it might be possible to reference the local maven repo
+    in the config.properties, but its not at all clear how that can be done,as the structure is 
+    not the same as required by the bundle loader
+    <dependency>
+      <groupId>org.springframework.osgi</groupId>
+      <artifactId>spring-osgi-core</artifactId>
+      <version>1.0.2</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.osgi</groupId>
+      <artifactId>spring-osgi-extender</artifactId>
+      <version>1.0.2</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.osgi</groupId>
+      <artifactId>spring-osgi-io</artifactId>
+      <version>1.0.2</version>
+      <type>jar</type>
+    </dependency>
+      -->
+<!--  
+
+    spring-core.jar (bundle symbolic name
+    org.springframework.bundle.spring.core) *
+
+    spring-context.jar (bundle symbolic name
+    org.springframework.bundle.spring.context) *
+
+    spring-beans.jar (bundle symbolic name
+    org.springframework.bundle.spring.beans) *
+
+    spring-aop.jar (bundle symbolic name
+    org.springframework.bundle.spring.aop) *
+
+    aopalliance *
+
+    cglib-nodep (when proxying classes rather then interfaces, needed in
+    most cases) *
+
+    commons-logging API (SLF4J version highly recommended) *
+
+    logging implementation such as log4j
+-->
+
+
   </dependencies>
 </project>
