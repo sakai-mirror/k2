@@ -110,7 +110,7 @@ public class KernelLifecycle implements CommonLifecycle<Kernel> {
       ObjectName kernel = new ObjectName(Kernel.MBEAN_KERNEL);
       mbs.registerMBean(model, kernel);
 
-      Logger logger = new KernelLogger();
+      Logger logger = new Logger();
       kernelBundleActivator = new KernelBundleActivator(logger);
 
       try {

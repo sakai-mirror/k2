@@ -1,9 +1,13 @@
 package org.sakaiproject.kernel.component;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.felix.framework.Felix;
 import org.apache.felix.framework.Logger;
 import org.apache.felix.framework.cache.BundleCache;
 import org.apache.felix.framework.util.FelixConstants;
+import org.apache.felix.main.AutoActivator;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -30,6 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  */
 public class KernelBundleActivator implements BundleActivator, Kernel {
+  private static final Log LOG = LogFactory.getLog(KernelBundleActivator.class);
   /**
    * The bundle logger.
    */
@@ -60,11 +65,13 @@ public class KernelBundleActivator implements BundleActivator, Kernel {
     p.load(in);
     for (Entry<?, ?> e : p.entrySet()) {
       m.put(String.valueOf(e.getKey()), String.valueOf(e.getValue()));
+      LOG.info("Adding Key "+e);
     }
     m.put(BundleCache.CACHE_PROFILE_DIR_PROP, "cache");
     // make sure Felix does not exit the VM when terminating ...
     m.put(FelixConstants.EMBEDDED_EXECUTION_PROP, "true");
 
+    m.put(FelixConstants.LOG_LEVEL_PROP,"4");
 
     // check for auto-start bundles
     this.setInstallBundles(m);
@@ -76,7 +83,8 @@ public class KernelBundleActivator implements BundleActivator, Kernel {
     // the custom activator list just contains this servlet
     List<BundleActivator> activators = new ArrayList<BundleActivator>();
     activators.add(this);
-    // activators.add(new BootstrapInstaller(logger, resourceProvider));
+    activators.add(new AutoActivator(m));
+    //activators.add(new BootstrapInstaller(logger, resourceProvider));
 
     // create the framework and start it
     Felix tmpFelix = new Felix(logger, m, activators);
@@ -91,7 +99,7 @@ public class KernelBundleActivator implements BundleActivator, Kernel {
     this.felix = tmpFelix;
 
     // log sucess message
-    this.logger.log(Logger.LOG_INFO, "Sakai OSGi Activator started");
+    this.logger.log(Logger.LOG_INFO, "Sakai OSGi Activator started ");
   }
 
   /**
@@ -187,7 +195,7 @@ public class KernelBundleActivator implements BundleActivator, Kernel {
     bundleContext.registerService(URLStreamHandlerService.class.getName(), streamHandler, props);
 
     // execute optional bundle startup tasks of an extension
-    // this.doStartBundle();
+    this.doStartBundle();
   }
 
   /**
@@ -219,7 +227,9 @@ public class KernelBundleActivator implements BundleActivator, Kernel {
    * @throws Exception May be thrown in case of problems.
    */
   protected void doStartBundle() throws Exception {
+    LOG.info("Starting Bundle");    
   }
+
 
   /**
    * Executes additional shutdown tasks and is called by the {@link #stop(BundleContext)} method.
@@ -231,6 +241,7 @@ public class KernelBundleActivator implements BundleActivator, Kernel {
    * unexpected behaviour may result.
    */
   protected void doStopBundle() {
+    LOG.info("Stopping Bundle");
   }
 
 
