@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.sakaiproject.kernel2</groupId>
+    <artifactId>base</artifactId>
+    <version>1-SNAPSHOT</version>
+  </parent>
+
+  <name>osgi-shared-bundle</name>
+  <groupId>org.sakaiproject.kernel2</groupId>
+  <artifactId>osgi-shared-bundle</artifactId>
+  <version>0.1-SNAPSHOT</version>
+  <packaging>bundle</packaging>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
+                <version>1.0.6</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <version>1.4.1</version>
+                <configuration>
+                    <instructions>
+                        <Bundle-Category>
+                            kernel,sakai
+                        </Bundle-Category>
+                        <!-- No Export-Package -->
+                        <Export-Package>
+                            org.apache.commons.logging.*;-split-package:=merge-first;version=1.1.1,
+                            org.apache.xerces.*;-split-package:=merge-first;version=2.8.1,
+                            javax.servlet.*;-split-package:=merge-first;version=2.4,
+                            *;--split-package:=merge-last
+                        </Export-Package>
+                        <Import-Package>
+                            !javax.servlet.*,
+                            !org.apache.xerces.*,
+                            !org.apache.log4j.*,
+                            !org.apache.log.*,
+                            !org.apache.avalon.*,
+                            !org.apache.commons.logging.*,
+                            !org.apache.xml.resolver.*,
+                            !sun.io.*
+                        </Import-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+  <dependencies>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.1.1</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <version>2.8.1</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.4</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.14</version>
+      <scope>provided</scope>
+      <type>jar</type>
+    </dependency>
+
+  </dependencies>
+</project>

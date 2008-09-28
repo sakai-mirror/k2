@@ -17,6 +17,7 @@
   <packaging>pom</packaging>
   <modules>
     <module>shared</module>
+    <module>shared-bundle</module>
     <module>common</module>
     <module>server</module>
     <module>server-test</module>

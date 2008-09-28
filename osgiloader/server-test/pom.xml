@@ -104,6 +104,13 @@
       <scope>provided</scope>
       <type>jar</type>
     </dependency>
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <version>2.8.1</version>
+      <scope>provided</scope>
+      <type>jar</type>
+    </dependency>
 
     <!--  Spring DM Dependencies  -->
     <!-- At the moment, I am pulling this live on bundle startup from the maven repo as I cant
@@ -128,6 +135,7 @@
       <version>1.0.2</version>
       <type>jar</type>
     </dependency>
+
       -->
 <!--  
 

@@ -35,7 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class KernelBundleActivator implements BundleActivator, Kernel {
   private static final Log LOG = LogFactory.getLog(KernelBundleActivator.class);
-  private static final String BOOT_DELIGATION = "org.osgi.framework.bootdelegation";
+
   /**
    * The bundle logger.
    */
