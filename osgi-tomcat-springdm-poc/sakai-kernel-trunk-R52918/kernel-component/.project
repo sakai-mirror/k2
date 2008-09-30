@@ -1,0 +1,16 @@
+<projectDescription>
+  <name>sakai-kernel-component</name>
+  <comment/>
+  <projects>
+    <project>sakai-kernel-impl</project>
+    <project>sakai-kernel-util</project>
+  </projects>
+  <buildSpec>
+    <buildCommand>
+      <name>org.eclipse.jdt.core.javabuilder</name>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>org.eclipse.jdt.core.javanature</nature>
+  </natures>
+</projectDescription>
