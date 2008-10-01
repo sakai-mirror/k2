@@ -10,9 +10,9 @@
     <version>1-SNAPSHOT</version>
   </parent>
 
-  <name>osgi-shared-bundle</name>
+  <name>shared-bundle</name>
   <groupId>org.sakaiproject.kernel2</groupId>
-  <artifactId>osgi-shared-bundle</artifactId>
+  <artifactId>shared-bundle</artifactId>
   <version>0.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
     <build>
@@ -32,22 +32,25 @@
                         <Bundle-Category>
                             kernel,sakai
                         </Bundle-Category>
-                        <!-- No Export-Package -->
                         <Export-Package>
-                            org.apache.commons.logging.*;-split-package:=merge-first;version=1.1.1,
-                            org.apache.xerces.*;-split-package:=merge-first;version=2.8.1,
-                            javax.servlet.*;-split-package:=merge-first;version=2.4,
-                            *;--split-package:=merge-last
+                            org.springframework.*;version=2.0.6,
+                            org.apache.commons.codec.*;version=1.3,
+                            org.apache.commons.io.*;version=1.2,
+                            org.apache.commons.dbcp.*;version=1.2.2,
+                            org.apache.commons.collections.*;version=3.2.1,
+                            org.apache.xalan.*;version=2.6.0,
+                            org.apache.derby.*;version=10.4.2.0,
+                            org.hibernate.*;version=3.2.5.ga,
+                            javax.jcr.*;version=1.0,
+                            org.apache.jackrabbit.*;version=1.4,
+                            net.sf.ehcache.*;version=1.3,
+                            javax.mail.*;version=1.3.1,
+                            javax.activation.*;version=1.0.2,
+                            *
                         </Export-Package>
                         <Import-Package>
-                            !javax.servlet.*,
-                            !org.apache.xerces.*,
-                            !org.apache.log4j.*,
-                            !org.apache.log.*,
-                            !org.apache.avalon.*,
-                            !org.apache.commons.logging.*,
-                            !org.apache.xml.resolver.*,
-                            !sun.io.*
+                            !sun.io.*,
+                            *
                         </Import-Package>
                     </instructions>
                 </configuration>
@@ -56,29 +59,98 @@
     </build>
   <dependencies>
     <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <version>1.1.1</version>
-      <type>jar</type>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+        <version>3.2.1</version>
     </dependency>
     <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-      <version>2.8.1</version>
-      <type>jar</type>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+        <version>1.3</version>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.4</version>
-      <type>jar</type>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+        <version>1.2</version>
+
     </dependency>
     <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.14</version>
-      <scope>provided</scope>
-      <type>jar</type>
+      <groupId>commons-dbcp</groupId>
+      <artifactId>commons-dbcp</artifactId>
+        <version>1.2.2</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.jcr</groupId>
+      <artifactId>jcr</artifactId>
+ <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>jackrabbit-core</artifactId>
+      <version>1.4</version>
+
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>jackrabbit-api</artifactId>
+      <version>1.4</version>
+
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>jackrabbit-jcr-commons</artifactId>
+      <version>1.4</version>
+
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>jackrabbit-jcr-commons</artifactId>
+      <version>1.4</version>
+
+    </dependency>
+   <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>1.0</version>
+
+    </dependency>
+  <dependency>
+      <groupId>net.sf.ehcache</groupId>
+      <artifactId>ehcache</artifactId>
+   <version>1.3.0</version>
+
+    </dependency>
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+    <version>1.3.1</version>
+
+    </dependency>
+    <dependency>
+      <groupId>javax.activation</groupId>
+      <artifactId>activation</artifactId>
+      <version>1.0.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring</artifactId>
+      <version>2.0.6</version>
+    </dependency>
+    <dependency>
+      <groupId>xalan</groupId>
+      <artifactId>xalan</artifactId>
+      <version>2.6.0</version>
+    </dependency>
+    <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate</artifactId>
+        <version>3.2.5.ga</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derby</artifactId>
+      <version>10.4.2.0</version>
     </dependency>
 
   </dependencies>
