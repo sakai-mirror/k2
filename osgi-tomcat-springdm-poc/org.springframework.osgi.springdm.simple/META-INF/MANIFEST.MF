@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Simple Service
+Bundle-SymbolicName: org.springframework.osgi.springdm.simple
+Bundle-Version: 1.0.0
+Import-Package: org.apache.log4j;version="1.2.15"
+Export-Package: org.springframework.osgi.sample.service
