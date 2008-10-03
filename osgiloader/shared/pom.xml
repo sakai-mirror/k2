@@ -30,6 +30,21 @@
       <scope>provided</scope>
       <type>jar</type>
     </dependency>
+    <!--  this must be built first to make it available -->
+    <dependency>
+      <groupId>org.sakaiproject.kernel2</groupId>
+      <artifactId>osgi-common-bundle</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.sakaiproject.kernel2</groupId>
+      <artifactId>osgi-shared-bundle</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+      <type>jar</type>
+    </dependency>
     <dependency>
       <groupId>org.apache.felix</groupId>
       <artifactId>org.apache.felix.main</artifactId>
