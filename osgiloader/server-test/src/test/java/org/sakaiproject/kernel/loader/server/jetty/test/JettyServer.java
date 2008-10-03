@@ -17,32 +17,82 @@
  */
 package org.sakaiproject.kernel.loader.server.jetty.test;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.mortbay.jetty.Connector;
+import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
-import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.ServletHolder;
+import org.mortbay.jetty.handler.HandlerCollection;
+import org.mortbay.jetty.nio.SelectChannelConnector;
+import org.mortbay.thread.QueuedThreadPool;
 import org.sakaiproject.kernel.loader.server.jetty.KernelLoader;
+import org.sakaiproject.kernel.loader.server.jetty.OSGiWebAppContext;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A skeleton Jetty Server.
  */
 public class JettyServer {
+  /**
+   * 
+   */
+  public static enum Function {
+    DEFAULT(""), KERNEL("k"), GETSERVICE("s"), TESTSOURCESERVICE("t");
+
+    private static Map<String, Function> table = new HashMap<String, Function>();
+    static {
+      for (Function f : Function.values()) {
+        table.put(f.toString(), f);
+      }
+    }
+    private final String name;
+
+    private Function(String name) {
+      this.name = name;
+    }
+
+    @Override
+    public String toString() {
+      return name;
+    }
+
+    public static Function getValueOf(String value) {
+      Function f = DEFAULT;
+      if (value != null) {
+        f = table.get(value);
+        if (f == null) {
+          f = DEFAULT;
+        }
+      }
+      return f;
+    }
+  }
+
+  public static final int JETTY_PORT = 9003;
+  public static final String SERVER_URL = "http://localhost:" + JETTY_PORT;  
+  public static final String DEPLOYED_URL = "/hello";
+  public static final String REQUEST_URL = SERVER_URL + DEPLOYED_URL;
+  public static final String RESPONSE = "hello";
 
   /**
    * The port to run the server on.
    */
-  private static final int JETTY_PORT = 9003;
-  
-  public static final String SERVER_URL = "http://localhost:" + JETTY_PORT;
 
+
+  private static final Log LOG = LogFactory.getLog(JettyServer.class);
+
+  private static final String WEBAPP_WAR = "../webapp-test/target/osgi-test-webapp-0.1-SNAPSHOT.war";
 
   /**
    * the jetty server.
    */
   private final Server server;
 
-
   /**
    * Create a new Jetty Server.
+   * 
    * @throws Exception if the jetty server wont create.
    */
   public JettyServer() throws Exception {
@@ -51,6 +101,7 @@ public class JettyServer {
 
   /**
    * Start the jetty server up.
+   * 
    * @throws Exception if the jetty server wont start.
    */
   public void start() throws Exception {
@@ -59,6 +110,7 @@ public class JettyServer {
 
   /**
    * Stop the server.
+   * 
    * @throws Exception if the server fails to stop.
    */
   public void stop() throws Exception {
@@ -67,20 +119,49 @@ public class JettyServer {
 
   /**
    * Starts the server for end-to-end tests.
+   * 
    * @param port the port to open the server on.
    * @return the server to return.
    * @throws Exception if the server can't be created.
    */
   private Server createServer(final int port) throws Exception {
-    Server newServer = new Server(port);
-    KernelLoader kl = new KernelLoader();
-    newServer.addLifeCycle(kl);
+    
+    
+    KernelLoader kernelLoader = new KernelLoader();
+    
+    LOG.info("Starting servlet Context ");
 
-    // add the test webapp, which is in the osgi-test-webapp
-    Context context = new Context(newServer, "/", Context.SESSIONS);
-    ServletHolder helloWorldHolder = new ServletHolder(new HelloWorldServlet());
-    context.addServlet(helloWorldHolder, HelloWorldServlet.DEPLOYED_URL);
+    Server server = new Server();
+    server.addLifeCycle(kernelLoader);
 
-    return newServer;
+    QueuedThreadPool threadPool = new QueuedThreadPool();
+    threadPool.setMaxThreads(100);
+    server.setThreadPool(threadPool);
+
+    Connector connector = new SelectChannelConnector();
+    connector.setPort(JETTY_PORT);
+    connector.setMaxIdleTime(30000);
+    server.setConnectors(new Connector[] { connector });
+
+    HandlerCollection handlers = new HandlerCollection();
+    
+    
+    server.setHandler(handlers);
+
+    // in a real server, this would be the webapp context class in the xml file
+    OSGiWebAppContext wah = new OSGiWebAppContext(this.getClass().getClassLoader());
+    wah.setWar(WEBAPP_WAR);
+    wah.setContextPath("/");
+    
+    
+    handlers.setHandlers(new Handler[] { wah });
+    
+    server.setStopAtShutdown(true);
+    server.setSendServerVersion(true);
+
+    server.start();
+// uncomment to keep the server up    server.join();
+
+    return server;
   }
 }

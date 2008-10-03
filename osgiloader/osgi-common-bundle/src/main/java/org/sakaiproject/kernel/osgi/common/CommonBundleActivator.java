@@ -20,6 +20,7 @@ public class CommonBundleActivator implements BundleActivator {
   private CommonObjectLifecycle commonObjectLifeCycle;
 
   public CommonBundleActivator() {
+    LOG.info("Created CommonBundleActivator ++++++++++++++++++++++++++++");
   }
 
 

@@ -90,7 +90,7 @@ public class CommonObjectLifecycle implements CommonLifecycle<CommonObject> {
    * @see org.sakaiproject.kernel.loader.common.CommonLifecycle#start()
    */
   public void start() {
-    LOG.info("Component Lifecycle is starting ==============================================");
+    LOG.info("Common Object Lifecycle is starting ==============================================");
     try {
       long start = System.currentTimeMillis();
       lifecycleEvent(CommonLifecycleEvent.BEFORE_START);
@@ -99,6 +99,7 @@ public class CommonObjectLifecycle implements CommonLifecycle<CommonObject> {
 
       MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
 
+      LOG.info("MBean Server is "+mbs);
       RequiredModelMBean model = new RequiredModelMBean(createMBeanInfo());
       model.setManagedResource(this, "objectReference");
       ObjectName commonObjectName = new ObjectName(CommonObject.MBEAN_COMMON);
@@ -112,7 +113,7 @@ public class CommonObjectLifecycle implements CommonLifecycle<CommonObject> {
       LOG.error("Failed to start Component Lifecycle ", ex);
       System.exit(FAILURE_CODE);
     }
-    LOG.info("Common Lifecycle Start Complete ===========================================");
+    LOG.info("Common Object Lifecycle Start Complete ===========================================");
 
   }
 

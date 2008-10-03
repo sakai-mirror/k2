@@ -1,42 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <groupId>org.sakaiproject.kernel2</groupId>
     <artifactId>base</artifactId>
     <version>1-SNAPSHOT</version>
   </parent>
-
   <name>osgi-common-bundle</name>
-  <description>
-    This jar is a manually constructed bundle that creates an OSGi
-    classloader and registers a JMX CommonObject bean to allow access
-    via JMX into the OSGi Classloaders.
-  </description>
+  <description> This jar is a manually constructed bundle that creates
+    an OSGi classloader and registers a JMX CommonObject bean to allow
+    access via JMX into the OSGi Classloaders. </description>
   <groupId>org.sakaiproject.kernel2</groupId>
   <artifactId>osgi-common-bundle</artifactId>
   <version>0.1-SNAPSHOT</version>
-  <packaging>jar</packaging>
+  <packaging>bundle</packaging>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-scr-plugin</artifactId>
+        <version>1.0.6</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <version>1.4.1</version>
+        <configuration>
+          <instructions>
+            <Bundle-Category> kernel,sakai </Bundle-Category>
+            <Bundle-Activator>org.sakaiproject.kernel.osgi.common.CommonBundleActivator</Bundle-Activator>
+            <Private-Package> 
+            * 
+            </Private-Package>
+            <Import-Package>
+            !org.sakaiproject.kernel.osgi.common.*,
+            org.apache.jasper.*,
+            org.apache.xerces.*,
+            *
+            </Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
   <dependencies>
     <dependency>
       <groupId>org.sakaiproject.kernel2</groupId>
       <artifactId>osgi-common</artifactId>
       <version>${project.version}</version>
-      <scope>provided</scope>
       <type>jar</type>
     </dependency>
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
       <version>1.0.4</version>
+      <scope>provided</scope>
       <type>jar</type>
     </dependency>
     <dependency>
       <groupId>org.apache.felix</groupId>
       <artifactId>org.osgi.core</artifactId>
+      <scope>provided</scope>
       <version>1.2.0</version>
     </dependency>
   </dependencies>

@@ -60,7 +60,7 @@ public class KernelBundleActivator implements BundleActivator, Kernel {
     this.logger.log(Logger.LOG_INFO, "Starting POC");
 
     Map<String, String> m = new ConcurrentHashMap<String, String>();
-
+    ClassLoader cl = this.getClass().getClassLoader();
     InputStream in = this.getClass().getResourceAsStream("config.properties");
     Properties p = new Properties();
     p.load(in);

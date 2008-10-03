@@ -38,6 +38,9 @@
                         </Export-Package>
                         <Import-Package>
                             !sun.io.*,
+                            !org.apache.derby.*,
+                            !org.slf4j.*,
+                            !org.apache.log4j.*,
                             *
                         </Import-Package>
                     </instructions>

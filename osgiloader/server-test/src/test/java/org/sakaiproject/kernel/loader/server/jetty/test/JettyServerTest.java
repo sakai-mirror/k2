@@ -17,10 +17,9 @@
  */
 package org.sakaiproject.kernel.loader.server.jetty.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import com.gargoylesoftware.htmlunit.CollectingAlertHandler;
-import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -39,15 +38,12 @@ import org.sakaiproject.kernel.api.KernelManager;
 
 import javax.servlet.http.HttpServletResponse;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-
 /**
  * Test the startup.
  */
 public class JettyServerTest {
 
-  private static final Log LOG = LogFactory.getLog(JettyServerTest.class) ;
+  private static final Log LOG = LogFactory.getLog(JettyServerTest.class);
   /**
    * holds the jetty server.
    */
@@ -71,7 +67,9 @@ public class JettyServerTest {
    */
   @AfterClass
   public static void tearDownOnce() throws Exception {
-    server.stop();
+    if (server != null) {
+      server.stop();
+    }
   }
 
   private WebClient webClient;
@@ -119,58 +117,63 @@ public class JettyServerTest {
 
   /**
    * Test getting the OSGi container in a servlet.
+   * 
    * @throws Exception if there was an http problem
    */
   @Test
   public void testGetOSGiContainer() throws Exception {
-    Page p = webClient.getPage(HelloWorldServlet.REQUEST_URL);
+    Page p = webClient.getPage(JettyServer.REQUEST_URL);
     WebResponse r = p.getWebResponse();
     assertEquals(200, r.getStatusCode());
     String content = r.getContentAsString();
-    assertEquals(HelloWorldServlet.RESPONSE, content);
+    assertEquals(JettyServer.RESPONSE, content);
   }
 
   /**
    * Test the default function on the servlet.
+   * 
    * @throws Exception if there was an http problem
    */
   @Test
   public void testHttpGetDefault() throws Exception {
 
-    Page p = webClient.getPage(HelloWorldServlet.REQUEST_URL + "?f="
-        + HelloWorldServlet.Function.DEFAULT);
+    Page p = webClient.getPage(JettyServer.REQUEST_URL + "?f="
+        + JettyServer.Function.DEFAULT);
     WebResponse r = p.getWebResponse();
     assertEquals(HttpServletResponse.SC_OK, r.getStatusCode());
     String content = r.getContentAsString();
-    assertEquals(HelloWorldServlet.RESPONSE, content);
+    assertEquals(JettyServer.RESPONSE, content);
   }
 
   /**
    * Test the load kernel function on the servlet.
+   * 
    * @throws Exception if there was an http problem
    */
   @Test
   public void testHttpGetKernel() throws Exception {
-    Page p = webClient.getPage(HelloWorldServlet.REQUEST_URL + "?f="
-        + HelloWorldServlet.Function.KERNEL);
+    Page p = webClient.getPage(JettyServer.REQUEST_URL + "?f="
+        + JettyServer.Function.KERNEL);
     WebResponse r = p.getWebResponse();
     assertEquals(HttpServletResponse.SC_OK, r.getStatusCode());
     String content = r.getContentAsString();
-    assertEquals(HelloWorldServlet.RESPONSE, content);
+    assertEquals(JettyServer.RESPONSE, content);
 
   }
+
   /**
    * Test the load kernel function on the servlet.
+   * 
    * @throws Exception if there was an http problem
    */
   @Test
   public void testHttpGetService() throws Exception {
-    Page p = webClient.getPage(HelloWorldServlet.REQUEST_URL + "?f="
-        + HelloWorldServlet.Function.GETSERVICE);
+    Page p = webClient.getPage(JettyServer.REQUEST_URL + "?f="
+        + JettyServer.Function.GETSERVICE);
     WebResponse r = p.getWebResponse();
     assertEquals(HttpServletResponse.SC_OK, r.getStatusCode());
     String content = r.getContentAsString();
-    LOG.info("Got "+content);
+    LOG.info("Got " + content);
 
   }
 

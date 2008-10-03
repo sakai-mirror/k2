@@ -15,7 +15,7 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.loader.server.jetty.test;
+package org.sakaiproject.kernel.test.webapp;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,7 +40,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -84,13 +83,16 @@ public class HelloWorldServlet extends HttpServlet {
     }
   }
 
+  
   /**
    * 
    */
   private static final long serialVersionUID = 1L;
   private static final Log LOG = LogFactory.getLog(HelloWorldServlet.class);
+  public static final int JETTY_PORT = 9003;
+  public static final String SERVER_URL = "http://localhost:" + JETTY_PORT;  
   public static final String DEPLOYED_URL = "/hello";
-  public static final String REQUEST_URL = JettyServer.SERVER_URL + DEPLOYED_URL;
+  public static final String REQUEST_URL = SERVER_URL + DEPLOYED_URL;
   public static final String RESPONSE = "hello";
   private Kernel kernel;
 
