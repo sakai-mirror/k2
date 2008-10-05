@@ -41,6 +41,7 @@ public class SakaiKernel1BundleActivator implements BundleActivator {
    */
   public void start(BundleContext context) throws Exception {
     LOG.info("Starting Sakai 1 Kernel ++++++++++++++++++++++++++++++");
+    System.setProperty("sakai.components.root","/Users/ieb/Caret/sakai22/sakaidev/kernel/kernel-component/src/main/");
     componentManager = org.sakaiproject.component.cover.ComponentManager.getInstance();
     // register the context URL handler
     Hashtable<String, Object> props = new Hashtable<String, Object>();
