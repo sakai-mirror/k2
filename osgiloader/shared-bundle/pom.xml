@@ -52,7 +52,7 @@
                             !sun.io.*,
                             !org.apache.derby.*,
                             !org.springframework.*,
-                            *
+                            *;resolution:=optional
                         </Import-Package>
                     </instructions>
                 </configuration>
