@@ -30,6 +30,8 @@
             <Export-Package> org.sakaiproject.*;version=1.0RC2-SNAPSHOT 
             </Export-Package>
             <Private-Package> !org.sakaiproject.*, * </Private-Package>
+            <Bundle-Activator>org.sakaiproject.kernel.osgi.loader.SakaiKernel1BundleActivator</Bundle-Activator>
+            
             <!--
               Javax.mail wont go into a bundle for some reason. As we
               build more bundles, some of the excludes may need to be
@@ -74,10 +76,18 @@
       <artifactId>sakai-kernel-util</artifactId>
       <version>1.0RC2-SNAPSHOT</version>
     </dependency>
+    
+    <!--  non bundled dependencies for the bundle bootstrap code -->
     <dependency>
       <groupId>org.apache.felix</groupId>
       <artifactId>org.osgi.core</artifactId>
       <version>1.2.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.0.4</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>

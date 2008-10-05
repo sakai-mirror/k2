@@ -53,7 +53,11 @@ public class ManifestTest {
       LOG.info("Manifest is " + m + " " + m.getMainAttributes().size());
       Attributes a = m.getMainAttributes();
       for (Entry<Object, Object> e : a.entrySet()) {
-        LOG.info("Attribute " + e.getKey() + ":" + e.getValue());
+        String value = String.valueOf(e.getValue());
+        if ( value.length() > 75 ) {
+          value = value.substring(0,75)+"...";
+        }
+        LOG.info("Attribute  " + e.getKey() + ":" + value);
       }
     } else {
       LOG.info("Test Disabled, target jar file does not exist");
