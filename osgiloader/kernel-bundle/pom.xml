@@ -31,7 +31,6 @@
             </Export-Package>
             <Private-Package> !org.sakaiproject.*, * </Private-Package>
             <Bundle-Activator>org.sakaiproject.kernel.osgi.loader.SakaiKernel1BundleActivator</Bundle-Activator>
-            
             <!--
               Javax.mail wont go into a bundle for some reason. As we
               build more bundles, some of the excludes may need to be
