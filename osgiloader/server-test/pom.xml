@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <groupId>org.sakaiproject.kernel2</groupId>
     <artifactId>base</artifactId>
     <version>1-SNAPSHOT</version>
   </parent>
-
   <name>osgi-server-test</name>
   <groupId>org.sakaiproject.kernel2</groupId>
   <artifactId>osgi-server-test</artifactId>
@@ -83,7 +80,16 @@
       <scope>provided</scope>
       <type>jar</type>
     </dependency>
-    
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <version>2.8.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.sakaiproject.kernel2</groupId>
+      <artifactId>osgi-server</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     
     <!--  this must be built first to make it available -->
     <dependency>
@@ -93,6 +99,5 @@
       <scope>provided</scope>
       <type>war</type>
     </dependency>
-    
   </dependencies>
 </project>

@@ -1,161 +1,226 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <groupId>org.sakaiproject.kernel2</groupId>
     <artifactId>base</artifactId>
     <version>1-SNAPSHOT</version>
   </parent>
-
   <name>shared-bundle</name>
   <groupId>org.sakaiproject.kernel2</groupId>
   <artifactId>shared-bundle</artifactId>
   <version>0.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-scr-plugin</artifactId>
-                <version>1.0.6</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <version>1.4.1</version>
-                <configuration>
-                    <instructions>
-                        <Bundle-Category>
-                            kernel,sakai
-                        </Bundle-Category>
-                        <Export-Package>
-                            org.springframework.*;version=2.0.6,
-                            org.apache.commons.codec.*;version=1.3,
-                            org.apache.commons.io.*;version=1.2,
-                            org.apache.commons.dbcp.*;version=1.2.2,
-                            org.apache.commons.collections.*;version=3.2.1,
-                            org.apache.xalan.*;version=2.6.0,
-                            org.apache.derby.*;version=10.4.2.0,
-                            org.hibernate.*;version=3.2.5.ga,
-                            javax.jcr.*;version=1.0,
-                            org.apache.jackrabbit.*;version=1.4,
-                            net.sf.ehcache.*;version=1.3,
-                            javax.mail.*;version=1.3.1,
-                            javax.activation.*;version=1.0.2,
-                            *
-                        </Export-Package>
-                        <Import-Package>
-                            !sun.io.*,
-                            !org.apache.derby.*,
-                            !org.springframework.*,
-                            *;resolution:=optional
-                        </Import-Package>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-scr-plugin</artifactId>
+        <version>1.0.6</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <version>1.4.1</version>
+        <configuration>
+          <instructions>
+            <Bundle-Activator>org.sakaiproject.kernel.osgi.loader.SakaiKernel1BundleActivator</Bundle-Activator>
+            <Export-Package>
+            !org.w3c.dom.*,
+            org.sakaiproject.kernel.osgi.loader.*
+            </Export-Package>
+            <_exportcontents>
+              org.sakaiproject.*;version=1.0RC2-SNAPSHOT,
+              org.hsqldb.*;version=1.8.0.7,
+              org.springframework.*;version=2.0.6,
+              net.sf.cglib.*;version=2.1_3,
+              org.apache.commons.collections.*;version=3.2.1,
+              org.apache.commons.dbcp.*;version=1.2.2,
+              org.apache.commons.pool.*;version=1.3,
+              org.apache.commons.lang.*;version=2.1,
+              org.apache.commons.fileupload.*;version=1.1.1,
+              org.apache.commons.io.*;version=1.2,
+              org.dom4j.*;version=1.6.1,
+              antlr.*;version=2.7.6,    
+              net.sf.ehcache.*;version=1.3.1,
+              org.hibernate.*;version=3.2.5.ga,
+              javax.sql.*;-split-package:=merge-last,
+              javax.transaction.*;-split-package:=merge-last,
+              javax.jms.*;version=1.1-rc4,
+              javax.jcr.*,
+              org.jdom.*;-split-package:=merge-last;version=1.0,
+              org.jaxen.*;version=1.1.1
+          </_exportcontents>
+          <_failok>true</_failok>
+            <Import-Package>
+              !oracle,
+              *;resolution:=optional
+            </Import-Package>
+            <Private-Package>
+            <!-- 
+              com.sun.mail.*;-split-package:=merge-last;version=1.3.1,
+              com.sun.activation.*;-split-package:=merge-last;version=1.0.2,
+              org.w3c.*;-split-package:=merge-last
+              -->
+              
+              !*
+            </Private-Package>
+            <Embed-Dependency>*;scope=!provided;type=!pom;inline=true</Embed-Dependency>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
   <dependencies>
+      <!--  non bundled dependencies for the bundle bootstrap code -->
     <dependency>
-      <groupId>commons-collections</groupId>
-      <artifactId>commons-collections</artifactId>
-        <version>3.2.1</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-codec</groupId>
-      <artifactId>commons-codec</artifactId>
-        <version>1.3</version>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.osgi.core</artifactId>
+      <version>1.2.0</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-        <version>1.2</version>
-
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.0.4</version>
+      <scope>provided</scope>
+    </dependency>
+    
+    <!--  Sakai 2.x shared bundle -->
+    <dependency>
+      <groupId>org.sakaiproject.kernel</groupId>
+      <artifactId>sakai-kernel-api</artifactId>
+      <version>1.0RC2-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>commons-dbcp</groupId>
-      <artifactId>commons-dbcp</artifactId>
-        <version>1.2.2</version>
+      <groupId>org.sakaiproject.kernel</groupId>
+      <artifactId>sakai-component-manager</artifactId>
+      <version>1.0RC2-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>javax.jcr</groupId>
-      <artifactId>jcr</artifactId>
- <version>1.0</version>
+      <groupId>org.sakaiproject.kernel</groupId>
+      <artifactId>sakai-kernel-private</artifactId>
+      <version>1.0RC2-SNAPSHOT</version>
+      <exclusions>
+      <exclusion>
+      <groupId>xml-apis</groupId>
+      <artifactId>xml-apis</artifactId>
+      </exclusion>
+      <exclusion>
+      <groupId>xml-apis</groupId>
+      <artifactId>xmlParserAPIs</artifactId>
+      </exclusion>
+      </exclusions>
     </dependency>
-    <dependency>
-      <groupId>org.apache.jackrabbit</groupId>
-      <artifactId>jackrabbit-core</artifactId>
-      <version>1.4</version>
-
-    </dependency>
-    <dependency>
-      <groupId>org.apache.jackrabbit</groupId>
-      <artifactId>jackrabbit-api</artifactId>
-      <version>1.4</version>
-
-    </dependency>
-    <dependency>
-      <groupId>org.apache.jackrabbit</groupId>
-      <artifactId>jackrabbit-jcr-commons</artifactId>
-      <version>1.4</version>
-
-    </dependency>
-    <dependency>
-      <groupId>org.apache.jackrabbit</groupId>
-      <artifactId>jackrabbit-jcr-commons</artifactId>
-      <version>1.4</version>
-
-    </dependency>
-   <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <version>1.0</version>
-
-    </dependency>
-  <dependency>
-      <groupId>net.sf.ehcache</groupId>
-      <artifactId>ehcache</artifactId>
-   <version>1.3.0</version>
-
-    </dependency>
-<!--
-  This must be in shared
-    <dependency>
-      <groupId>javax.mail</groupId>
-      <artifactId>mail</artifactId>
-    <version>1.3.1</version>
-
-    </dependency>
-    <dependency>
-      <groupId>javax.activation</groupId>
-      <artifactId>activation</artifactId>
-      <version>1.0.2</version>
-    </dependency>
--->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring</artifactId>
       <version>2.0.6</version>
     </dependency>
     <dependency>
-      <groupId>xalan</groupId>
-      <artifactId>xalan</artifactId>
-      <version>2.6.0</version>
+      <groupId>hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <version>1.8.0.7</version>
     </dependency>
     <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate</artifactId>
-        <version>3.2.5.ga</version>
+      <groupId>cglib</groupId>
+      <artifactId>cglib-nodep</artifactId>
+      <version>2.1_3</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derby</artifactId>
-      <version>10.4.2.0</version>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+      <version>3.2.1</version>
     </dependency>
-
+    <dependency>
+      <groupId>commons-dbcp</groupId>
+      <artifactId>commons-dbcp</artifactId>
+      <version>1.2.2</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-pool</groupId>
+      <artifactId>commons-pool</artifactId>
+      <version>1.3</version>
+    </dependency>
+    <dependency>
+      <groupId>dom4j</groupId>
+      <artifactId>dom4j</artifactId>
+      <version>1.6.1</version>
+    </dependency>
+    <dependency>
+      <groupId>antlr</groupId>
+      <artifactId>antlr</artifactId>
+      <version>2.7.6</version>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.ehcache</groupId>
+      <artifactId>ehcache</artifactId>
+      <version>1.3.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate</artifactId>
+      <version>3.2.5.ga</version>
+    </dependency>
+    <dependency>
+      <groupId>jdbc</groupId>
+      <artifactId>jdbc2_0-stdext</artifactId>
+      <version>h2.1.8</version>
+    </dependency>
+    <dependency>
+      <groupId>jta</groupId>
+      <artifactId>jta</artifactId>
+      <version>h2.1.8</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>2.1</version>
+    </dependency>
+    <!--
+    These must be provided in shared as they have signatures in the manifext files. 
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <version>1.3.1</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.activation</groupId>
+      <artifactId>activation</artifactId>
+      <version>1.0.2</version>
+    </dependency>
+    -->
+    <dependency>
+      <groupId>geronimo-spec</groupId>
+      <artifactId>geronimo-spec-jms</artifactId>
+      <version>1.1-rc4</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.jcr</groupId>
+      <artifactId>jcr</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+      <version>1.1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>jdom</groupId>
+      <artifactId>jdom</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>jaxen</groupId>
+      <artifactId>jaxen</artifactId>
+      <version>1.1.1</version>
+    </dependency>
   </dependencies>
 </project>

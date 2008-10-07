@@ -35,7 +35,7 @@
                         <!-- No Export-Package -->
                         <Export-Package>
                             org.apache.commons.logging.*;-split-package:=merge-first;version=1.1.1,
-                            org.apache.xerces.*;-split-package:=merge-first;version=2.8.1,
+             
                             javax.servlet.*;-split-package:=merge-first;version=2.4,
                             *;--split-package:=merge-last
                         </Export-Package>

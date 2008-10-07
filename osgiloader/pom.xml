@@ -20,7 +20,6 @@
     <module>osgi-shared-bundle</module>
     <module>osgi-common-bundle</module>
     <module>shared-bundle</module>
-    <module>kernel-bundle</module>
     <module>common</module>
     <module>server</module>
     <module>server-test</module>

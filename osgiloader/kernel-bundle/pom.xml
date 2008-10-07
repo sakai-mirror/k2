@@ -60,19 +60,11 @@
       <artifactId>sakai-component-manager</artifactId>
       <version>1.0RC2-SNAPSHOT</version>
     </dependency>
-    <dependency>
-      <groupId>org.sakaiproject.kernel</groupId>
-      <artifactId>sakai-kernel-impl</artifactId>
-      <version>1.0RC2-SNAPSHOT</version>
-    </dependency>
+    
+    
     <dependency>
       <groupId>org.sakaiproject.kernel</groupId>
       <artifactId>sakai-kernel-private</artifactId>
-      <version>1.0RC2-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.sakaiproject.kernel</groupId>
-      <artifactId>sakai-kernel-util</artifactId>
       <version>1.0RC2-SNAPSHOT</version>
     </dependency>
     
