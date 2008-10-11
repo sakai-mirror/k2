@@ -10,6 +10,10 @@
     <version>1-SNAPSHOT</version>
   </parent>
 
+<properties>
+  <deploy.target>shared</deploy.target>
+</properties>
+
   <name>osgi-shared</name>
   <groupId>org.sakaiproject.kernel2</groupId>
   <artifactId>osgi-shared</artifactId>

@@ -15,11 +15,21 @@
   <artifactId>osgi-server</artifactId>
   <version>0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
+  <properties>
+     <deploy.target>shared</deploy.target>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.sakaiproject.kernel2</groupId>
       <artifactId>osgi-common</artifactId>
       <version>${project.version}</version>
+      <scope>provided</scope>
+      <type>jar</type>
+    </dependency>
+	<dependency>
+      <groupId>org.sakaiproject.maven.plugins</groupId>
+      <artifactId>sakai</artifactId>
+      <version>M2</version>
       <scope>provided</scope>
       <type>jar</type>
     </dependency>
@@ -36,13 +46,13 @@
       <scope>provided</scope>
       <type>jar</type>
     </dependency>
-    <dependency>
+    <!--dependency>
       <groupId>tomcat-temp</groupId>
       <artifactId>naming-factory</artifactId>
       <version>5.5.16</version>
       <scope>provided</scope>
       <type>jar</type>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>tomcat</groupId>
       <artifactId>naming-resources</artifactId>
@@ -63,4 +73,5 @@
       <type>jar</type>
     </dependency>
   </dependencies>
+
 </project>

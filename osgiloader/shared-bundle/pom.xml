@@ -12,6 +12,7 @@
   <artifactId>shared-bundle</artifactId>
   <version>0.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
+
   <build>
     <plugins>
       <plugin>
@@ -28,9 +29,11 @@
           <instructions>
             <Bundle-Activator>org.sakaiproject.kernel.osgi.loader.SakaiKernel1BundleActivator</Bundle-Activator>
             <Export-Package>
-            !org.w3c.dom.*,
             org.sakaiproject.kernel.osgi.loader.*
             </Export-Package>
+            <Export-Service>
+            org.w3c.dom.*
+            </Export-Service>
             <_exportcontents>
               org.sakaiproject.*;version=1.0RC2-SNAPSHOT,
               org.hsqldb.*;version=1.8.0.7,
@@ -222,5 +225,6 @@
       <artifactId>jaxen</artifactId>
       <version>1.1.1</version>
     </dependency>
+
   </dependencies>
 </project>

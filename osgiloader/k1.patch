@@ -2,21 +2,6 @@ diff --git a/component-manager/src/main/java/org/sakaiproject/util/SakaiApplicat
 index 622f65d..7e66fb4 100644
 --- a/component-manager/src/main/java/org/sakaiproject/util/SakaiApplicationContext.java
 +++ b/component-manager/src/main/java/org/sakaiproject/util/SakaiApplicationContext.java
-@@ -1,9 +1,9 @@
- /**********************************************************************************
--*
--* $Id$
--*
--***********************************************************************************
--*
-+ *
-+ * $Id$
-+ *
-+ ***********************************************************************************
-+ *
-  * Copyright (c) 2007, 2008 Sakai Foundation
-  *
-  * Licensed under the Educational Community License, Version 2.0 (the "License");
 @@ -17,12 +17,13 @@
   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   * See the License for the specific language governing permissions and
@@ -183,7 +168,7 @@ index 622f65d..7e66fb4 100644
 -	}
 +  /**
 +   * Add bean-created post processors.
-+   * 
++   *
 +   * @param beanFactory
 +   */
 +  public void invokePostProcessorCreators(ConfigurableListableBeanFactory beanFactory) {
