@@ -28,6 +28,7 @@
   <properties>
     <deploy.target>shared</deploy.target>
   </properties>
+
   <dependencies>
     <dependency>
       <groupId>javax.servlet</groupId>

@@ -130,7 +130,7 @@ public class ComponentsLoader
 	protected void loadComponentPackage(File dir, ConfigurableApplicationContext ac)
 	{
 		// setup the classloader onto the thread
-		ClassLoader current = Thread.currentThread().getContextClassLoader();
+		ClassLoader current = this.getClass().getClassLoader();//Thread.currentThread().getContextClassLoader();
 		ClassLoader loader = newPackageClassLoader(dir);
 
 		M_log.info("loadComponentPackage: " + dir);
@@ -150,7 +150,7 @@ public class ComponentsLoader
 			
 			// In Spring 2, classes aren't loaded during bean parsing unless this
 			// classloader property is set.
-			reader.setBeanClassLoader(loader);
+			reader.setBeanClassLoader(current);
 			
 			List<Resource> beanDefList = new ArrayList<Resource>();
 			beanDefList.add(new FileSystemResource(xml.getCanonicalPath()));

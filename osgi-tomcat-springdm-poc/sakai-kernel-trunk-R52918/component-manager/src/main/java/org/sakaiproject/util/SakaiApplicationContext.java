@@ -32,6 +32,7 @@ import org.springframework.beans.factory.xml.ResourceEntityResolver;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.support.GenericApplicationContext;
+import org.w3c.dom.Node;
 
 /**
  * Hook some Sakai-specific operations into the normal ApplicationContext
@@ -63,10 +64,11 @@ public class SakaiApplicationContext extends GenericApplicationContext {
 	protected void loadBeanDefinitions(ConfigurableListableBeanFactory beanFactory) throws IOException {
 		// Create a new XmlBeanDefinitionReader for the given BeanFactory.
 		XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader((BeanDefinitionRegistry)beanFactory);
-		beanDefinitionReader.setBeanClassLoader(Thread.currentThread().getContextClassLoader());
+		//beanDefinitionReader.setBeanClassLoader(Thread.currentThread().getContextClassLoader());
+		beanDefinitionReader.setBeanClassLoader(this.getClass().getClassLoader());
 		beanDefinitionReader.setResourceLoader(this);
 		beanDefinitionReader.setEntityResolver(new ResourceEntityResolver(this));
-
+org.w3c.dom.Node node = new Node();
 		if (configLocations != null) {
 			beanDefinitionReader.loadBeanDefinitions(configLocations);
 		}
