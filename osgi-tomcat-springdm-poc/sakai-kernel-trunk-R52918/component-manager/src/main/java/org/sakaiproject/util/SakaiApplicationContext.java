@@ -68,7 +68,6 @@ public class SakaiApplicationContext extends GenericApplicationContext {
 		beanDefinitionReader.setBeanClassLoader(this.getClass().getClassLoader());
 		beanDefinitionReader.setResourceLoader(this);
 		beanDefinitionReader.setEntityResolver(new ResourceEntityResolver(this));
-org.w3c.dom.Node node = new Node();
 		if (configLocations != null) {
 			beanDefinitionReader.loadBeanDefinitions(configLocations);
 		}
