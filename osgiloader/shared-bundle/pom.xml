@@ -29,7 +29,7 @@
           <instructions>
             <Bundle-Activator>org.sakaiproject.kernel.osgi.loader.SakaiKernel1BundleActivator</Bundle-Activator>
             <Export-Package>
-            org.sakaiproject.kernel.osgi.loader.*
+            org.sakaiproject.kernel.osgi.loader.*,*
             </Export-Package>
             <Export-Service>
             org.w3c.dom.*
@@ -95,6 +95,11 @@
     <dependency>
       <groupId>org.sakaiproject.kernel</groupId>
       <artifactId>sakai-kernel-api</artifactId>
+      <version>1.0RC2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.sakaiproject.kernel</groupId>
+      <artifactId>sakai-kernel-impl</artifactId>
       <version>1.0RC2-SNAPSHOT</version>
     </dependency>
     <dependency>
