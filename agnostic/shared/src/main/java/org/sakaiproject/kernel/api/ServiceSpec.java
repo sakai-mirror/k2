@@ -77,7 +77,7 @@ public class ServiceSpec {
     if (equals(serviceSpec)) {
       return true;
     } else if (ofType) {
-      getServiceClass().isAssignableFrom(serviceSpec.getServiceClass());
+      return getServiceClass().isAssignableFrom(serviceSpec.getServiceClass());
     }
     return false;
   }

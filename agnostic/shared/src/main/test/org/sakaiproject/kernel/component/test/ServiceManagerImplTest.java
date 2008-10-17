@@ -150,9 +150,9 @@ public class ServiceManagerImplTest {
     Object service = new Object();
     serviceManager.registerService(new ServiceSpec(ServiceManager.class), service);
     serviceManager.registerService(new ServiceSpec(ServiceManagerImpl.class), service);
-    Collection<ServiceManager> registeredServices = serviceManager.getServices(new ServiceSpec(ServiceManager.class));
+    Collection<ServiceManager> registeredServices = serviceManager.getServices(new ServiceSpec(ServiceManager.class,true));
     assertEquals(2, registeredServices.size());
-    registeredServices = serviceManager.getServices(new ServiceSpec(ServiceManagerImpl.class));
+    registeredServices = serviceManager.getServices(new ServiceSpec(ServiceManagerImpl.class,true));
     assertEquals(1, registeredServices.size());
     serviceManager.stop();
   }

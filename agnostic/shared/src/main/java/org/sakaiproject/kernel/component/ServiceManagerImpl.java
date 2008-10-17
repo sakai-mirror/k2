@@ -78,7 +78,7 @@ public class ServiceManagerImpl implements ServiceManager {
   public <T> Collection<T> getServices(ServiceSpec serviceSpec) {
     Collection<T> matchedServices = new ArrayList<T>();
     for ( Entry<ServiceSpec, Object> e : services.entrySet()) {
-      if ( serviceSpec.matches(serviceSpec) ) {
+      if ( serviceSpec.matches(e.getKey()) ) {
         matchedServices.add((T)e.getValue());
       }
     }
