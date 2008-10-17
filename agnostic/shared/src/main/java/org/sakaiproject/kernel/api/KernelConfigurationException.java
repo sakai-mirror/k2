@@ -29,28 +29,27 @@ public class KernelConfigurationException extends Exception {
   private static final long serialVersionUID = 6417518779003794916L;
 
   /**
-   *
+   * {@inheritDoc}
    */
   public KernelConfigurationException() {
   }
 
   /**
-   * @param message
+   * {@inheritDoc}
    */
   public KernelConfigurationException(String message) {
     super(message);
   }
 
   /**
-   * @param cause
+   * {@inheritDoc}
    */
   public KernelConfigurationException(Throwable cause) {
     super(cause);
   }
 
   /**
-   * @param message
-   * @param cause
+   * {@inheritDoc}
    */
   public KernelConfigurationException(String message, Throwable cause) {
     super(message, cause);

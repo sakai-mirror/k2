@@ -24,33 +24,32 @@ package org.sakaiproject.kernel.api;
 public class ServiceManagerException extends Exception {
 
   /**
-   * 
+   * {@inheritDoc}
    */
   private static final long serialVersionUID = -2300463444645444286L;
 
   /**
-   * 
+   * {@inheritDoc}
    */
   public ServiceManagerException() {
   }
 
   /**
-   * @param arg0
+   * {@inheritDoc}
    */
   public ServiceManagerException(String arg0) {
     super(arg0);
   }
 
   /**
-   * @param arg0
+   * {@inheritDoc}
    */
   public ServiceManagerException(Throwable arg0) {
     super(arg0);
   }
 
   /**
-   * @param arg0
-   * @param arg1
+   * {@inheritDoc}
    */
   public ServiceManagerException(String arg0, Throwable arg1) {
     super(arg0, arg1);

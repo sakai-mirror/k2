@@ -18,7 +18,7 @@
 package org.sakaiproject.kernel.api;
 
 /**
- *
+ * Indicates a component activation problem.
  */
 public class ComponentActivatorException extends Exception {
 
@@ -28,35 +28,30 @@ public class ComponentActivatorException extends Exception {
   private static final long serialVersionUID = -3196491957756931650L;
 
   /**
-   * 
+   * {@inheritDoc}
    */
   public ComponentActivatorException() {
-    // TODO Auto-generated constructor stub
   }
 
   /**
-   * @param arg0
+   * {@inheritDoc}
    */
   public ComponentActivatorException(String arg0) {
     super(arg0);
-    // TODO Auto-generated constructor stub
   }
 
   /**
-   * @param arg0
+   * {@inheritDoc}
    */
   public ComponentActivatorException(Throwable arg0) {
     super(arg0);
-    // TODO Auto-generated constructor stub
   }
 
   /**
-   * @param arg0
-   * @param arg1
+   * {@inheritDoc}
    */
   public ComponentActivatorException(String arg0, Throwable arg1) {
     super(arg0, arg1);
-    // TODO Auto-generated constructor stub
   }
 
 }

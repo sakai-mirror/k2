@@ -25,7 +25,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.loader.common.CommonLifecycleEvent;
 import org.sakaiproject.kernel.loader.common.CommonLifecycleListener;
-import org.sakaiproject.kernel.loader.common.CommonObject;
 import org.sakaiproject.kernel.loader.common.CommonObjectManager;
 
 /**
@@ -38,7 +37,6 @@ public class SakaiSharedClassLoader extends WebappClassLoader implements Lifecyc
     CommonLifecycleListener {
   private static final Log LOG = LogFactory.getLog(SakaiSharedClassLoader.class);
   private CommonObjectManager commonObjectManager;
-  private CommonObject commonObject;
   private ClassLoader parentClassLoader;
 
   /**
@@ -89,7 +87,7 @@ public class SakaiSharedClassLoader extends WebappClassLoader implements Lifecyc
         stop();
       } else if (Lifecycle.DESTROY_EVENT.equals(type)) {
         LOG.debug("Destroy ");
-        commonObject = null;
+        parentClassLoader = null;
         commonObjectManager.removeListener(this);
         commonObjectManager = null;
 

@@ -20,7 +20,17 @@ package org.sakaiproject.kernel.api;
 import java.util.Collection;
 
 /**
- *
+ * The Service manager provides a central core service where the components
+ * register services. Services are registered using the ServiceSpec which allows
+ * only one service to be registered against a name. Each service must be
+ * registered against an API class, by convention this is the API that the
+ * service implements. It is not a requirement of the ServiceManager that the
+ * API class is visible outside the component that is registering it, but that
+ * would be slightly pointless. Where a service implementation provides more
+ * than one Service API, the same service object may be registered multiple
+ * times against different APIs. The reason for taking this restrictive approach
+ * is to discourage the registration of services that are private to components,
+ * or don't represent API's.
  */
 public interface ServiceManager {
 

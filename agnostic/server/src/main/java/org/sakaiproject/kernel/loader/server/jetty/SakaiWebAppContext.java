@@ -22,7 +22,6 @@ import org.apache.commons.logging.LogFactory;
 import org.mortbay.jetty.webapp.WebAppClassLoader;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.mortbay.resource.Resource;
-import org.sakaiproject.kernel.loader.common.CommonObject;
 import org.sakaiproject.kernel.loader.common.CommonObjectConfigurationException;
 import org.sakaiproject.kernel.loader.common.CommonObjectManager;
 import org.sakaiproject.kernel.loader.server.SwitchedClassLoader;
