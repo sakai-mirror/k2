@@ -17,7 +17,10 @@
  */
 package org.sakaiproject.kernel.component;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.ComponentActivator;
+import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.api.ComponentDependency;
 import org.sakaiproject.kernel.api.ComponentManager;
 import org.sakaiproject.kernel.api.ComponentSpecification;
@@ -25,6 +28,7 @@ import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.KernelConfigurationException;
 
 import java.io.InputStream;
+import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Map;
 import java.util.Properties;
@@ -35,6 +39,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ComponentManagerImpl implements ComponentManager {
 
+  private static final Log LOG = LogFactory.getLog(ComponentManagerImpl.class);
   private static final String DEFAULT_COMPONENTS_PROPERTIES = "kernel.properties";
   private static final String DEFAULT_COMPONENTS = "components";
   private Kernel kernel;
@@ -54,6 +59,7 @@ public class ComponentManagerImpl implements ComponentManager {
    * 
    */
   public void start() throws KernelConfigurationException {
+    LOG.info("Starting Component Manager");
     startDefaultComponents();
   }
 
@@ -77,12 +83,17 @@ public class ComponentManagerImpl implements ComponentManager {
     // create a new component classloader
     // load the component spec.
     ClassLoader cl = kernel.getParentComponentClassLoader();
-    URLClassLoader componentClassloader = new URLClassLoader(spec
-        .getClassPathURLs(), cl);
+    URL[] classPathURLs = spec.getClassPathURLs();
     ClassLoader currentClassloader = Thread.currentThread()
         .getContextClassLoader();
-    Thread.currentThread().setContextClassLoader(componentClassloader);
+    ClassLoader componentClassloader = currentClassloader;
+    if (classPathURLs != null) {
+      componentClassloader = new URLClassLoader(spec.getClassPathURLs(), cl);
+      Thread.currentThread().setContextClassLoader(componentClassloader);
+    }
     try {
+      LOG.info("Activating " + spec + " with Class "
+          + spec.getComponentActivatorClassName());
       Class<ComponentActivator> clazz = (Class<ComponentActivator>) componentClassloader
           .loadClass(spec.getComponentActivatorClassName());
 
@@ -100,13 +111,16 @@ public class ComponentManagerImpl implements ComponentManager {
       return true;
     } catch (ClassNotFoundException e) {
       throw new KernelConfigurationException("Unable to start component "
-          + spec + " cause:" + e.getMessage());
+          + spec + " cause:" + e.getMessage(),e);
     } catch (InstantiationException e) {
       throw new KernelConfigurationException("Unable to start component "
-          + spec + " cause:" + e.getMessage());
+          + spec + " cause:" + e.getMessage(),e);
     } catch (IllegalAccessException e) {
       throw new KernelConfigurationException("Unable to start component "
-          + spec + " cause:" + e.getMessage());
+          + spec + " cause:" + e.getMessage(),e);
+    } catch (ComponentActivatorException e) {
+      throw new KernelConfigurationException("Unable to start component "
+          + spec + " cause:" + e.getMessage(),e);
     } finally {
       Thread.currentThread().setContextClassLoader(currentClassloader);
     }
@@ -135,16 +149,19 @@ public class ComponentManagerImpl implements ComponentManager {
       if (dc != null) {
         String[] defaultComponents = dc.split(";");
         for (String d : defaultComponents) {
-          ComponentSpecification spec = null;
-          if (d.startsWith("class:")) {
-            String activatorName = d.substring("class:".length());
-            Class<ComponentSpecification> aclazz = (Class<ComponentSpecification>) this
-                .getClass().getClassLoader().loadClass(activatorName);
-            spec = aclazz.newInstance();
-          } else {
-            spec = new URLComponentSpecificationImpl(d);
+          d = d.trim();
+          if (d.length() > 0) {
+            ComponentSpecification spec = null;
+            if (d.startsWith("class:")) {
+              String activatorName = d.substring("class:".length());
+              Class<ComponentSpecification> aclazz = (Class<ComponentSpecification>) this
+                  .getClass().getClassLoader().loadClass(activatorName);
+              spec = aclazz.newInstance();
+            } else {
+              spec = new URLComponentSpecificationImpl(d);
+            }
+            startComponent(spec);
           }
-          startComponent(spec);
         }
       }
       return true;
@@ -184,6 +201,15 @@ public class ComponentManagerImpl implements ComponentManager {
       activator.deactivate();
     }
     return false;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.sakaiproject.kernel.api.ComponentManager#getComponents()
+   */
+  public ComponentSpecification[] getComponents() {
+    return components.keySet().toArray(new ComponentSpecification[0]);
   }
 
 }

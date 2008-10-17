@@ -83,7 +83,7 @@ public class JettyServer {
 
   private static final Log LOG = LogFactory.getLog(JettyServer.class);
 
-  private static final String WEBAPP_WAR = "../webapp-test/target/osgi-test-webapp-0.1-SNAPSHOT.war";
+  private static final String WEBAPP_WAR = "../webapp-test/target/test-webapp-0.1-SNAPSHOT.war";
 
   /**
    * the jetty server.

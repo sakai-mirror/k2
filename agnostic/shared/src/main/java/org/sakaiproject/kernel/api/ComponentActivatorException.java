@@ -18,27 +18,45 @@
 package org.sakaiproject.kernel.api;
 
 /**
- * A Component Activator activates the component within the Kernel. During
- * activation, the component activator should register any services with the
- * kernel. Some components may perform deactivation depending on their
- * dependencies. The ComponentActivator is invokect by the component manager
- * that understands dependencies and the component specification.
+ *
  */
-public interface ComponentActivator {
+public class ComponentActivatorException extends Exception {
 
   /**
-   * Activate the component in the context of the suppled kernel.
-   * 
-   * @param kernel
-   *          the kernel context in which to perform the activation.
-   * @throws ComponentActivatorException 
    * 
    */
-  void activate(Kernel kernel) throws ComponentActivatorException;
+  private static final long serialVersionUID = -3196491957756931650L;
 
   /**
-   * Deactive the component.
+   * 
    */
-  void deactivate();
+  public ComponentActivatorException() {
+    // TODO Auto-generated constructor stub
+  }
+
+  /**
+   * @param arg0
+   */
+  public ComponentActivatorException(String arg0) {
+    super(arg0);
+    // TODO Auto-generated constructor stub
+  }
+
+  /**
+   * @param arg0
+   */
+  public ComponentActivatorException(Throwable arg0) {
+    super(arg0);
+    // TODO Auto-generated constructor stub
+  }
+
+  /**
+   * @param arg0
+   * @param arg1
+   */
+  public ComponentActivatorException(String arg0, Throwable arg1) {
+    super(arg0, arg1);
+    // TODO Auto-generated constructor stub
+  }
 
 }

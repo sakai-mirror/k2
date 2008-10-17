@@ -55,6 +55,7 @@ public class ComponentManagerImplTest {
   public void testStart() throws Exception {
     ComponentManagerImpl cm = new ComponentManagerImpl(kernel);
     cm.start();
+    cm.stop();
   }
 
   /**

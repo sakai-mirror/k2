@@ -35,8 +35,6 @@ public class ServiceManagerImpl implements ServiceManager {
 
   private Kernel kernel;
   private Map<ServiceSpec, Object> services = new ConcurrentHashMap<ServiceSpec, Object>();
-  
-  
 
   /**
    * @param kernel
@@ -57,14 +55,15 @@ public class ServiceManagerImpl implements ServiceManager {
    */
   public void stop() {
   }
-  
+
   @SuppressWarnings("unchecked")
   public <T> T getService(ServiceSpec serviceSpec) {
     return (T) services.get(serviceSpec);
   }
-  
-  public void registerService(ServiceSpec serviceSpec, Object service) throws ServiceManagerException {
-    if ( services.containsKey(serviceSpec) ) {
+
+  public void registerService(ServiceSpec serviceSpec, Object service)
+      throws ServiceManagerException {
+    if (services.containsKey(serviceSpec)) {
       throw new ServiceManagerException("Can register duplicate services");
     }
     services.put(serviceSpec, service);
@@ -77,14 +76,21 @@ public class ServiceManagerImpl implements ServiceManager {
   @SuppressWarnings("unchecked")
   public <T> Collection<T> getServices(ServiceSpec serviceSpec) {
     Collection<T> matchedServices = new ArrayList<T>();
-    for ( Entry<ServiceSpec, Object> e : services.entrySet()) {
-      if ( serviceSpec.matches(e.getKey()) ) {
-        matchedServices.add((T)e.getValue());
+    for (Entry<ServiceSpec, Object> e : services.entrySet()) {
+      if (serviceSpec.matches(e.getKey())) {
+        matchedServices.add((T) e.getValue());
       }
     }
     return matchedServices;
   }
-  
-  
+
+  /**
+   * @return an array of service specifications representing the current set of
+   *         services.
+   * @see org.sakaiproject.kernel.api.ServiceManager#getServices()
+   */
+  public ServiceSpec[] getServices() {
+    return services.keySet().toArray(new ServiceSpec[0]);
+  }
 
 }

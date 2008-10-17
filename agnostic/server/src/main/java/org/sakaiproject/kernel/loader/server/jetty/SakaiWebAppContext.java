@@ -62,9 +62,9 @@ public class SakaiWebAppContext extends WebAppContext {
         if (webappClassLoader == null) {
           try {
 
-            CommonObjectManager com = new CommonObjectManager();
-            CommonObject commonObject = com.getCommonObject();
-            parentClassloader = new SwitchedClassLoader(new URL[]{}, commonObject.getSharedClassLoader(), containerClassLoader);
+            CommonObjectManager com = new CommonObjectManager("sharedclassloader");
+            ClassLoader cl = com.getManagedObject();
+            parentClassloader = new SwitchedClassLoader(new URL[]{}, cl, containerClassLoader);
             
             LOG.info("Got Classloader fromm JMX as " + parentClassloader + "("
                 + parentClassloader.getClass() + ")");

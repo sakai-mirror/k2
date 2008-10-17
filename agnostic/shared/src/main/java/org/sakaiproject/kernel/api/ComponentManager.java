@@ -53,5 +53,10 @@ public interface ComponentManager {
    */
   boolean stopComponent(ComponentSpecification spec);
 
+  /**
+   * @return an array of component specifications for components currently loaded.
+   */
+  ComponentSpecification[] getComponents();
+
 
 }

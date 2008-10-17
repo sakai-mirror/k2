@@ -19,14 +19,13 @@ package org.sakaiproject.kernel.test.webapp;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
-import org.osgi.service.url.URLStreamHandlerService;
+import org.sakaiproject.kernel.api.ComponentManager;
+import org.sakaiproject.kernel.api.ComponentSpecification;
 import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.KernelConfigurationException;
 import org.sakaiproject.kernel.api.KernelManager;
+import org.sakaiproject.kernel.api.ServiceManager;
+import org.sakaiproject.kernel.api.ServiceSpec;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -133,50 +132,25 @@ public class HelloWorldServlet extends HttpServlet {
     }
     case GETSERVICE: {
       resp.setContentType("text/xml");
-      BundleContext bc = kernel.getContext();
+      ServiceManager sm = kernel.getServiceManager();
+      ComponentManager cm = kernel.getComponentManager();
       PrintWriter w = resp.getWriter();
       w.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
       w.println("<kernel>");
-      w.println("  <bundles>");
-      for (Bundle b : bc.getBundles()) {
-        LOG.info("Got Bundle " + b.getSymbolicName());
-        w.print("    <bundle>");
-        w.print(b.getSymbolicName());
-        w.println("</bundle>");
+      w.println("  <components>");
+      for (ComponentSpecification c : cm.getComponents()) {
+        w.print("    <comonent>");
+        w.print(c.toString());
+        w.println("</component>");
       }
-      w.println("  </bundles>");
+      w.println("  </components>");
       w.println("  <services>");
-      try {
-        for (ServiceReference sr : bc.getAllServiceReferences(null, null)) {
-          LOG.info("Got Service Reference " + sr.toString());
-          String sx = sr.toString();
+        for (ServiceSpec ss : sm.getServices()) {
           w.print("    <service>");
-          w.print(sx);
+          w.print(ss.toString());
           w.println("</service>");
         }
-      } catch (InvalidSyntaxException e) {
-        LOG.error(e);
-        w.print("    <error>");
-        w.print(e.getMessage());
-        w.println("</error>");
-
-      }
       w.println("  </services>");
-      ServiceReference sr = bc.getServiceReference("org.osgi.service.url.URLStreamHandlerService");
-      URLStreamHandlerService o = (URLStreamHandlerService) bc.getService(sr);
-      URLConnection u = o.openConnection(new URL(HelloWorldServlet.REQUEST_URL + "?f="
-          + Function.TESTSOURCESERVICE));
-      BufferedReader in  = new BufferedReader(new InputStreamReader(u.getInputStream()));
-      StringBuilder sb = new StringBuilder();
-      String line = in.readLine();
-      while ( line != null ) {
-        sb.append(line);
-        line = in.readLine();
-      }
-      w.println("  <service-invoke>");
-      w.println(sb.toString());
-      w.println("  </service-invoke>");
-
       w.println("</kernel>");
       LOG.info("Sending Response for GETSERVICE ");
       break;

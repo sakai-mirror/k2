@@ -11,7 +11,7 @@
   </parent>
 
   <name>test-webapp</name>
-  <groupId>org.sakaiproject.kernel2</groupId>
+  <groupId>org.sakaiproject.kernel2.agnostic</groupId>
   <artifactId>test-webapp</artifactId>
   <version>0.1-SNAPSHOT</version>
   <packaging>war</packaging>

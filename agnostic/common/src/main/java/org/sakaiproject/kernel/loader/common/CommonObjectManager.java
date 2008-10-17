@@ -17,7 +17,6 @@
  */
 package org.sakaiproject.kernel.loader.common;
 
-
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
 import javax.management.MBeanServer;
@@ -31,29 +30,43 @@ import java.lang.management.ManagementFactory;
  * A kernel manager manages the kernel.
  */
 public class CommonObjectManager {
+
   /**
    * The current kernel.
    */
-  private CommonObject common;
+  private Object common;
   /**
    * A lock on the kernel to handle multiple threads getting the first item.
    */
   private Object lock = new Object();
+  private String commonObjectSpec;
 
   /**
-   * Get the kernel, this will be a single instance for the JVM, but the method will retrieve the
-   * same instance regardless of this object instance.
+   * @param string
+   */
+  public CommonObjectManager(String commonObjectSpec) {
+    this.commonObjectSpec = commonObjectSpec;
+  }
+
+  /**
+   * Get the kernel, this will be a single instance for the JVM, but the method
+   * will retrieve the same instance regardless of this object instance.
    * 
    * @return the kernel
-   * @throws KernelConfigurationException if the kernel is not available.
+   * @throws KernelConfigurationException
+   *           if the kernel is not available.
    */
-  public CommonObject getCommonObject() throws CommonObjectConfigurationException {
+  @SuppressWarnings("unchecked")
+  public <T> T getManagedObject()
+      throws CommonObjectConfigurationException {
     if (common == null) {
       synchronized (lock) {
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         try {
-          ObjectName commonObjectName = new ObjectName(CommonObject.MBEAN_COMMON);
-          common = (CommonObject) mbs.invoke(commonObjectName, "getManagedObject", null, null);
+          ObjectName commonObjectName = new ObjectName(
+              CommonObject.MBEAN_COMMON + "." + commonObjectSpec);
+          common = mbs.invoke(commonObjectName,
+              "getManagedObject", null, null);
         } catch (InstanceNotFoundException e) {
           throw new CommonObjectConfigurationException(e);
         } catch (MBeanException e) {
@@ -68,7 +81,7 @@ public class CommonObjectManager {
       }
     }
 
-    return common;
+    return (T) common;
   }
 
   /**
@@ -76,7 +89,7 @@ public class CommonObjectManager {
    */
   public void addListener(CommonLifecycleListener listener) {
     // TODO Auto-generated method stub
-    
+
   }
 
   /**
@@ -84,6 +97,6 @@ public class CommonObjectManager {
    */
   public void removeListener(CommonLifecycleListener listener) {
     // TODO Auto-generated method stub
-    
+
   }
 }

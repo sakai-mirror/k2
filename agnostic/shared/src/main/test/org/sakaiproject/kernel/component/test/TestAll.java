@@ -15,30 +15,21 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.api;
+package org.sakaiproject.kernel.component.test;
+
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
+
 
 /**
- * A Component Activator activates the component within the Kernel. During
- * activation, the component activator should register any services with the
- * kernel. Some components may perform deactivation depending on their
- * dependencies. The ComponentActivator is invokect by the component manager
- * that understands dependencies and the component specification.
+ *
  */
-public interface ComponentActivator {
-
-  /**
-   * Activate the component in the context of the suppled kernel.
-   * 
-   * @param kernel
-   *          the kernel context in which to perform the activation.
-   * @throws ComponentActivatorException 
-   * 
-   */
-  void activate(Kernel kernel) throws ComponentActivatorException;
-
-  /**
-   * Deactive the component.
-   */
-  void deactivate();
+@RunWith(Suite.class)
+@SuiteClasses({ComponentManagerImplTest.class,
+    KernelImplTest.class, 
+    ServiceManagerImplTest.class,
+    KernelLifecycleTest.class})
+public class TestAll {
 
 }

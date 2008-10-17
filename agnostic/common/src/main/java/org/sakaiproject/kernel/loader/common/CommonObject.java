@@ -27,14 +27,10 @@ public interface CommonObject {
   String MBEAN_COMMON = "Sakai:type=CommonObject";
 
   /**
-   * Gives access to the OSGi Classloader, the implementation of this object should be in a bundle
-   * and this method should give the calling class the classloader of the bundle that loaded the
-   * CommonObjectImpl.
-   * 
    * Calling objects should register to be informed of if the CommonObjectManager reloads
    * 
    * @return
    */
-  ClassLoader getSharedClassLoader();
+  <T> T getManagedObject();
 
 }

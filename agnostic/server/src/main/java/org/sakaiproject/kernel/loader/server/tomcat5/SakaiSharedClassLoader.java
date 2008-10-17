@@ -64,10 +64,9 @@ public class SakaiSharedClassLoader extends WebappClassLoader implements Lifecyc
       String type = event.getType();
       LOG.debug("At " + type);
       if (Lifecycle.INIT_EVENT.equals(type)) {
-        commonObjectManager = new CommonObjectManager();
+        commonObjectManager = new CommonObjectManager("sharedclassloader");
         commonObjectManager.addListener(this);
-        commonObject = commonObjectManager.getCommonObject();
-        parentClassLoader = commonObject.getSharedClassLoader();
+        parentClassLoader = commonObjectManager.getManagedObject();
         this.setParentClassLoader(parentClassLoader);
         LOG.info("Parent Classloader has been set to " + parentClassLoader);
 

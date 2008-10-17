@@ -70,4 +70,9 @@ public interface ServiceManager {
    */
   <T> Collection<T> getServices(ServiceSpec serviceSpec);
 
+  /**
+   * @return a list of all the service specifications.
+   */
+  ServiceSpec[] getServices();
+
 }
