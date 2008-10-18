@@ -17,6 +17,12 @@
  */
 package org.sakaiproject.kernel.component.core;
 
+import com.google.inject.Inject;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.api.Kernel;
+import org.sakaiproject.kernel.api.RequiresStop;
 import org.sakaiproject.kernel.loader.common.CommonObject;
 
 import java.lang.management.ManagementFactory;
@@ -37,22 +43,42 @@ import javax.management.modelmbean.RequiredModelMBean;
 /**
  *
  */
-public class SharedClassLoaderContainer  {
+public class SharedClassLoaderContainer implements RequiresStop {
 
-  public SharedClassLoaderContainer() throws JMRuntimeException, JMException, InvalidTargetObjectTypeException {
-      MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-      RequiredModelMBean model = new RequiredModelMBean(createMBeanInfo());
-      model.setManagedResource(this, "objectReference");
-      ObjectName common = new ObjectName(CommonObject.MBEAN_COMMON+".sharedclassloader");
-      mbs.registerMBean(model, common);
-  }
-  
-  public void stop() throws JMException {
+  private static final Log LOG = LogFactory
+      .getLog(SharedClassLoaderContainer.class);
+
+  @Inject
+  public SharedClassLoaderContainer(Kernel kernel, ShutdownService shutdownService) throws JMRuntimeException, JMException,
+      InvalidTargetObjectTypeException {
     MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-    ObjectName common = new ObjectName(CommonObject.MBEAN_COMMON+".sharedclassloader");
-    mbs.unregisterMBean(common);
+    RequiredModelMBean model = new RequiredModelMBean(createMBeanInfo());
+    model.setManagedResource(this, "objectReference");
+    ObjectName common = new ObjectName(CommonObject.MBEAN_COMMON
+        + ".sharedclassloader");
+    mbs.registerMBean(model, common);
+    
+    // Explicit register this container to be shutdown, we dont want this 
+    // container exposed as a service, so we register directly. Within the 
+    // same module, this approach should be taken to give the IoC container 
+    // a dependency graph.
+    shutdownService.register(this);
   }
 
+  public void stop() {
+    try {
+      MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+      ObjectName common = new ObjectName(CommonObject.MBEAN_COMMON
+          + ".sharedclassloader");
+      mbs.unregisterMBean(common);
+      LOG.info("Shared Classloader Container stopped Ok");
+    } catch (JMException e) {
+      LOG
+          .info(
+              "Cant stop the shared classloader bean, this will cause problems if the kernel is restarted in this jvm "
+                  + e.getMessage(), e);
+    }
+  }
 
   /**
    * Create the the MBean Info for the Shared ClassLoader so that the methods
@@ -80,7 +106,9 @@ public class SharedClassLoaderContainer  {
         "Sakai Shared Classloader", mmbai, null, mmboi, null);
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.sakaiproject.kernel.loader.common.CommonObject#getManagedObject()
    */
   @SuppressWarnings("unchecked")

@@ -69,14 +69,14 @@ public class SwitchedClassLoader extends URLClassLoader {
       }
     }
 
-    LOG.info("Resolved "+name+" as "+c);
+    LOG.debug("Resolved "+name+" as "+c);
     if (c == null)
       throw ex;
 
     if (resolve)
       resolveClass(c);
 
-    LOG.info("loaded " + c + " from " + c.getClassLoader());
+    LOG.debug("loaded " + c + " from " + c.getClassLoader());
 
     return c;
   }

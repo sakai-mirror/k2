@@ -104,6 +104,7 @@ public class KernelLifecycle implements CommonLifecycle<Kernel> {
       
       // Start the kernel
       
+      
       kernel = new KernelImpl();
       kernel.start();
 

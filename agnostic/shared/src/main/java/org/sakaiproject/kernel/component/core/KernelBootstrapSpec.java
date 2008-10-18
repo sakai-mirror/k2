@@ -27,6 +27,7 @@ import java.net.URL;
  */
 public class KernelBootstrapSpec implements ComponentSpecification {
 
+  private static final String SPECIFICATION = "<name>"+KernelBootstrapSpec.class.getName()+"</name><classpath>kernel</classpath><dependencies/>";
   private ComponentDependency[] dependencies = new ComponentDependency[0];
   /**
    * We dont want any special classloader.
@@ -48,6 +49,13 @@ public class KernelBootstrapSpec implements ComponentSpecification {
    */
   public ComponentDependency[] getDependencies() {
     return dependencies;
+  }
+
+  /* (non-Javadoc)
+   * @see org.sakaiproject.kernel.api.ComponentSpecification#getDefinition()
+   */
+  public String getDefinition() {
+    return SPECIFICATION;
   }
 
 }

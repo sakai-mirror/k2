@@ -19,6 +19,7 @@ package org.sakaiproject.kernel.component.test.mock;
 
 import org.sakaiproject.kernel.api.ComponentDependency;
 import org.sakaiproject.kernel.api.ComponentSpecification;
+import org.sakaiproject.kernel.component.core.KernelBootstrapSpec;
 
 import java.net.URL;
 
@@ -27,25 +28,45 @@ import java.net.URL;
  */
 public class MockComponentSpecificationImpl implements ComponentSpecification {
 
-  /* (non-Javadoc)
+  private static final String SPECIFICATION = "<name>"
+      + MockComponentSpecificationImpl.class.getName() + "</name>"
+      + "<classpath>test</classpath>" + "<dependencies/>";
+
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getClassPathURLs()
    */
   public URL[] getClassPathURLs() {
     return new URL[0];
   }
 
-  /* (non-Javadoc)
-   * @see org.sakaiproject.kernel.api.ComponentSpecification#getComponentActivatorClassName()
+  /*
+   * (non-Javadoc)
+   * 
+   * @seeorg.sakaiproject.kernel.api.ComponentSpecification#
+   * getComponentActivatorClassName()
    */
   public String getComponentActivatorClassName() {
     return MockComponentActivator.class.getName();
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getDependencies()
    */
   public ComponentDependency[] getDependencies() {
     return new ComponentDependency[0];
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.sakaiproject.kernel.api.ComponentSpecification#getDefinition()
+   */
+  public String getDefinition() {
+    return SPECIFICATION;
   }
 
 }

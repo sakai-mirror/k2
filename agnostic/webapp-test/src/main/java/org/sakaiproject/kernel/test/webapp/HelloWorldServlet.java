@@ -139,9 +139,10 @@ public class HelloWorldServlet extends HttpServlet {
       w.println("<kernel>");
       w.println("  <components>");
       for (ComponentSpecification c : cm.getComponents()) {
-        w.print("    <comonent>");
-        w.print(c.toString());
-        w.println("</component>");
+        w.println("    <comonent>");
+ 
+        w.println(c.getDefinition());
+        w.println("    </component>");
       }
       w.println("  </components>");
       w.println("  <services>");

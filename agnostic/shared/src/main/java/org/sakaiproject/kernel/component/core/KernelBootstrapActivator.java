@@ -17,51 +17,49 @@
  */
 package org.sakaiproject.kernel.component.core;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.ComponentActivator;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.KernelConfigurationException;
+import org.sakaiproject.kernel.api.RequiresStop;
+import org.sakaiproject.kernel.api.ServiceSpec;
 
-import javax.management.JMException;
-import javax.management.JMRuntimeException;
-import javax.management.modelmbean.InvalidTargetObjectTypeException;
+import java.util.Collection;
 
 /**
  *
  */
 public class KernelBootstrapActivator implements ComponentActivator {
 
-  private static final Log LOG = LogFactory.getLog(KernelBootstrapActivator.class);
-  private SharedClassLoaderContainer scl;
+  private static final Log LOG = LogFactory
+      .getLog(KernelBootstrapActivator.class);
+  private Kernel kernel;
 
   /**
    * @throws KernelConfigurationException
    * @see org.sakaiproject.kernel.api.ComponentActivator#activate(org.sakaiproject.kernel.api.Kernel)
    */
   public void activate(Kernel kernel) throws ComponentActivatorException {
-    try {
-      LOG.info("Starting Shared Container");
-      scl = new SharedClassLoaderContainer();
-    } catch (JMRuntimeException e) {
-      throw new ComponentActivatorException("Failed to bootstrap Kernel:"+e.getMessage(), e);
-    } catch (JMException e) {
-      throw new ComponentActivatorException("Failed to bootstrap Kernel:"+e.getMessage(), e);
-    } catch (InvalidTargetObjectTypeException e) {
-      throw new ComponentActivatorException("Failed to bootstrap Kernel:"+e.getMessage(), e);
-    }
+    LOG.info("Starting Shared Container");
+    this.kernel = kernel;
+    Injector injector = Guice.createInjector(new KernelBootstrapModule(kernel));
   }
 
   /**
    * @see org.sakaiproject.kernel.api.ComponentActivator#deactivate()
    */
   public void deactivate() {
-    try {
-      scl.stop();
-    } catch (JMException e) {
+    Collection<RequiresStop> toStop = kernel.getServiceManager().getServices(
+        new ServiceSpec(RequiresStop.class, true));
+    
+    for (RequiresStop s : toStop) {
+      s.stop();
     }
-
   }
 
 }

@@ -40,7 +40,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ComponentManagerImpl implements ComponentManager {
 
   private static final Log LOG = LogFactory.getLog(ComponentManagerImpl.class);
-  private static final String DEFAULT_COMPONENTS_PROPERTIES = "kernel.properties";
+  private static final String DEFAULT_COMPONENTS_PROPERTIES = "res://kernel.properties";
   private static final String DEFAULT_COMPONENTS = "components";
   private Kernel kernel;
   private Map<ComponentSpecification, ComponentActivator> components = new ConcurrentHashMap<ComponentSpecification, ComponentActivator>();
@@ -111,16 +111,16 @@ public class ComponentManagerImpl implements ComponentManager {
       return true;
     } catch (ClassNotFoundException e) {
       throw new KernelConfigurationException("Unable to start component "
-          + spec + " cause:" + e.getMessage(),e);
+          + spec + " cause:" + e.getMessage(), e);
     } catch (InstantiationException e) {
       throw new KernelConfigurationException("Unable to start component "
-          + spec + " cause:" + e.getMessage(),e);
+          + spec + " cause:" + e.getMessage(), e);
     } catch (IllegalAccessException e) {
       throw new KernelConfigurationException("Unable to start component "
-          + spec + " cause:" + e.getMessage(),e);
+          + spec + " cause:" + e.getMessage(), e);
     } catch (ComponentActivatorException e) {
       throw new KernelConfigurationException("Unable to start component "
-          + spec + " cause:" + e.getMessage(),e);
+          + spec + " cause:" + e.getMessage(), e);
     } finally {
       Thread.currentThread().setContextClassLoader(currentClassloader);
     }
@@ -139,11 +139,17 @@ public class ComponentManagerImpl implements ComponentManager {
     try {
       // load a list of components urls from a properties file.
       Properties p = new Properties();
-      InputStream in = this.getClass().getResourceAsStream(
-          DEFAULT_COMPONENTS_PROPERTIES);
-      if (in != null) {
-        p.load(in);
-        in.close();
+      InputStream in = ResourceLoader
+          .openResource(DEFAULT_COMPONENTS_PROPERTIES);
+      try {
+        if (in != null) {
+          p.load(in);
+          in.close();
+        }
+      } finally {
+        if (in != null) {
+          in.close();
+        }
       }
       String dc = p.getProperty(DEFAULT_COMPONENTS);
       if (dc != null) {

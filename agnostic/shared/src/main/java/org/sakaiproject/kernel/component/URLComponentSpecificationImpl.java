@@ -27,6 +27,8 @@ import java.net.URL;
  */
 public class URLComponentSpecificationImpl implements ComponentSpecification {
 
+  private String specification = "<empty />";
+
   /**
    * Construct a URL based component specification based on the supplied string
    * representation of the URL. That URL points to a base location that contains
@@ -78,6 +80,13 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
   public boolean isManaged() {
     // TODO Auto-generated method stub
     return false;
+  }
+
+  /* (non-Javadoc)
+   * @see org.sakaiproject.kernel.api.ComponentSpecification#getDefinition()
+   */
+  public String getDefinition() {
+    return specification ;
   }
 
 }
