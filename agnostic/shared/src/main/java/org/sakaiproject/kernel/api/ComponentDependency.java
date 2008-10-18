@@ -38,11 +38,8 @@ public interface ComponentDependency {
   boolean isManaged();
 
   /**
-   * Components are defined by a component specification, so the target
-   * Component is defined by a ComponentSpec.
-   * 
-   * @return the ComponentSpec for the dependent Component.
+   * @return the Name of the component that this component depends on
    */
-  ComponentSpecification getComponentSpec();
+  String getComponentName();
 
 }

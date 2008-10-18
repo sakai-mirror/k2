@@ -17,38 +17,41 @@
  */
 package org.sakaiproject.kernel.api;
 
-import java.net.URL;
-
 /**
- * A ComponentSpecification is required to manage a component, it may specify a
- * list of classpath urls to build a classpath and it may optionally specify and
- * activation classloader.
+ *
  */
-public interface ComponentSpecification {
+public class ComponentSpecificationException extends Exception {
 
   /**
-   * @return an Array of URLS specifying the classpath.
+   * 
    */
-  URL[] getClassPathURLs();
+  public ComponentSpecificationException() {
+    // TODO Auto-generated constructor stub
+  }
 
   /**
-   * @return the ClassName of the activator class for this component, expected
-   *         to be resolvable in the classpath specified. This class must
-   *         implement the ComponentActivator interface
+   * @param arg0
    */
-  String getComponentActivatorClassName();
+  public ComponentSpecificationException(String arg0) {
+    super(arg0);
+    // TODO Auto-generated constructor stub
+  }
 
   /**
-   * @return an array of ComponentDependencies that this component depends upon.
+   * @param arg0
    */
-  ComponentDependency[] getDependencies();
-  
-  String getDefinition();
+  public ComponentSpecificationException(Throwable arg0) {
+    super(arg0);
+    // TODO Auto-generated constructor stub
+  }
 
   /**
-   * @return
+   * @param arg0
+   * @param arg1
    */
-  String getName();
-
+  public ComponentSpecificationException(String arg0, Throwable arg1) {
+    super(arg0, arg1);
+    // TODO Auto-generated constructor stub
+  }
 
 }

@@ -17,9 +17,12 @@
  */
 package org.sakaiproject.kernel.component;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 /**
  *
@@ -29,15 +32,36 @@ public class ResourceLoader {
   /**
    * @param defaultProperties
    * @return
-   * @throws IOException 
+   * @throws IOException
    */
   public static InputStream openResource(String resource) throws IOException {
-    if ( resource.startsWith("res://") ) {
+    if (resource.startsWith("res://")) {
       ClassLoader cl = ResourceLoader.class.getClassLoader();
       return cl.getResourceAsStream(resource.substring(6));
+    } else if (resource.startsWith("inline://")) {
+      return new ByteArrayInputStream(resource.substring(9).getBytes("UTF-8"));
     } else {
       return new FileInputStream(resource);
     }
+  }
+
+  /**
+   * @param d
+   * @return
+   * @throws IOException
+   */
+  public static String readResource(String resource) throws IOException {
+    BufferedReader in = new BufferedReader(new InputStreamReader(
+        openResource(resource)));
+    StringBuilder sb = new StringBuilder();
+    try {
+      for (String line = in.readLine(); line != null; line = in.readLine()) {
+        sb.append(line);
+      }
+    } finally {
+      in.close();
+    }
+    return sb.toString();
   }
 
 }

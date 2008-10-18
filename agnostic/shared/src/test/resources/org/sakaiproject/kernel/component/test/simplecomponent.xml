@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component xmlns="http://ns.sakaiproject.org/2008/components">
+  <name>simplecomponent</name>
+  <documentation>A simple component with some documentation</documentation>
+  <activator>org.sakaiproject.simple</activator>
+ </component>
+ 

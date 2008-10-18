@@ -69,4 +69,11 @@ public class MockComponentSpecificationImpl implements ComponentSpecification {
     return SPECIFICATION;
   }
 
+  /* (non-Javadoc)
+   * @see org.sakaiproject.kernel.api.ComponentSpecification#getName()
+   */
+  public String getName() {
+    return MockComponentSpecificationImpl.class.getName();
+  }
+
 }

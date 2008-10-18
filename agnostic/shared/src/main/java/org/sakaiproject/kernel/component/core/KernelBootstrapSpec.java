@@ -58,4 +58,11 @@ public class KernelBootstrapSpec implements ComponentSpecification {
     return SPECIFICATION;
   }
 
+  /* (non-Javadoc)
+   * @see org.sakaiproject.kernel.api.ComponentSpecification#getName()
+   */
+  public String getName() {
+    return KernelBootstrapSpec.class.getName();
+  }
+
 }

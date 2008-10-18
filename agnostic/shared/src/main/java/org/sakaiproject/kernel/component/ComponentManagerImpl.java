@@ -44,6 +44,7 @@ public class ComponentManagerImpl implements ComponentManager {
   private static final String DEFAULT_COMPONENTS = "components";
   private Kernel kernel;
   private Map<ComponentSpecification, ComponentActivator> components = new ConcurrentHashMap<ComponentSpecification, ComponentActivator>();
+  private Map<String, ComponentSpecification> componentsByName = new ConcurrentHashMap<String, ComponentSpecification>();
 
   /**
    * @param kernel
@@ -99,7 +100,7 @@ public class ComponentManagerImpl implements ComponentManager {
 
       for (ComponentDependency dependant : spec.getDependencies()) {
         if (dependant.isManaged()) {
-          startComponent(dependant.getComponentSpec());
+          startComponent(componentsByName.get(dependant.getComponentName()));
         }
       }
 
@@ -108,6 +109,7 @@ public class ComponentManagerImpl implements ComponentManager {
       activator.activate(kernel);
 
       components.put(spec, activator);
+      componentsByName.put(spec.getName(),spec);
       return true;
     } catch (ClassNotFoundException e) {
       throw new KernelConfigurationException("Unable to start component "
@@ -186,6 +188,8 @@ public class ComponentManagerImpl implements ComponentManager {
     for (ComponentSpecification spec : components.keySet()) {
       stopComponent(spec);
     }
+    components.clear();
+    componentsByName.clear();
     return true;
   }
 
@@ -199,13 +203,15 @@ public class ComponentManagerImpl implements ComponentManager {
   public boolean stopComponent(ComponentSpecification spec) {
     for (ComponentDependency dependant : spec.getDependencies()) {
       if (dependant.isManaged()) {
-        stopComponent(dependant.getComponentSpec());
+        stopComponent(componentsByName.get(dependant.getComponentName()));
       }
     }
     ComponentActivator activator = components.get(spec);
     if (activator != null) {
       activator.deactivate();
     }
+    components.remove(spec);
+    componentsByName.remove(spec.getName());
     return false;
   }
 
@@ -217,5 +223,6 @@ public class ComponentManagerImpl implements ComponentManager {
   public ComponentSpecification[] getComponents() {
     return components.keySet().toArray(new ComponentSpecification[0]);
   }
+
 
 }
