@@ -46,9 +46,14 @@ public interface ComponentSpecification {
   String getDefinition();
 
   /**
-   * @return
+   * @return the component name.
    */
   String getName();
+
+  /**
+   * @return a string representation of the dependency description.
+   */
+  String getDependencyDescription();
 
 
 }

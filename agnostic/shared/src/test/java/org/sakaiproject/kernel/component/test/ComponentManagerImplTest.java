@@ -45,6 +45,7 @@ public class ComponentManagerImplTest {
    */
   @Test
   public void testComponentManagerImpl() {
+    @SuppressWarnings("unused")
     ComponentManager cm = new ComponentManagerImpl(kernel);
   }
 

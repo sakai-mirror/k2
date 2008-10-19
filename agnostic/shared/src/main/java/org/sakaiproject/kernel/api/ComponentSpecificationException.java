@@ -22,6 +22,12 @@ package org.sakaiproject.kernel.api;
  */
 public class ComponentSpecificationException extends Exception {
 
+
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -8837553837359676249L;
+
   /**
    * 
    */

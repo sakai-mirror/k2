@@ -136,14 +136,12 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
     return dependencies;
   }
 
-
   /*
    * (non-Javadoc)
    * 
    * @see org.sakaiproject.kernel.api.ComponentSpecification#isManaged()
    */
   public boolean isManaged() {
-    // TODO Auto-generated method stub
     return component.getManaged();
   }
 
@@ -156,11 +154,34 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
     return specification;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getName()
    */
   public String getName() {
     return component.getName();
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.sakaiproject.kernel.api.ComponentSpecification#getDependencyDescription
+   * ()
+   */
+  public String getDependencyDescription() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(getName()).append("->(");
+    ComponentDependency[] dependencies = getDependencies();
+    for (int i = 0; i < dependencies.length - 1; i++) {
+      sb.append(dependencies[i].getComponentName()).append(",");
+    }
+    if (dependencies.length > 0) {
+      sb.append(dependencies[dependencies.length - 1]);
+    }
+    sb.append(")");
+    return sb.toString();
   }
 
 }

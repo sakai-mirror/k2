@@ -33,6 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ServiceManagerImpl implements ServiceManager {
 
+  @SuppressWarnings("unused")
   private Kernel kernel;
   private Map<ServiceSpec, Object> services = new ConcurrentHashMap<ServiceSpec, Object>();
 

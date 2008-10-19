@@ -19,7 +19,6 @@ package org.sakaiproject.kernel.component.test.mock;
 
 import org.sakaiproject.kernel.api.ComponentDependency;
 import org.sakaiproject.kernel.api.ComponentSpecification;
-import org.sakaiproject.kernel.component.core.KernelBootstrapSpec;
 
 import java.net.URL;
 
@@ -74,6 +73,27 @@ public class MockComponentSpecificationImpl implements ComponentSpecification {
    */
   public String getName() {
     return MockComponentSpecificationImpl.class.getName();
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.sakaiproject.kernel.api.ComponentSpecification#getDependencyDescription
+   * ()
+   */
+  public String getDependencyDescription() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(getName()).append("->(");
+    ComponentDependency[] dependencies = getDependencies();
+    for (int i = 0; i < dependencies.length - 1; i++) {
+      sb.append(dependencies[i].getComponentName()).append(",");
+    }
+    if (dependencies.length > 0) {
+      sb.append(dependencies[dependencies.length - 1]);
+    }
+    sb.append(")");
+    return sb.toString();
   }
 
 }

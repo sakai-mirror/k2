@@ -47,6 +47,7 @@ public class KernelBootstrapActivator implements ComponentActivator {
   public void activate(Kernel kernel) throws ComponentActivatorException {
     LOG.info("Starting Shared Container");
     this.kernel = kernel;
+    @SuppressWarnings("unused")
     Injector injector = Guice.createInjector(new KernelBootstrapModule(kernel));
   }
 

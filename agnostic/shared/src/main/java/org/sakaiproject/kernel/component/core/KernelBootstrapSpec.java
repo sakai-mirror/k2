@@ -65,4 +65,25 @@ public class KernelBootstrapSpec implements ComponentSpecification {
     return KernelBootstrapSpec.class.getName();
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.sakaiproject.kernel.api.ComponentSpecification#getDependencyDescription
+   * ()
+   */
+  public String getDependencyDescription() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(getName()).append("->(");
+    ComponentDependency[] dependencies = getDependencies();
+    for (int i = 0; i < dependencies.length - 1; i++) {
+      sb.append(dependencies[i].getComponentName()).append(",");
+    }
+    if (dependencies.length > 0) {
+      sb.append(dependencies[dependencies.length - 1]);
+    }
+    sb.append(")");
+    return sb.toString();
+  }
+
 }

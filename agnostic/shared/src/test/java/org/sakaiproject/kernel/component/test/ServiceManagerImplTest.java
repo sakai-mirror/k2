@@ -58,6 +58,7 @@ public class ServiceManagerImplTest {
    */
   @Test
   public void testServiceManagerImpl() {
+    @SuppressWarnings("unused")
     ServiceManagerImpl serviceManager = new ServiceManagerImpl(kernel);
   }
 
