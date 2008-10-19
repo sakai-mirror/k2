@@ -28,24 +28,46 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- *
+ * A shutdown service that stops all services registered with it.
  */
 public class ShutdownService implements RequiresStop {
 
+  /**
+   * A list of services to stop on reload.
+   */
   List<RequiresStop> tostop = new CopyOnWriteArrayList<RequiresStop>();
+
+  /**
+   * Create a shutdown service based on the kernel
+   * 
+   * @param kernel
+   *          the kernel.
+   * @throws ServiceManagerException
+   */
   @Inject
   public ShutdownService(Kernel kernel) throws ServiceManagerException {
-    kernel.getServiceManager().registerService(new ServiceSpec(ShutdownService.class), this);
+    kernel.getServiceManager().registerService(
+        new ServiceSpec(ShutdownService.class), this);
   }
-  
+
+  /**
+   * Stop the Shutdown services.
+   * 
+   * @see org.sakaiproject.kernel.api.RequiresStop#stop()
+   */
   public void stop() {
-    for ( RequiresStop s : tostop ) {
+    for (RequiresStop s : tostop) {
       s.stop();
     }
   }
-  
+
+  /**
+   * Register a new stop service.
+   * 
+   * @param toBeStopped
+   */
   public void register(RequiresStop toBeStopped) {
-    if ( !tostop.contains(toBeStopped) ) {
+    if (!tostop.contains(toBeStopped)) {
       tostop.add(toBeStopped);
     }
   }

@@ -30,8 +30,18 @@ import org.sakaiproject.kernel.api.ServiceSpec;
  */
 public class KernelInjectorService {
 
+  /**
+   * The injector used to construct this service.
+   */
   private Injector injector;
 
+  /**
+   * Create an injector service, specifying the kernel and the injector.
+   * 
+   * @param kernel the kernel
+   * @param injector the injector to use.
+   * @throws ServiceManagerException if there is a problem creating this service.
+   */
   @Inject
   public KernelInjectorService(Kernel kernel, Injector injector)
       throws ServiceManagerException {

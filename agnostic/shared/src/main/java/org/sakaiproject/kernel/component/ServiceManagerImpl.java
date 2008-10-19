@@ -29,16 +29,25 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- *
+ * The service manager implementation.
  */
 public class ServiceManagerImpl implements ServiceManager {
 
+  /**
+   * The kernel
+   */
   @SuppressWarnings("unused")
   private Kernel kernel;
+  /**
+   * A map of services.
+   */
   private Map<ServiceSpec, Object> services = new ConcurrentHashMap<ServiceSpec, Object>();
 
   /**
+   * Create the ServiceManager for the supplied kernel.
+   * 
    * @param kernel
+   *          the kernel.
    */
   public ServiceManagerImpl(KernelImpl kernel) {
     this.kernel = kernel;
@@ -46,22 +55,41 @@ public class ServiceManagerImpl implements ServiceManager {
   }
 
   /**
-   * 
+   * Start the service manager.
    */
   public void start() {
   }
 
   /**
-   * 
+   * Stop the service manager.
    */
   public void stop() {
   }
 
+  /**
+   * @param <T>
+   *          the service API class.
+   * @param serviceSpec
+   *          the specification of the service.
+   * @return the service registered against the service spec. If none is found,
+   *         then null is retruend.
+   * @see org.sakaiproject.kernel.api.ServiceManager#getService(org.sakaiproject.kernel.api.ServiceSpec)
+   */
   @SuppressWarnings("unchecked")
   public <T> T getService(ServiceSpec serviceSpec) {
     return (T) services.get(serviceSpec);
   }
 
+  /**
+   * Register a service against a spec.
+   * 
+   * @param serviceSpec
+   *          the service specification to register the service against.
+   * @param service
+   *          the service to be registered.
+   * @see org.sakaiproject.kernel.api.ServiceManager#registerService(org.sakaiproject.kernel.api.ServiceSpec,
+   *      java.lang.Object)
+   */
   public void registerService(ServiceSpec serviceSpec, Object service)
       throws ServiceManagerException {
     if (services.containsKey(serviceSpec)) {
@@ -70,10 +98,29 @@ public class ServiceManagerImpl implements ServiceManager {
     services.put(serviceSpec, service);
   }
 
+  /**
+   * De register a service.
+   * 
+   * @param serviceSpec
+   *          the specification of the service to deregister.
+   * @see org.sakaiproject.kernel.api.ServiceManager#deregisterService(org.sakaiproject.kernel.api.ServiceSpec)
+   */
   public void deregisterService(ServiceSpec serviceSpec) {
     services.remove(serviceSpec);
   }
 
+  /**
+   * Get a list of services that match the supplied service spec, which may be
+   * looking for services the implement an interface or extend a class.
+   * 
+   * @param <T>
+   *          the type of service.
+   * @param serviceSpec
+   *          a service specification that may be a wildcard query based on
+   *          implementing a class.
+   * @return a collection of services matching the service spec query.
+   * @see org.sakaiproject.kernel.api.ServiceManager#getServices(org.sakaiproject.kernel.api.ServiceSpec)
+   */
   @SuppressWarnings("unchecked")
   public <T> Collection<T> getServices(ServiceSpec serviceSpec) {
     Collection<T> matchedServices = new ArrayList<T>();

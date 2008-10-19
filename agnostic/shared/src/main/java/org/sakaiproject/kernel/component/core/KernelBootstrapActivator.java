@@ -25,23 +25,33 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.ComponentActivator;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.api.Kernel;
-import org.sakaiproject.kernel.api.KernelConfigurationException;
 import org.sakaiproject.kernel.api.RequiresStop;
 import org.sakaiproject.kernel.api.ServiceSpec;
 
 import java.util.Collection;
 
 /**
- *
+ * The activator for the kernel bootstrap component.
  */
 public class KernelBootstrapActivator implements ComponentActivator {
 
+  /**
+   * A logger
+   */
   private static final Log LOG = LogFactory
       .getLog(KernelBootstrapActivator.class);
+  /**
+   * The kernel in which this bootstrap was activated.
+   */
   private Kernel kernel;
 
   /**
-   * @throws KernelConfigurationException
+   * Activate the bootstrap.
+   * 
+   * @param kernel
+   *          the kernel which is activating the bootstrap
+   * @throws ComponentActivatorException
+   *           if there was a problem activating the component.
    * @see org.sakaiproject.kernel.api.ComponentActivator#activate(org.sakaiproject.kernel.api.Kernel)
    */
   public void activate(Kernel kernel) throws ComponentActivatorException {
@@ -52,12 +62,14 @@ public class KernelBootstrapActivator implements ComponentActivator {
   }
 
   /**
+   * Deactivate this component.
+   * 
    * @see org.sakaiproject.kernel.api.ComponentActivator#deactivate()
    */
   public void deactivate() {
     Collection<RequiresStop> toStop = kernel.getServiceManager().getServices(
         new ServiceSpec(RequiresStop.class, true));
-    
+
     for (RequiresStop s : toStop) {
       s.stop();
     }

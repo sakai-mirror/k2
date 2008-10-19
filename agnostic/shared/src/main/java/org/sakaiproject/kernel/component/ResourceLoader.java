@@ -25,14 +25,22 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 /**
- *
+ * Abstration of resource loading, that understands file refernece as well as
+ * classpath resources.
  */
 public class ResourceLoader {
 
   /**
-   * @param defaultProperties
-   * @return
+   * Get an input stream for a resource.
+   * 
+   * @param resource
+   *          a URI pointing to the resource, URI's starting res:// mean
+   *          resources from the classpath and inline:// means the rest of the
+   *          uri is the resource. Anything else is resolved as a file.
+   * @return the input stream for the resource. It is the callers responsibility
+   *         to close this stream.
    * @throws IOException
+   *           if the resource could not be opened.
    */
   public static InputStream openResource(String resource) throws IOException {
     if (resource.startsWith("res://")) {
@@ -46,9 +54,13 @@ public class ResourceLoader {
   }
 
   /**
+   * Read a resource into a string.
+   * 
    * @param d
-   * @return
+   *          the URI for the resource, @see openResource(String resource)
+   * @return the contents of the resource.
    * @throws IOException
+   *           if there was a problem opening the resource.
    */
   public static String readResource(String resource) throws IOException {
     BufferedReader in = new BufferedReader(new InputStreamReader(

@@ -45,9 +45,24 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ComponentManagerImpl implements ComponentManager {
 
+  /**
+   * The logger
+   */
   private static final Log LOG = LogFactory.getLog(ComponentManagerImpl.class);
+  /**
+   * Properties for the kernel, contains a list of default components to load.
+   */
   private static final String DEFAULT_COMPONENTS_PROPERTIES = "res://kernel.properties";
+  /**
+   * The name of the property containing the ; separated list of components to
+   * load. If the component starts with class: its a class implementing
+   * ComponentSpecification in the current classloader, if something else, then
+   * its a resolvable URI.
+   */
   private static final String DEFAULT_COMPONENTS = "components";
+  /**
+   * The kernel that this component manager services.
+   */
   private Kernel kernel;
   /**
    * A map of components that have been started, indexed by spec.
@@ -63,16 +78,21 @@ public class ComponentManagerImpl implements ComponentManager {
   private Map<String, ComponentSpecification> startedComponents = new ConcurrentHashMap<String, ComponentSpecification>();
 
   /**
+   * create the component manager with a reference to the kernel.
+   * 
    * @param kernel
+   *          the kernel.
    */
   public ComponentManagerImpl(KernelImpl kernel) {
     this.kernel = kernel;
     kernel.setComponentManager(this);
-
   }
 
   /**
+   * Start the component manager.
+   * 
    * @throws KernelConfigurationException
+   *           if there is a problem starting the component manager.
    * 
    */
   public void start() throws KernelConfigurationException {
@@ -81,18 +101,22 @@ public class ComponentManagerImpl implements ComponentManager {
   }
 
   /**
-   * 
+   * Stop the component manager and all the components.
    */
   public void stop() {
     stopComponents();
   }
 
-  /*
-   * (non-Javadoc)
+  /**
+   * Start a component based on the specification. This will create a
+   * classloader for the component, if required, then start all dependent
+   * components and then start he component requested.
    * 
-   * @see
-   * org.sakaiproject.kernel.api.ComponentManager#startComponent(org.sakaiproject
-   * .kernel.api.ComponentSpecification)
+   * @param spec
+   *          the specification of a component to be started.
+   * @return true of the component started.
+   * @see org.sakaiproject.kernel.api.ComponentManager#startComponent(org.sakaiproject
+   *      .kernel.api.ComponentSpecification)
    */
   @SuppressWarnings("unchecked")
   public boolean startComponent(ComponentSpecification spec)
@@ -203,10 +227,12 @@ public class ComponentManagerImpl implements ComponentManager {
   }
 
   /**
-   * Work out the start order of all
+   * Work out the start order of all.
    * 
    * @param toStart
-   * @return
+   *          the list of components to be started
+   * @return a sorted list in start order of all the components that need to be
+   *         started.
    * @throws ComponentSpecificationException
    */
   public List<ComponentSpecification> getStartOrder(
@@ -222,8 +248,7 @@ public class ComponentManagerImpl implements ComponentManager {
 
     unstable.add(toStart.get(0));
     speclevel.put(toStart.get(0), 0);
-    for (int i = 0; i < speclevel.size() + 1 
-        && unstable.size() > 0; i++) {
+    for (int i = 0; i < speclevel.size() + 1 && unstable.size() > 0; i++) {
       unstable.clear();
       for (ComponentSpecification spec : toStart) {
         Integer plevel = speclevel.get(spec);
@@ -311,12 +336,14 @@ public class ComponentManagerImpl implements ComponentManager {
     return true;
   }
 
-  /*
-   * (non-Javadoc)
+  /**
+   * Stop a component.
    * 
-   * @see
-   * org.sakaiproject.kernel.api.ComponentManager#stopComponent(org.sakaiproject
-   * .kernel.api.ComponentSpecification)
+   * @param spec
+   *          the specification of the component to stop.
+   * @return true if the component was successfully stopped.
+   * @see org.sakaiproject.kernel.api.ComponentManager#stopComponent(org.sakaiproject
+   *      .kernel.api.ComponentSpecification)
    */
   public boolean stopComponent(ComponentSpecification spec) {
     for (ComponentDependency dependant : spec.getDependencies()) {
@@ -333,18 +360,16 @@ public class ComponentManagerImpl implements ComponentManager {
     return false;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
+  /**
+   * @return a list of components that have been started.
    * @see org.sakaiproject.kernel.api.ComponentManager#getComponents()
    */
   public ComponentSpecification[] getStartedComponents() {
     return components.keySet().toArray(new ComponentSpecification[0]);
   }
-  
-  /*
-   * (non-Javadoc)
-   * 
+
+  /**
+   * @return a list of components that have been loaded.
    * @see org.sakaiproject.kernel.api.ComponentManager#getComponents()
    */
   public ComponentSpecification[] getLoadedComponents() {
@@ -355,6 +380,7 @@ public class ComponentManagerImpl implements ComponentManager {
    * Load components ready for starting
    * 
    * @param cs
+   *          a list of component specifications to load
    */
   public void loadComponents(List<ComponentSpecification> cs) {
     // TODO Auto-generated method stub

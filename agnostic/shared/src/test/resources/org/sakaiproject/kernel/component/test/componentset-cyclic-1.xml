@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component xmlns="http://ns.sakaiproject.org/2008/components">
   <name>componentset-good-1</name>
-  <documentation>ComponentSet Good 1 depends on 3 and 4
+  <documentation>ComponentSet Good 1 depends on 3
   </documentation>
   <activator>org.sakaiproject.simple</activator>
   <classPath>file:lib/test.jar</classPath>

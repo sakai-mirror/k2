@@ -17,50 +17,56 @@
  */
 package org.sakaiproject.kernel.component;
 
-
 import org.sakaiproject.kernel.api.ComponentManager;
 import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.ServiceManager;
 
 /**
- *
+ * The kernel implementation.
  */
-public class KernelImpl implements Kernel{
+public class KernelImpl implements Kernel {
 
+  /**
+   * The Component manager supporting this kernel.
+   */
   private ComponentManager componentManager;
+  /**
+   * The Service manager containing services for this kernel.
+   */
   private ServiceManager serviceManager;
 
   /**
-   * 
+   * Start the kernel. 
    */
   public void start() {
-    // TODO Auto-generated method stub
-    
+ 
   }
 
   /**
-   * 
+   * Stop the kernel.
    */
   public void stop() {
-    // TODO Auto-generated method stub
-    
+ 
   }
 
-  /* (non-Javadoc)
+  /**
+   * @return the component manager for the kernel. 
    * @see org.sakaiproject.kernel.api.Kernel#getComponentManager()
    */
   public ComponentManager getComponentManager() {
     return componentManager;
   }
 
-  /* (non-Javadoc)
+  /**
+   * @return the service manager for the kernel.
    * @see org.sakaiproject.kernel.api.Kernel#getServiceManager()
    */
   public ServiceManager getServiceManager() {
     return serviceManager;
   }
 
-  /* (non-Javadoc)
+  /**
+   * @return the parent classloader for components.
    * @see org.sakaiproject.kernel.api.Kernel#getParentComponentClassLoader()
    */
   public ClassLoader getParentComponentClassLoader() {
@@ -68,14 +74,16 @@ public class KernelImpl implements Kernel{
   }
 
   /**
-   * @param componentManagerImpl
+   * This method is not exposed in the api, it sets the component manager for the kernel.
+   * @param componentManagerImpl set the component manager.
    */
   protected void setComponentManager(ComponentManager componentManager) {
     this.componentManager = componentManager;
   }
 
   /**
-   * @param serviceManagerImpl
+   * This method is not exposed in the API, it sets the service manager.
+   * @param serviceManagerImpl set the service manager
    */
   public void setServiceManager(ServiceManager serviceManager) {
     this.serviceManager = serviceManager;

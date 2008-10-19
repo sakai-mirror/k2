@@ -84,8 +84,17 @@ public class KernelLifecycle implements CommonLifecycle<Kernel> {
    */
   private long loadTime;
 
+  /**
+   * The service manager connected to the kernel
+   */
   private ServiceManagerImpl serviceManager;
+  /**
+   * The component manager connected to the kernel.
+   */
   private ComponentManagerImpl componentManager;
+  /**
+   * The kernel itself.
+   */
   private KernelImpl kernel;
   
 

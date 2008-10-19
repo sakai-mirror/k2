@@ -41,15 +41,30 @@ import javax.management.modelmbean.ModelMBeanOperationInfo;
 import javax.management.modelmbean.RequiredModelMBean;
 
 /**
- *
+ * A container to hold the shared classloader for webapps as a bean.
  */
-public class SharedClassLoaderContainer implements RequiresStop {
+public class SharedClassLoaderContainer implements RequiresStop, CommonObject {
 
+  /**
+   * A logger.
+   */
   private static final Log LOG = LogFactory
       .getLog(SharedClassLoaderContainer.class);
 
+  /**
+   * Create a shared classloader object.
+   * 
+   * @param kernel
+   *          the kernel to connect to.
+   * @param shutdownService
+   *          the shutdown service.
+   * @throws JMRuntimeException
+   * @throws JMException
+   * @throws InvalidTargetObjectTypeException
+   */
   @Inject
-  public SharedClassLoaderContainer(Kernel kernel, ShutdownService shutdownService) throws JMRuntimeException, JMException,
+  public SharedClassLoaderContainer(Kernel kernel,
+      ShutdownService shutdownService) throws JMRuntimeException, JMException,
       InvalidTargetObjectTypeException {
     MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
     RequiredModelMBean model = new RequiredModelMBean(createMBeanInfo());
@@ -57,14 +72,18 @@ public class SharedClassLoaderContainer implements RequiresStop {
     ObjectName common = new ObjectName(CommonObject.MBEAN_COMMON
         + ".sharedclassloader");
     mbs.registerMBean(model, common);
-    
-    // Explicit register this container to be shutdown, we dont want this 
-    // container exposed as a service, so we register directly. Within the 
-    // same module, this approach should be taken to give the IoC container 
+
+    // Explicit register this container to be shutdown, we dont want this
+    // container exposed as a service, so we register directly. Within the
+    // same module, this approach should be taken to give the IoC container
     // a dependency graph.
     shutdownService.register(this);
   }
 
+  /**
+   * Stop the classloader container, removing the MBean from the MBean server.
+   * @see org.sakaiproject.kernel.api.RequiresStop#stop()
+   */
   public void stop() {
     try {
       MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
@@ -106,9 +125,8 @@ public class SharedClassLoaderContainer implements RequiresStop {
         "Sakai Shared Classloader", mmbai, null, mmboi, null);
   }
 
-  /*
-   * (non-Javadoc)
-   * 
+  /**
+   * Get the shared classloader..
    * @see org.sakaiproject.kernel.loader.common.CommonObject#getManagedObject()
    */
   @SuppressWarnings("unchecked")

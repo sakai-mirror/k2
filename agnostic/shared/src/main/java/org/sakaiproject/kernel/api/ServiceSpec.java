@@ -117,7 +117,8 @@ public class ServiceSpec {
     return super.equals(object);
   }
   
-  /* (non-Javadoc)
+  /**
+   * @return a string representation of the spec, namely the service classname that the spec represents.
    * @see java.lang.Object#toString()
    */
   @Override

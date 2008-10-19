@@ -23,7 +23,7 @@ package org.sakaiproject.kernel.api;
 public class ComponentActivatorException extends Exception {
 
   /**
-   * 
+   * The Object ID
    */
   private static final long serialVersionUID = -3196491957756931650L;
 

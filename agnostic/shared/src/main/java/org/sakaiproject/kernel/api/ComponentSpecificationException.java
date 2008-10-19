@@ -18,46 +18,41 @@
 package org.sakaiproject.kernel.api;
 
 /**
- *
+ * Thrown when there is a problem with the component specification.
  */
 public class ComponentSpecificationException extends Exception {
 
 
   /**
-   * 
+   *  the object ID should this ever need to be serialized.
    */
   private static final long serialVersionUID = -8837553837359676249L;
 
   /**
-   * 
+   * {@inheritDoc}
    */
   public ComponentSpecificationException() {
-    // TODO Auto-generated constructor stub
   }
 
   /**
-   * @param arg0
+   * {@inheritDoc}
    */
   public ComponentSpecificationException(String arg0) {
     super(arg0);
-    // TODO Auto-generated constructor stub
   }
 
   /**
-   * @param arg0
+   * {@inheritDoc}
    */
   public ComponentSpecificationException(Throwable arg0) {
     super(arg0);
-    // TODO Auto-generated constructor stub
   }
 
   /**
-   * @param arg0
-   * @param arg1
+   * {@inheritDoc}
    */
   public ComponentSpecificationException(String arg0, Throwable arg1) {
     super(arg0, arg1);
-    // TODO Auto-generated constructor stub
   }
 
 }

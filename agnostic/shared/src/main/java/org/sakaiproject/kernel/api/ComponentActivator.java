@@ -20,8 +20,8 @@ package org.sakaiproject.kernel.api;
 /**
  * A Component Activator activates the component within the Kernel. During
  * activation, the component activator should register any services with the
- * kernel. Some components may perform deactivation depending on their
- * dependencies. The ComponentActivator is invokect by the component manager
+ * kernel. Some components may perform de-activation depending on their
+ * dependencies. The ComponentActivator is invoked by the component manager
  * that understands dependencies and the component specification.
  */
 public interface ComponentActivator {
@@ -37,7 +37,7 @@ public interface ComponentActivator {
   void activate(Kernel kernel) throws ComponentActivatorException;
 
   /**
-   * Deactive the component.
+   * De-activate the component.
    */
   void deactivate();
 

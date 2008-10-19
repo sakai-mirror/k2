@@ -34,14 +34,31 @@ import java.net.URL;
 import java.util.List;
 
 /**
- *
+ * A Component Specification that is loaded from a xml resource specified by a
+ * uri.
  */
 public class URLComponentSpecificationImpl implements ComponentSpecification {
 
+  /**
+   * The location of the components XSD, which is used to validate the
+   * components files.
+   */
   private static final String COMPONENTS_XSD = "res://components.xsd";
+  /**
+   * The default specifiation.
+   */
   private String specification = "<empty />";
+  /**
+   * The component model as loaded from the xml file.
+   */
   private Component component;
+  /**
+   * an array of classpath urls.
+   */
   private URL[] classPathUrls;
+  /**
+   * dependencies of the component.
+   */
   private ComponentDependency[] dependencies;
 
   /**
@@ -108,67 +125,62 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * 
+  /**
+   * @return an array of URL's representing the classpath for the component.
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getClassPathURLs()
    */
   public URL[] getClassPathURLs() {
     return classPathUrls;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @seeorg.sakaiproject.kernel.api.ComponentSpecification#
-   * getComponentActivatorClassName()
+  /**
+   * @return the name of the class that is the activator for this component.
+   * @see org.sakaiproject.kernel.api.ComponentSpecification#
+   *      getComponentActivatorClassName()
    */
   public String getComponentActivatorClassName() {
     return component.getActivator();
   }
 
-  /*
-   * (non-Javadoc)
-   * 
+  /**
+   * @return an array of dependencies for this component.
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getDependencies()
    */
   public ComponentDependency[] getDependencies() {
     return dependencies;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
+  /**
+   * @return true if the component is actively managed by the component manager.
+   *         Managed components are started as dependencies of other components.
+   *         If they are not managed, the must be explicitly started.
    * @see org.sakaiproject.kernel.api.ComponentSpecification#isManaged()
    */
   public boolean isManaged() {
     return component.getManaged();
   }
 
-  /*
-   * (non-Javadoc)
-   * 
+  /**
+   * @return the xml that was used to configure the component specification.
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getDefinition()
    */
   public String getDefinition() {
     return specification;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
+  /**
+   * @return the name of the component, that must be unique.
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getName()
    */
   public String getName() {
     return component.getName();
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.sakaiproject.kernel.api.ComponentSpecification#getDependencyDescription
-   * ()
+  /**
+   * @return a description of the component spec showing the name of this
+   *         component and the components which this component depends on.
+   * @see org.sakaiproject.kernel.api.ComponentSpecification#getDependencyDescription
+   *      ()
    */
   public String getDependencyDescription() {
     StringBuilder sb = new StringBuilder();

@@ -40,11 +40,12 @@ public class KernelManager {
   private Object lock = new Object();
 
   /**
-   * Get the kernel, this will be a single instance for the JVM, but the method will retrieve
-   * the same instance regardless of this object instance.
-   *
+   * Get the kernel, this will be a single instance for the JVM, but the method
+   * will retrieve the same instance regardless of this object instance.
+   * 
    * @return the kernel
-   * @throws KernelConfigurationException if the kernel is not available.
+   * @throws KernelConfigurationException
+   *           if the kernel is not available.
    */
   public Kernel getKernel() throws KernelConfigurationException {
     if (kernel == null) {
@@ -52,7 +53,8 @@ public class KernelManager {
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         try {
           ObjectName kernelName = new ObjectName(Kernel.MBEAN_KERNEL);
-          kernel = (Kernel) mbs.invoke(kernelName, "getManagedObject", null, null);
+          kernel = (Kernel) mbs.invoke(kernelName, "getManagedObject", null,
+              null);
         } catch (InstanceNotFoundException e) {
           throw new KernelConfigurationException(e);
         } catch (MBeanException e) {
@@ -69,7 +71,17 @@ public class KernelManager {
 
     return kernel;
   }
-  
+
+  /**
+   * Get a service, bound to an API, of the same type as the API
+   * 
+   * @param <T>
+   *          the type of the service
+   * @param serviceApi
+   *          the class representing the service that is also used for
+   *          registration.
+   * @return the service or null if none is found.
+   */
   @SuppressWarnings("unchecked")
   public <T> T getService(Class<T> serviceApi) {
     ServiceSpec ss = new ServiceSpec(serviceApi);
@@ -77,7 +89,7 @@ public class KernelManager {
       return (T) getKernel().getServiceManager().getService(ss);
     } catch (KernelConfigurationException e) {
       return null;
-    } 
+    }
   }
 
 }

@@ -23,51 +23,69 @@ import org.sakaiproject.kernel.api.ComponentSpecification;
 import java.net.URL;
 
 /**
- *
+ * A hand coded specification for the kernel bootstrap.
  */
 public class KernelBootstrapSpec implements ComponentSpecification {
 
-  private static final String SPECIFICATION = "<name>"+KernelBootstrapSpec.class.getName()+"</name><classpath>kernel</classpath><dependencies/>";
-  private ComponentDependency[] dependencies = new ComponentDependency[0];
   /**
-   * We dont want any special classloader.
+   * An XML representation of the bootstrap specification.
+   */
+  private static final String SPECIFICATION = "<name>"
+      + KernelBootstrapSpec.class.getName()
+      + "</name><classpath>kernel</classpath><dependencies/>";
+  /**
+   * An empty list of component dependencies.
+   */
+  private ComponentDependency[] dependencies = new ComponentDependency[0];
+
+  /**
+   * We don't want any special classloader, so return a null classpath.
+   * 
+   * @return a null URL array representing no classloader.
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getClassPathURLs()
    */
   public URL[] getClassPathURLs() {
     return null;
   }
 
-  /* (non-Javadoc)
-   * @see org.sakaiproject.kernel.api.ComponentSpecification#getComponentActivatorClassName()
+  /**
+   * @return the name of the component activator, ie
+   *         {@link KernelBootstrapActivator}.
+   * @seeorg.sakaiproject.kernel.api.ComponentSpecification# 
+   *                                                         getComponentActivatorClassName
+   *                                                         ()
    */
   public String getComponentActivatorClassName() {
     return KernelBootstrapActivator.class.getName();
   }
 
-  /* (non-Javadoc)
+  /**
+   * 
+   * @return an array of dependencies.
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getDependencies()
    */
   public ComponentDependency[] getDependencies() {
     return dependencies;
   }
 
-  /* (non-Javadoc)
+  /**
+   * The defintion in XML form.
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getDefinition()
    */
   public String getDefinition() {
     return SPECIFICATION;
   }
 
-  /* (non-Javadoc)
+  /**
+   * @return the name of the component.
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getName()
    */
   public String getName() {
     return KernelBootstrapSpec.class.getName();
   }
 
-  /*
-   * (non-Javadoc)
-   * 
+  /**
+   * @return a description of the depenency
    * @see
    * org.sakaiproject.kernel.api.ComponentSpecification#getDependencyDescription
    * ()

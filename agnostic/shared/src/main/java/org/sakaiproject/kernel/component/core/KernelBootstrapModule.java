@@ -31,16 +31,31 @@ import java.util.Arrays;
 import java.util.Properties;
 
 /**
- * 
+ * A Guice module used to create the bootstrap component.
  */
 public class KernelBootstrapModule extends AbstractModule {
 
+  /**
+   * Location of the kernel properties.
+   */
   private final static String DEFAULT_PROPERTIES = "res://kernel.properties";
-  
+
+  /**
+   * The properties for the kernel
+   */
   private final Properties properties;
 
+  /**
+   * The kernel which the bootstrap component exists within.
+   */
   private Kernel kernel;
-  
+
+  /**
+   * Create a Guice module for the kernel bootstrap.
+   * 
+   * @param kernel
+   *          the kernel performing the bootstrap.
+   */
   public KernelBootstrapModule(Kernel kernel) {
     this.kernel = kernel;
     InputStream is = null;
@@ -49,8 +64,8 @@ public class KernelBootstrapModule extends AbstractModule {
       properties = new Properties();
       properties.load(is);
     } catch (IOException e) {
-      throw new CreationException(Arrays.asList(
-          new Message("Unable to load properties: " + DEFAULT_PROPERTIES)));
+      throw new CreationException(Arrays.asList(new Message(
+          "Unable to load properties: " + DEFAULT_PROPERTIES)));
     } finally {
       try {
         if (is != null) {
@@ -61,13 +76,20 @@ public class KernelBootstrapModule extends AbstractModule {
       }
     }
   }
-  
+
+  /**
+   * Create the bootstrap module with a kernel and supplied properties.
+   * 
+   * @param kernel
+   * @param properties
+   */
   public KernelBootstrapModule(Kernel kernel, Properties properties) {
     this.properties = properties;
     this.kernel = kernel;
   }
 
-  /* (non-Javadoc)
+  /**
+   * Configure the guice bindings.
    * @see com.google.inject.AbstractModule#configure()
    */
   @Override
@@ -77,7 +99,7 @@ public class KernelBootstrapModule extends AbstractModule {
     bind(KernelInjectorService.class).asEagerSingleton();
     bind(ShutdownService.class).asEagerSingleton();
     bind(SharedClassLoaderContainer.class).asEagerSingleton();
-    
+
   }
 
 }

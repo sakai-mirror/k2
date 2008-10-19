@@ -20,7 +20,7 @@ package org.sakaiproject.kernel.api;
 /**
  * If a service needs to be stopped, then it should implement this interface, 
  * and then either register with a class that extends this, or explicitly register 
- * whith the shutdown service.
+ * with the shutdown service.
  */
 public interface RequiresStop {
 
