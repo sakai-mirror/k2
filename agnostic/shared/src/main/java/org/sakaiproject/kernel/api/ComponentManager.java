@@ -17,6 +17,8 @@
  */
 package org.sakaiproject.kernel.api;
 
+import java.util.List;
+
 /**
  * The ComponentManager, manages the life-cycle of components on demand. It is
  * capable so starting and stopping individual components as well as starting
@@ -56,7 +58,18 @@ public interface ComponentManager {
   /**
    * @return an array of component specifications for components currently loaded.
    */
-  ComponentSpecification[] getComponents();
+  ComponentSpecification[] getLoadedComponents();
+  
+  /**
+   * @return an array of component specifications for components currently started.
+   */
+  ComponentSpecification[] getStartedComponents();
+
+  /**
+   * Load components into the component manager ready to be started.
+   * @param cs a list of components to load
+   */
+  void loadComponents(List<ComponentSpecification> cs);
 
 
 }

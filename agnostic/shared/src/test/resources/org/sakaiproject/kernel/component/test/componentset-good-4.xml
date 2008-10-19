@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component xmlns="http://ns.sakaiproject.org/2008/components">
+  <name>componentset-good-4</name>
+  <documentation>ComponentSet Good 4 depends on nothing
+  </documentation>
+  <activator>org.sakaiproject.simple</activator>
+  <classPath>file:lib/test.jar</classPath>
+  <dependencies>
+  </dependencies>
+  <managed>false</managed>
+</component>

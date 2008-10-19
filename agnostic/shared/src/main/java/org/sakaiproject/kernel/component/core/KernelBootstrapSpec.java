@@ -80,7 +80,7 @@ public class KernelBootstrapSpec implements ComponentSpecification {
       sb.append(dependencies[i].getComponentName()).append(",");
     }
     if (dependencies.length > 0) {
-      sb.append(dependencies[dependencies.length - 1]);
+      sb.append(dependencies[dependencies.length - 1].getComponentName());
     }
     sb.append(")");
     return sb.toString();

@@ -29,7 +29,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({ComponentManagerImplTest.class,
     KernelImplTest.class, 
     ServiceManagerImplTest.class,
-    KernelLifecycleTest.class})
+    KernelLifecycleTest.class,
+    URLComponentSpecificationImplTest.class})
 public class TestAll {
 
 }

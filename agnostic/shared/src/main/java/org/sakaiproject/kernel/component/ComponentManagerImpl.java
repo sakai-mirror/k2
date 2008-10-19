@@ -187,11 +187,11 @@ public class ComponentManagerImpl implements ComponentManager {
             } else {
               spec = new URLComponentSpecificationImpl(d);
             }
-            componentsByName.put(spec.getName(), spec);
             toStart.add(spec);
           }
         }
       }
+      loadComponents(toStart);
       for (ComponentSpecification spec : getStartOrder(toStart)) {
         startComponent(spec);
       }
@@ -209,7 +209,7 @@ public class ComponentManagerImpl implements ComponentManager {
    * @return
    * @throws ComponentSpecificationException
    */
-  private List<ComponentSpecification> getStartOrder(
+  public List<ComponentSpecification> getStartOrder(
       List<ComponentSpecification> toStart)
       throws ComponentSpecificationException {
     final Map<ComponentSpecification, Integer> speclevel = new HashMap<ComponentSpecification, Integer>();
@@ -222,7 +222,7 @@ public class ComponentManagerImpl implements ComponentManager {
 
     unstable.add(toStart.get(0));
     speclevel.put(toStart.get(0), 0);
-    for (int i = 0; i < speclevel.size() + 1 && errors.size() == 0
+    for (int i = 0; i < speclevel.size() + 1 
         && unstable.size() > 0; i++) {
       unstable.clear();
       for (ComponentSpecification spec : toStart) {
@@ -235,7 +235,7 @@ public class ComponentManagerImpl implements ComponentManager {
         for (ComponentDependency d : spec.getDependencies()) {
           ComponentSpecification cs = componentsByName
               .get(d.getComponentName());
-          if (cs == null) {
+          if (cs == null && !errors.contains(spec)) {
             errors.add(spec);
           } else {
             Integer dlevel = speclevel.get(cs);
@@ -273,7 +273,7 @@ public class ComponentManagerImpl implements ComponentManager {
     }
     if (message.length() > 0) {
       throw new ComponentSpecificationException(
-          "Unable to start the component tree dur to the following errors "
+          "Unable to start the component tree due to the following errors "
               + message.toString());
     }
     // we now have a level sorted list, extract the levels in order leaving out
@@ -288,11 +288,11 @@ public class ComponentManagerImpl implements ComponentManager {
     Collections.sort(notStarted, new Comparator<ComponentSpecification>() {
 
       public int compare(ComponentSpecification o1, ComponentSpecification o2) {
-        return speclevel.get(o1)-speclevel.get(o2);
+        return speclevel.get(o1) - speclevel.get(o2);
       }
 
     });
-    
+
     return notStarted;
 
   }
@@ -338,8 +338,39 @@ public class ComponentManagerImpl implements ComponentManager {
    * 
    * @see org.sakaiproject.kernel.api.ComponentManager#getComponents()
    */
-  public ComponentSpecification[] getComponents() {
+  public ComponentSpecification[] getStartedComponents() {
     return components.keySet().toArray(new ComponentSpecification[0]);
   }
+  
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.sakaiproject.kernel.api.ComponentManager#getComponents()
+   */
+  public ComponentSpecification[] getLoadedComponents() {
+    return componentsByName.values().toArray(new ComponentSpecification[0]);
+  }
 
+  /**
+   * Load components ready for starting
+   * 
+   * @param cs
+   */
+  public void loadComponents(List<ComponentSpecification> cs) {
+    // TODO Auto-generated method stub
+    for (ComponentSpecification spec : cs) {
+      if (componentsByName.containsKey(spec.getName())) {
+        if (components.containsKey(spec)) {
+          LOG.warn("Component " + spec.getName()
+              + " is already started, and cant be re-loaded ");
+        } else {
+          LOG.warn("Component " + spec.getName()
+              + "is already loaded, and cant be re-loaded ");
+        }
+      } else {
+        componentsByName.put(spec.getName(), spec);
+      }
+    }
+
+  }
 }

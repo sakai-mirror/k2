@@ -17,6 +17,9 @@
  */
 package org.sakaiproject.kernel.component.test;
 
+import static org.junit.Assert.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.sakaiproject.kernel.api.ComponentManager;
@@ -24,7 +27,11 @@ import org.sakaiproject.kernel.api.ComponentSpecification;
 import org.sakaiproject.kernel.component.ComponentManagerImpl;
 import org.sakaiproject.kernel.component.KernelImpl;
 import org.sakaiproject.kernel.component.ServiceManagerImpl;
+import org.sakaiproject.kernel.component.URLComponentSpecificationImpl;
 import org.sakaiproject.kernel.component.test.mock.MockComponentSpecificationImpl;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -32,6 +39,9 @@ import org.sakaiproject.kernel.component.test.mock.MockComponentSpecificationImp
 public class ComponentManagerImplTest {
 
   private KernelImpl kernel;
+  private static final String BASE = "res://org/sakaiproject/kernel/component/test/componentset";
+  private static final Log LOG = LogFactory
+      .getLog(ComponentManagerImplTest.class);
 
   @Before
   public void before() {
@@ -40,8 +50,11 @@ public class ComponentManagerImplTest {
     ServiceManagerImpl serviceManager = new ServiceManagerImpl(kernel);
     serviceManager.start();
   }
+
   /**
-   * Test method for {@link org.sakaiproject.kernel.component.ComponentManagerImpl#ComponentManagerImpl(org.sakaiproject.kernel.component.KernelImpl)}.
+   * Test method for
+   * {@link org.sakaiproject.kernel.component.ComponentManagerImpl#ComponentManagerImpl(org.sakaiproject.kernel.component.KernelImpl)}
+   * .
    */
   @Test
   public void testComponentManagerImpl() {
@@ -50,7 +63,8 @@ public class ComponentManagerImplTest {
   }
 
   /**
-   * Test method for {@link org.sakaiproject.kernel.component.ComponentManagerImpl#start()}.
+   * Test method for
+   * {@link org.sakaiproject.kernel.component.ComponentManagerImpl#start()}.
    */
   @Test
   public void testStart() throws Exception {
@@ -60,7 +74,8 @@ public class ComponentManagerImplTest {
   }
 
   /**
-   * Test method for {@link org.sakaiproject.kernel.component.ComponentManagerImpl#stop()}.
+   * Test method for
+   * {@link org.sakaiproject.kernel.component.ComponentManagerImpl#stop()}.
    */
   @Test
   public void testStop() throws Exception {
@@ -70,7 +85,9 @@ public class ComponentManagerImplTest {
   }
 
   /**
-   * Test method for {@link org.sakaiproject.kernel.component.ComponentManagerImpl#startComponent(org.sakaiproject.kernel.api.ComponentSpecification)}.
+   * Test method for
+   * {@link org.sakaiproject.kernel.component.ComponentManagerImpl#startComponent(org.sakaiproject.kernel.api.ComponentSpecification)}
+   * .
    */
   @Test
   public void testStartComponent() throws Exception {
@@ -80,9 +97,10 @@ public class ComponentManagerImplTest {
     cm.stop();
   }
 
-
   /**
-   * Test method for {@link org.sakaiproject.kernel.component.ComponentManagerImpl#stopComponent(org.sakaiproject.kernel.api.ComponentSpecification)}.
+   * Test method for
+   * {@link org.sakaiproject.kernel.component.ComponentManagerImpl#stopComponent(org.sakaiproject.kernel.api.ComponentSpecification)}
+   * .
    */
   @Test
   public void testStopComponent() throws Exception {
@@ -91,6 +109,78 @@ public class ComponentManagerImplTest {
     ComponentSpecification spec = new MockComponentSpecificationImpl();
     cm.startComponent(spec);
     cm.stopComponent(spec);
+    cm.stop();
+  }
+
+  /**
+   * Test method for
+   * {@link org.sakaiproject.kernel.component.ComponentManagerImpl#startComponent(org.sakaiproject.kernel.api.ComponentSpecification)}
+   * .
+   */
+  @Test
+  public void testNormalDependencyAnalysis() throws Exception {
+    ComponentManagerImpl cm = new ComponentManagerImpl(kernel);
+    cm.start();
+    List<ComponentSpecification> cs = new ArrayList<ComponentSpecification>();
+    for (int i = 0; i < 5; i++) {
+      cs.add(new URLComponentSpecificationImpl(BASE + "-good-" + i + ".xml"));
+    }
+    cm.loadComponents(cs);
+    List<ComponentSpecification> startOrder = cm.getStartOrder(cs);
+    for (ComponentSpecification spec : startOrder) {
+      LOG.info(spec.getDependencyDescription());
+    }
+    assertEquals(5, startOrder.size());
+    cm.stop();
+  }
+
+  /**
+   * Test method for
+   * {@link org.sakaiproject.kernel.component.ComponentManagerImpl#startComponent(org.sakaiproject.kernel.api.ComponentSpecification)}
+   * .
+   */
+  @Test
+  public void testMissingDependencyAnalysis() throws Exception {
+    ComponentManagerImpl cm = new ComponentManagerImpl(kernel);
+    cm.start();
+    List<ComponentSpecification> cs = new ArrayList<ComponentSpecification>();
+    for (int i = 0; i < 5; i++) {
+      cs
+          .add(new URLComponentSpecificationImpl(BASE + "-missing-" + i
+              + ".xml"));
+    }
+    cm.loadComponents(cs);
+    try {
+      List<ComponentSpecification> startOrder = cm.getStartOrder(cs);
+      for (ComponentSpecification spec : startOrder) {
+        LOG.info(spec.getDependencyDescription());
+      }
+      fail("Should have found a missing dependency ");
+    } catch (Exception ex) {
+      LOG.info("Sucess Found Missing dependency "+ex.getMessage());
+    }
+    cm.stop();
+  }
+
+  @Test
+  public void testCyclicDependencyAnalysis() throws Exception {
+    ComponentManagerImpl cm = new ComponentManagerImpl(kernel);
+    cm.start();
+    List<ComponentSpecification> cs = new ArrayList<ComponentSpecification>();
+    for (int i = 0; i < 5; i++) {
+      cs.add(new URLComponentSpecificationImpl(BASE + "-cyclic-" + i + ".xml"));
+    }
+
+    cm.loadComponents(cs);
+    try {
+      List<ComponentSpecification> startOrder = cm.getStartOrder(cs);
+      for (ComponentSpecification spec : startOrder) {
+        LOG.info(spec.getDependencyDescription());
+      }
+      fail("Should have found a cyclic dependency ");
+    } catch (Exception ex) {
+      LOG.info("Sucess Found cyclic dependency "+ex.getMessage());
+    }
     cm.stop();
   }
 

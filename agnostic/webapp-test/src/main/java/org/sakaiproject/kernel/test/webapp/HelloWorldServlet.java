@@ -137,8 +137,16 @@ public class HelloWorldServlet extends HttpServlet {
       PrintWriter w = resp.getWriter();
       w.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
       w.println("<kernel>");
-      w.println("  <components>");
-      for (ComponentSpecification c : cm.getComponents()) {
+      w.println("  <components type=\"started\" >");
+      for (ComponentSpecification c : cm.getStartedComponents()) {
+        w.println("    <comonent>");
+ 
+        w.println(c.getDefinition());
+        w.println("    </component>");
+      }
+      w.println("  </components>");
+      w.println("  <components type=\"loaded\" >");
+      for (ComponentSpecification c : cm.getLoadedComponents()) {
         w.println("    <comonent>");
  
         w.println(c.getDefinition());
