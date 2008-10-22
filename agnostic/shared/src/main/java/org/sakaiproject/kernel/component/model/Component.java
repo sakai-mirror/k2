@@ -25,58 +25,80 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * The model for a component, mapped to the xml definition of a component.
+ * Mapped to the component element.
  */
 @XStreamAlias("component")
 public class Component {
 
+  /**
+   * A ; seperate list of class path uri's
+   */
   private String classPath;
+  /**
+   * The name of activator class.
+   */
   private String activator;
 
-  @XStreamAlias(value="dependencies",impl=ArrayList.class)
+  /**
+   * A list of dependencies mapped to the dependencies element.
+   */
+  @XStreamAlias(value = "dependencies", impl = ArrayList.class)
   private List<ComponentDependency> componentDependencies;
-  
+
+  /**
+   * is the component actively managed by the component manager.
+   */
   private boolean managed;
+  /**
+   * Some documentation about the component
+   */
   private String documentation;
+  /**
+   * The name of the component.
+   */
   private String name;
 
   /**
-   * @return
+   * @return the classpath
    */
   public String getClassPath() {
     return classPath;
   }
 
   /**
-   * @param classPath the classPath to set
+   * @param classPath
+   *          the classPath to set
    */
   public void setClassPath(String classPath) {
     this.classPath = classPath;
   }
 
   /**
-   * @return
+   * @return the activator class name
    */
   public String getActivator() {
     return activator;
   }
 
   /**
-   * @param activator the activator to set
+   * @param activator
+   *          the activator to set
    */
   public void setActivator(String activator) {
     this.activator = activator;
   }
 
   /**
-   * @return
+   * @return a list of component dependencies.
    */
   public List<ComponentDependency> getDependencies() {
     return componentDependencies;
   }
-  
+
   /**
-   * @param componentDependencies the componentDependencies to set
+   * @param componentDependencies
+   *          the componentDependencies to set
    */
   public void setComponentDependencies(
       List<ComponentDependency> componentDependencies) {
@@ -84,21 +106,23 @@ public class Component {
   }
 
   /**
-   * @return
+   * @return true if the component is managed.
    */
   public boolean getManaged() {
     return managed;
   }
-  
+
   /**
-   * @param managed the managed to set
+   * @param managed
+   *          the managed to set
    */
   public void setManaged(boolean managed) {
     this.managed = managed;
   }
 
   /**
-   * @param documentation the documentation to set
+   * @param documentation
+   *          the documentation to set
    */
   public void setDocumentation(String documentation) {
     this.documentation = documentation;
@@ -112,7 +136,8 @@ public class Component {
   }
 
   /**
-   * @param name the name to set
+   * @param name
+   *          the name to set
    */
   public void setName(String name) {
     this.name = name;

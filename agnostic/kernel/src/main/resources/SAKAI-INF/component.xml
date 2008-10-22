@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component xmlns="http://ns.sakaiproject.org/2008/components">
+  <name>kernel-2</name>
+  <documentation>Kernel 2 Component
+  </documentation>
+  <activator>org.sakaiproject.kernel.Activator</activator>
+  <classPath>file:lib/test.jar</classPath>
+  <managed>false</managed>
+</component>

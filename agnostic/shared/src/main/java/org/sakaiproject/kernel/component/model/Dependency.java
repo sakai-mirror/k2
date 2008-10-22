@@ -22,23 +22,29 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import org.sakaiproject.kernel.api.ComponentDependency;
 
 /**
- *
+ * A dependency of a component, mapped to the dependency element (contained
+ * within dependencies)
  */
 @XStreamAlias("dependency")
 public class Dependency implements ComponentDependency {
 
-  private String componentName;
-  private boolean managed;
-  
-  
   /**
-   * 
+   * The name of the component dependency
+   */
+  private String componentName;
+  /**
+   * Should the dependency be started by the parent component.
+   */
+  private boolean managed;
+
+  /**
+   * create a dependency object.
    */
   public Dependency() {
-    // TODO Auto-generated constructor stub
   }
 
-  /* (non-Javadoc)
+  /**
+   * @return true if the dependency is actively managed.
    * @see org.sakaiproject.kernel.api.ComponentDependency#isManaged()
    */
   public boolean isManaged() {
@@ -46,7 +52,8 @@ public class Dependency implements ComponentDependency {
   }
 
   /**
-   * @param componentName the componentName to set
+   * @param componentName
+   *          the componentName to set
    */
   public void setComponentName(String componentName) {
     this.componentName = componentName;
@@ -60,7 +67,8 @@ public class Dependency implements ComponentDependency {
   }
 
   /**
-   * @param managed the managed to set
+   * @param managed
+   *          the managed to set
    */
   public void setManaged(boolean managed) {
     this.managed = managed;
