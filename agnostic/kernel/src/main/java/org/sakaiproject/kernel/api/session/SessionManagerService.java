@@ -15,31 +15,34 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.api.memory;
+package org.sakaiproject.kernel.api.session;
 
 import com.google.inject.ImplementedBy;
 import com.google.inject.Singleton;
 
-import org.sakaiproject.kernel.memory.CacheManagerServiceImpl;
-
+import org.sakaiproject.kernel.session.SessionManagerServiceImpl;
 
 /**
- *
+ * 
  */
-@ImplementedBy(CacheManagerServiceImpl.class)
+@ImplementedBy(SessionManagerServiceImpl.class)
 @Singleton
-public interface CacheManagerService {
+public interface SessionManagerService {
+
 
   /**
-   * @param name
    * @return
    */
-  <T> Cache<T> getCache(String name, CacheScope scope);
+  Session getCurrentSession();
+  
+  
+  /**
+   * Attach the supplied session ID to the current request
+   * @param sessionID
+   */
+  void bindSession(String sessionID);
+  
+  
   
 
-  /**
-   * Unbind the the context specified in scope
-   * @param scope
-   */
-  void unbind(CacheScope scope);
 }

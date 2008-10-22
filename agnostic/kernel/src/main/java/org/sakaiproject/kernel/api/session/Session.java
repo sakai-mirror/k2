@@ -15,23 +15,16 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.thread;
-
-import java.util.HashMap;
-import java.util.Map;
+package org.sakaiproject.kernel.api.session;
 
 /**
- * <p>
- * ThreadBindings is a thread local map of keys to objects, holding the things
- * bound to each thread.
- * </p>
+ * 
  */
-public class ThreadBindings extends ThreadLocal<Map<String, Object>> {
-  public Map<String, Object> initialValue() {
-    return new HashMap<String, Object>();
-  }
+public interface Session {
 
-  public Map<String, Object> getBindings() {
-    return get();
-  }
+  /**
+   * @return
+   */
+  String getUserId();
+
 }

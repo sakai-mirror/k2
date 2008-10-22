@@ -86,8 +86,14 @@ public class CacheImpl<V> implements Cache<V> {
    * @see org.sakaiproject.kernel.api.memory.Cache#put(java.lang.String,
    *      java.lang.Object)
    */
-  public void put(String key, V payload) {
+  @SuppressWarnings("unchecked")
+  public V put(String key, V payload) {
+    V previous = null;
+    if ( cache.isKeyInCache(key) ) {
+      previous = (V) cache.get(key).getObjectValue();
+    }
     cache.put(new Element(key, payload));
+    return previous;
   }
 
   /**
@@ -98,5 +104,7 @@ public class CacheImpl<V> implements Cache<V> {
   public void remove(String key) {
     cache.remove(key);
   }
+
+
 
 }

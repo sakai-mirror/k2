@@ -28,7 +28,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.RequiresStop;
 import org.sakaiproject.kernel.api.jcr.JCRService;
-import org.sakaiproject.kernel.api.thread.ThreadLocalManager;
+import org.sakaiproject.kernel.api.memory.Cache;
+import org.sakaiproject.kernel.api.memory.CacheManagerService;
+import org.sakaiproject.kernel.api.memory.CacheScope;
 
 import javax.jcr.Credentials;
 import javax.jcr.LoginException;
@@ -42,29 +44,31 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
 
   public static final String DEFAULT_WORKSPACE = "sakai";
 
+  private static final String JCR_REQUEST_CACHE = "jcr.rc";
+
+  private static final String JCR_SESSION_HOLDER = "sh";
+
   /**
    * The injected 170 repository
    */
   private RepositoryBuilder repositoryBuilder = null;
 
-  private ThreadLocal<SessionHolder> sessionHolder = new ThreadLocal<SessionHolder>();
-
   private Credentials repositoryCredentials;
 
   private boolean requestScope = true;
 
-  private ThreadLocalManager threadLocalManager;
+  private CacheManagerService cacheManager;
 
   /**
    * 
    */
   @Inject
   public JCRServiceImpl(RepositoryBuilder repositoryBuilder,
-      Credentials repositoryCredentials, ThreadLocalManager threadLocalManager,
+      Credentials repositoryCredentials, CacheManagerService cacheManager,
       @Named(JCRService.REQUEST_SCOPE_NAME) boolean requestScope) {
     this.repositoryBuilder = repositoryBuilder;
     this.repositoryCredentials = repositoryCredentials;
-    this.threadLocalManager = threadLocalManager;
+    this.cacheManager = cacheManager;
     this.requestScope = requestScope;
 
   }
@@ -84,29 +88,30 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
 
   public Session login() throws LoginException, RepositoryException {
     Session session = null;
-    if (requestScope) {
-
-      SessionHolder sh = (SessionHolder) threadLocalManager.get("jcrsession");
-      if (sh == null) {
-        long t1 = System.currentTimeMillis();
-        sh = new SessionHolder(repositoryBuilder, repositoryCredentials,
-            DEFAULT_WORKSPACE);
-        threadLocalManager.set("jcrsession", sh);
-        if (log.isDebugEnabled())
-          log.debug("Session Start took " + (System.currentTimeMillis() - t1)
-              + "ms");
-      }
-      session = sh.getSession();
-    } else {
-      SessionHolder sh = sessionHolder.get();
-      if (sh == null) {
-        sh = new SessionHolder(repositoryBuilder, repositoryCredentials,
-            DEFAULT_WORKSPACE);
-        sessionHolder.set(sh);
-      }
-      session = sh.getSession();
+    SessionHolder sh = getSessionHolder();
+    if (sh == null) {
+      long t1 = System.currentTimeMillis();
+      sh = new SessionHolder(repositoryBuilder, repositoryCredentials,
+          DEFAULT_WORKSPACE);
+      setSesssionHolder(sh);
+      if (log.isDebugEnabled())
+        log.debug("Session Start took " + (System.currentTimeMillis() - t1)
+            + "ms");
     }
+    session = sh.getSession();
     return session;
+  }
+
+  /**
+   * @return
+   */
+  private Cache<Object> getRequestCache() {
+    if (requestScope) {
+      return cacheManager.getCache(JCR_REQUEST_CACHE, CacheScope.REQUEST);
+    } else {
+      return cacheManager.getCache(JCR_REQUEST_CACHE, CacheScope.THREAD);
+    }
+
   }
 
   /*
@@ -115,7 +120,30 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
    * @see org.sakaiproject.kernel.api.jcr.JCRService#logout()
    */
   public void logout() throws LoginException, RepositoryException {
-    threadLocalManager.set("jcrsession", null);
+    clearSessionHolder();
+  }
+
+  /**
+   * @param jcrSessionHolder
+   * @return
+   */
+  private SessionHolder getSessionHolder() {
+    return (SessionHolder) getRequestCache()
+        .get(JCR_SESSION_HOLDER);
+  }
+
+  /**
+   * @param sh
+   */
+  private void setSesssionHolder(SessionHolder sh) {
+    getRequestCache().put(JCR_SESSION_HOLDER, sh);
+  }
+
+  /**
+   * 
+   */
+  private void clearSessionHolder() {
+    getRequestCache().remove(JCR_SESSION_HOLDER);
   }
 
   /*
@@ -136,30 +164,16 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
    */
   public Session setSession(Session session) {
     Session currentSession = null;
-    if (requestScope) {
-      SessionHolder sh = (SessionHolder) threadLocalManager.get("jcrsession");
-      if (sh != null) {
-
-        currentSession = sh.getSession();
-        sh.keepLoggedIn();
-      }
-      if (session == null) {
-        threadLocalManager.set("jcrsession", null);
-      } else {
-        sh = new SessionHolder(session);
-        threadLocalManager.set("jcrsession", sh);
-      }
+    SessionHolder sh = getSessionHolder();
+    if (sh != null) {
+      currentSession = sh.getSession();
+      sh.keepLoggedIn();
+    }
+    if (session == null) {
+      clearSessionHolder();
     } else {
-      SessionHolder sh = sessionHolder.get();
-      if (sh != null) {
-        currentSession = sh.getSession();
-      }
-      if (session == null) {
-        sessionHolder.set(null);
-      } else {
-        sh = new SessionHolder(session);
-        sessionHolder.set(sh);
-      }
+      sh = new SessionHolder(session);
+      setSesssionHolder(sh);
     }
     return currentSession;
   }
@@ -172,20 +186,11 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
 
   public boolean hasActiveSession() {
     Session session = null;
-    if (requestScope) {
-
-      SessionHolder sh = (SessionHolder) threadLocalManager.get("jcrsession");
-      if (sh != null) {
-        session = sh.getSession();
-      }
-    } else {
-      SessionHolder sh = sessionHolder.get();
-      if (sh != null) {
-        session = sh.getSession();
-      }
+    SessionHolder sh = getSessionHolder();
+    if (sh != null) {
+      session = sh.getSession();
     }
     return (session != null);
   }
-
 
 }

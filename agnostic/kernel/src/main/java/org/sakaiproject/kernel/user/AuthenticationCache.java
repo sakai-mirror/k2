@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.memory.Cache;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
+import org.sakaiproject.kernel.api.memory.CacheScope;
 import org.sakaiproject.kernel.api.user.Authentication;
 import org.sakaiproject.kernel.api.user.AuthenticationException;
 
@@ -54,7 +55,7 @@ public class AuthenticationCache {
 	
 	@Inject
   public AuthenticationCache(CacheManagerService cacheManager) {
-    this.authCache = cacheManager.getCache(AuthenticationCache.class.getName());
+    this.authCache = cacheManager.getCache(AuthenticationCache.class.getName(), CacheScope.INSTANCE);
   }
 
 	public Authentication getAuthentication(String authenticationId, String password)

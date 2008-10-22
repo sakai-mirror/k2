@@ -21,11 +21,18 @@
 
 package org.sakaiproject.kernel.api.user;
 
+import com.google.inject.ImplementedBy;
+import com.google.inject.Singleton;
+
+import org.sakaiproject.kernel.user.AuthenticationManagerImpl;
+
 /**
  * <p>
  * AuthenticationManager provides authentication of end-users.
  * </p>
  */
+@ImplementedBy(AuthenticationManagerImpl.class)
+@Singleton
 public interface AuthenticationManager
 {
   /**

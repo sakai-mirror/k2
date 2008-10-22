@@ -21,7 +21,8 @@
 
 package org.sakaiproject.kernel.api.memory;
 
-import java.util.List;
+import java.util.Collection;
+
 
 /**
  */
@@ -39,7 +40,7 @@ public interface Cache<V>
 	 * @param duration
 	 *        The time to cache the object (seconds).
 	 */
-	void put(String key, V payload);
+	V put(String key, V payload);
 
 	/**
 	 * Test for a non expired entry in the cache.

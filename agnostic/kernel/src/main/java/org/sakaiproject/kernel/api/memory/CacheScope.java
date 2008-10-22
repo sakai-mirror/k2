@@ -17,29 +17,14 @@
  */
 package org.sakaiproject.kernel.api.memory;
 
-import com.google.inject.ImplementedBy;
-import com.google.inject.Singleton;
-
-import org.sakaiproject.kernel.memory.CacheManagerServiceImpl;
-
-
 /**
- *
+ * Defines the scope of the cache
  */
-@ImplementedBy(CacheManagerServiceImpl.class)
-@Singleton
-public interface CacheManagerService {
-
-  /**
-   * @param name
-   * @return
-   */
-  <T> Cache<T> getCache(String name, CacheScope scope);
-  
-
-  /**
-   * Unbind the the context specified in scope
-   * @param scope
-   */
-  void unbind(CacheScope scope);
+public enum CacheScope {
+    REQUEST(),
+    THREAD(),
+    INSTANCE(),
+    CLUSTERINVALIDATED(),
+    CLUSTERREPLICATED();
+    
 }

@@ -26,6 +26,7 @@ import net.sf.ehcache.management.ManagementService;
 import org.sakaiproject.kernel.api.RequiresStop;
 import org.sakaiproject.kernel.api.memory.Cache;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
+import org.sakaiproject.kernel.api.memory.CacheScope;
 
 import java.lang.management.ManagementFactory;
 import java.net.URL;
@@ -37,16 +38,17 @@ import javax.management.MBeanServer;
 /**
  * 
  */
-public class CacheManagerServiceImpl implements CacheManagerService, RequiresStop {
-
+public class CacheManagerServiceImpl implements CacheManagerService,
+    RequiresStop {
 
   private CacheManager cacheManager;
   private Map<String, Cache<?>> caches = new HashMap<String, Cache<?>>();
+  private ThreadLocalCacheMap requestCacheMapHolder = new ThreadLocalCacheMap();
+  private ThreadLocalCacheMap threadCacheMapHolder = new ThreadLocalCacheMap();
 
   @Inject
-  public CacheManagerServiceImpl(@Named("cache.config")
-  String configPath, @Named("cache.jmx.stats")
-  String withCacheStatistics) {
+  public CacheManagerServiceImpl(@Named("cache.config") String configPath,
+      @Named("cache.jmx.stats") String withCacheStatistics) {
     create(configPath, withCacheStatistics);
   }
 
@@ -60,7 +62,7 @@ public class CacheManagerServiceImpl implements CacheManagerService, RequiresSto
     Runtime.getRuntime().addShutdownHook(new Thread() {
       /*
        * (non-Javadoc)
-       *
+       * 
        * @see java.lang.Thread#run()
        */
       @Override
@@ -77,8 +79,8 @@ public class CacheManagerServiceImpl implements CacheManagerService, RequiresSto
 
     // register the cache manager with JMX
     MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
-    ManagementService.registerMBeans(cacheManager, mBeanServer, true, true, true, Boolean.valueOf(
-        withCacheStatistics).booleanValue());
+    ManagementService.registerMBeans(cacheManager, mBeanServer, true, true,
+        true, Boolean.valueOf(withCacheStatistics).booleanValue());
 
   }
 
@@ -91,10 +93,66 @@ public class CacheManagerServiceImpl implements CacheManagerService, RequiresSto
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.memory.CacheManagerService#getCache(java.lang.String)
    */
+  public <V> Cache<V> getCache(String name, CacheScope scope) {
+    switch (scope) {
+    case INSTANCE:
+      return getInstanceCache(name);
+    case CLUSTERINVALIDATED:
+      return getInstanceCache(name);
+    case CLUSTERREPLICATED:
+      return getInstanceCache(name);
+    case REQUEST:
+      return getRequestCache(name);
+    case THREAD:
+      return getThreadCache(name);
+    default:
+      return getInstanceCache(name);
+    }
+  }
+
+  /**
+   * Generate a cache bound to the thread.
+   * 
+   * @param name
+   * @return
+   */
   @SuppressWarnings("unchecked")
-  public <V> Cache<V> getCache(String name) {
+  private <V> Cache<V> getThreadCache(String name) {
+    Map<String, Cache<?>> threadCacheMap = threadCacheMapHolder.get();
+    Cache<V> threadCache = (Cache<V>) threadCacheMap.get(name);
+    if (threadCache == null) {
+      threadCache = new MapCacheImpl<V>();
+      threadCacheMap.put(name, threadCache);
+    }
+    return threadCache;
+  }
+
+  /**
+   * Generate a cache bound to the request
+   * 
+   * @param name
+   * @return
+   */
+  @SuppressWarnings("unchecked")
+  private <V> Cache<V> getRequestCache(String name) {
+    Map<String, Cache<?>> requestCacheMap = requestCacheMapHolder.get();
+    Cache<V> requestCache = (Cache<V>) requestCacheMap.get(name);
+    if (requestCache == null) {
+      requestCache = new MapCacheImpl<V>();
+      requestCacheMap.put(name, requestCache);
+    }
+    return requestCache;
+  }
+
+  /**
+   * @param name
+   * @return
+   */
+  @SuppressWarnings("unchecked")
+  private <V> Cache<V> getInstanceCache(String name) {
     if (name == null) {
       return new CacheImpl<V>(cacheManager, name);
     } else {
@@ -105,6 +163,42 @@ public class CacheManagerServiceImpl implements CacheManagerService, RequiresSto
       }
       return c;
     }
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.kernel.api.memory.CacheManagerService#unbind(org.sakaiproject.kernel.api.memory.CacheScope)
+   */
+  public void unbind(CacheScope scope) {
+    switch (scope) {
+    case REQUEST:
+      unbindRequest();
+    case THREAD:
+      unbindThread();
+    }
+  }
+
+  /**
+   * 
+   */
+  private void unbindThread() {
+    Map<String, Cache<?>> threadCache = threadCacheMapHolder.get();
+    for (Cache<?> cache : threadCache.values()) {
+      cache.clear();
+    }
+    threadCacheMapHolder.remove();
+  }
+
+  /**
+   * 
+   */
+  private void unbindRequest() {
+    Map<String, Cache<?>> requestCache = requestCacheMapHolder.get();
+    for (Cache<?> cache : requestCache.values()) {
+      cache.clear();
+    }
+    requestCacheMapHolder.remove();
   }
 
 }

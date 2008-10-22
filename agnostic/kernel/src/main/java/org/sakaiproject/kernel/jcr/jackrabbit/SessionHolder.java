@@ -29,7 +29,7 @@ import javax.jcr.Session;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.sakaiproject.kernel.api.thread.ThreadBound;
+import org.sakaiproject.kernel.api.memory.ThreadBound;
 
 public class SessionHolder implements ThreadBound
 {

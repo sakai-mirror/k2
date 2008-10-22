@@ -27,7 +27,6 @@ import com.google.inject.name.Named;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.jcr.JCRService;
-import org.sakaiproject.kernel.api.thread.ThreadLocalManager;
 
 import javax.jcr.Credentials;
 import javax.jcr.LoginException;
@@ -55,7 +54,7 @@ public class UnboundJCRServiceImpl implements JCRService {
 
   @Inject
   public UnboundJCRServiceImpl(RepositoryBuilder repositoryBuilder,
-      Credentials repositoryCredentials, ThreadLocalManager threadLocalManager,
+      Credentials repositoryCredentials, 
       @Named(JCRService.REQUEST_SCOPE_NAME) boolean requestScope) {
 
     boolean error = false;

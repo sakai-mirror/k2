@@ -15,31 +15,30 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.api.memory;
+package org.sakaiproject.kernel.user;
 
-import com.google.inject.ImplementedBy;
-import com.google.inject.Singleton;
-
-import org.sakaiproject.kernel.memory.CacheManagerServiceImpl;
-
+import org.sakaiproject.kernel.api.user.User;
 
 /**
- *
+ * 
  */
-@ImplementedBy(CacheManagerServiceImpl.class)
-@Singleton
-public interface CacheManagerService {
+public class AnonUser implements User {
 
   /**
-   * @param name
-   * @return
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.user.User#getEid()
    */
-  <T> Cache<T> getCache(String name, CacheScope scope);
-  
+  public String getEid() {
+    return "anon";
+  }
 
   /**
-   * Unbind the the context specified in scope
-   * @param scope
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.user.User#getId()
    */
-  void unbind(CacheScope scope);
+  public String getId() {
+    // TODO Auto-generated method stub
+    return "anon";
+  }
+
 }

@@ -15,31 +15,28 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.api.memory;
+package org.sakaiproject.kernel.memory;
 
-import com.google.inject.ImplementedBy;
-import com.google.inject.Singleton;
+import org.sakaiproject.kernel.api.memory.Cache;
 
-import org.sakaiproject.kernel.memory.CacheManagerServiceImpl;
-
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- *
+ * 
  */
-@ImplementedBy(CacheManagerServiceImpl.class)
-@Singleton
-public interface CacheManagerService {
-
+public class ThreadLocalCacheMap extends ThreadLocal<Map<String,Cache<?>>> {
   /**
-   * @param name
-   * @return
+   * {@inheritDoc}
+   * @see java.lang.ThreadLocal#initialValue()
    */
-  <T> Cache<T> getCache(String name, CacheScope scope);
+  @Override
+  protected Map<String, Cache<?>> initialValue() {
+    return new HashMap<String, Cache<?>>();
+  }
+    
+  
+  
   
 
-  /**
-   * Unbind the the context specified in scope
-   * @param scope
-   */
-  void unbind(CacheScope scope);
 }

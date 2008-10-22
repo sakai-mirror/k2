@@ -17,6 +17,8 @@
  */
 package org.sakaiproject.kernel.user;
 
+import org.sakaiproject.kernel.api.session.Session;
+import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.user.UserDirectoryService;
 import org.sakaiproject.kernel.api.user.UserNotDefinedException;
@@ -24,34 +26,61 @@ import org.sakaiproject.kernel.api.user.UserNotDefinedException;
 /**
  *
  */
-public class UserDirectoryServiceImpl implements UserDirectoryService{
+public class UserDirectoryServiceImpl implements UserDirectoryService {
 
-  
-  
-  /* (non-Javadoc)
+  private SessionManagerService sessionManagerService;
+
+  public UserDirectoryServiceImpl(SessionManagerService sessionManagerService) {
+    this.sessionManagerService = sessionManagerService;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.sakaiproject.kernel.api.user.UserDirectoryService#getCurrentUser()
    */
   public User getCurrentUser() {
-    return null;
+    Session session = sessionManagerService.getCurrentSession();
+    if (session != null) {
+      String userId = session.getUserId();
+      try {
+        return getUser(userId);
+      } catch (UserNotDefinedException e) {
+        return new AnonUser();
+      }
+    }
+    return new AnonUser();
   }
 
-  /* (non-Javadoc)
-   * @see org.sakaiproject.kernel.api.user.UserDirectoryService#getUser(java.lang.String)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.sakaiproject.kernel.api.user.UserDirectoryService#getUser(java.lang
+   * .String)
    */
   public User getUser(String uid) throws UserNotDefinedException {
     return null;
   }
 
-  /* (non-Javadoc)
-   * @see org.sakaiproject.kernel.api.user.UserDirectoryService#authenticate(java.lang.String, java.lang.String)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.sakaiproject.kernel.api.user.UserDirectoryService#authenticate(java
+   * .lang.String, java.lang.String)
    */
   public User authenticate(String identifier, String password) {
     // TODO Auto-generated method stub
     return null;
   }
 
-  /* (non-Javadoc)
-   * @see org.sakaiproject.kernel.api.user.UserDirectoryService#getUserByEid(java.lang.String)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.sakaiproject.kernel.api.user.UserDirectoryService#getUserByEid(java
+   * .lang.String)
    */
   public User getUserByEid(String identifier) {
     // TODO Auto-generated method stub

@@ -19,7 +19,7 @@
  *
  **********************************************************************************/
 
-package org.sakaiproject.kernel.api.thread;
+package org.sakaiproject.kernel.api.memory;
 
 /**
  * Objects that are added to a ThreadLocalManager, that implement this method

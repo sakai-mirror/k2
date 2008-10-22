@@ -29,7 +29,9 @@ import org.sakaiproject.kernel.api.ServiceManagerException;
 import org.sakaiproject.kernel.api.ServiceSpec;
 import org.sakaiproject.kernel.api.jcr.JCRRegistrationService;
 import org.sakaiproject.kernel.api.jcr.JCRService;
-import org.sakaiproject.kernel.api.thread.ThreadLocalManager;
+import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
+import org.sakaiproject.kernel.api.memory.CacheManagerService;
+import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.user.AuthenticationManager;
 import org.sakaiproject.kernel.api.user.UserDirectoryService;
 
@@ -39,8 +41,10 @@ import org.sakaiproject.kernel.api.user.UserDirectoryService;
 public class Activator implements ComponentActivator {
 
   private static final Class<?>[] SERVICE_CLASSES = { JCRService.class,
-      JCRRegistrationService.class, ThreadLocalManager.class,
-      UserDirectoryService.class, AuthenticationManager.class };
+      JCRRegistrationService.class, JCRNodeFactoryService.class,
+       UserDirectoryService.class,
+      AuthenticationManager.class, CacheManagerService.class,
+      SessionManagerService.class };
   @SuppressWarnings("unused")
   private Kernel kernel;
   private ServiceManager serviceManager;
