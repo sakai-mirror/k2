@@ -20,12 +20,13 @@ package org.sakaiproject.kernel.component.core;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-import org.mortbay.log.Log;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.ComponentManager;
 import org.sakaiproject.kernel.api.ComponentSpecification;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
 import org.sakaiproject.kernel.api.KernelConfigurationException;
-import org.sakaiproject.kernel.api.util.FileUtil;
+import org.sakaiproject.kernel.component.FileUtil;
 import org.sakaiproject.kernel.component.URLComponentSpecificationImpl;
 
 import java.io.File;
@@ -42,6 +43,7 @@ import java.util.List;
 public class ComponentLoaderService {
 
   private static final String COMPONENT_SPEC_XML = "SAKAI-INF/component.xml";
+  private static final Log LOG = LogFactory.getLog(ComponentLoaderService.class);
 
   /**
    * @throws IOException
@@ -92,7 +94,7 @@ public class ComponentLoaderService {
         source = source
             .substring(source.length() - COMPONENT_SPEC_XML.length());
       }
-      Log.info("Adding Component " + url);
+      LOG.info("Adding Component " + url);
       specs.add(new URLComponentSpecificationImpl(source, componentSpecXml));
     }
     uclassloader = null;

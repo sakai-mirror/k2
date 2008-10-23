@@ -15,7 +15,7 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.api.util;
+package org.sakaiproject.kernel.component;
 
 import java.io.File;
 import java.io.FileFilter;
