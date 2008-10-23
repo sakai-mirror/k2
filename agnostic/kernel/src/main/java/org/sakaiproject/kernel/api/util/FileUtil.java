@@ -18,6 +18,9 @@
 package org.sakaiproject.kernel.api.util;
 
 import java.io.File;
+import java.io.FileFilter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Utility class for working on the file system.
@@ -36,6 +39,29 @@ public class FileUtil {
       }
       f.delete();
     }
+  }
+
+  /**
+   * @param string
+   * @return
+   */
+  public static File[] findAll(String file, final String endsWith) {
+    List<File> list = new ArrayList<File>();
+    File f = new File(file);
+    FileFilter ff = new FileFilter() {
+
+      public boolean accept(File pathname) {
+        if ( pathname.isDirectory() ) {
+          return true;
+        } 
+        return ( pathname.getName().endsWith(endsWith) );
+      }
+      
+    };
+    if ( f.exists() ) {
+    }
+    // TODO Auto-generated method stub
+    return new File[0];
   }
 
 }

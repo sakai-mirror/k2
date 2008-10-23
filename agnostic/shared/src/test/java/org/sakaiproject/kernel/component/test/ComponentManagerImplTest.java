@@ -123,7 +123,7 @@ public class ComponentManagerImplTest {
     cm.start();
     List<ComponentSpecification> cs = new ArrayList<ComponentSpecification>();
     for (int i = 0; i < 5; i++) {
-      cs.add(new URLComponentSpecificationImpl(BASE + "-good-" + i + ".xml"));
+      cs.add(new URLComponentSpecificationImpl(null,BASE + "-good-" + i + ".xml"));
     }
     cm.loadComponents(cs);
     List<ComponentSpecification> startOrder = cm.getStartOrder(cs);
@@ -146,7 +146,7 @@ public class ComponentManagerImplTest {
     List<ComponentSpecification> cs = new ArrayList<ComponentSpecification>();
     for (int i = 0; i < 5; i++) {
       cs
-          .add(new URLComponentSpecificationImpl(BASE + "-missing-" + i
+          .add(new URLComponentSpecificationImpl(null,BASE + "-missing-" + i
               + ".xml"));
     }
     cm.loadComponents(cs);
@@ -168,7 +168,7 @@ public class ComponentManagerImplTest {
     cm.start();
     List<ComponentSpecification> cs = new ArrayList<ComponentSpecification>();
     for (int i = 0; i < 5; i++) {
-      cs.add(new URLComponentSpecificationImpl(BASE + "-cyclic-" + i + ".xml"));
+      cs.add(new URLComponentSpecificationImpl(null,BASE + "-cyclic-" + i + ".xml"));
     }
 
     cm.loadComponents(cs);

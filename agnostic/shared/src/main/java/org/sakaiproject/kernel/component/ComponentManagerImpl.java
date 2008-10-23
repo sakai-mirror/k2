@@ -214,7 +214,7 @@ public class ComponentManagerImpl implements ComponentManager {
                   .getClass().getClassLoader().loadClass(activatorName);
               spec = aclazz.newInstance();
             } else {
-              spec = new URLComponentSpecificationImpl(d);
+              spec = new URLComponentSpecificationImpl(null,d);
             }
             toStart.add(spec);
           }

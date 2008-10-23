@@ -60,6 +60,7 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
    * dependencies of the component.
    */
   private ComponentDependency[] dependencies;
+  private String source;
 
   /**
    * Construct a URL based component specification based on the supplied string
@@ -71,8 +72,9 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
    * @throws IOException
    * @throws ComponentSpecificationException
    */
-  public URLComponentSpecificationImpl(String d)
+  public URLComponentSpecificationImpl(String source, String d)
       throws ComponentSpecificationException {
+    this.source = source;
     XStream xstream = new XStream();
     Annotations.configureAliases(xstream, Component.class, Dependency.class);
     Reader in = null;
@@ -95,11 +97,21 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
 
       String classPath = component.getClassPath();
       if (classPath == null) {
+        if ( source == null ) {
         classPathUrls = new URL[0];
+        } else {
+          classPathUrls = new URL[1];
+          classPathUrls[0] = new URL(source);
+        }
       } else {
-        String[] cp = classPath.trim().split(";");
-        classPathUrls = new URL[cp.length];
         int i = 0;
+        String[] cp = classPath.trim().split(";");
+        if ( source == null ) {
+          classPathUrls = new URL[cp.length];
+        } else {
+          classPathUrls = new URL[cp.length+1];
+          classPathUrls[i++] = new URL(source);
+        }
         for (String classpath : cp) {
           classPathUrls[i++] = new URL(classpath);
         }

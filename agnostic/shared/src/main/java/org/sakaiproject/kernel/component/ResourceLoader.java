@@ -59,6 +59,9 @@ public class ResourceLoader {
       return in;
     } else if (resource.startsWith(INLINE)) {
       return new ByteArrayInputStream(resource.substring(INLINE.length()).getBytes("UTF-8"));
+    } else if ( resource.indexOf("://") > 0) {
+      URL url = new URL(resource);
+      return url.openStream();
     } else {
       return new FileInputStream(resource);
     }

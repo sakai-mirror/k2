@@ -104,7 +104,7 @@ public class URLComponentSpecificationImplTest {
    */
   @Test
   public void testSimpleComponentSpecificationImpl() throws IOException, ComponentSpecificationException {
-    URLComponentSpecificationImpl uc = new URLComponentSpecificationImpl(TEST_RESOURCE);
+    URLComponentSpecificationImpl uc = new URLComponentSpecificationImpl(null,TEST_RESOURCE);
     assertNotNull(uc.getClassPathURLs());
     assertEquals(0, uc.getClassPathURLs().length);
     assertNotNull(uc.getComponentActivatorClassName());
@@ -114,7 +114,7 @@ public class URLComponentSpecificationImplTest {
   
   @Test
   public void testComplexComponentSpecificationImpl() throws IOException, ComponentSpecificationException {
-    URLComponentSpecificationImpl uc = new URLComponentSpecificationImpl(TEST_COMPLEX_RESOURCE);
+    URLComponentSpecificationImpl uc = new URLComponentSpecificationImpl(null,TEST_COMPLEX_RESOURCE);
     assertNotNull(uc.getClassPathURLs());
     assertEquals(1, uc.getClassPathURLs().length);
     assertNotNull(uc.getComponentActivatorClassName());
