@@ -20,6 +20,8 @@ package org.sakaiproject.kernel;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.ComponentActivator;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.api.Kernel;
@@ -45,6 +47,7 @@ public class Activator implements ComponentActivator {
        UserDirectoryService.class,
       AuthenticationManager.class, CacheManagerService.class,
       SessionManagerService.class };
+  private static final Log LOG = LogFactory.getLog(Activator.class);
   @SuppressWarnings("unused")
   private Kernel kernel;
   private ServiceManager serviceManager;
@@ -83,6 +86,7 @@ public class Activator implements ComponentActivator {
    */
   private void exportService(Class<?> serviceClass)
       throws ServiceManagerException {
+    LOG.info("Exporting "+serviceClass);
     serviceManager.registerService(new ServiceSpec(serviceClass), injector
         .getInstance(serviceClass));
   }

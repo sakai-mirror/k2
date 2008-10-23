@@ -54,8 +54,8 @@ public class UnboundJCRServiceImpl implements JCRService {
 
   @Inject
   public UnboundJCRServiceImpl(RepositoryBuilder repositoryBuilder,
-      Credentials repositoryCredentials, 
-      @Named(JCRService.REQUEST_SCOPE_NAME) boolean requestScope) {
+      @Named(JCRService.NAME_CREDENTIALS) Credentials repositoryCredentials, 
+      @Named(JCRService.NAME_REQUEST_SCOPE) boolean requestScope) {
 
     boolean error = false;
     try {

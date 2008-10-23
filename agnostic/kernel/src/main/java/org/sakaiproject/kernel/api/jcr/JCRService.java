@@ -60,7 +60,9 @@ public interface JCRService {
 
   public static final String JCR_UUID = "jcr:uuid";
 
-  public static final String REQUEST_SCOPE_NAME = "requestScope@org.sakaiproject.kernel.api.jcr.JCRService";
+  public static final String NAME_REQUEST_SCOPE = "requestScope@org.sakaiproject.kernel.api.jcr.JCRService";
+
+  public static final String NAME_CREDENTIALS = "credentials@org.sakaiproject.kernel.api.jcr.JCRService";
 
   /**
    * @return

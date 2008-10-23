@@ -64,8 +64,9 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
    */
   @Inject
   public JCRServiceImpl(RepositoryBuilder repositoryBuilder,
-      Credentials repositoryCredentials, CacheManagerService cacheManager,
-      @Named(JCRService.REQUEST_SCOPE_NAME) boolean requestScope) {
+      @Named(JCRService.NAME_CREDENTIALS) Credentials repositoryCredentials,
+      CacheManagerService cacheManager,
+      @Named(JCRService.NAME_REQUEST_SCOPE) boolean requestScope) {
     this.repositoryBuilder = repositoryBuilder;
     this.repositoryCredentials = repositoryCredentials;
     this.cacheManager = cacheManager;
@@ -128,8 +129,7 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
    * @return
    */
   private SessionHolder getSessionHolder() {
-    return (SessionHolder) getRequestCache()
-        .get(JCR_SESSION_HOLDER);
+    return (SessionHolder) getRequestCache().get(JCR_SESSION_HOLDER);
   }
 
   /**

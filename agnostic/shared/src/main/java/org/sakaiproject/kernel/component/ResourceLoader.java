@@ -43,15 +43,23 @@ public class ResourceLoader {
    *           if the resource could not be opened.
    */
   public static InputStream openResource(String resource) throws IOException {
+    return openResource(resource,ResourceLoader.class.getClassLoader());
+  }
+  
+  public static InputStream openResource(String resource, ClassLoader classLoader) throws IOException {
     if (resource.startsWith("res://")) {
-      ClassLoader cl = ResourceLoader.class.getClassLoader();
-      return cl.getResourceAsStream(resource.substring(6));
+      InputStream in = classLoader.getResourceAsStream(resource.substring(6));
+      if ( in == null ) {
+        throw new IOException("Unable to find resource "+resource+" using "+classLoader);
+      }
+      return in;
     } else if (resource.startsWith("inline://")) {
       return new ByteArrayInputStream(resource.substring(9).getBytes("UTF-8"));
     } else {
       return new FileInputStream(resource);
     }
   }
+  
 
   /**
    * Read a resource into a string.
@@ -63,8 +71,19 @@ public class ResourceLoader {
    *           if there was a problem opening the resource.
    */
   public static String readResource(String resource) throws IOException {
+    return readResource(resource,ResourceLoader.class.getClassLoader());
+  }
+
+  /**
+   * @param repositoryConfigTemplate
+   * @param classLoader
+   * @return
+   * @throws IOException 
+   */
+  public static String readResource(String resource,
+      ClassLoader classLoader) throws IOException {
     BufferedReader in = new BufferedReader(new InputStreamReader(
-        openResource(resource)));
+        openResource(resource,classLoader)));
     StringBuilder sb = new StringBuilder();
     try {
       for (String line = in.readLine(); line != null; line = in.readLine()) {

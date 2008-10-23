@@ -21,9 +21,12 @@
 
 package org.sakaiproject.kernel.jcr.jackrabbit.sakai;
 
-import com.google.inject.Inject;
-
 import org.apache.jackrabbit.core.security.CredentialsCallback;
+import org.sakaiproject.kernel.api.Kernel;
+import org.sakaiproject.kernel.api.KernelConfigurationException;
+import org.sakaiproject.kernel.api.KernelManager;
+import org.sakaiproject.kernel.api.ServiceManager;
+import org.sakaiproject.kernel.api.ServiceSpec;
 import org.sakaiproject.kernel.api.user.Authentication;
 import org.sakaiproject.kernel.api.user.AuthenticationException;
 import org.sakaiproject.kernel.api.user.AuthenticationManager;
@@ -69,14 +72,19 @@ public class SakaiLoginModule implements LoginModule {
   @SuppressWarnings("unused")
   private Map<String, ?> options;
 
-
   /**
    * Constructor
+   * 
+   * @throws KernelConfigurationException
    */
-  @Inject
-  public SakaiLoginModule(UserDirectoryService userDirectoryService, AuthenticationManager authenticationManager) {
-    this.userDirectoryService = userDirectoryService;
-    this.authenticationManager = authenticationManager;
+  public SakaiLoginModule() throws KernelConfigurationException {
+    KernelManager km = new KernelManager();
+    Kernel k = km.getKernel();
+    ServiceManager sm = k.getServiceManager();
+    this.userDirectoryService = sm.getService(new ServiceSpec(
+        UserDirectoryService.class));
+    this.authenticationManager = sm.getService(new ServiceSpec(
+        AuthenticationManager.class));
   }
 
   /**
@@ -164,7 +172,6 @@ public class SakaiLoginModule implements LoginModule {
       throw new FailedLoginException();
     }
   }
-
 
   /**
    * {@inheritDoc}

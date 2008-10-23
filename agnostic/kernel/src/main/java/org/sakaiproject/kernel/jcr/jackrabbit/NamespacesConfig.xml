@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map>
+	<entry key="sakaijcr">
+		<value>http://www.sakaiproject.org/CHS/jcr/jackrabbit/1.0
+		</value>
+	</entry>
+	<entry key="sakai">
+		<value>http://www.sakaiproject.org/CHS/jcr/sakai/1.0
+		</value>
+	</entry>
+	<entry key="CHEF">
+		<value>http://www.sakaiproject.org/CHS/jcr/chef/1.0
+		</value>
+	</entry>
+	<entry key="DAV">
+		<value>http://www.sakaiproject.org/CHS/jcr/dav/1.0
+		</value>
+	</entry>
+</map>

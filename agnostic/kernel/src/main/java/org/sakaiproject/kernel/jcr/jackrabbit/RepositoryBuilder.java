@@ -24,6 +24,8 @@ package org.sakaiproject.kernel.jcr.jackrabbit;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import com.thoughtworks.xstream.XStream;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.core.RepositoryImpl;
@@ -41,6 +43,7 @@ import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -55,7 +58,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Workspace;
 
-public class RepositoryBuilder  {
+public class RepositoryBuilder {
 
   private static final Log log = LogFactory.getLog(RepositoryBuilder.class);
 
@@ -85,56 +88,63 @@ public class RepositoryBuilder  {
    * These constants are the default Sakai Properties we will use if the values
    * are not custom injected.
    */
-  public static final String DEFAULT_DBDIALECT_PROP = "vendor@org.sakaiproject.db.api.SqlService";
-
-  public static final String DEFAULT_DBUSER_PROP = "username@javax.sql.BaseDataSource";
-
-  public static final String DEFAULT_DBPASS_PROP = "password@javax.sql.BaseDataSource";
-
-  public static final String DEFAULT_DBDRIVER_PROP = "driverClassName@javax.sql.BaseDataSource";
-
-  public static final String DEFAULT_DBURL_PROP = "url@javax.sql.BaseDataSource";
-
+  /*
+   * public static final String DEFAULT_DBDIALECT_PROP =
+   * "vendor@org.sakaiproject.db.api.SqlService";
+   * 
+   * public static final String DEFAULT_DBUSER_PROP =
+   * "username@javax.sql.BaseDataSource";
+   * 
+   * public static final String DEFAULT_DBPASS_PROP =
+   * "password@javax.sql.BaseDataSource";
+   * 
+   * public static final String DEFAULT_DBDRIVER_PROP =
+   * "driverClassName@javax.sql.BaseDataSource";
+   * 
+   * public static final String DEFAULT_DBURL_PROP =
+   * "url@javax.sql.BaseDataSource";
+   */
   public static final String DEFAULT_DSPERSISTMNGR_PROP = "dataSourcePersistanceManager@org.sakaiproject.kernel.api.jcr.JCRService.repositoryBuilder";
 
   private static final String BASE_NAME = "@org.sakaiproject.kernel.jcr.jackrabbit.RepositoryBuilder";
 
-  private static final String DB_DIALECT_NAME = "dbDialect" + BASE_NAME;
+  public static final String NAME_DB_DIALECT = "dbDialect" + BASE_NAME;
 
-  private static final String DB_USER_NAME = "dbUser" + BASE_NAME;
+  public static final String NAME_DB_USER = "dbUser" + BASE_NAME;
 
-  private static final String DB_PASS_NAME = "dbPassword" + BASE_NAME;
+  public static final String NAME_DB_PASS = "dbPassword" + BASE_NAME;
 
-  private static final String DB_DRIVER_NAME = "dbDriver" + BASE_NAME;
+  public static final String NAME_DB_DRIVER = "dbDriver" + BASE_NAME;
 
-  private static final String DB_URL_NAME = "dbUrl" + BASE_NAME;
+  public static final String NAME_DB_URL = "dbUrl" + BASE_NAME;
 
-  private static final String DB_CONTENTONFILESYSTEM_NAME = "contentOnFilesystem"
+  public static final String NAME_DB_CONTENTONFILESYSTEM = "contentOnFilesystem"
       + BASE_NAME;
 
-  private static final String DB_USESHARED_FS_BLOB_NAME = "useSharedFSBlob"
+  public static final String NAME_DB_USESHARED_FS_BLOB = "useSharedFSBlob"
       + BASE_NAME;
 
-  private static final String DB_SHARED_FS_BLOB_LOCATION_NAME = "sharedFSBlobLocation"
+  public static final String NAME_DB_SHARED_FS_BLOB_LOCATION = "sharedFSBlobLocation"
       + BASE_NAME;
 
-  private static final String SERVER_ID = "serverId";
+  public static final String NAME_SERVER_ID = "serverId";
 
-  private static final String SERVER_LOCATION_NAME = "sharedLocation"
+  public static final String NAME_SERVER_LOCATION = "sharedLocation"
       + BASE_NAME;
 
-  private static final String NAMESPACES_MAP_NAME = "namespaces" + BASE_NAME;
+  public static final String NAME_NAMESPACES_MAP = "namespaces" + BASE_NAME;
 
-  private static final String REPOSITORY_HOME_NAME = "repositoryHome"
+  public static final String NAME_REPOSITORY_HOME = "repositoryHome"
       + BASE_NAME;
 
-  private static final String REPOSITORY_CONFIG_LOCATION = "repositoryConfigTemplate"
+  public static final String NAME_REPOSITORY_CONFIG_LOCATION = "repositoryConfigTemplate"
       + BASE_NAME;
 
-  private static final String NODE_TYPE_CONFIGURATION_NAME = "nodeTypeConfiguration"
+  public static final String NAME_NODE_TYPE_CONFIGURATION = "nodeTypeConfiguration"
       + BASE_NAME;
 
-  private static final String STARTUP_ACTIONS_NAME = "startupActions"+BASE_NAME;
+  public static final String NAME_STARTUP_ACTIONS = "startupActions"
+      + BASE_NAME;
 
   private RepositoryImpl repository;
 
@@ -146,7 +156,7 @@ public class RepositoryBuilder  {
 
   // private boolean dataSourcePersistanceManager = true;
 
-  //private List<StartupAction> startupActions;
+  // private List<StartupAction> startupActions;
 
   // private String clusterNodeId;
 
@@ -188,76 +198,64 @@ public class RepositoryBuilder  {
   }
 
   @Inject
-  public RepositoryBuilder(@Named(DB_DIALECT_NAME) String dbDialect,
-      @Named(DB_USER_NAME) String dbUser, @Named(DB_PASS_NAME) String dbPass,
-      @Named(DB_DRIVER_NAME) String dbDriver, @Named(DB_URL_NAME) String dbURL,
-      @Named(DB_CONTENTONFILESYSTEM_NAME) String contentOnFilesystem,
-      @Named(DB_USESHARED_FS_BLOB_NAME) String useSharedFSBlobStore,
-      @Named(DB_SHARED_FS_BLOB_LOCATION_NAME) String sharedFSBlobLocation,
-      @Named(SERVER_ID) String serverId,
-      @Named(SERVER_LOCATION_NAME) String journalLocation,
-      @Named(NAMESPACES_MAP_NAME) Map<String, String> namespaces,
-      @Named(REPOSITORY_HOME_NAME) String repositoryHome,
-      @Named(REPOSITORY_CONFIG_LOCATION) String repositoryConfigTemplate,
-      @Named(NODE_TYPE_CONFIGURATION_NAME) String nodeTypeConfiguration,
-      @Named(STARTUP_ACTIONS_NAME) List<StartupAction> startupActions) {
+  public RepositoryBuilder(@Named(NAME_DB_DIALECT) String dbDialect,
+      @Named(NAME_DB_USER) String dbUser, @Named(NAME_DB_PASS) String dbPass,
+      @Named(NAME_DB_DRIVER) String dbDriver, @Named(NAME_DB_URL) String dbURL,
+      @Named(NAME_DB_CONTENTONFILESYSTEM) String contentOnFilesystem,
+      @Named(NAME_DB_USESHARED_FS_BLOB) String useSharedFSBlobStore,
+      @Named(NAME_DB_SHARED_FS_BLOB_LOCATION) String sharedFSBlobLocation,
+      @Named(NAME_SERVER_ID) String serverId,
+      @Named(NAME_SERVER_LOCATION) String journalLocation,
+      @Named(NAME_REPOSITORY_HOME) String repositoryHome,
+      @Named(NAME_REPOSITORY_CONFIG_LOCATION) String repositoryConfigTemplate,
+      @Named(NAME_NODE_TYPE_CONFIGURATION) String nodeTypeConfiguration,
+      @Named(NAME_NAMESPACES_MAP) String namespacesConfiguration,
+      @Named(NAME_STARTUP_ACTIONS) List<StartupAction> startupActions)
+      throws IOException, RepositoryException {
 
     dbURL = dbURL.replaceAll("&", "&amp;");
 
-    boolean error = false;
+    String persistanceManagerClass = persistanceManagers.get(dbDialect);
+    log.info(MessageFormat.format("\nJCR Repository Config is \n"
+        + "\trepositoryConfig = {0} \n" + "\tdbURL = {1}\n"
+        + "\tdbUser = {2} \n" + "\tdbDriver = {4} \n" + "\tdbDialect = {5} \n"
+        + "\trepository Home = {6}\n" + "\tcontentOnFilesystem = {7}\n"
+        + "\tpersistanceManageerClass= {8}\n", new Object[] {
+        repositoryConfigTemplate, dbURL, dbUser, dbPass, dbDriver, dbDialect,
+        repositoryHome, contentOnFilesystem, persistanceManagerClass }));
+
+    String contentStr = ResourceLoader.readResource(repositoryConfigTemplate,
+        this.getClass().getClassLoader());
+
+    contentStr = contentStr.toString().replaceAll(DB_URL, dbURL);
+    contentStr = contentStr.replaceAll(DB_USER, dbUser);
+    contentStr = contentStr.replaceAll(DB_PASS, dbPass);
+    contentStr = contentStr.replaceAll(DB_DRIVER, dbDriver);
+    contentStr = contentStr.replaceAll(DB_DIALECT, dbDialect);
+    contentStr = contentStr.replaceAll(CONTENT_ID_DB, contentOnFilesystem);
+    contentStr = contentStr.replaceAll(USE_SHARED_FS_BLOB_STORE,
+        useSharedFSBlobStore);
+    contentStr = contentStr.replaceAll(SHARED_CONTENT_BLOB_LOCATION,
+        sharedFSBlobLocation);
+    contentStr = contentStr.replaceAll(CLUSTER_NODE_ID, serverId);
+    contentStr = contentStr.replaceAll(JOURNAL_LOCATION, journalLocation);
+    contentStr = contentStr.replaceAll(PERSISTANCE_MANAGER,
+        persistanceManagerClass);
+
+    if (log.isDebugEnabled())
+      log.debug("Repositroy Config is \n" + contentStr);
+
+    ByteArrayInputStream bais = new ByteArrayInputStream(contentStr.getBytes());
     try {
-      String persistanceManagerClass = persistanceManagers.get(dbDialect);
-      log.info(MessageFormat.format("\nJCR Repository Config is \n"
-          + "\trepositoryConfig = {0} \n" + "\tdbURL = {1}\n"
-          + "\tdbUser = {2} \n" + "\tdbDriver = {4} \n"
-          + "\tdbDialect = {5} \n" + "\trepository Home = {6}\n"
-          + "\tcontentOnFilesystem = {7}\n"
-          + "\tpersistanceManageerClass= {8}\n", new Object[] {
-          repositoryConfigTemplate, dbURL, dbUser, dbPass, dbDriver, dbDialect,
-          repositoryHome, contentOnFilesystem, persistanceManagerClass }));
 
-      String contentStr = ResourceLoader.readResource(repositoryConfigTemplate);
+      RepositoryConfig rc = RepositoryConfig.create(bais, repositoryHome);
+      repository = RepositoryImpl.create(rc);
+      setup(namespacesConfiguration, nodeTypeConfiguration, startupActions);
 
-      contentStr = contentStr.toString().replaceAll(DB_URL, dbURL);
-      contentStr = contentStr.replaceAll(DB_USER, dbUser);
-      contentStr = contentStr.replaceAll(DB_PASS, dbPass);
-      contentStr = contentStr.replaceAll(DB_DRIVER, dbDriver);
-      contentStr = contentStr.replaceAll(DB_DIALECT, dbDialect);
-      contentStr = contentStr.replaceAll(CONTENT_ID_DB, contentOnFilesystem);
-      contentStr = contentStr.replaceAll(USE_SHARED_FS_BLOB_STORE,
-          useSharedFSBlobStore);
-      contentStr = contentStr.replaceAll(SHARED_CONTENT_BLOB_LOCATION,
-          sharedFSBlobLocation);
-      contentStr = contentStr.replaceAll(CLUSTER_NODE_ID, serverId);
-      contentStr = contentStr.replaceAll(JOURNAL_LOCATION, journalLocation);
-      contentStr = contentStr.replaceAll(PERSISTANCE_MANAGER,
-          persistanceManagerClass);
-
-      if (log.isDebugEnabled())
-        log.debug("Repositroy Config is \n" + contentStr);
-
-      ByteArrayInputStream bais = new ByteArrayInputStream(contentStr
-          .getBytes());
-      try {
-
-        RepositoryConfig rc = RepositoryConfig.create(bais, repositoryHome);
-        repository = RepositoryImpl.create(rc);
-        setup(namespaces, nodeTypeConfiguration, startupActions);
-
-      } finally {
-        bais.close();
-      }
-
-    } catch (Throwable ex) {
-      log.error("init() failure: " + ex);
-      error = true;
     } finally {
-      if (error) {
-        throw new RuntimeException(
-            "Fatal error initialising JCRService... (see previous logged ERROR for details)");
-
-      }
+      bais.close();
     }
+
     log.info("Repository Builder passed init ");
   }
 
@@ -276,13 +274,30 @@ public class RepositoryBuilder  {
 
   }
 
-  private void setup(Map<String, String> namespaces,
-      String nodeTypeConfiguration, List<StartupAction> startupActions) throws RepositoryException, IOException {
+  @SuppressWarnings("unchecked")
+  private void setup(String namespacesConfiguration,
+      String nodeTypeConfiguration, List<StartupAction> startupActions)
+      throws RepositoryException, IOException {
     SakaiJCRCredentials ssp = new SakaiJCRCredentials();
     Session s = repository.login(ssp);
     try {
       Workspace w = s.getWorkspace();
       NamespaceRegistry reg = w.getNamespaceRegistry();
+
+      XStream parser = new XStream();
+      InputStream in = null;
+      Map<String, String> namespaces = new HashMap<String, String>();
+      try {
+        in = ResourceLoader.openResource(namespacesConfiguration, this
+            .getClass().getClassLoader());
+        namespaces = (Map<String, String>) parser.fromXML(in, namespaces);
+      } finally {
+        try {
+          in.close();
+        } catch (Exception ex) {
+
+        }
+      }
       for (Entry<String, String> e : namespaces.entrySet()) {
         try {
           reg.getPrefix(e.getValue());
@@ -299,14 +314,21 @@ public class RepositoryBuilder  {
         }
       }
       try {
+        in = ResourceLoader.openResource(nodeTypeConfiguration, this.getClass()
+            .getClassLoader());
         NodeTypeManagerImpl ntm = (NodeTypeManagerImpl) w.getNodeTypeManager();
-        ntm.registerNodeTypes(this.getClass().getResourceAsStream(
-            nodeTypeConfiguration), "text/xml");
+        ntm.registerNodeTypes(in, "text/xml");
       } catch (Exception ex) {
         log
             .info("Exception Loading Types, this is expected for all loads after the first one: "
                 + ex.getMessage()
                 + "(this message is here because Jackrabbit does not give us a good way to detect that the node types are already added)");
+      } finally {
+        try {
+          in.close();
+        } catch (Exception ex) {
+
+        }
       }
       if (startupActions != null) {
         for (Iterator<StartupAction> i = startupActions.iterator(); i.hasNext();) {
@@ -320,6 +342,5 @@ public class RepositoryBuilder  {
     }
 
   }
-
 
 }
