@@ -53,6 +53,9 @@ public class ComponentManagerImpl implements ComponentManager {
    * Properties for the kernel, contains a list of default components to load.
    */
   private static final String DEFAULT_COMPONENTS_PROPERTIES = "res://kernel.properties";
+  
+  
+  
   /**
    * The name of the property containing the ; separated list of components to
    * load. If the component starts with class: its a class implementing
@@ -217,10 +220,7 @@ public class ComponentManagerImpl implements ComponentManager {
           }
         }
       }
-      loadComponents(toStart);
-      for (ComponentSpecification spec : getStartOrder(toStart)) {
-        startComponent(spec);
-      }
+      startComponents(toStart);
       return true;
     } catch (Exception ex) {
       throw new KernelConfigurationException("Unable To start components "
@@ -400,5 +400,18 @@ public class ComponentManagerImpl implements ComponentManager {
       }
     }
 
+  }
+
+  /**
+   * {@inheritDoc}
+   * @throws KernelConfigurationException 
+   * @throws ComponentSpecificationException 
+   * @see org.sakaiproject.kernel.api.ComponentManager#startComponents(java.util.List)
+   */
+  public void startComponents(List<ComponentSpecification> specs) throws ComponentSpecificationException, KernelConfigurationException {
+    loadComponents(specs);
+    for (ComponentSpecification spec : getStartOrder(specs)) {
+      startComponent(spec);
+    }
   }
 }

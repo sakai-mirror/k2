@@ -23,12 +23,16 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 
 /**
  * Abstration of resource loading, that understands file refernece as well as
  * classpath resources.
  */
 public class ResourceLoader {
+
+  public static final String INLINE = "inline://";
+  public static final String RESOURCE = "res://";
 
   /**
    * Get an input stream for a resource.
@@ -47,14 +51,14 @@ public class ResourceLoader {
   }
   
   public static InputStream openResource(String resource, ClassLoader classLoader) throws IOException {
-    if (resource.startsWith("res://")) {
+    if (resource.startsWith(RESOURCE)) {
       InputStream in = classLoader.getResourceAsStream(resource.substring(6));
       if ( in == null ) {
         throw new IOException("Unable to find resource "+resource+" using "+classLoader);
       }
       return in;
-    } else if (resource.startsWith("inline://")) {
-      return new ByteArrayInputStream(resource.substring(9).getBytes("UTF-8"));
+    } else if (resource.startsWith(INLINE)) {
+      return new ByteArrayInputStream(resource.substring(INLINE.length()).getBytes("UTF-8"));
     } else {
       return new FileInputStream(resource);
     }
@@ -84,6 +88,24 @@ public class ResourceLoader {
       ClassLoader classLoader) throws IOException {
     BufferedReader in = new BufferedReader(new InputStreamReader(
         openResource(resource,classLoader)));
+    StringBuilder sb = new StringBuilder();
+    try {
+      for (String line = in.readLine(); line != null; line = in.readLine()) {
+        sb.append(line);
+      }
+    } finally {
+      in.close();
+    }
+    return sb.toString();
+  }
+
+  /**
+   * @param nextElement
+   * @return
+   * @throws IOException 
+   */
+  public static String readResource(URL url) throws IOException {
+    BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
     StringBuilder sb = new StringBuilder();
     try {
       for (String line = in.readLine(); line != null; line = in.readLine()) {

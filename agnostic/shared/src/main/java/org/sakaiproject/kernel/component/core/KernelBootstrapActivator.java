@@ -40,6 +40,16 @@ public class KernelBootstrapActivator implements ComponentActivator {
    */
   private static final Log LOG = LogFactory
       .getLog(KernelBootstrapActivator.class);
+  private static final Class<?>[] KERNEL_SERVICES = {
+    KernelInjectorService.class,
+    SharedClassLoaderContainer.class,
+    ShutdownService.class,
+    
+    
+    
+    // this should really be the last bootstrap, as it will load the remaining
+    ComponentLoaderService.class
+  };
   /**
    * The kernel in which this bootstrap was activated.
    */
@@ -57,8 +67,11 @@ public class KernelBootstrapActivator implements ComponentActivator {
   public void activate(Kernel kernel) throws ComponentActivatorException {
     LOG.info("Starting Shared Container");
     this.kernel = kernel;
-    @SuppressWarnings("unused")
     Injector injector = Guice.createInjector(new KernelBootstrapModule(kernel));
+    for ( Class<?> c : KERNEL_SERVICES ) {
+      Object s = injector.getInstance(c);
+      LOG.info("Loaded "+c+" as "+s);
+    }
   }
 
   /**

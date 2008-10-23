@@ -71,5 +71,12 @@ public interface ComponentManager {
    */
   void loadComponents(List<ComponentSpecification> cs);
 
+  /**
+   * @param specs
+   * @throws KernelConfigurationException 
+   * @throws ComponentSpecificationException 
+   */
+  void startComponents(List<ComponentSpecification> specs) throws ComponentSpecificationException, KernelConfigurationException;
+
 
 }

@@ -22,7 +22,9 @@ import com.google.inject.CreationException;
 import com.google.inject.name.Names;
 import com.google.inject.spi.Message;
 
+import org.sakaiproject.kernel.api.ComponentManager;
 import org.sakaiproject.kernel.api.Kernel;
+import org.sakaiproject.kernel.api.ServiceManager;
 import org.sakaiproject.kernel.component.ResourceLoader;
 
 import java.io.IOException;
@@ -95,7 +97,11 @@ public class KernelBootstrapModule extends AbstractModule {
   @Override
   protected void configure() {
     Names.bindProperties(this.binder(), properties);
+    
     bind(Kernel.class).toInstance(kernel);
+    bind(ServiceManager.class).toInstance(kernel.getServiceManager());
+    bind(ComponentManager.class).toInstance(kernel.getComponentManager());
+    
     bind(KernelInjectorService.class).asEagerSingleton();
     bind(ShutdownService.class).asEagerSingleton();
     bind(SharedClassLoaderContainer.class).asEagerSingleton();

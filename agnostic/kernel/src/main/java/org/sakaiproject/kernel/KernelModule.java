@@ -109,10 +109,13 @@ public class KernelModule extends AbstractModule {
   @Override
   protected void configure() {
     Names.bindProperties(this.binder(), properties);
-    bind(Kernel.class).toInstance(kernel);
     ServiceManager serviceManager = kernel.getServiceManager();
+    bind(Kernel.class).toInstance(kernel);
     bind(ServiceManager.class).toInstance(serviceManager);
     bind(ComponentManager.class).toInstance(kernel.getComponentManager());
+    
+    
+    
     bind(ShutdownService.class).toProvider(
         new ServiceProvider<ShutdownService>(serviceManager,
             ShutdownService.class));

@@ -23,6 +23,7 @@
     <module>overlay</module>
     <module>kernel</module>
     <module>webapp-test</module>
+    <module>integration</module>
   </modules>
   
 </project>
