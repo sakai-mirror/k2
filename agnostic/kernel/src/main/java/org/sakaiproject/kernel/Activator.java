@@ -42,7 +42,7 @@ import org.sakaiproject.kernel.api.user.UserDirectoryService;
  */
 public class Activator implements ComponentActivator {
 
-  private static final Class<?>[] SERVICE_CLASSES = { JCRService.class,
+  public static final Class<?>[] SERVICE_CLASSES = { JCRService.class,
       JCRRegistrationService.class, JCRNodeFactoryService.class,
        UserDirectoryService.class,
       AuthenticationManager.class, CacheManagerService.class,
@@ -62,10 +62,12 @@ public class Activator implements ComponentActivator {
    */
   public void activate(Kernel kernel) throws ComponentActivatorException {
     // Start the injector for the kernel
-
+    
+    
     this.kernel = kernel;
     this.serviceManager = kernel.getServiceManager();
     this.injector = Guice.createInjector(new KernelModule(kernel));
+    
     // export the services.
     try {
       for (Class<?> serviceClass : SERVICE_CLASSES) {
@@ -113,4 +115,6 @@ public class Activator implements ComponentActivator {
       ((RequiresStop) service).stop();
     }
   }
+  
+  
 }

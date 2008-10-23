@@ -22,6 +22,7 @@
 package org.sakaiproject.kernel.jcr.jackrabbit;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,6 +42,7 @@ import javax.jcr.Workspace;
 
 /**
  */
+@Singleton
 public class JCRRegistrationServiceImpl implements JCRRegistrationService {
 
   private static final Log log = LogFactory

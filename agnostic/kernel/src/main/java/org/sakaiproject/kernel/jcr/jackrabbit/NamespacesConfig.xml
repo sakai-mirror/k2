@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map>
-	<entry key="sakaijcr">
-		<value>http://www.sakaiproject.org/CHS/jcr/jackrabbit/1.0
-		</value>
+	<entry>
+		<string>sakaijcr</string>
+		<string> http://www.sakaiproject.org/CHS/jcr/jackrabbit/1.0</string>
 	</entry>
-	<entry key="sakai">
-		<value>http://www.sakaiproject.org/CHS/jcr/sakai/1.0
-		</value>
+	<entry>
+		<string>sakai</string>
+		<string>http://www.sakaiproject.org/CHS/jcr/sakai/1.0
+		</string>
 	</entry>
-	<entry key="CHEF">
-		<value>http://www.sakaiproject.org/CHS/jcr/chef/1.0
-		</value>
+	<entry>
+		<string>CHEF</string>
+		<string>http://www.sakaiproject.org/CHS/jcr/chef/1.0
+		</string>
 	</entry>
-	<entry key="DAV">
-		<value>http://www.sakaiproject.org/CHS/jcr/dav/1.0
-		</value>
+	<entry>
+		<string>DAV</string>
+		<string>http://www.sakaiproject.org/CHS/jcr/dav/1.0
+		</string>
 	</entry>
 </map>

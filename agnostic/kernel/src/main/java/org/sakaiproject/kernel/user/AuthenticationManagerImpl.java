@@ -22,6 +22,7 @@
 package org.sakaiproject.kernel.user;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import org.sakaiproject.kernel.api.user.Authentication;
 import org.sakaiproject.kernel.api.user.AuthenticationException;
@@ -38,6 +39,7 @@ import org.sakaiproject.kernel.api.user.UserNotDefinedException;
  * An Authentication component working with the UserDirectoryService.
  * </p>
  */
+@Singleton
 public class AuthenticationManagerImpl implements AuthenticationManager
 {
   private AuthenticationCache authenticationCache;

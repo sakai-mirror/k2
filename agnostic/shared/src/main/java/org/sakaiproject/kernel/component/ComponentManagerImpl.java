@@ -104,7 +104,9 @@ public class ComponentManagerImpl implements ComponentManager {
    * Stop the component manager and all the components.
    */
   public void stop() {
+    LOG.info("== Starting ComponentManager Shutdown");
     stopComponents();
+    LOG.info("== ComponentManager Shutdown Complete");
   }
 
   /**

@@ -27,9 +27,15 @@ import org.junit.Test;
 import org.sakaiproject.kernel.Activator;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.api.KernelConfigurationException;
+import org.sakaiproject.kernel.api.RequiresStop;
+import org.sakaiproject.kernel.api.ServiceSpec;
+import org.sakaiproject.kernel.api.util.FileUtil;
 import org.sakaiproject.kernel.component.ComponentManagerImpl;
 import org.sakaiproject.kernel.component.KernelImpl;
 import org.sakaiproject.kernel.component.ServiceManagerImpl;
+import org.sakaiproject.kernel.component.core.ShutdownService;
+
+import java.io.File;
 
 /**
  * 
@@ -43,6 +49,9 @@ public class ActivatorTest {
 
   @Before
   public void start() throws KernelConfigurationException {
+    // If there are problems with startup and shutdown, these will prevent the problem
+    //FileUtil.deleteAll(new File("target/jcr"));
+    //FileUtil.deleteAll(new File("target/testdb"));
     kernel = new KernelImpl();
     kernel.start();
     serviceManager = new ServiceManagerImpl(kernel);
@@ -73,6 +82,15 @@ public class ActivatorTest {
   public void testActivate() throws ComponentActivatorException {
     Activator activator = new Activator();
     activator.activate(kernel);
+    for (Class<?> c : Activator.SERVICE_CLASSES) {
+
+      ShutdownService ss = kernel.getServiceManager().getService(
+          new ServiceSpec(ShutdownService.class));
+      Object s = kernel.getServiceManager().getService(new ServiceSpec(c));
+      if (s instanceof RequiresStop) {
+        ss.register((RequiresStop) s);
+      }
+    }
   }
 
 }

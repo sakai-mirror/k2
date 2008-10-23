@@ -21,7 +21,10 @@
 
 package org.sakaiproject.kernel.jcr.jackrabbit.sakai;
 
+import com.google.inject.Injector;
+
 import org.apache.jackrabbit.core.security.CredentialsCallback;
+import org.sakaiproject.kernel.Activator;
 import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.KernelConfigurationException;
 import org.sakaiproject.kernel.api.KernelManager;
@@ -35,6 +38,7 @@ import org.sakaiproject.kernel.api.user.UserDirectoryService;
 import org.sakaiproject.kernel.api.user.UserNotDefinedException;
 import org.sakaiproject.kernel.jcr.jackrabbit.JCRAnonymousPrincipal;
 import org.sakaiproject.kernel.jcr.jackrabbit.JCRSystemPrincipal;
+import org.sakaiproject.kernel.jcr.jackrabbit.RepositoryBuilder;
 
 import java.security.Principal;
 import java.util.HashSet;
@@ -78,13 +82,10 @@ public class SakaiLoginModule implements LoginModule {
    * @throws KernelConfigurationException
    */
   public SakaiLoginModule() throws KernelConfigurationException {
-    KernelManager km = new KernelManager();
-    Kernel k = km.getKernel();
-    ServiceManager sm = k.getServiceManager();
-    this.userDirectoryService = sm.getService(new ServiceSpec(
-        UserDirectoryService.class));
-    this.authenticationManager = sm.getService(new ServiceSpec(
-        AuthenticationManager.class));
+    // this is ugly, but there is no other way
+    Injector injector = RepositoryBuilder.getStartupInjector();
+    this.userDirectoryService = injector.getInstance(UserDirectoryService.class);
+    this.authenticationManager = injector.getInstance(AuthenticationManager.class);
   }
 
   /**

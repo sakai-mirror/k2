@@ -17,6 +17,8 @@
  */
 package org.sakaiproject.kernel.component;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.ServiceManager;
 import org.sakaiproject.kernel.api.ServiceManagerException;
@@ -33,6 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ServiceManagerImpl implements ServiceManager {
 
+  private static final Log LOG = LogFactory.getLog(ServiceManagerImpl.class);
   /**
    * The kernel
    */
@@ -64,6 +67,8 @@ public class ServiceManagerImpl implements ServiceManager {
    * Stop the service manager.
    */
   public void stop() {
+    LOG.info("== Starting ServiceManager Shutdown");
+    LOG.info("== ServiceManager Shutdown Complete");
   }
 
   /**

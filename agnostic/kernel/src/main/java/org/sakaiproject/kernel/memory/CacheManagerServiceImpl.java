@@ -18,6 +18,7 @@
 package org.sakaiproject.kernel.memory;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 
 import net.sf.ehcache.CacheManager;
@@ -27,9 +28,11 @@ import org.sakaiproject.kernel.api.RequiresStop;
 import org.sakaiproject.kernel.api.memory.Cache;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
+import org.sakaiproject.kernel.component.ResourceLoader;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.management.ManagementFactory;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,6 +41,7 @@ import javax.management.MBeanServer;
 /**
  * 
  */
+@Singleton
 public class CacheManagerServiceImpl implements CacheManagerService,
     RequiresStop {
 
@@ -48,13 +52,14 @@ public class CacheManagerServiceImpl implements CacheManagerService,
 
   @Inject
   public CacheManagerServiceImpl(@Named("cache.config") String configPath,
-      @Named("cache.jmx.stats") String withCacheStatistics) {
+      @Named("cache.jmx.stats") String withCacheStatistics) throws IOException {
     create(configPath, withCacheStatistics);
   }
 
-  public void create(String configPath, String withCacheStatistics) {
-    URL url = getClass().getResource(configPath);
-    cacheManager = new CacheManager(url);
+  private void create(String configPath, String withCacheStatistics) throws IOException {
+    InputStream in = ResourceLoader.openResource(configPath, this.getClass().getClassLoader());
+    cacheManager = new CacheManager(in);
+    in.close();
 
     /*
      * Add in a shutdown hook, for safety

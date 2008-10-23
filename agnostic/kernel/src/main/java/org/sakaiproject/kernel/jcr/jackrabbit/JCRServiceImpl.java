@@ -22,6 +22,7 @@
 package org.sakaiproject.kernel.jcr.jackrabbit;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 
 import org.apache.commons.logging.Log;
@@ -39,14 +40,16 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+@Singleton
 public class JCRServiceImpl implements JCRService, RequiresStop {
-  private static final Log log = LogFactory.getLog(JCRServiceImpl.class);
+  private static final Log LOG = LogFactory.getLog(JCRServiceImpl.class);
 
   public static final String DEFAULT_WORKSPACE = "sakai";
 
   private static final String JCR_REQUEST_CACHE = "jcr.rc";
 
   private static final String JCR_SESSION_HOLDER = "sh";
+
 
   /**
    * The injected 170 repository
@@ -81,6 +84,7 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
    */
   public void stop() {
     repositoryBuilder.stop();
+    LOG.info("Repository has been stopped");
   }
 
   public Session getSession() throws LoginException, RepositoryException {
@@ -95,8 +99,8 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
       sh = new SessionHolder(repositoryBuilder, repositoryCredentials,
           DEFAULT_WORKSPACE);
       setSesssionHolder(sh);
-      if (log.isDebugEnabled())
-        log.debug("Session Start took " + (System.currentTimeMillis() - t1)
+      if (LOG.isDebugEnabled())
+        LOG.debug("Session Start took " + (System.currentTimeMillis() - t1)
             + "ms");
     }
     session = sh.getSession();

@@ -22,6 +22,7 @@
 package org.sakaiproject.kernel.jcr.support;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import java.io.InputStream;
 import java.util.GregorianCalendar;
@@ -47,6 +48,7 @@ import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
  *         service as a Filing System.
  * 
  **/
+@Singleton
 public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
 
   private static final Log log = LogFactory

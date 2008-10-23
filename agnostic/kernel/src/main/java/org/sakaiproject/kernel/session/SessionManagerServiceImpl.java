@@ -17,6 +17,9 @@
  */
 package org.sakaiproject.kernel.session;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import org.sakaiproject.kernel.api.memory.Cache;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
@@ -26,6 +29,7 @@ import org.sakaiproject.kernel.api.session.SessionManagerService;
 /**
  * 
  */
+@Singleton
 public class SessionManagerServiceImpl implements SessionManagerService {
 
   /**
@@ -40,6 +44,7 @@ public class SessionManagerServiceImpl implements SessionManagerService {
   private Cache<Session> sessionCache;
   private CacheManagerService cacheManagerService;
 
+  @Inject
   public SessionManagerServiceImpl(CacheManagerService cacheManagerService) {
     this.cacheManagerService = cacheManagerService;
     sessionCache = cacheManagerService.getCache(SESSION_CACHE, CacheScope.CLUSTERREPLICATED);

@@ -17,6 +17,9 @@
  */
 package org.sakaiproject.kernel.user;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.user.User;
@@ -26,10 +29,12 @@ import org.sakaiproject.kernel.api.user.UserNotDefinedException;
 /**
  *
  */
+@Singleton
 public class UserDirectoryServiceImpl implements UserDirectoryService {
 
   private SessionManagerService sessionManagerService;
 
+  @Inject
   public UserDirectoryServiceImpl(SessionManagerService sessionManagerService) {
     this.sessionManagerService = sessionManagerService;
   }

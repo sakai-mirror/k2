@@ -22,6 +22,8 @@
 package org.sakaiproject.kernel.jcr.jackrabbit;
 
 import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 
 import com.thoughtworks.xstream.XStream;
@@ -58,6 +60,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Workspace;
 
+@Singleton
 public class RepositoryBuilder {
 
   private static final Log log = LogFactory.getLog(RepositoryBuilder.class);
@@ -146,6 +149,8 @@ public class RepositoryBuilder {
   public static final String NAME_STARTUP_ACTIONS = "startupActions"
       + BASE_NAME;
 
+  private static final ThreadLocal<Injector> injectorHolder = new ThreadLocal<Injector>();
+
   private RepositoryImpl repository;
 
   // private String repositoryConfig;
@@ -210,7 +215,8 @@ public class RepositoryBuilder {
       @Named(NAME_REPOSITORY_CONFIG_LOCATION) String repositoryConfigTemplate,
       @Named(NAME_NODE_TYPE_CONFIGURATION) String nodeTypeConfiguration,
       @Named(NAME_NAMESPACES_MAP) String namespacesConfiguration,
-      @Named(NAME_STARTUP_ACTIONS) List<StartupAction> startupActions)
+      @Named(NAME_STARTUP_ACTIONS) List<StartupAction> startupActions,
+      Injector injector)
       throws IOException, RepositoryException {
 
     dbURL = dbURL.replaceAll("&", "&amp;");
@@ -248,11 +254,24 @@ public class RepositoryBuilder {
     ByteArrayInputStream bais = new ByteArrayInputStream(contentStr.getBytes());
     try {
 
+      injectorHolder.set(injector);
       RepositoryConfig rc = RepositoryConfig.create(bais, repositoryHome);
       repository = RepositoryImpl.create(rc);
+      
+      Runtime.getRuntime().addShutdownHook(new Thread(){
+        /**
+         * {@inheritDoc}
+         * @see java.lang.Thread#run()
+         */
+        @Override
+        public void run() {
+          RepositoryBuilder.this.stop();
+        }
+      });
       setup(namespacesConfiguration, nodeTypeConfiguration, startupActions);
 
     } finally {
+      injectorHolder.set(null);
       bais.close();
     }
 
@@ -261,14 +280,14 @@ public class RepositoryBuilder {
 
   public void stop() {
     if (repository != null) {
-      log.info("Start repository shutdown  ");
       try {
+        
         repository.shutdown();
+        log.info("An A No current connection exception from the version manager is normal, if the version manager hasnt been used");
       } catch (Exception ex) {
         log.warn("Repository Shutdown failed, this may be normal "
             + ex.getMessage());
       }
-      log.info("Shutdown of repository complete  ");
       repository = null;
     }
 
@@ -285,6 +304,7 @@ public class RepositoryBuilder {
       NamespaceRegistry reg = w.getNamespaceRegistry();
 
       XStream parser = new XStream();
+      parser.addDefaultImplementation(HashMap.class, Map.class);
       InputStream in = null;
       Map<String, String> namespaces = new HashMap<String, String>();
       try {
@@ -342,5 +362,13 @@ public class RepositoryBuilder {
     }
 
   }
+
+  /**
+   * @return
+   */
+  public static Injector getStartupInjector() {
+    return injectorHolder.get();
+  }
+
 
 }
