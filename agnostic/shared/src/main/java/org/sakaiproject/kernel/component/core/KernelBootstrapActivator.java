@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.ComponentActivator;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.api.Kernel;
+import org.sakaiproject.kernel.api.PackageRegistryService;
 import org.sakaiproject.kernel.api.RequiresStop;
 import org.sakaiproject.kernel.api.ServiceSpec;
 
@@ -44,6 +45,7 @@ public class KernelBootstrapActivator implements ComponentActivator {
     KernelInjectorService.class,
     SharedClassLoaderContainer.class,
     ShutdownService.class,
+    PackageRegistryService.class,
     
     
     
