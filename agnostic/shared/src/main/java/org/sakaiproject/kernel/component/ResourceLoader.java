@@ -33,6 +33,7 @@ public class ResourceLoader {
 
   public static final String INLINE = "inline://";
   public static final String RESOURCE = "res://";
+  private static final String FILE = "file:/";
 
   /**
    * Get an input stream for a resource.
@@ -59,6 +60,8 @@ public class ResourceLoader {
       return in;
     } else if (resource.startsWith(INLINE)) {
       return new ByteArrayInputStream(resource.substring(INLINE.length()).getBytes("UTF-8"));
+    } else if ( resource.startsWith(FILE ) ) {
+      return new FileInputStream(resource.substring(FILE.length()));
     } else if ( resource.indexOf("://") > 0) {
       URL url = new URL(resource);
       return url.openStream();

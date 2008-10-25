@@ -30,7 +30,9 @@ import org.junit.runners.Suite.SuiteClasses;
     KernelImplTest.class, 
     ServiceManagerImplTest.class,
     KernelLifecycleTest.class,
-    URLComponentSpecificationImplTest.class})
+    URLComponentSpecificationImplTest.class,
+    FileUtilTest.class,
+    ResourceLoaderTest.class})
 public class TestAll {
 
 }

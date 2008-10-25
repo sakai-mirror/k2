@@ -51,17 +51,37 @@ public class FileUtil {
     FileFilter ff = new FileFilter() {
 
       public boolean accept(File pathname) {
-        if ( pathname.isDirectory() ) {
+        if (pathname.isDirectory()) {
           return true;
-        } 
-        return ( pathname.getName().endsWith(endsWith) );
+        }
+        return (pathname.getName().endsWith(endsWith));
       }
-      
+
     };
-    if ( f.exists() ) {
-    }
+    addFile(f, list, ff);
     // TODO Auto-generated method stub
-    return new File[0];
+    return list.toArray(new File[0]);
+  }
+
+  /**
+   * @param f
+   * @param list
+   * @param ff
+   */
+  private static void addFile(File f, List<File> list, FileFilter ff) {
+    if (f.exists()) {
+      if (f.isDirectory()) {
+        for (File fn : f.listFiles(ff)) {
+          if (fn.isDirectory()) {
+            addFile(fn, list, ff);
+          } else {
+            list.add(fn);
+          }
+        }
+      } else if (ff.accept(f)) {
+        list.add(f);
+      }
+    }
   }
 
 }
