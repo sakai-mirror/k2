@@ -17,10 +17,9 @@
  */
 package org.sakaiproject.kernel.component.core.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.sakaiproject.kernel.component.core.PackageRegistryServiceImpl;
 

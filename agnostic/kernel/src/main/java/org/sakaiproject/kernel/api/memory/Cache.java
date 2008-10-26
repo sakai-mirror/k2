@@ -21,7 +21,6 @@
 
 package org.sakaiproject.kernel.api.memory;
 
-import java.util.Collection;
 
 
 /**

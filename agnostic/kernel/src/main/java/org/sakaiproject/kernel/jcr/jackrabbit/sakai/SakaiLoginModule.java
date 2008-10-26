@@ -24,12 +24,7 @@ package org.sakaiproject.kernel.jcr.jackrabbit.sakai;
 import com.google.inject.Injector;
 
 import org.apache.jackrabbit.core.security.CredentialsCallback;
-import org.sakaiproject.kernel.Activator;
-import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.KernelConfigurationException;
-import org.sakaiproject.kernel.api.KernelManager;
-import org.sakaiproject.kernel.api.ServiceManager;
-import org.sakaiproject.kernel.api.ServiceSpec;
 import org.sakaiproject.kernel.api.user.Authentication;
 import org.sakaiproject.kernel.api.user.AuthenticationException;
 import org.sakaiproject.kernel.api.user.AuthenticationManager;

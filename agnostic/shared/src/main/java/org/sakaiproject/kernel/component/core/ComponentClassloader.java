@@ -17,39 +17,103 @@
  */
 package org.sakaiproject.kernel.component.core;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.api.Kernel;
+import org.sakaiproject.kernel.api.PackageRegistryService;
+import org.sakaiproject.kernel.api.ServiceSpec;
+
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLStreamHandlerFactory;
 
 /**
- * 
+ * The Component Classloader is used for components, and will resolve classes
+ * exported from other Classloaders into the package registry service. In addition it acts exactly in the same
+ * way the URLClassloader operates, resolving to the parent.
  */
-public class ComponentClassloader extends URLClassLoader{
+public class ComponentClassloader extends URLClassLoader {
+
+  private static final Log LOG = LogFactory
+      .getLog(ComponentLoaderService.class);
+  private PackageRegistryService packageRegistryService;
 
   /**
    * @param urls
    * @param parent
    * @param factory
    */
-  public ComponentClassloader(URL[] urls, ClassLoader parent,
+  public ComponentClassloader(Kernel kernel, URL[] urls, ClassLoader parent,
       URLStreamHandlerFactory factory) {
     super(urls, parent, factory);
+    packageRegistryService = kernel.getServiceManager().getService(
+        new ServiceSpec(PackageRegistryService.class));
+
   }
 
   /**
    * 
    */
-  public ComponentClassloader(URL[] urls) {
+  public ComponentClassloader(Kernel kernel, URL[] urls) {
     super(urls);
+    packageRegistryService = kernel.getServiceManager().getService(
+        new ServiceSpec(PackageRegistryService.class));
   }
+
   /**
    * 
    */
-  public ComponentClassloader(URL[] urls, ClassLoader parent) {
-    super(urls,parent);
+  public ComponentClassloader(Kernel kernel, URL[] urls, ClassLoader parent) {
+    super(urls, parent);
+    packageRegistryService = kernel.getServiceManager().getService(
+        new ServiceSpec(PackageRegistryService.class));
   }
-  
-  
-  
-  
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.ClassLoader#loadClass(java.lang.String, boolean)
+   */
+  @Override
+  protected synchronized Class<?> loadClass(String name, boolean resolve)
+      throws ClassNotFoundException {
+    Class<?> c = findLoadedClass(name);
+    ClassNotFoundException ex = null;
+
+    // load from exports first
+    if (c == null && packageRegistryService != null) {
+      ClassLoader classLoader = packageRegistryService.findClassloader(name);
+      if (classLoader != null) {
+        try {
+          c = classLoader.loadClass(name);
+          if (LOG.isDebugEnabled())
+            LOG.debug("loaded " + c);
+        } catch (ClassNotFoundException e) {
+          ex = e;
+        }
+      }
+    }
+
+    //then load internally
+    if (c == null) {
+      try {
+        c = this.findClass(name);
+      } catch (ClassNotFoundException e) {
+        ex = e;
+      }
+    }
+
+
+    LOG.debug("Resolved " + name + " as " + c);
+    if (c == null)
+      throw ex;
+
+    if (resolve)
+      resolveClass(c);
+
+    LOG.debug("loaded " + c + " from " + c.getClassLoader());
+
+    return c;
+  }
+
 }

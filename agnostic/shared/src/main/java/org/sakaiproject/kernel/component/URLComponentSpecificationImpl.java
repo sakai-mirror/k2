@@ -24,7 +24,6 @@ import org.sakaiproject.kernel.api.ComponentDependency;
 import org.sakaiproject.kernel.api.ComponentSpecification;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
 import org.sakaiproject.kernel.component.model.Component;
-import org.sakaiproject.kernel.component.model.Dependency;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,6 +59,7 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
    * dependencies of the component.
    */
   private ComponentDependency[] dependencies;
+  @SuppressWarnings("unused")
   private String source;
 
   /**
@@ -76,7 +76,7 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
       throws ComponentSpecificationException {
     this.source = source;
     XStream xstream = new XStream();
-    Annotations.configureAliases(xstream, Component.class, Dependency.class);
+    Annotations.configureAliases(xstream, Component.CLASSES);
     Reader in = null;
     InputStream xsd = null;
     try {
@@ -116,7 +116,7 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
           classPathUrls[i++] = new URL(classpath);
         }
       }
-      List<ComponentDependency> deps = component.getDependencies();
+      List<ComponentDependency> deps = component.getComponentDependencies();
       if (deps == null) {
         dependencies = new ComponentDependency[0];
       } else {

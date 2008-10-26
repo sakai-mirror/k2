@@ -17,8 +17,6 @@
  */
 package org.sakaiproject.kernel.test;
 
-import static org.junit.Assert.*;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.After;
@@ -30,12 +28,9 @@ import org.sakaiproject.kernel.api.KernelConfigurationException;
 import org.sakaiproject.kernel.api.RequiresStop;
 import org.sakaiproject.kernel.api.ServiceSpec;
 import org.sakaiproject.kernel.component.ComponentManagerImpl;
-import org.sakaiproject.kernel.component.FileUtil;
 import org.sakaiproject.kernel.component.KernelImpl;
 import org.sakaiproject.kernel.component.ServiceManagerImpl;
 import org.sakaiproject.kernel.component.core.ShutdownService;
-
-import java.io.File;
 
 /**
  * 

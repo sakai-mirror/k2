@@ -5,16 +5,16 @@
   </documentation>
   <activator>org.sakaiproject.simple</activator>
   <classPath>file:lib/test.jar</classPath>
-  <dependencies>
-    <dependency>
+  <componentDependencies>
+    <componentDependency>
       <componentName>componentset-good-2</componentName>
       <managed>false</managed>
-    </dependency>
-    <dependency>
+    </componentDependency>
+    <componentDependency>
       <componentName>componentset-good-4</componentName>
       <managed>false</managed>
-    </dependency>
+    </componentDependency>
     
-  </dependencies>
+  </componentDependencies>
   <managed>false</managed>
 </component>

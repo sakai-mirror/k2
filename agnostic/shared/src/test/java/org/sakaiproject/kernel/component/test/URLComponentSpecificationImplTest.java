@@ -27,13 +27,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
+import org.sakaiproject.kernel.api.ClasspathDependency;
 import org.sakaiproject.kernel.api.ComponentDependency;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
+import org.sakaiproject.kernel.api.PackageExport;
 import org.sakaiproject.kernel.component.ResourceLoader;
 import org.sakaiproject.kernel.component.URLComponentSpecificationImpl;
 import org.sakaiproject.kernel.component.XSDValidator;
+import org.sakaiproject.kernel.component.model.ClasspathDepencencyImpl;
+import org.sakaiproject.kernel.component.model.ClasspathScope;
 import org.sakaiproject.kernel.component.model.Component;
-import org.sakaiproject.kernel.component.model.Dependency;
+import org.sakaiproject.kernel.component.model.ComponentDependencyImpl;
+import org.sakaiproject.kernel.component.model.PackageExportImpl;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,23 +66,51 @@ public class URLComponentSpecificationImplTest {
   @Test
   public void testOutput() throws IOException {
     XStream xstream = new XStream();
-    Annotations.configureAliases(xstream, Component.class, Dependency.class);
+    Annotations.configureAliases(xstream, Component.CLASSES);
     Component c = new Component();
     c.setActivator("activator.class");
     c.setClassPath("classpath");
     c.setDocumentation("docs");
     c.setManaged(true);
     c.setName("Some Name");
-    Dependency cd = new Dependency();
+    ComponentDependencyImpl cd = new ComponentDependencyImpl();
     cd.setComponentName("Some Other Name");
     cd.setManaged(false);
-    Dependency cd1 = new Dependency();
+    ComponentDependencyImpl cd1 = new ComponentDependencyImpl();
     cd1.setComponentName("Some Other Name");
     cd1.setManaged(false);
     List<ComponentDependency> cdl = new ArrayList<ComponentDependency>();
     cdl.add(cd);
     cdl.add(cd1);
     c.setComponentDependencies(cdl);
+    
+    ClasspathDepencencyImpl cpd1 = new ClasspathDepencencyImpl();
+    cpd1.setGroupId("org.sakaiproject.kernel2.agnostic");
+    cpd1.setArtifactId("shared");
+    cpd1.setVersion("0.1-SNAPSHOT");
+    cpd1.setScope(ClasspathScope.LOCAL);
+
+    ClasspathDepencencyImpl cpd2 = new ClasspathDepencencyImpl();
+    cpd2.setGroupId("org.sakaiproject.kernel2.agnostic");
+    cpd2.setArtifactId("common");
+    cpd2.setVersion("0.1-SNAPSHOT");
+    cpd2.setScope(ClasspathScope.SHARE);
+    
+    List<ClasspathDependency> cpdl = new ArrayList<ClasspathDependency>();
+    cpdl.add(cpd1);
+    cpdl.add(cpd2);
+
+    c.setDependencies(cpdl);
+    
+    PackageExportImpl pe1 = new PackageExportImpl();
+    pe1.setName("org.sakaiproject.kernel.api");
+    PackageExportImpl pe2 = new PackageExportImpl();
+    pe2.setName("org.sakaiproject.search.api");
+    
+    List<PackageExport> pel = new ArrayList<PackageExport>();
+    pel.add(pe1);
+    
+    c.setExports(pel);
     xstream.setMode(XStream.NO_REFERENCES);
    
     String specification = attachXSD(xstream.toXML(c));

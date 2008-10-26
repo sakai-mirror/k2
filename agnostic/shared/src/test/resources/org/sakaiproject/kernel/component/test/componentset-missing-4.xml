@@ -5,7 +5,7 @@
   </documentation>
   <activator>org.sakaiproject.simple</activator>
   <classPath>file:lib/test.jar</classPath>
-  <dependencies>
-  </dependencies>
+  <componentDependencies>
+  </componentDependencies>
   <managed>false</managed>
 </component>

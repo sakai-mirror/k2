@@ -25,8 +25,8 @@ import org.sakaiproject.kernel.api.ComponentDependency;
  * A dependency of a component, mapped to the dependency element (contained
  * within dependencies)
  */
-@XStreamAlias("dependency")
-public class Dependency implements ComponentDependency {
+@XStreamAlias("componentDependency")
+public class ComponentDependencyImpl implements ComponentDependency {
 
   /**
    * The name of the component dependency
@@ -40,7 +40,7 @@ public class Dependency implements ComponentDependency {
   /**
    * create a dependency object.
    */
-  public Dependency() {
+  public ComponentDependencyImpl() {
   }
 
   /**

@@ -19,7 +19,9 @@ package org.sakaiproject.kernel.component.model;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+import org.sakaiproject.kernel.api.ClasspathDependency;
 import org.sakaiproject.kernel.api.ComponentDependency;
+import org.sakaiproject.kernel.api.PackageExport;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +33,13 @@ import java.util.List;
 @XStreamAlias("component")
 public class Component {
 
+  public static final Class<?>[] CLASSES = {
+    Component.class,
+    ComponentDependencyImpl.class,
+    ClasspathDepencencyImpl.class,
+    ClasspathScope.class,
+    PackageExportImpl.class
+  };
   /**
    * A ; seperate list of class path uri's
    */
@@ -41,10 +50,25 @@ public class Component {
   private String activator;
 
   /**
-   * A list of dependencies mapped to the dependencies element.
+   * A list of component dependencies mapped to the component-dependencies element.
+   */
+  @XStreamAlias(value = "componentDependencies", impl = ArrayList.class)
+  private List<ComponentDependency> componentDependencies;
+
+  
+  /**
+   * A list of classpath dependencies mapped to the classpath-dependencies element.
    */
   @XStreamAlias(value = "dependencies", impl = ArrayList.class)
-  private List<ComponentDependency> componentDependencies;
+  private List<ClasspathDependency> classpathDependencies;
+  
+  /**
+   * A list of classpath dependencies mapped to the classpath-dependencies element.
+   */
+  @XStreamAlias(value = "exports", impl = ArrayList.class)
+  private List<PackageExport> exports;
+ 
+  
 
   /**
    * is the component actively managed by the component manager.
@@ -92,7 +116,7 @@ public class Component {
   /**
    * @return a list of component dependencies.
    */
-  public List<ComponentDependency> getDependencies() {
+  public List<ComponentDependency> getComponentDependencies() {
     return componentDependencies;
   }
 
@@ -149,4 +173,34 @@ public class Component {
   public String getName() {
     return name;
   }
+  
+  /**
+   * @return the classpathDependencies
+   */
+  public List<ClasspathDependency> getDependencies() {
+    return classpathDependencies;
+  }
+  
+  /**
+   * @param classpathDependencies the classpathDependencies to set
+   */
+  public void setDependencies(
+      List<ClasspathDependency> classpathDependencies) {
+    this.classpathDependencies = classpathDependencies;
+  }
+ 
+  /**
+   * @return the exports
+   */
+  public List<PackageExport> getExports() {
+    return exports;
+  }
+  
+  /**
+   * @param exports the exports to set
+   */
+  public void setExports(List<PackageExport> exports) {
+    this.exports = exports;
+  }
+ 
 }
