@@ -42,9 +42,10 @@ public interface ComponentManager {
    * @return true if the component started ok
    * @throws KernelConfigurationException
    *           if there was a problem starting the component.
+   * @throws ComponentSpecificationException 
    */
   boolean startComponent(ComponentSpecification spec)
-      throws KernelConfigurationException;
+      throws KernelConfigurationException, ComponentSpecificationException;
 
   /**
    * Stop the component and all managed dependent components.

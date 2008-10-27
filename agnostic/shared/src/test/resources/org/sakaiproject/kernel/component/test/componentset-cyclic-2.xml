@@ -4,7 +4,6 @@
   <documentation>ComponentSet Good 2 depends on 4
   </documentation>
   <activator>org.sakaiproject.simple</activator>
-  <classPath>file:lib/test.jar</classPath>
   <componentDependencies>
     <componentDependency>
       <componentName>componentset-good-4</componentName>

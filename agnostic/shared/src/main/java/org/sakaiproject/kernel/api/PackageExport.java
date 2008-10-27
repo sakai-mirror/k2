@@ -22,4 +22,9 @@ package org.sakaiproject.kernel.api;
  */
 public interface PackageExport {
 
+  /**
+   * @return
+   */
+  String getName();
+
 }

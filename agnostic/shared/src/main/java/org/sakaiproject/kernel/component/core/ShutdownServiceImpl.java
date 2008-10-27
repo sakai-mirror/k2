@@ -23,6 +23,7 @@ import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.RequiresStop;
 import org.sakaiproject.kernel.api.ServiceManagerException;
 import org.sakaiproject.kernel.api.ServiceSpec;
+import org.sakaiproject.kernel.api.ShutdownService;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -30,7 +31,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * A shutdown service that stops all services registered with it.
  */
-public class ShutdownService implements RequiresStop {
+public class ShutdownServiceImpl implements RequiresStop, ShutdownService {
 
   /**
    * A list of services to stop on reload.
@@ -45,7 +46,7 @@ public class ShutdownService implements RequiresStop {
    * @throws ServiceManagerException
    */
   @Inject
-  public ShutdownService(Kernel kernel) throws ServiceManagerException {
+  public ShutdownServiceImpl(Kernel kernel) throws ServiceManagerException {
     kernel.getServiceManager().registerService(
         new ServiceSpec(ShutdownService.class), this);
   }

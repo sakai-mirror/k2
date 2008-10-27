@@ -15,11 +15,20 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.component.model;
+package org.sakaiproject.kernel.api;
+
 
 /**
  * 
  */
-public enum ClasspathScope {
-  SHARE, LOCAL;
+public interface ClassLoaderService {
+
+  /**
+   * Create a ComponentClassLoader based on the specification
+   * @param spec the ComponentSpecification
+   * @return the new Component Classloader
+   * @throws ComponentSpecificationException 
+   */
+  ClassLoader getComponentClassLoader(ComponentSpecification spec) throws ComponentSpecificationException;
+
 }

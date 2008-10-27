@@ -19,6 +19,7 @@ package org.sakaiproject.kernel.component;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.api.ClassLoaderService;
 import org.sakaiproject.kernel.api.ComponentActivator;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.api.ComponentDependency;
@@ -27,10 +28,10 @@ import org.sakaiproject.kernel.api.ComponentSpecification;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
 import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.KernelConfigurationException;
+import org.sakaiproject.kernel.api.ServiceSpec;
+import org.sakaiproject.kernel.util.ResourceLoader;
 
 import java.io.InputStream;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -53,9 +54,7 @@ public class ComponentManagerImpl implements ComponentManager {
    * Properties for the kernel, contains a list of default components to load.
    */
   private static final String DEFAULT_COMPONENTS_PROPERTIES = "res://kernel.properties";
-  
-  
-  
+
   /**
    * The name of the property containing the ; separated list of components to
    * load. If the component starts with class: its a class implementing
@@ -120,27 +119,32 @@ public class ComponentManagerImpl implements ComponentManager {
    * @param spec
    *          the specification of a component to be started.
    * @return true of the component started.
+   * @throws ComponentSpecificationException 
    * @see org.sakaiproject.kernel.api.ComponentManager#startComponent(org.sakaiproject
    *      .kernel.api.ComponentSpecification)
    */
   @SuppressWarnings("unchecked")
   public boolean startComponent(ComponentSpecification spec)
-      throws KernelConfigurationException {
+      throws KernelConfigurationException, ComponentSpecificationException {
 
     // create a new component classloader
     // load the component spec.
     ClassLoader cl = kernel.getParentComponentClassLoader();
-    URL[] classPathURLs = spec.getClassPathURLs();
+
     ClassLoader currentClassloader = Thread.currentThread()
         .getContextClassLoader();
     ClassLoader componentClassloader = currentClassloader;
-    if (classPathURLs != null) {
-      componentClassloader = new URLClassLoader(spec.getClassPathURLs(), cl);
+
+    ClassLoaderService classLoaderService = kernel.getServiceManager()
+        .getService(new ServiceSpec(ClassLoaderService.class));
+    if (classLoaderService != null) {
+      componentClassloader = classLoaderService.getComponentClassLoader(spec);
       Thread.currentThread().setContextClassLoader(componentClassloader);
     }
+
     try {
 
-      for (ComponentDependency dependant : spec.getDependencies()) {
+      for (ComponentDependency dependant : spec.getComponentDependencies()) {
         if (dependant.isManaged()) {
           startComponent(componentsByName.get(dependant.getComponentName()));
         }
@@ -214,7 +218,7 @@ public class ComponentManagerImpl implements ComponentManager {
                   .getClass().getClassLoader().loadClass(activatorName);
               spec = aclazz.newInstance();
             } else {
-              spec = new URLComponentSpecificationImpl(null,d);
+              spec = new URLComponentSpecificationImpl(null, d);
             }
             toStart.add(spec);
           }
@@ -259,7 +263,7 @@ public class ComponentManagerImpl implements ComponentManager {
           speclevel.put(spec, plevel);
           unstable.add(spec);
         }
-        for (ComponentDependency d : spec.getDependencies()) {
+        for (ComponentDependency d : spec.getComponentDependencies()) {
           ComponentSpecification cs = componentsByName
               .get(d.getComponentName());
           if (cs == null && !errors.contains(spec)) {
@@ -289,7 +293,7 @@ public class ComponentManagerImpl implements ComponentManager {
       message
           .append("\n\tERROR:The component dependency graph has unsatisfield dependencies\n");
       for (ComponentSpecification spec : errors) {
-        for (ComponentDependency d : spec.getDependencies()) {
+        for (ComponentDependency d : spec.getComponentDependencies()) {
           if (!componentsByName.containsKey(d.getComponentName())) {
             message.append("\t\tComponent ").append(spec.getName()).append(
                 " depends on unsatisfied depedency ").append(
@@ -348,7 +352,7 @@ public class ComponentManagerImpl implements ComponentManager {
    *      .kernel.api.ComponentSpecification)
    */
   public boolean stopComponent(ComponentSpecification spec) {
-    for (ComponentDependency dependant : spec.getDependencies()) {
+    for (ComponentDependency dependant : spec.getComponentDependencies()) {
       if (dependant.isManaged()) {
         stopComponent(startedComponents.get(dependant.getComponentName()));
       }
@@ -385,7 +389,6 @@ public class ComponentManagerImpl implements ComponentManager {
    *          a list of component specifications to load
    */
   public void loadComponents(List<ComponentSpecification> cs) {
-    // TODO Auto-generated method stub
     for (ComponentSpecification spec : cs) {
       if (componentsByName.containsKey(spec.getName())) {
         if (components.containsKey(spec)) {
@@ -404,11 +407,13 @@ public class ComponentManagerImpl implements ComponentManager {
 
   /**
    * {@inheritDoc}
-   * @throws KernelConfigurationException 
-   * @throws ComponentSpecificationException 
+   * 
+   * @throws KernelConfigurationException
+   * @throws ComponentSpecificationException
    * @see org.sakaiproject.kernel.api.ComponentManager#startComponents(java.util.List)
    */
-  public void startComponents(List<ComponentSpecification> specs) throws ComponentSpecificationException, KernelConfigurationException {
+  public void startComponents(List<ComponentSpecification> specs)
+      throws ComponentSpecificationException, KernelConfigurationException {
     loadComponents(specs);
     for (ComponentSpecification spec : getStartOrder(specs)) {
       startComponent(spec);

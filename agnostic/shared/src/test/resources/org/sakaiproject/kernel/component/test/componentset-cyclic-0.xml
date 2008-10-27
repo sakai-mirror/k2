@@ -4,6 +4,5 @@
   <documentation>ComponentSet Good 0 has no dependencies
   </documentation>
   <activator>org.sakaiproject.simple</activator>
-  <classPath>file:lib/test.jar</classPath>
   <managed>false</managed>
 </component>

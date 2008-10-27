@@ -26,14 +26,14 @@ import com.google.inject.spi.Message;
 import org.sakaiproject.kernel.api.ComponentManager;
 import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.ServiceManager;
+import org.sakaiproject.kernel.api.ShutdownService;
 import org.sakaiproject.kernel.api.jcr.JCRService;
-import org.sakaiproject.kernel.component.ResourceLoader;
-import org.sakaiproject.kernel.component.core.ShutdownService;
 import org.sakaiproject.kernel.component.core.guice.ServiceProvider;
 import org.sakaiproject.kernel.jcr.api.internal.StartupAction;
 import org.sakaiproject.kernel.jcr.jackrabbit.RepositoryBuilder;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.StartupActionProvicer;
+import org.sakaiproject.kernel.util.ResourceLoader;
 
 import java.io.IOException;
 import java.io.InputStream;

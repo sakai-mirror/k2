@@ -17,10 +17,13 @@
  */
 package org.sakaiproject.kernel.component.core;
 
+import com.google.inject.Inject;
+
 import org.sakaiproject.kernel.api.ClasspathDependency;
+import org.sakaiproject.kernel.api.ComponentSpecificationException;
 import org.sakaiproject.kernel.api.DependencyResolverService;
 import org.sakaiproject.kernel.api.Kernel;
-import org.sakaiproject.kernel.api.ServiceSpec;
+import org.sakaiproject.kernel.api.PackageRegistryService;
 
 import java.net.URL;
 import java.net.URLStreamHandlerFactory;
@@ -31,28 +34,38 @@ import java.net.URLStreamHandlerFactory;
  * add urls to the shared classpath. It only provides loading of classes and not
  * resources from the exported classes.
  */
-public class SharedClassLoader extends ComponentClassloader {
+public class SharedClassLoader extends ComponentClassLoader {
 
   private DependencyResolverService dependencyResolverService;
 
+  @Inject
+  public SharedClassLoader(PackageRegistryService packageRegistryService,
+      DependencyResolverService dependencyResolverService, Kernel kernel) {
+    super(packageRegistryService,new URL[0],kernel.getParentComponentClassLoader());
+    this.dependencyResolverService = dependencyResolverService;
+  }
   /**
+   * @param packageRegistryService
+   * @param dependencyResolverService
    * @param urls
    * @param parent
    * @param factory
    */
-  public SharedClassLoader(Kernel kernel, URL[] urls, ClassLoader parent,
-      URLStreamHandlerFactory factory) {
-    super(kernel, urls, parent, factory);
-    dependencyResolverService = kernel.getServiceManager().getService(
-        new ServiceSpec(DependencyResolverService.class));
+  public SharedClassLoader(PackageRegistryService packageRegistryService,
+      DependencyResolverService dependencyResolverService, URL[] urls,
+      ClassLoader parent, URLStreamHandlerFactory factory) {
+    super(packageRegistryService, urls, parent, factory);
+    this.dependencyResolverService = dependencyResolverService;
   }
 
   /**
    * @param kernel
    * @param urls
    */
-  public SharedClassLoader(Kernel kernel, URL[] urls) {
-    super(kernel, urls);
+  public SharedClassLoader(PackageRegistryService packageRegistryService,
+      DependencyResolverService dependencyResolverService, URL[] urls) {
+    super(packageRegistryService, urls);
+    this.dependencyResolverService = dependencyResolverService;
   }
 
   /**
@@ -60,8 +73,10 @@ public class SharedClassLoader extends ComponentClassloader {
    * @param urls
    * @param parent
    */
-  public SharedClassLoader(Kernel kernel, URL[] urls, ClassLoader parent) {
-    super(kernel, urls, parent);
+  public SharedClassLoader(PackageRegistryService packageRegistryService,
+      DependencyResolverService dependencyResolverService, URL[] urls, ClassLoader parent) {
+    super(packageRegistryService, urls, parent);
+    this.dependencyResolverService = dependencyResolverService;
   }
 
   /**
@@ -69,9 +84,11 @@ public class SharedClassLoader extends ComponentClassloader {
    * @param artifactId
    * @param versionId
    * @param classifier
+   * @throws ComponentSpecificationException 
    */
-  public void addDependency(ClasspathDependency classpathDependency) {
-    URL classPathUrl = dependencyResolverService.resolve(getURLs(), classpathDependency);
+  public void addDependency(ClasspathDependency classpathDependency) throws ComponentSpecificationException {
+    URL classPathUrl = dependencyResolverService.resolve(getURLs(),
+        classpathDependency);
     if (classPathUrl != null) {
       addURL(classPathUrl);
     }

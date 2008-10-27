@@ -4,7 +4,6 @@
   <documentation>ComponentSet Good 4 depends on nothing
   </documentation>
   <activator>org.sakaiproject.simple</activator>
-  <classPath>file:lib/test.jar</classPath>
   <componentDependencies>
   </componentDependencies>
   <managed>false</managed>

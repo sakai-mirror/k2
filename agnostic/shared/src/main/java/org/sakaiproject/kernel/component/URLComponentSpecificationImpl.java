@@ -20,15 +20,21 @@ package org.sakaiproject.kernel.component;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.Annotations;
 
+import org.sakaiproject.kernel.api.ClasspathDependency;
 import org.sakaiproject.kernel.api.ComponentDependency;
 import org.sakaiproject.kernel.api.ComponentSpecification;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
+import org.sakaiproject.kernel.api.PackageExport;
 import org.sakaiproject.kernel.component.model.Component;
+import org.sakaiproject.kernel.util.ComponentSpecificationUtil;
+import org.sakaiproject.kernel.util.ResourceLoader;
+import org.sakaiproject.kernel.util.XSDValidator;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
@@ -52,15 +58,18 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
    */
   private Component component;
   /**
-   * an array of classpath urls.
-   */
-  private URL[] classPathUrls;
-  /**
    * dependencies of the component.
    */
-  private ComponentDependency[] dependencies;
+  private ComponentDependency[] componentDependencies;
+  /**
+   * The classpath dependencies of this component
+   */
+  private ClasspathDependency[] dependencies;
+
   @SuppressWarnings("unused")
   private String source;
+  private PackageExport[] exports;
+  private URL componentClasspath;
 
   /**
    * Construct a URL based component specification based on the supplied string
@@ -68,13 +77,21 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
    * a components.xml defining classpath, component activation, and component
    * dependency.
    * 
+   * @param source
    * @param d
    * @throws IOException
    * @throws ComponentSpecificationException
    */
   public URLComponentSpecificationImpl(String source, String d)
       throws ComponentSpecificationException {
-    this.source = source;
+    if (source != null) {
+      try {
+        this.componentClasspath = new URL(source);
+      } catch (MalformedURLException e) {
+        throw new ComponentSpecificationException(
+            "The source of the component is does not represent a URL " + source,e);
+      }
+    }
     XStream xstream = new XStream();
     Annotations.configureAliases(xstream, Component.CLASSES);
     Reader in = null;
@@ -95,32 +112,23 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
             "A component must have an activator");
       }
 
-      String classPath = component.getClassPath();
-      if (classPath == null) {
-        if ( source == null ) {
-        classPathUrls = new URL[0];
-        } else {
-          classPathUrls = new URL[1];
-          classPathUrls[0] = new URL(source);
-        }
+      List<ComponentDependency> cdeps = component.getComponentDependencies();
+      if (cdeps == null) {
+        componentDependencies = new ComponentDependency[0];
       } else {
-        int i = 0;
-        String[] cp = classPath.trim().split(";");
-        if ( source == null ) {
-          classPathUrls = new URL[cp.length];
-        } else {
-          classPathUrls = new URL[cp.length+1];
-          classPathUrls[i++] = new URL(source);
-        }
-        for (String classpath : cp) {
-          classPathUrls[i++] = new URL(classpath);
-        }
+        componentDependencies = cdeps.toArray(new ComponentDependency[0]);
       }
-      List<ComponentDependency> deps = component.getComponentDependencies();
+      List<ClasspathDependency> deps = component.getDependencies();
       if (deps == null) {
-        dependencies = new ComponentDependency[0];
+        dependencies = new ClasspathDependency[0];
       } else {
-        dependencies = deps.toArray(new ComponentDependency[0]);
+        dependencies = deps.toArray(new ClasspathDependency[0]);
+      }
+      List<PackageExport> exs = component.getExports();
+      if (exs == null) {
+        exports = new PackageExport[0];
+      } else {
+        exports = exs.toArray(new PackageExport[0]);
       }
     } catch (IOException e) {
       throw new ComponentSpecificationException(
@@ -141,8 +149,8 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
    * @return an array of URL's representing the classpath for the component.
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getClassPathURLs()
    */
-  public URL[] getClassPathURLs() {
-    return classPathUrls;
+  public ClasspathDependency[] getClassPathDependencies() {
+    return dependencies;
   }
 
   /**
@@ -156,10 +164,10 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
 
   /**
    * @return an array of dependencies for this component.
-   * @see org.sakaiproject.kernel.api.ComponentSpecification#getDependencies()
+   * @see org.sakaiproject.kernel.api.ComponentSpecification#getComponentDependencies()
    */
-  public ComponentDependency[] getDependencies() {
-    return dependencies;
+  public ComponentDependency[] getComponentDependencies() {
+    return componentDependencies;
   }
 
   /**
@@ -195,17 +203,40 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
    *      ()
    */
   public String getDependencyDescription() {
-    StringBuilder sb = new StringBuilder();
-    sb.append(getName()).append("->(");
-    ComponentDependency[] dependencies = getDependencies();
-    for (int i = 0; i < dependencies.length - 1; i++) {
-      sb.append(dependencies[i].getComponentName()).append(",");
-    }
-    if (dependencies.length > 0) {
-      sb.append(dependencies[dependencies.length - 1].getComponentName());
-    }
-    sb.append(")");
-    return sb.toString();
+    return ComponentSpecificationUtil.formatDescription(this);
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.kernel.api.ComponentSpecification#getDependencies()
+   */
+  public ClasspathDependency[] getDependencies() {
+    return dependencies;
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.kernel.api.ComponentSpecification#getExports()
+   */
+  public PackageExport[] getExports() {
+    return exports;
+  }
+
+  /**
+   * @return the url to the start of
+   */
+  public URL getComponentClasspath() {
+    return componentClasspath;
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.ComponentSpecification#isKernelBootstrap()
+   */
+  public boolean isKernelBootstrap() {
+    return false;
   }
 
 }

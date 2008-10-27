@@ -21,6 +21,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 import org.sakaiproject.kernel.api.ClasspathDependency;
 import org.sakaiproject.kernel.api.ComponentDependency;
+import org.sakaiproject.kernel.api.DependencyScope;
 import org.sakaiproject.kernel.api.PackageExport;
 
 import java.util.ArrayList;
@@ -37,13 +38,9 @@ public class Component {
     Component.class,
     ComponentDependencyImpl.class,
     ClasspathDepencencyImpl.class,
-    ClasspathScope.class,
+    DependencyScope.class,
     PackageExportImpl.class
   };
-  /**
-   * A ; seperate list of class path uri's
-   */
-  private String classPath;
   /**
    * The name of activator class.
    */
@@ -82,21 +79,6 @@ public class Component {
    * The name of the component.
    */
   private String name;
-
-  /**
-   * @return the classpath
-   */
-  public String getClassPath() {
-    return classPath;
-  }
-
-  /**
-   * @param classPath
-   *          the classPath to set
-   */
-  public void setClassPath(String classPath) {
-    this.classPath = classPath;
-  }
 
   /**
    * @return the activator class name

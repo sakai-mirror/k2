@@ -10,7 +10,6 @@
 			<xs:element minOccurs="1" name="name" type="xs:string" />
 			<xs:element minOccurs="1" name="documentation" type="xs:string" />
 			<xs:element minOccurs="1" name="activator" type="xs:string" />
-			<xs:element minOccurs="0" name="classPath" type="xs:string" />
 			<xs:element minOccurs="0" name="componentDependencies"
 				type="tns:ArrayOfComponentDependencies" />
 			<xs:element minOccurs="0" name="dependencies" type="tns:ArrayOfDependencies" />

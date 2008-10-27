@@ -24,7 +24,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.sakaiproject.kernel.component.FileUtil;
+import org.sakaiproject.kernel.util.FileUtil;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -67,7 +67,7 @@ public class FileUtilTest {
     fw.close();
   }
   /**
-   * Test method for {@link org.sakaiproject.kernel.component.FileUtil#deleteAll(java.io.File)}.
+   * Test method for {@link org.sakaiproject.kernel.util.FileUtil#deleteAll(java.io.File)}.
    */
   @Test
   public void testDeleteAll() {
@@ -77,7 +77,7 @@ public class FileUtilTest {
   }
 
   /**
-   * Test method for {@link org.sakaiproject.kernel.component.FileUtil#findAll(java.lang.String, java.lang.String)}.
+   * Test method for {@link org.sakaiproject.kernel.util.FileUtil#findAll(java.lang.String, java.lang.String)}.
    */
   @Test
   public void testFindAll() {

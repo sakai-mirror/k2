@@ -17,8 +17,11 @@
  */
 package org.sakaiproject.kernel.component.test.mock;
 
+import org.sakaiproject.kernel.api.ClasspathDependency;
 import org.sakaiproject.kernel.api.ComponentDependency;
 import org.sakaiproject.kernel.api.ComponentSpecification;
+import org.sakaiproject.kernel.api.PackageExport;
+import org.sakaiproject.kernel.util.ComponentSpecificationUtil;
 
 import java.net.URL;
 
@@ -53,22 +56,15 @@ public class MockComponentSpecificationImpl implements ComponentSpecification {
   /*
    * (non-Javadoc)
    * 
-   * @see org.sakaiproject.kernel.api.ComponentSpecification#getDependencies()
-   */
-  public ComponentDependency[] getDependencies() {
-    return new ComponentDependency[0];
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getDefinition()
    */
   public String getDefinition() {
     return SPECIFICATION;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getName()
    */
   public String getName() {
@@ -83,17 +79,33 @@ public class MockComponentSpecificationImpl implements ComponentSpecification {
    * ()
    */
   public String getDependencyDescription() {
-    StringBuilder sb = new StringBuilder();
-    sb.append(getName()).append("->(");
-    ComponentDependency[] dependencies = getDependencies();
-    for (int i = 0; i < dependencies.length - 1; i++) {
-      sb.append(dependencies[i].getComponentName()).append(",");
-    }
-    if (dependencies.length > 0) {
-      sb.append(dependencies[dependencies.length - 1].getComponentName());
-    }
-    sb.append(")");
-    return sb.toString();
+    return ComponentSpecificationUtil.formatDescription(this);
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.kernel.api.ComponentSpecification#getComponentDependencies()
+   */
+  public ComponentDependency[] getComponentDependencies() {
+    return new ComponentDependency[0];
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.kernel.api.ComponentSpecification#getDependencies()
+   */
+  public ClasspathDependency[] getDependencies() {
+    return new ClasspathDependency[0];
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.ComponentSpecification#getExports()
+   */
+  public PackageExport[] getExports() {
+    return new PackageExport[0];
   }
 
 }

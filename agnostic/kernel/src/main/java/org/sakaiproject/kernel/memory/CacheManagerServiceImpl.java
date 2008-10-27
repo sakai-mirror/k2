@@ -28,7 +28,7 @@ import org.sakaiproject.kernel.api.RequiresStop;
 import org.sakaiproject.kernel.api.memory.Cache;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
-import org.sakaiproject.kernel.component.ResourceLoader;
+import org.sakaiproject.kernel.util.ResourceLoader;
 
 import java.io.IOException;
 import java.io.InputStream;

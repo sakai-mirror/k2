@@ -19,6 +19,7 @@ package org.sakaiproject.kernel.api;
 
 import java.net.URL;
 
+
 /**
  * A ComponentSpecification is required to manage a component, it may specify a
  * list of classpath urls to build a classpath and it may optionally specify and
@@ -27,9 +28,14 @@ import java.net.URL;
 public interface ComponentSpecification {
 
   /**
-   * @return an Array of URLS specifying the classpath.
+   * @return an list of classpath dependencies
    */
-  URL[] getClassPathURLs();
+  ClasspathDependency[] getDependencies();
+
+  /**
+   * @return the packages that will be exported
+   */
+  PackageExport[] getExports();
 
   /**
    * @return the ClassName of the activator class for this component, expected
@@ -41,8 +47,8 @@ public interface ComponentSpecification {
   /**
    * @return an array of ComponentDependencies that this component depends upon.
    */
-  ComponentDependency[] getDependencies();
-  
+  ComponentDependency[] getComponentDependencies();
+
   String getDefinition();
 
   /**
@@ -55,5 +61,14 @@ public interface ComponentSpecification {
    */
   String getDependencyDescription();
 
+  /**
+   * @return the classpath of the component itself
+   */
+  URL getComponentClasspath();
+
+  /**
+   * @return true if the component is part of the kernel bootstrap
+   */
+  boolean isKernelBootstrap();
 
 }

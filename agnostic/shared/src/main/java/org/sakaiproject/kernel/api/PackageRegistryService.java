@@ -17,15 +17,11 @@
  */
 package org.sakaiproject.kernel.api;
 
-import com.google.inject.ImplementedBy;
-
-import org.sakaiproject.kernel.component.core.PackageRegistryServiceImpl;
 
 /**
  * Provides an in memory tree register for classloaders that load exported
  * packages.
  */
-@ImplementedBy(PackageRegistryServiceImpl.class)
 public interface PackageRegistryService {
 
   /**

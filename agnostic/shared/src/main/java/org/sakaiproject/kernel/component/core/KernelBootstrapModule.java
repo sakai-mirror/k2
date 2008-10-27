@@ -19,13 +19,19 @@ package org.sakaiproject.kernel.component.core;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.CreationException;
+import com.google.inject.Scopes;
 import com.google.inject.name.Names;
 import com.google.inject.spi.Message;
 
+import org.sakaiproject.kernel.api.ClassLoaderService;
+import org.sakaiproject.kernel.api.ComponentLoaderService;
 import org.sakaiproject.kernel.api.ComponentManager;
+import org.sakaiproject.kernel.api.DependencyResolverService;
 import org.sakaiproject.kernel.api.Kernel;
+import org.sakaiproject.kernel.api.PackageRegistryService;
 import org.sakaiproject.kernel.api.ServiceManager;
-import org.sakaiproject.kernel.component.ResourceLoader;
+import org.sakaiproject.kernel.api.ShutdownService;
+import org.sakaiproject.kernel.util.ResourceLoader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -92,20 +98,37 @@ public class KernelBootstrapModule extends AbstractModule {
 
   /**
    * Configure the guice bindings.
+   * 
    * @see com.google.inject.AbstractModule#configure()
    */
   @Override
   protected void configure() {
     Names.bindProperties(this.binder(), properties);
-    
+
     bind(Kernel.class).toInstance(kernel);
     bind(ServiceManager.class).toInstance(kernel.getServiceManager());
     bind(ComponentManager.class).toInstance(kernel.getComponentManager());
-    
+
     bind(KernelInjectorService.class).asEagerSingleton();
-    bind(ShutdownService.class).asEagerSingleton();
     bind(SharedClassLoaderContainer.class).asEagerSingleton();
 
+    bind(ComponentLoaderService.class).to(ComponentLoaderServiceImpl.class).in(
+        Scopes.SINGLETON);
+    bind(ShutdownService.class).to(ShutdownServiceImpl.class).in(
+        Scopes.SINGLETON);
+    bind(PackageRegistryService.class).to(PackageRegistryServiceImpl.class).in(
+        Scopes.SINGLETON);
+    bind(ClassLoaderService.class).to(ClassLoaderServiceImpl.class).in(
+        Scopes.SINGLETON);
+    bind(DependencyResolverService.class).to(Maven2DependencyResolver.class)
+        .in(Scopes.SINGLETON);
   }
 
+  
+  /**
+   * @return the properties
+   */
+  public Properties getProperties() {
+    return properties;
+  }
 }

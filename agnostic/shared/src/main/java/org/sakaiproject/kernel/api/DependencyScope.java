@@ -17,35 +17,9 @@
  */
 package org.sakaiproject.kernel.api;
 
-
 /**
  * 
  */
-public interface ClasspathDependency {
-
-  /**
-   * @return
-   */
-  String getGroupId();
-
-  /**
-   * @return
-   */
-  String getArtifactId();
-
-  /**
-   * @return
-   */
-  String getVersion();
-
-  /**
-   * @return
-   */
-  String getType();
-
-  /**
-   * @return
-   */
-   DependencyScope getScope();
-
+public enum DependencyScope {
+  SHARE, LOCAL;
 }

@@ -33,7 +33,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.core.RepositoryImpl;
 import org.apache.jackrabbit.core.config.RepositoryConfig;
 import org.apache.jackrabbit.core.nodetype.NodeTypeManagerImpl;
-import org.sakaiproject.kernel.component.ResourceLoader;
 import org.sakaiproject.kernel.jcr.api.internal.StartupAction;
 import org.sakaiproject.kernel.jcr.jackrabbit.persistance.BundleDbSharedPersistenceManager;
 import org.sakaiproject.kernel.jcr.jackrabbit.persistance.DerbySharedPersistenceManager;
@@ -42,6 +41,7 @@ import org.sakaiproject.kernel.jcr.jackrabbit.persistance.MySqlSharedPersistence
 import org.sakaiproject.kernel.jcr.jackrabbit.persistance.Oracle9SharedPersistenceManager;
 import org.sakaiproject.kernel.jcr.jackrabbit.persistance.OracleSharedPersistenceManager;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
+import org.sakaiproject.kernel.util.ResourceLoader;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

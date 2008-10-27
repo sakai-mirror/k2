@@ -22,14 +22,23 @@ import com.google.inject.Injector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.api.ClassLoaderService;
 import org.sakaiproject.kernel.api.ComponentActivator;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
+import org.sakaiproject.kernel.api.ComponentLoaderService;
+import org.sakaiproject.kernel.api.ComponentSpecificationException;
+import org.sakaiproject.kernel.api.DependencyResolverService;
 import org.sakaiproject.kernel.api.Kernel;
+import org.sakaiproject.kernel.api.KernelConfigurationException;
 import org.sakaiproject.kernel.api.PackageRegistryService;
 import org.sakaiproject.kernel.api.RequiresStop;
 import org.sakaiproject.kernel.api.ServiceSpec;
+import org.sakaiproject.kernel.api.ShutdownService;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
+import java.util.Properties;
 
 /**
  * The activator for the kernel bootstrap component.
@@ -46,10 +55,8 @@ public class KernelBootstrapActivator implements ComponentActivator {
     SharedClassLoaderContainer.class,
     ShutdownService.class,
     PackageRegistryService.class,
-    
-    
-    
-    // this should really be the last bootstrap, as it will load the remaining
+    DependencyResolverService.class,
+    ClassLoaderService.class,
     ComponentLoaderService.class
   };
   /**
@@ -69,10 +76,26 @@ public class KernelBootstrapActivator implements ComponentActivator {
   public void activate(Kernel kernel) throws ComponentActivatorException {
     LOG.info("Starting Shared Container");
     this.kernel = kernel;
-    Injector injector = Guice.createInjector(new KernelBootstrapModule(kernel));
+    KernelBootstrapModule kbmodule = new KernelBootstrapModule(kernel);
+    Injector injector = Guice.createInjector(kbmodule);
     for ( Class<?> c : KERNEL_SERVICES ) {
       Object s = injector.getInstance(c);
       LOG.info("Loaded "+c+" as "+s);
+    }
+    
+    
+    // finally invoke the component loader
+    ComponentLoaderService loader = kernel.getServiceManager().getService(new ServiceSpec(ComponentLoaderService.class));
+    Properties p = kbmodule.getProperties();    
+    
+    try {
+      loader.load(p.getProperty("component.locations"), false);
+    } catch (IOException e) {
+      throw new ComponentActivatorException("Failed to load kernel components "+e.getMessage(),e);
+    } catch (ComponentSpecificationException e) {
+      throw new ComponentActivatorException("Failed to load kernel components "+e.getMessage(),e);
+    } catch (KernelConfigurationException e) {
+      throw new ComponentActivatorException("Failed to load kernel components "+e.getMessage(),e);
     }
   }
 

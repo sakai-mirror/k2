@@ -17,35 +17,14 @@
  */
 package org.sakaiproject.kernel.api;
 
-
 /**
  * 
  */
-public interface ClasspathDependency {
+public interface ShutdownService {
 
   /**
-   * @return
+   * @param toBeStopped
    */
-  String getGroupId();
-
-  /**
-   * @return
-   */
-  String getArtifactId();
-
-  /**
-   * @return
-   */
-  String getVersion();
-
-  /**
-   * @return
-   */
-  String getType();
-
-  /**
-   * @return
-   */
-   DependencyScope getScope();
+  void register(RequiresStop toBeStopped);
 
 }

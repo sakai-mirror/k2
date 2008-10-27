@@ -5,7 +5,20 @@
 <title>Core Kernel Service Implementations</title>
 </head>
 <body>
-The Basic Kernel Activator that bootstraps the core services into the
-kernel.
+<p>This package forms the core of the bootstrap component within the
+kernel. The Bootstrap component provides low level services that make it
+possible to start other components. Since there are none of these
+services are available when the kernel bootstrap component starts, it
+may not use the ComponentManager and ServiceManager to perform
+configuration and startup.</p>
+<p>The kernel boot strap component starts using the
+KernelBootstrapSpec, which is specified in the kernel.properties file.
+This provides a hard coded specification for the Kernel Spec, that
+starts the KernelBootstrapActivator. This invokes Guice against a
+KernelBootstrapModule which starts all the bootstrap services. The
+services, specified in the KernelBoostrapSpec are then pulled form guice
+and injected into the kernel Service Manager.</p>
+<p>Finally the Component Loader service manager loads the remaining
+components.</p>
 </body>
 </html>

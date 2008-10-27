@@ -24,8 +24,8 @@ import static org.junit.Assert.fail;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.sakaiproject.kernel.component.FileUtil;
-import org.sakaiproject.kernel.component.ResourceLoader;
+import org.sakaiproject.kernel.util.FileUtil;
+import org.sakaiproject.kernel.util.ResourceLoader;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -65,7 +65,7 @@ public class ResourceLoaderTest {
 
   /**
    * Test method for
-   * {@link org.sakaiproject.kernel.component.ResourceLoader#openResource(java.lang.String)}
+   * {@link org.sakaiproject.kernel.util.ResourceLoader#openResource(java.lang.String)}
    * .
    * 
    * @throws IOException
@@ -105,7 +105,7 @@ public class ResourceLoaderTest {
 
   /**
    * Test method for
-   * {@link org.sakaiproject.kernel.component.ResourceLoader#openResource(java.lang.String, java.lang.ClassLoader)}
+   * {@link org.sakaiproject.kernel.util.ResourceLoader#openResource(java.lang.String, java.lang.ClassLoader)}
    * .
    * 
    * @throws IOException
@@ -121,7 +121,7 @@ public class ResourceLoaderTest {
 
   /**
    * Test method for
-   * {@link org.sakaiproject.kernel.component.ResourceLoader#readResource(java.lang.String)}
+   * {@link org.sakaiproject.kernel.util.ResourceLoader#readResource(java.lang.String)}
    * .
    * @throws IOException 
    */
@@ -135,7 +135,7 @@ public class ResourceLoaderTest {
 
   /**
    * Test method for
-   * {@link org.sakaiproject.kernel.component.ResourceLoader#readResource(java.lang.String, java.lang.ClassLoader)}
+   * {@link org.sakaiproject.kernel.util.ResourceLoader#readResource(java.lang.String, java.lang.ClassLoader)}
    * .
    * @throws IOException 
    */
@@ -150,7 +150,7 @@ public class ResourceLoaderTest {
 
   /**
    * Test method for
-   * {@link org.sakaiproject.kernel.component.ResourceLoader#readResource(java.net.URL)}
+   * {@link org.sakaiproject.kernel.util.ResourceLoader#readResource(java.net.URL)}
    * .
    * @throws IOException 
    * @throws MalformedURLException 

@@ -17,8 +17,11 @@
  */
 package org.sakaiproject.kernel.component.core;
 
+import org.sakaiproject.kernel.api.ClasspathDependency;
 import org.sakaiproject.kernel.api.ComponentDependency;
 import org.sakaiproject.kernel.api.ComponentSpecification;
+import org.sakaiproject.kernel.api.PackageExport;
+import org.sakaiproject.kernel.util.ComponentSpecificationUtil;
 
 import java.net.URL;
 
@@ -36,7 +39,9 @@ public class KernelBootstrapSpec implements ComponentSpecification {
   /**
    * An empty list of component dependencies.
    */
-  private ComponentDependency[] dependencies = new ComponentDependency[0];
+  private ComponentDependency[] componentDependencies = new ComponentDependency[0];
+  private ClasspathDependency[] dependencies = new ClasspathDependency[0];
+  private PackageExport[] exports = new PackageExport[0];
 
   /**
    * We don't want any special classloader, so return a null classpath.
@@ -64,12 +69,13 @@ public class KernelBootstrapSpec implements ComponentSpecification {
    * @return an array of dependencies.
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getDependencies()
    */
-  public ComponentDependency[] getDependencies() {
-    return dependencies;
+  public ComponentDependency[] getComponentDependencies() {
+    return componentDependencies;
   }
 
   /**
    * The defintion in XML form.
+   * 
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getDefinition()
    */
   public String getDefinition() {
@@ -86,22 +92,46 @@ public class KernelBootstrapSpec implements ComponentSpecification {
 
   /**
    * @return a description of the depenency
-   * @see
-   * org.sakaiproject.kernel.api.ComponentSpecification#getDependencyDescription
-   * ()
+   * @see org.sakaiproject.kernel.api.ComponentSpecification#getDependencyDescription
+   *      ()
    */
   public String getDependencyDescription() {
-    StringBuilder sb = new StringBuilder();
-    sb.append(getName()).append("->(");
-    ComponentDependency[] dependencies = getDependencies();
-    for (int i = 0; i < dependencies.length - 1; i++) {
-      sb.append(dependencies[i].getComponentName()).append(",");
-    }
-    if (dependencies.length > 0) {
-      sb.append(dependencies[dependencies.length - 1].getComponentName());
-    }
-    sb.append(")");
-    return sb.toString();
+    return ComponentSpecificationUtil.formatDescription(this);
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.kernel.api.ComponentSpecification#getDependencies()
+   */
+  public ClasspathDependency[] getDependencies() {
+
+    return dependencies;
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.kernel.api.ComponentSpecification#getExports()
+   */
+  public PackageExport[] getExports() {
+    return exports;
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.ComponentSpecification#getComponentClasspath()
+   */
+  public URL getComponentClasspath() {
+    return null;
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.ComponentSpecification#isKernelBootstrap()
+   */
+  public boolean isKernelBootstrap() {
+    return true;
   }
 
 }

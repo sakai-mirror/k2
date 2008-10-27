@@ -30,15 +30,15 @@ import org.junit.Test;
 import org.sakaiproject.kernel.api.ClasspathDependency;
 import org.sakaiproject.kernel.api.ComponentDependency;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
+import org.sakaiproject.kernel.api.DependencyScope;
 import org.sakaiproject.kernel.api.PackageExport;
-import org.sakaiproject.kernel.component.ResourceLoader;
 import org.sakaiproject.kernel.component.URLComponentSpecificationImpl;
-import org.sakaiproject.kernel.component.XSDValidator;
 import org.sakaiproject.kernel.component.model.ClasspathDepencencyImpl;
-import org.sakaiproject.kernel.component.model.ClasspathScope;
 import org.sakaiproject.kernel.component.model.Component;
 import org.sakaiproject.kernel.component.model.ComponentDependencyImpl;
 import org.sakaiproject.kernel.component.model.PackageExportImpl;
+import org.sakaiproject.kernel.util.ResourceLoader;
+import org.sakaiproject.kernel.util.XSDValidator;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -69,7 +69,6 @@ public class URLComponentSpecificationImplTest {
     Annotations.configureAliases(xstream, Component.CLASSES);
     Component c = new Component();
     c.setActivator("activator.class");
-    c.setClassPath("classpath");
     c.setDocumentation("docs");
     c.setManaged(true);
     c.setName("Some Name");
@@ -88,13 +87,13 @@ public class URLComponentSpecificationImplTest {
     cpd1.setGroupId("org.sakaiproject.kernel2.agnostic");
     cpd1.setArtifactId("shared");
     cpd1.setVersion("0.1-SNAPSHOT");
-    cpd1.setScope(ClasspathScope.LOCAL);
+    cpd1.setScope(DependencyScope.LOCAL);
 
     ClasspathDepencencyImpl cpd2 = new ClasspathDepencencyImpl();
     cpd2.setGroupId("org.sakaiproject.kernel2.agnostic");
     cpd2.setArtifactId("common");
     cpd2.setVersion("0.1-SNAPSHOT");
-    cpd2.setScope(ClasspathScope.SHARE);
+    cpd2.setScope(DependencyScope.SHARE);
     
     List<ClasspathDependency> cpdl = new ArrayList<ClasspathDependency>();
     cpdl.add(cpd1);
@@ -138,8 +137,8 @@ public class URLComponentSpecificationImplTest {
   @Test
   public void testSimpleComponentSpecificationImpl() throws IOException, ComponentSpecificationException {
     URLComponentSpecificationImpl uc = new URLComponentSpecificationImpl(null,TEST_RESOURCE);
-    assertNotNull(uc.getClassPathURLs());
-    assertEquals(0, uc.getClassPathURLs().length);
+    assertNotNull(uc.getComponentDependencies());
+    assertEquals(0, uc.getComponentDependencies().length);
     assertNotNull(uc.getComponentActivatorClassName());
     assertNotNull(uc.getDependencies());
     assertEquals(0,uc.getDependencies().length);
@@ -148,8 +147,8 @@ public class URLComponentSpecificationImplTest {
   @Test
   public void testComplexComponentSpecificationImpl() throws IOException, ComponentSpecificationException {
     URLComponentSpecificationImpl uc = new URLComponentSpecificationImpl(null,TEST_COMPLEX_RESOURCE);
-    assertNotNull(uc.getClassPathURLs());
-    assertEquals(1, uc.getClassPathURLs().length);
+    assertNotNull(uc.getComponentDependencies());
+    assertEquals(1, uc.getComponentDependencies().length);
     assertNotNull(uc.getComponentActivatorClassName());
     assertNotNull(uc.getDependencies());
     assertEquals(3,uc.getDependencies().length);

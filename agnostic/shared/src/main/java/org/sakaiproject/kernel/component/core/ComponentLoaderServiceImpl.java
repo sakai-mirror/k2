@@ -18,16 +18,16 @@
 package org.sakaiproject.kernel.component.core;
 
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.api.ComponentLoaderService;
 import org.sakaiproject.kernel.api.ComponentManager;
 import org.sakaiproject.kernel.api.ComponentSpecification;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
 import org.sakaiproject.kernel.api.KernelConfigurationException;
-import org.sakaiproject.kernel.component.FileUtil;
 import org.sakaiproject.kernel.component.URLComponentSpecificationImpl;
+import org.sakaiproject.kernel.util.FileUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,10 +40,12 @@ import java.util.List;
 /**
  * Loads components
  */
-public class ComponentLoaderService {
+public class ComponentLoaderServiceImpl implements ComponentLoaderService  {
 
   private static final String COMPONENT_SPEC_XML = "SAKAI-INF/component.xml";
-  private static final Log LOG = LogFactory.getLog(ComponentLoaderService.class);
+  private static final Log LOG = LogFactory
+      .getLog(ComponentLoaderServiceImpl.class);
+  private ComponentManager componentManager;
 
   /**
    * @throws IOException
@@ -52,10 +54,11 @@ public class ComponentLoaderService {
    * 
    */
   @Inject
-  public ComponentLoaderService(ComponentManager componentManager,
-      @Named("component.locations") String componentLocations,
-      @Named("component.fromclassloader") boolean fromClassloader)
-      throws ComponentSpecificationException, IOException,
+  public ComponentLoaderServiceImpl(ComponentManager componentManager) {
+    this.componentManager = componentManager;
+  }
+
+  public void load(String componentLocations, boolean fromClassloader) throws IOException, ComponentSpecificationException,
       KernelConfigurationException {
     // convert the location set into a list of URLs
     List<URL> locations = new ArrayList<URL>();

@@ -41,7 +41,8 @@ public interface DependencyResolverService {
    *          the classifier of the dependency (may be null)
    * @return null if there is nothing to add, or the URL if the url needs to be
    *         added.
+   * @throws ComponentSpecificationException 
    */
-  URL resolve(URL[] urls, ClasspathDependency classpathDependency);
+  URL resolve(URL[] urls, ClasspathDependency classpathDependency) throws ComponentSpecificationException;
 
 }

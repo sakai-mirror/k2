@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.RequiresStop;
+import org.sakaiproject.kernel.api.ShutdownService;
 import org.sakaiproject.kernel.loader.common.CommonObject;
 
 import java.lang.management.ManagementFactory;
@@ -50,6 +51,7 @@ public class SharedClassLoaderContainer implements RequiresStop, CommonObject {
    */
   private static final Log LOG = LogFactory
       .getLog(SharedClassLoaderContainer.class);
+  private SharedClassLoader sharedClassLoader;
 
   /**
    * Create a shared classloader object.
@@ -64,8 +66,9 @@ public class SharedClassLoaderContainer implements RequiresStop, CommonObject {
    */
   @Inject
   public SharedClassLoaderContainer(Kernel kernel,
-      ShutdownService shutdownService) throws JMRuntimeException, JMException,
+      ShutdownService shutdownService, SharedClassLoader classLoader) throws JMRuntimeException, JMException,
       InvalidTargetObjectTypeException {
+    this.sharedClassLoader = classLoader;
     MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
     RequiredModelMBean model = new RequiredModelMBean(createMBeanInfo());
     model.setManagedResource(this, "objectReference");
@@ -131,7 +134,7 @@ public class SharedClassLoaderContainer implements RequiresStop, CommonObject {
    */
   @SuppressWarnings("unchecked")
   public <T> T getManagedObject() {
-    return (T) this.getClass().getClassLoader();
+    return (T) sharedClassLoader;
   }
 
 }

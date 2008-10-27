@@ -27,10 +27,10 @@ import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.api.KernelConfigurationException;
 import org.sakaiproject.kernel.api.RequiresStop;
 import org.sakaiproject.kernel.api.ServiceSpec;
+import org.sakaiproject.kernel.api.ShutdownService;
 import org.sakaiproject.kernel.component.ComponentManagerImpl;
 import org.sakaiproject.kernel.component.KernelImpl;
 import org.sakaiproject.kernel.component.ServiceManagerImpl;
-import org.sakaiproject.kernel.component.core.ShutdownService;
 
 /**
  * 

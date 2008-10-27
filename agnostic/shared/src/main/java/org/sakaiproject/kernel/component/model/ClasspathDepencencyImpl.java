@@ -20,6 +20,7 @@ package org.sakaiproject.kernel.component.model;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 import org.sakaiproject.kernel.api.ClasspathDependency;
+import org.sakaiproject.kernel.api.DependencyScope;
 
 /**
  * 
@@ -30,7 +31,7 @@ public class ClasspathDepencencyImpl implements ClasspathDependency {
   private String artifactId;
   private String version;
   private String classifier;
-  private ClasspathScope scope = ClasspathScope.LOCAL;
+  private DependencyScope scope = DependencyScope.LOCAL;
 
   /**
    * @return the groupId
@@ -95,14 +96,22 @@ public class ClasspathDepencencyImpl implements ClasspathDependency {
   /**
    * @return the scope
    */
-  public ClasspathScope getScope() {
+  public DependencyScope getScope() {
     return scope;
   }
   
   /**
    * @param scope the scope to set
    */
-  public void setScope(ClasspathScope scope) {
+  public void setScope(DependencyScope scope) {
     this.scope = scope;
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.ClasspathDependency#getType()
+   */
+  public String getType() {
+    return "jar";
   }
 }
