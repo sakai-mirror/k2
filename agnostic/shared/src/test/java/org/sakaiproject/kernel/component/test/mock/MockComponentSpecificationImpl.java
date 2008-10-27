@@ -102,10 +102,29 @@ public class MockComponentSpecificationImpl implements ComponentSpecification {
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getExports()
    */
   public PackageExport[] getExports() {
     return new PackageExport[0];
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.kernel.api.ComponentSpecification#getComponentClasspath()
+   */
+  public URL getComponentClasspath() {
+    return null;
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.kernel.api.ComponentSpecification#isKernelBootstrap()
+   */
+  public boolean isKernelBootstrap() {
+    return false;
   }
 
 }

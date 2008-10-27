@@ -19,10 +19,8 @@ package org.sakaiproject.kernel.component.core;
 
 import com.google.inject.Inject;
 
-import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.RequiresStop;
 import org.sakaiproject.kernel.api.ServiceManagerException;
-import org.sakaiproject.kernel.api.ServiceSpec;
 import org.sakaiproject.kernel.api.ShutdownService;
 
 import java.util.List;
@@ -46,9 +44,7 @@ public class ShutdownServiceImpl implements RequiresStop, ShutdownService {
    * @throws ServiceManagerException
    */
   @Inject
-  public ShutdownServiceImpl(Kernel kernel) throws ServiceManagerException {
-    kernel.getServiceManager().registerService(
-        new ServiceSpec(ShutdownService.class), this);
+  public ShutdownServiceImpl() throws ServiceManagerException {
   }
 
   /**

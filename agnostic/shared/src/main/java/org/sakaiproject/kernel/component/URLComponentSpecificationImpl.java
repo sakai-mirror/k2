@@ -102,7 +102,7 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
       String errors = XSDValidator.validate(specification, xsd);
       if (errors.length() > 0) {
         throw new ComponentSpecificationException(
-            "Components file does not conform ot schema " + errors);
+            "Components file does not conform to schema " + errors);
       }
       in = new StringReader(specification);
       component = (Component) xstream.fromXML(in);

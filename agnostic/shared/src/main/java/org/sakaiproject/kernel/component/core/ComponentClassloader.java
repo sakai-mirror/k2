@@ -24,6 +24,8 @@ import org.sakaiproject.kernel.api.PackageRegistryService;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLStreamHandlerFactory;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * The Component Classloader is used for components, and will resolve classes
@@ -33,9 +35,19 @@ import java.net.URLStreamHandlerFactory;
  */
 public class ComponentClassLoader extends URLClassLoader {
 
-  private static final Log LOG = LogFactory
-      .getLog(ComponentClassLoader.class);
+  private static final Log LOG = LogFactory.getLog(ComponentClassLoader.class);
   private PackageRegistryService packageRegistryService;
+  private static final ThreadLocal<String> spacing = new ThreadLocal<String>() {
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.lang.ThreadLocal#initialValue()
+     */
+    @Override
+    protected String initialValue() {
+      return "1";
+    }
+  };
 
   /**
    * @param urls
@@ -84,11 +96,16 @@ public class ComponentClassLoader extends URLClassLoader {
       if (classLoader != null) {
         try {
           c = classLoader.loadClass(name);
-          if (LOG.isDebugEnabled())
+          if (LOG.isDebugEnabled()) {
             LOG.debug("loaded " + c);
+          }
         } catch (ClassNotFoundException e) {
           ex = e;
         }
+      }
+    } else {
+      if (LOG.isDebugEnabled()) {
+        LOG.info("Not Loading from exports ");
       }
     }
 
@@ -101,16 +118,67 @@ public class ComponentClassLoader extends URLClassLoader {
       }
     }
 
-    LOG.debug("Resolved " + name + " as " + c);
+    if (c == null) {
+      try {
+        c = getParent().loadClass(name);
+      } catch (ClassNotFoundException e) {
+        ex = e;
+      }
+    }
+
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("Resolved " + name + " as " + c);
+    }
     if (c == null)
       throw ex;
 
     if (resolve)
       resolveClass(c);
 
-    LOG.debug("loaded " + c + " from " + c.getClassLoader());
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("loaded " + c + " from " + c.getClassLoader());
+    }
 
     return c;
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    String t = spacing.get();
+    try {
+      String bl = t + " :         ";
+      StringBuilder sb = new StringBuilder();
+      sb.append(super.toString()).append("\n");
+      sb.append(bl).append("Contents :");
+      for (URL u : getURLs()) {
+        sb.append("\n").append(bl).append(u);
+      }
+      ClassLoader parent = getParent();
+      Map<ClassLoader, ClassLoader> parents = new LinkedHashMap<ClassLoader, ClassLoader>();
+
+      while (parent != null && !parents.containsKey(parent)) {
+        parents.put(parent, parent);
+        parent = parent.getParent();
+      }
+      if (t.equals("1")) {
+        sb.append("\n").append(bl).append("Classloaders :");
+        int i = 1;
+        for (ClassLoader p : parents.keySet()) {
+          String l = t + "." + i;
+          spacing.set(l);
+          sb.append("\n").append(l).append(" :").append(p);
+          i++;
+        }
+      }
+      return sb.toString();
+    } finally {
+      spacing.set(t);
+    }
   }
 
 }

@@ -19,6 +19,7 @@ package org.sakaiproject.kernel.component.core;
 
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
 import org.sakaiproject.kernel.api.PackageRegistryService;
+import org.sakaiproject.kernel.util.StringUtils;
 
 /**
  * Provides a tree implementation of the package register
@@ -38,7 +39,7 @@ public class PackageRegistryServiceImpl implements
    *      java.lang.ClassLoader)
    */
   public void addExport(String stub, ClassLoader classLoader) {
-    String[] elements = stub.split("\\.");
+    String[] elements = StringUtils.split(stub,'.');
     PackageExport p = root;
     for (String element : elements ) {
       PackageExport np = p.get(element);
@@ -58,7 +59,7 @@ public class PackageRegistryServiceImpl implements
    * @see org.sakaiproject.kernel.api.ExportedPackagedRegistryService#findClassloader(java.lang.String)
    */
   public ClassLoader findClassloader(String packageName) {
-    String[] elements = packageName.split("\\.");
+    String[] elements = StringUtils.split(packageName,'.');
     PackageExport p = root;
     for (String element : elements ) {
       PackageExport np = p.get(element);
@@ -70,13 +71,14 @@ public class PackageRegistryServiceImpl implements
     return p.getClassLoader();
   }
 
+
   /**
    * {@inheritDoc}
    * 
    * @see org.sakaiproject.kernel.api.ExportedPackagedRegistryService#removeExport(java.lang.String)
    */
   public void removeExport(String stub) {
-    String[] elements = stub.split("\\.");
+    String[] elements = StringUtils.split(stub,'.');
     PackageExport p = root;
     PackageExport container = root;
     String key = null;

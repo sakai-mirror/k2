@@ -30,6 +30,7 @@ import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.KernelConfigurationException;
 import org.sakaiproject.kernel.api.ServiceSpec;
 import org.sakaiproject.kernel.util.ResourceLoader;
+import org.sakaiproject.kernel.util.StringUtils;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -119,7 +120,7 @@ public class ComponentManagerImpl implements ComponentManager {
    * @param spec
    *          the specification of a component to be started.
    * @return true of the component started.
-   * @throws ComponentSpecificationException 
+   * @throws ComponentSpecificationException
    * @see org.sakaiproject.kernel.api.ComponentManager#startComponent(org.sakaiproject
    *      .kernel.api.ComponentSpecification)
    */
@@ -152,19 +153,32 @@ public class ComponentManagerImpl implements ComponentManager {
 
       LOG.info("Activating " + spec + " with Class "
           + spec.getComponentActivatorClassName());
-      Class<ComponentActivator> clazz = (Class<ComponentActivator>) componentClassloader
-          .loadClass(spec.getComponentActivatorClassName());
+      Class<ComponentActivator> clazz = null;
+      try {
+        clazz = (Class<ComponentActivator>) componentClassloader.loadClass(spec
+            .getComponentActivatorClassName());
+      } catch (ClassNotFoundException e) {
+        throw new ComponentSpecificationException(
+            "Unable to find activator class "
+                + spec.getComponentActivatorClassName() + " using "
+                + componentClassloader,e);
+      }
 
-      ComponentActivator activator = clazz.newInstance();
+      ComponentActivator activator = null;
+      try {
+        activator = clazz.newInstance();
+      } catch (ClassCastException e) {
+        throw new ComponentSpecificationException("The Activator class "
+            + spec.getComponentActivatorClassName() + " loaded using "
+            + componentClassloader
+            + " does not implement the ComponentActivator interface ",e);
+      }
 
       activator.activate(kernel);
 
       components.put(spec, activator);
       startedComponents.put(spec.getName(), spec);
       return true;
-    } catch (ClassNotFoundException e) {
-      throw new KernelConfigurationException("Unable to start component "
-          + spec + " cause:" + e.getMessage(), e);
     } catch (InstantiationException e) {
       throw new KernelConfigurationException("Unable to start component "
           + spec + " cause:" + e.getMessage(), e);
@@ -207,7 +221,7 @@ public class ComponentManagerImpl implements ComponentManager {
       String dc = p.getProperty(DEFAULT_COMPONENTS);
       List<ComponentSpecification> toStart = new ArrayList<ComponentSpecification>();
       if (dc != null) {
-        String[] defaultComponents = dc.split(";");
+        String[] defaultComponents = StringUtils.split(dc,';');
         for (String d : defaultComponents) {
           d = d.trim();
           if (d.length() > 0) {

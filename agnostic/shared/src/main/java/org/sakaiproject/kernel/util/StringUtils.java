@@ -15,24 +15,43 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.component.test;
-
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
-
+package org.sakaiproject.kernel.util;
 
 /**
- *
+ * 
  */
-@RunWith(Suite.class)
-@SuiteClasses({ComponentManagerImplTest.class,
-    KernelImplTest.class, 
-    ServiceManagerImplTest.class,
-    KernelLifecycleTest.class,
-    URLComponentSpecificationImplTest.class,
-    FileUtilTest.class,
-    ResourceLoaderTest.class})
-public class TestAll {
+public class StringUtils {
+
+  /**
+   * @param packageName
+   * @param c
+   * @return
+   */
+  public static String[] split(String st, char sep) {
+    char[] pn = st.toCharArray();
+    int n = 1;
+    int start = 0;
+    int end = pn.length;
+    while ( sep == pn[start] && start < end ) start++;
+    while( sep == pn[end-1] && start < end ) end--;
+    for (int i = start; i < end; i++) {
+      if (sep == pn[i]) {
+        n++;
+      }
+    }
+    String[] e = new String[n];
+    int s = start;
+    int j = 0;
+    for (int i = start; i < end; i++) {
+      if (pn[i] == sep) {
+        e[j++] = new String(pn, s, i - s);
+        s = i+1;
+      }
+    }
+    if ( s < end ) {
+      e[j++] = new String(pn, s, end - s);
+    }
+    return e;
+  }
 
 }

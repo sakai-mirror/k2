@@ -148,9 +148,9 @@ public class URLComponentSpecificationImplTest {
   public void testComplexComponentSpecificationImpl() throws IOException, ComponentSpecificationException {
     URLComponentSpecificationImpl uc = new URLComponentSpecificationImpl(null,TEST_COMPLEX_RESOURCE);
     assertNotNull(uc.getComponentDependencies());
-    assertEquals(1, uc.getComponentDependencies().length);
+    assertEquals(3, uc.getComponentDependencies().length);
     assertNotNull(uc.getComponentActivatorClassName());
     assertNotNull(uc.getDependencies());
-    assertEquals(3,uc.getDependencies().length);
+    assertEquals(1,uc.getDependencies().length);
   }
 }

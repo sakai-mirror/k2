@@ -1,23 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component xmlns="http://ns.sakaiproject.org/2008/components">
-  <name>complextcomponent</name>
-  <documentation>A more complex component with some documentation
-  </documentation>
-  <activator>org.sakaiproject.simple</activator>
-  <classPath>file:lib/test.jar</classPath>
-  <componentDependencies>
-    <componentDependency>
-      <componentName>component1</componentName>
-      <managed>false</managed>
-    </componentDependency>
-    <componentDependency>
-      <componentName>component2</componentName>
-      <managed>false</managed>
-    </componentDependency>
-    <componentDependency>
-      <componentName>component3</componentName>
-      <managed>false</managed>
-    </componentDependency>
-  </componentDependencies>
-  <managed>false</managed>
+	<name>complextcomponent</name>
+	<documentation>A more complex component with some documentation
+	</documentation>
+	<activator>org.sakaiproject.simple</activator>
+	<dependencies>
+		<dependency>
+			<groupId>org.sakaiproject.kernel2.agnostic
+			</groupId>
+			<artifactId>common</artifactId>
+			<version>0.1-SNAPSHOT</version>
+			<scope>SHARE</scope>
+		</dependency>
+	</dependencies>
+	<componentDependencies>
+		<componentDependency>
+			<componentName>component1</componentName>
+			<managed>false</managed>
+		</componentDependency>
+		<componentDependency>
+			<componentName>component2</componentName>
+			<managed>false</managed>
+		</componentDependency>
+		<componentDependency>
+			<componentName>component3</componentName>
+			<managed>false</managed>
+		</componentDependency>
+	</componentDependencies>
+	<managed>false</managed>
 </component>

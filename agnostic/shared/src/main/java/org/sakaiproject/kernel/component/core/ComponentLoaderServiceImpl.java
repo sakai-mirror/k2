@@ -28,6 +28,7 @@ import org.sakaiproject.kernel.api.ComponentSpecificationException;
 import org.sakaiproject.kernel.api.KernelConfigurationException;
 import org.sakaiproject.kernel.component.URLComponentSpecificationImpl;
 import org.sakaiproject.kernel.util.FileUtil;
+import org.sakaiproject.kernel.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,7 +63,7 @@ public class ComponentLoaderServiceImpl implements ComponentLoaderService  {
       KernelConfigurationException {
     // convert the location set into a list of URLs
     List<URL> locations = new ArrayList<URL>();
-    for (String location : componentLocations.split(";")) {
+    for (String location : StringUtils.split(componentLocations,';')) {
       if (location.endsWith(".jar")) {
         if (location.indexOf("://") < 0) {
           location = "file:/" + location;

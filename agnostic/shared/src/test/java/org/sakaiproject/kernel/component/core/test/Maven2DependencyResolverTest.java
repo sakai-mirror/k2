@@ -17,25 +17,36 @@
  */
 package org.sakaiproject.kernel.component.core.test;
 
+import static org.junit.Assert.*;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.sakaiproject.kernel.api.DependencyResolverService;
-import org.sakaiproject.kernel.api.PackageRegistryService;
-import org.sakaiproject.kernel.component.URLComponentSpecificationImpl;
-import org.sakaiproject.kernel.component.core.ComponentClassLoader;
+import org.sakaiproject.kernel.api.ComponentSpecificationException;
 import org.sakaiproject.kernel.component.core.Maven2DependencyResolver;
-import org.sakaiproject.kernel.component.core.PackageRegistryServiceImpl;
+import org.sakaiproject.kernel.component.model.ClasspathDepencencyImpl;
+
+import java.net.URL;
 
 /**
  * 
  */
-public class ComponentClassloaderTest {
+public class Maven2DependencyResolverTest {
 
-
+  /**
+   * Test method for {@link org.sakaiproject.kernel.component.core.Maven2DependencyResolver#resolve(java.net.URL[], org.sakaiproject.kernel.api.ClasspathDependency)}.
+   * @throws ComponentSpecificationException 
+   */
   @Test
-  public void testExportedPackages() {
-    // TODO
+  public void testResolve() throws ComponentSpecificationException {
+    Maven2DependencyResolver m2resolver = new Maven2DependencyResolver();
+    ClasspathDepencencyImpl dep = new ClasspathDepencencyImpl();
+    dep.setGroupId("com.google.code.guice");
+    dep.setArtifactId("guice");
+    dep.setVersion("1.0");
+    URL[] urls = new URL[1];
+    urls[0] = m2resolver.resolve(null, dep);
+    assertNotNull(urls[0]);
+    assertNull(m2resolver.resolve(urls, dep));
+    
   }
+
 }

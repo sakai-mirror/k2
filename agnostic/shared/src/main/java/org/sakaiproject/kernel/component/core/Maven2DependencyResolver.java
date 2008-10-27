@@ -56,14 +56,14 @@ public class Maven2DependencyResolver implements DependencyResolverService {
   public URL resolve(URL[] urls, ClasspathDependency classpathDependency)
       throws ComponentSpecificationException {
     File resource = new File(new File(new File(
-        classpathDependency.getGroupId(), classpathDependency.getArtifactId()),
+        classpathDependency.getGroupId().replace('.', File.separatorChar), classpathDependency.getArtifactId()),
         classpathDependency.getVersion()), classpathDependency.getArtifactId()
         + "-" + classpathDependency.getVersion() + "."
         + classpathDependency.getType());
     File localResource = new File(repo, resource.getPath());
     if (!localResource.exists()) {
       throw new ComponentSpecificationException(
-          "Resource does not exist locally " + classpathDependency);
+          "Resource does not exist locally " + classpathDependency+ " reslved as " + localResource.getAbsolutePath());
     }
     URL u;
     try {
@@ -71,6 +71,13 @@ public class Maven2DependencyResolver implements DependencyResolverService {
     } catch (IOException e) {
       throw new ComponentSpecificationException("Unable to create URL for  "
           + classpathDependency, e);
+    }
+    if (urls != null) {
+      for (URL clu : urls) {
+        if (u.equals(clu)) {
+          return null;
+        }
+      }
     }
     return u;
   }

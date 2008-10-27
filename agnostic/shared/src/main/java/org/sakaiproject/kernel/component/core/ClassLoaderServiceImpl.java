@@ -17,6 +17,8 @@
  */
 package org.sakaiproject.kernel.component.core;
 
+import com.google.inject.Inject;
+
 import org.sakaiproject.kernel.api.ClassLoaderService;
 import org.sakaiproject.kernel.api.ClasspathDependency;
 import org.sakaiproject.kernel.api.ComponentSpecification;
@@ -42,6 +44,7 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
    * @param dependencyResolverService
    * 
    */
+  @Inject
   public ClassLoaderServiceImpl(SharedClassLoader sharedClassLoader,
       PackageRegistryService packageRegistryService,
       DependencyResolverService dependencyResolverService) {

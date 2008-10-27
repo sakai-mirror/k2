@@ -32,6 +32,8 @@ import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.KernelConfigurationException;
 import org.sakaiproject.kernel.api.PackageRegistryService;
 import org.sakaiproject.kernel.api.RequiresStop;
+import org.sakaiproject.kernel.api.ServiceManager;
+import org.sakaiproject.kernel.api.ServiceManagerException;
 import org.sakaiproject.kernel.api.ServiceSpec;
 import org.sakaiproject.kernel.api.ShutdownService;
 
@@ -51,14 +53,14 @@ public class KernelBootstrapActivator implements ComponentActivator {
   private static final Log LOG = LogFactory
       .getLog(KernelBootstrapActivator.class);
   private static final Class<?>[] KERNEL_SERVICES = {
-    KernelInjectorService.class,
-    SharedClassLoaderContainer.class,
-    ShutdownService.class,
-    PackageRegistryService.class,
-    DependencyResolverService.class,
-    ClassLoaderService.class,
-    ComponentLoaderService.class
-  };
+      KernelInjectorService.class, SharedClassLoaderContainer.class,
+      ShutdownService.class, PackageRegistryService.class,
+      DependencyResolverService.class, ClassLoaderService.class,
+      ComponentLoaderService.class };
+  private static final Class<?>[] EXPORTED_KERNEL_SERVICES = {
+      SharedClassLoaderContainer.class, ShutdownService.class,
+      PackageRegistryService.class, DependencyResolverService.class,
+      ClassLoaderService.class, ComponentLoaderService.class };
   /**
    * The kernel in which this bootstrap was activated.
    */
@@ -78,24 +80,39 @@ public class KernelBootstrapActivator implements ComponentActivator {
     this.kernel = kernel;
     KernelBootstrapModule kbmodule = new KernelBootstrapModule(kernel);
     Injector injector = Guice.createInjector(kbmodule);
-    for ( Class<?> c : KERNEL_SERVICES ) {
+    for (Class<?> c : KERNEL_SERVICES) {
       Object s = injector.getInstance(c);
-      LOG.info("Loaded "+c+" as "+s);
+      LOG.info("Loaded " + c + " as " + s);
     }
-    
-    
+
+    ServiceManager serviceManager = kernel.getServiceManager();
+    for (Class<?> c : EXPORTED_KERNEL_SERVICES) {
+      Object s = injector.getInstance(c);
+      try {
+        serviceManager.registerService(new ServiceSpec(c), s);
+      } catch (ServiceManagerException e) {
+        throw new ComponentActivatorException("Failed to register service " + c
+            + " cause:" + e.getMessage(), e);
+      }
+      LOG.info("Registerd " + c + " as " + s);
+    }
+
     // finally invoke the component loader
-    ComponentLoaderService loader = kernel.getServiceManager().getService(new ServiceSpec(ComponentLoaderService.class));
-    Properties p = kbmodule.getProperties();    
-    
+    ComponentLoaderService loader = kernel.getServiceManager().getService(
+        new ServiceSpec(ComponentLoaderService.class));
+    Properties p = kbmodule.getProperties();
+
     try {
       loader.load(p.getProperty("component.locations"), false);
     } catch (IOException e) {
-      throw new ComponentActivatorException("Failed to load kernel components "+e.getMessage(),e);
+      throw new ComponentActivatorException("Failed to load kernel components "
+          + e.getMessage(), e);
     } catch (ComponentSpecificationException e) {
-      throw new ComponentActivatorException("Failed to load kernel components "+e.getMessage(),e);
+      throw new ComponentActivatorException("Failed to load kernel components "
+          + e.getMessage(), e);
     } catch (KernelConfigurationException e) {
-      throw new ComponentActivatorException("Failed to load kernel components "+e.getMessage(),e);
+      throw new ComponentActivatorException("Failed to load kernel components "
+          + e.getMessage(), e);
     }
   }
 
