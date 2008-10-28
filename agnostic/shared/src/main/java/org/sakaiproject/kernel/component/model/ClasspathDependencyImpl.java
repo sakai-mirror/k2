@@ -26,7 +26,7 @@ import org.sakaiproject.kernel.api.DependencyScope;
  * 
  */
 @XStreamAlias("dependency")
-public class ClasspathDepencencyImpl implements ClasspathDependency {
+public class ClasspathDependencyImpl implements ClasspathDependency {
   private String groupId;
   private String artifactId;
   private String version;

@@ -39,6 +39,7 @@ import org.sakaiproject.kernel.util.test.StringUtilsTest;
 @SuiteClasses( { StringUtilsTest.class, FileUtilTest.class,
     ResourceLoaderTest.class,
     Maven2DependencyResolverTest.class,
+    ComponentClassloaderTest.class,
     ComponentManagerImplTest.class, KernelImplTest.class,
     ServiceManagerImplTest.class, KernelLifecycleTest.class,
     URLComponentSpecificationImplTest.class,

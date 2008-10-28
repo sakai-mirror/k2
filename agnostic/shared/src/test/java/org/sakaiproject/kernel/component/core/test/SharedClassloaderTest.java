@@ -23,55 +23,65 @@ import static org.junit.Assert.fail;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
-import org.sakaiproject.kernel.component.core.ComponentClassLoader;
+import org.sakaiproject.kernel.api.ComponentSpecificationException;
+import org.sakaiproject.kernel.api.DependencyScope;
+import org.sakaiproject.kernel.component.KernelImpl;
+import org.sakaiproject.kernel.component.core.Maven2DependencyResolver;
 import org.sakaiproject.kernel.component.core.PackageRegistryServiceImpl;
+import org.sakaiproject.kernel.component.core.SharedClassLoader;
+import org.sakaiproject.kernel.component.model.ClasspathDependencyImpl;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * 
  */
-public class ComponentClassloaderTest {
+public class SharedClassloaderTest {
 
 
-  private static final Log LOG = LogFactory.getLog(ComponentClassloaderTest.class);
+  private static final Log LOG = LogFactory.getLog(SharedClassloaderTest.class);
 
 
   @Test
-  public void testExportedPackages() throws MalformedURLException, IOException {
+  public void testExportedPackages() throws MalformedURLException, IOException, ComponentSpecificationException {
     PackageRegistryServiceImpl prs = new PackageRegistryServiceImpl(); 
+    Maven2DependencyResolver dependencyResolver = new Maven2DependencyResolver();
+    KernelImpl kernel = new KernelImpl();
+    
+    // add an export that wont be used
     ClassLoader exportClassloader = this.getClass().getClassLoader();
     prs.addExport("org.sakaiproject.kernel.component.test", exportClassloader);
-    URL[] urls = new URL[1];
-    File f = new File("../server/target/classes/");
-    // classpaths to directories must end in / ... bad! / is a separator
-    urls[0] = new URL("file://"+f.getCanonicalPath()+"/");
     
-    ComponentClassLoader cc = new ComponentClassLoader(prs,urls,exportClassloader);
+    
+    SharedClassLoader cc = new SharedClassLoader(prs,dependencyResolver,kernel);
     LOG.info("Classloader Structure is "+cc.toString());
-    // test for a non found, look at code coverage to check that the export was checked. 
+
+    // Check the class in not visible
     try {
-      cc.loadClass("org.sakaiproject.kernel.component.test.NonExistantClass");
+      cc.loadClass("org.sakaiproject.kernel.loader.server.SwitchedClassLoader");
       fail();
     } catch (ClassNotFoundException e) {
     }
+
     
+    
+    
+    ClasspathDependencyImpl cpdep = new ClasspathDependencyImpl();
+    cpdep.setGroupId("org.sakaiproject.kernel2.agnostic");
+    cpdep.setArtifactId("server");
+    cpdep.setVersion("0.1-SNAPSHOT");
+    cpdep.setScope(DependencyScope.SHARE);
+    
+    cc.addDependency(cpdep);
+
+    LOG.info("Classloader Structure after add is  "+cc.toString());
+
     // load something from the exported classloader
-    try {
-      Class<?> c = cc.loadClass("org.sakaiproject.kernel.component.test.KernelLifecycleTest");
-      assertSame(exportClassloader, c.getClassLoader());
-    } catch (ClassNotFoundException e) {
-      fail();
-    }
-    // load something thats only in the ComponentClassloader
     try {
       Class<?> c = cc.loadClass("org.sakaiproject.kernel.loader.server.SwitchedClassLoader");
       assertSame(cc, c.getClassLoader());
     } catch (ClassNotFoundException e) {
-      LOG.error("Failed ",e);
       fail();
     }
     

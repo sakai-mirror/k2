@@ -23,7 +23,6 @@ import org.sakaiproject.kernel.api.PackageRegistryService;
 
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.net.URLStreamHandlerFactory;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -50,27 +49,6 @@ public class ComponentClassLoader extends URLClassLoader {
   };
 
   /**
-   * @param urls
-   * @param parent
-   * @param factory
-   */
-  public ComponentClassLoader(PackageRegistryService packageRegistryService,
-      URL[] urls, ClassLoader parent, URLStreamHandlerFactory factory) {
-    super(urls, parent, factory);
-    this.packageRegistryService = packageRegistryService;
-
-  }
-
-  /**
-   * 
-   */
-  public ComponentClassLoader(PackageRegistryService packageRegistryService,
-      URL[] urls) {
-    super(urls);
-    this.packageRegistryService = packageRegistryService;
-  }
-
-  /**
    * 
    */
   public ComponentClassLoader(PackageRegistryService packageRegistryService,
@@ -95,10 +73,12 @@ public class ComponentClassLoader extends URLClassLoader {
       ClassLoader classLoader = packageRegistryService.findClassloader(name);
       if (classLoader != null) {
         try {
+          LOG.info("Using export ClassLoader "+classLoader);
           c = classLoader.loadClass(name);
           if (LOG.isDebugEnabled()) {
             LOG.debug("loaded " + c);
           }
+          LOG.info("Got Exported Class "+c+" from "+classLoader);
         } catch (ClassNotFoundException e) {
           ex = e;
         }
@@ -113,6 +93,7 @@ public class ComponentClassLoader extends URLClassLoader {
     if (c == null) {
       try {
         c = this.findClass(name);
+        LOG.info("Got Internal Class "+c+" from "+this);
       } catch (ClassNotFoundException e) {
         ex = e;
       }
@@ -121,6 +102,7 @@ public class ComponentClassLoader extends URLClassLoader {
     if (c == null) {
       try {
         c = getParent().loadClass(name);
+        LOG.info("Got Parent Class "+c+" from "+getParent());
       } catch (ClassNotFoundException e) {
         ex = e;
       }

@@ -26,7 +26,6 @@ import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.PackageRegistryService;
 
 import java.net.URL;
-import java.net.URLStreamHandlerFactory;
 
 /**
  * The shared classloader acts a a shared space for utility jars. It will load
@@ -42,40 +41,6 @@ public class SharedClassLoader extends ComponentClassLoader {
   public SharedClassLoader(PackageRegistryService packageRegistryService,
       DependencyResolverService dependencyResolverService, Kernel kernel) {
     super(packageRegistryService,new URL[0],kernel.getParentComponentClassLoader());
-    this.dependencyResolverService = dependencyResolverService;
-  }
-  /**
-   * @param packageRegistryService
-   * @param dependencyResolverService
-   * @param urls
-   * @param parent
-   * @param factory
-   */
-  public SharedClassLoader(PackageRegistryService packageRegistryService,
-      DependencyResolverService dependencyResolverService, URL[] urls,
-      ClassLoader parent, URLStreamHandlerFactory factory) {
-    super(packageRegistryService, urls, parent, factory);
-    this.dependencyResolverService = dependencyResolverService;
-  }
-
-  /**
-   * @param kernel
-   * @param urls
-   */
-  public SharedClassLoader(PackageRegistryService packageRegistryService,
-      DependencyResolverService dependencyResolverService, URL[] urls) {
-    super(packageRegistryService, urls);
-    this.dependencyResolverService = dependencyResolverService;
-  }
-
-  /**
-   * @param kernel
-   * @param urls
-   * @param parent
-   */
-  public SharedClassLoader(PackageRegistryService packageRegistryService,
-      DependencyResolverService dependencyResolverService, URL[] urls, ClassLoader parent) {
-    super(packageRegistryService, urls, parent);
     this.dependencyResolverService = dependencyResolverService;
   }
 

@@ -68,6 +68,14 @@ public class PackageRegistryServiceTest {
     assertSame(specialsomewhere, registry.findClassloader("org.sakaiproject.kernel.api.something.special2.somewhere.xsye.ses.Test321"));
     assertSame(apiLoader, registry.findClassloader("org.sakaiproject.kernel.api.something.special.somewhere.Test213"));
     assertSame(specialsomewhere, registry.findClassloader("org.sakaiproject.kernel.api.something.special.somewhere.else.Test213"));
+    
+    registry.removeExport("org.sakaiproject.kernel.api.something.special.somewhere.else");
+    assertSame(apiLoader, registry.findClassloader("org.sakaiproject.kernel.api.something.special"));
+    assertSame(apiLoader, registry.findClassloader("org.sakaiproject.kernel.api.something.special.Test12345"));
+    assertSame(specialsomewhere, registry.findClassloader("org.sakaiproject.kernel.api.something.special2.somewhere"));
+    assertSame(specialsomewhere, registry.findClassloader("org.sakaiproject.kernel.api.something.special2.somewhere.xsye.ses.Test321"));
+    assertSame(apiLoader, registry.findClassloader("org.sakaiproject.kernel.api.something.special.somewhere.Test213"));
+    assertSame(apiLoader, registry.findClassloader("org.sakaiproject.kernel.api.something.special.somewhere.else.Test213"));
   }
 
 

@@ -17,12 +17,13 @@
  */
 package org.sakaiproject.kernel.component.core.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
 import org.sakaiproject.kernel.component.core.Maven2DependencyResolver;
-import org.sakaiproject.kernel.component.model.ClasspathDepencencyImpl;
+import org.sakaiproject.kernel.component.model.ClasspathDependencyImpl;
 
 import java.net.URL;
 
@@ -38,7 +39,7 @@ public class Maven2DependencyResolverTest {
   @Test
   public void testResolve() throws ComponentSpecificationException {
     Maven2DependencyResolver m2resolver = new Maven2DependencyResolver();
-    ClasspathDepencencyImpl dep = new ClasspathDepencencyImpl();
+    ClasspathDependencyImpl dep = new ClasspathDependencyImpl();
     dep.setGroupId("com.google.code.guice");
     dep.setArtifactId("guice");
     dep.setVersion("1.0");

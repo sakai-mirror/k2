@@ -37,7 +37,7 @@ public class Component {
   public static final Class<?>[] CLASSES = {
     Component.class,
     ComponentDependencyImpl.class,
-    ClasspathDepencencyImpl.class,
+    ClasspathDependencyImpl.class,
     DependencyScope.class,
     PackageExportImpl.class
   };

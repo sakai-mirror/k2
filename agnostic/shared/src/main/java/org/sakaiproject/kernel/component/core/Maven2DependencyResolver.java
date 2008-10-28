@@ -67,7 +67,7 @@ public class Maven2DependencyResolver implements DependencyResolverService {
     }
     URL u;
     try {
-      u = new URL("file:/" + localResource.getCanonicalPath());
+      u = new URL("file://" + localResource.getCanonicalPath());
     } catch (IOException e) {
       throw new ComponentSpecificationException("Unable to create URL for  "
           + classpathDependency, e);
