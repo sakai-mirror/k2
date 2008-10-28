@@ -44,11 +44,11 @@ public final class LoaderEnvironment {
    * The name of the system property that defines the lifecycle class. This is also used in the
    * properties file, loader.properties. System properties override loader.properties.
    */
-  private static final String SYS_LIFECYCLE_PROPERTY = "sakai.kernel.lifecycle";
+  public static final String SYS_LIFECYCLE_PROPERTY = "sakai.kernel.lifecycle";
   /**
    * The Name of the OS environment variable that defines the lifecycle class.
    */
-  private static final String ENV_LIFECYCLE_PROPERTY = "SAKAI_KERNEL_LIFECYCLE";
+  public static final String ENV_LIFECYCLE_PROPERTY = "SAKAI_KERNEL_LIFECYCLE";
   /**
    * The logger.
    */
@@ -67,7 +67,7 @@ public final class LoaderEnvironment {
   @SuppressWarnings("unchecked")
   public static <T> T getLifecyleClass(final ClassLoader classLoader)
       throws ClassNotFoundException {
-    InputStream in = LoaderEnvironment.class.getResourceAsStream("loader.properties");
+    InputStream in = LoaderEnvironment.class.getClassLoader().getResourceAsStream("loader.properties");
     Properties p = new Properties();
     try {
       p.load(in);

@@ -17,6 +17,7 @@
  */
 package org.sakaiproject.kernel.component.test.mock;
 
+import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.ComponentActivator;
 import org.sakaiproject.kernel.api.Kernel;
 
@@ -36,6 +37,7 @@ public class MockComponentActivator  implements ComponentActivator {
    * @see org.sakaiproject.kernel.api.ComponentActivator#deactivate()
    */
   public void deactivate() {
+    LogFactory.release(this.getClass().getClassLoader());
   }
 
 }

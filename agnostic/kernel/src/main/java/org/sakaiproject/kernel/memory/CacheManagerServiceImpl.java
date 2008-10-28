@@ -94,6 +94,7 @@ public class CacheManagerServiceImpl implements CacheManagerService,
    */
   public void stop() {
     cacheManager.shutdown();
+    // we really want to notify all threads that have maps
   }
 
   /**

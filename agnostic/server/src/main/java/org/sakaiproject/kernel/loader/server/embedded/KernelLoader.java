@@ -22,41 +22,41 @@ import org.sakaiproject.kernel.loader.common.CommonLifecycle;
 import org.sakaiproject.kernel.loader.server.LoaderEnvironment;
 
 /**
- * A static loader that will bring the kernel up once per jvm with the thread classloader. This
- * loader can be used in containers that have no lifecycle and the only option is to use a static
- * startup mechanism
+ * A loader that will bring the kernel up once per jvm with the thread
+ * classloader. This loader can be used in containers that have no lifecycle and
+ * the only option is to use a startup mechanism
  */
 public class KernelLoader {
 
   /**
    * a lock object just in case more than one thread tries to start.
    */
-  private static final Object LOCK = new Object();
+  private final Object LOCK = new Object();
 
   /**
    * the Lifecycle object being loaded.
    */
-  private static CommonLifecycle<?> kernelLifecycle;
+  private CommonLifecycle<?> kernelLifecycle;
 
   /**
    * true if the start failed.
    */
-  private static boolean failed = false;
+  private boolean failed = false;
 
   /**
    * true if running.
    */
-  private static boolean running = false;
+  private boolean running = false;
 
   /**
    * true if started.
    */
-  private static boolean started = false;
+  private boolean started = false;
 
   /**
    * true if starting.
    */
-  private static boolean starting = false;
+  private boolean starting = false;
 
   /**
    * true if stopped.
@@ -70,25 +70,30 @@ public class KernelLoader {
 
   /**
    * Start the kernel for the JVM.
-   * @throws Exception if there is a problem starting the lifecycle.
+   * 
+   * @throws Exception
+   *           if there is a problem starting the lifecycle.
    */
-  public static void start() throws Exception {
+  public void start() throws Exception {
     synchronized (LOCK) {
       if (starting || running || started) {
         return;
       }
       starting = true;
 
-      ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
+      ClassLoader currentClassLoader = Thread.currentThread()
+          .getContextClassLoader();
 
       try {
 
-        Class<CommonLifecycle<?>> clazz = LoaderEnvironment.getLifecyleClass(currentClassLoader);
+        Class<CommonLifecycle<?>> clazz = LoaderEnvironment
+            .getLifecyleClass(currentClassLoader);
         kernelLifecycle = clazz.newInstance();
         kernelLifecycle.start();
         failed = false;
         running = true;
         started = true;
+        stopped = false;
 
       } finally {
         starting = false;
@@ -99,7 +104,9 @@ public class KernelLoader {
 
   /**
    * Stop the kernel.
-   * @throws Exception if there is a problem stopping the lifecycle.
+   * 
+   * @throws Exception
+   *           if there is a problem stopping the lifecycle.
    */
   public void stop() throws Exception {
     synchronized (LOCK) {
@@ -113,6 +120,7 @@ public class KernelLoader {
         failed = false;
         running = false;
         started = false;
+        stopped = true;
       } finally {
         stopping = false;
       }

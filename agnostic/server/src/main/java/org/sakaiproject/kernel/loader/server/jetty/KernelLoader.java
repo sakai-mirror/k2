@@ -85,6 +85,7 @@ public class KernelLoader implements LifeCycle {
       failed = false;
       running  = true;
       started = true;
+      stopped = false;
 
     } finally {
       starting = false;
@@ -105,6 +106,7 @@ public class KernelLoader implements LifeCycle {
       failed = false;
       running  = false;
       started = false;
+      stopped = true;
     } finally {
       stopping = false;
     }

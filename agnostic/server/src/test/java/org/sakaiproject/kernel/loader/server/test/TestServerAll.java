@@ -15,17 +15,23 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.api.memory;
+package org.sakaiproject.kernel.loader.server.test;
+
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
+import org.sakaiproject.kernel.loader.server.embedded.test.EmbeddedKernelLoaderTest;
+import org.sakaiproject.kernel.loader.server.jetty.test.JettyKernelLoaderTest;
+import org.sakaiproject.kernel.loader.server.jetty.test.JettySakaiWebAppContextTest;
 
 /**
- * Defines the scope of the cache
+ *
  */
-public enum CacheScope {
-  REQUEST(),
-  /**
-   * WARNING: use with extreme caution, as any classes referenced in this type
-   * of cache will keep classloaders open and result in memory leaks
-   */
-  THREAD(), INSTANCE(), CLUSTERINVALIDATED(), CLUSTERREPLICATED();
+@RunWith(Suite.class)
+@SuiteClasses( { LoaderEnvironmentTest.class, EmbeddedKernelLoaderTest.class,
+    JettyKernelLoaderTest.class, JettySakaiWebAppContextTest.class
+
+})
+public class TestServerAll {
 
 }

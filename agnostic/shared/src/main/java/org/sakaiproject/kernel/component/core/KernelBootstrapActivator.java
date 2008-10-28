@@ -128,6 +128,7 @@ public class KernelBootstrapActivator implements ComponentActivator {
     for (RequiresStop s : toStop) {
       s.stop();
     }
+    LogFactory.release(this.getClass().getClassLoader());
   }
 
 }

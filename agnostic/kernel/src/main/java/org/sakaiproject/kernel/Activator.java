@@ -102,6 +102,7 @@ public class Activator implements ComponentActivator {
     for (Class<?> serviceClass : SERVICE_CLASSES) {
       retractService(serviceClass);
     }
+    LogFactory.release(this.getClass().getClassLoader());
   }
 
   /**
