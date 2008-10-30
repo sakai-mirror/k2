@@ -4,18 +4,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.persistence.Query;
 
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sakaiproject.jpa.Address;
 import org.sakaiproject.jpa.Employee;
+import org.sakaiproject.jpa.Project;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -25,7 +25,7 @@ public class TestSpringLookup
 	static EntityManager em;
 
 	@BeforeClass
-	public static void oneTimeSetup() throws Exception
+	public static void runOnceSetUp()
 	{
 		ApplicationContext context = new ClassPathXmlApplicationContext(
 				new String[] { "classpath:applicationContext.xml" });
@@ -34,54 +34,94 @@ public class TestSpringLookup
 		em = emf.createEntityManager();
 
 		em.getTransaction().begin();
+
 		// create some addresses
-		ArrayList<Address> adds = new ArrayList<Address>();
+		Address a1 = new Address();
+		a1.setStreet("123 Main St.");
+		a1.setCity("Mainville");
+		a1.setState("GA");
+		em.persist(a1);
 
-		Address add = new Address();
-		add.setStreet("123 Main St.");
-		add.setCity("Mainville");
-		add.setState("AA");
-		em.persist(add);
-		add = new Address();
-		add.setStreet("128 Main St.");
-		add.setCity("Maintown");
-		add.setState("AB");
-		em.persist(add);
+		Address a2 = new Address();
+		a2.setStreet("128 Main St.");
+		a2.setCity("Maintown");
+		a2.setState("SD");
+		em.persist(a2);
 
-		Employee emp = new Employee();
-		emp.setFirstName("Carl");
-		emp.setLastName("Hall");
-		// adds.add(add);
-		emp.setAddresses(adds);
-		em.persist(emp);
+		Address a3 = new Address();
+		a3.setStreet("128 Other Dr.");
+		a3.setCity("Maintown");
+		a3.setState("VT");
+		em.persist(a3);
 
-		emp = new Employee();
-		emp.setFirstName("Michelle");
-		emp.setLastName("Hall");
-		em.persist(emp);
+		Address a4 = new Address();
+		a4.setStreet("500 Boulevard.");
+		a4.setCity("Maintown");
+		a4.setState("DE");
+		em.persist(a4);
 
-		emp = new Employee();
-		emp.setFirstName("Stuart");
-		emp.setLastName("Freeman");
-		em.persist(emp);
+		Employee e1 = new Employee();
+		e1.setFirstName("Carl");
+		e1.setLastName("Hall");
+		e1.addAddress(a1);
+		e1.addAddress(a2);
+		em.persist(e1);
 
-		emp = new Employee();
-		emp.setFirstName("Clay");
-		emp.setLastName("Fenlason");
-		em.persist(emp);
+		Employee e2 = new Employee();
+		e2.setFirstName("Michelle");
+		e2.setLastName("Hall");
+		e2.addAddress(a2);
+		em.persist(e2);
 
-		emp = new Employee();
-		emp.setFirstName("Clay");
-		emp.setLastName("Smith");
-		em.persist(emp);
+		Employee e3 = new Employee();
+		e3.setFirstName("Stuart");
+		e3.setLastName("Freeman");
+		e3.addAddress(a3);
+		em.persist(e3);
+
+		Employee e4 = new Employee();
+		e4.setFirstName("Clay");
+		e4.setLastName("Fenlason");
+		e4.addAddress(a2);
+		e4.addAddress(a4);
+		em.persist(e4);
+
+		Employee e5 = new Employee();
+		e5.setFirstName("Clay");
+		e5.setLastName("Smith");
+		e5.addAddress(a2);
+		e5.addAddress(a3);
+		em.persist(e5);
+
+		Project p1 = new Project();
+		p1.setName("Test Project 1");
+		p1.addEmployee(e1);
+		p1.addEmployee(e2);
+		p1.addEmployee(e3);
+		em.persist(p1);
+
+		e1.addProject(p1);
+		em.persist(e1);
+		e2.addProject(p1);
+		em.persist(e2);
+		e3.addProject(p1);
+		em.persist(e3);
+
+		Project p2 = new Project();
+		p2.setName("Test Project 2");
+		p2.addEmployee(e3);
+		p2.addEmployee(e4);
+		p2.addEmployee(e5);
+		em.persist(p2);
+
+		e3.addProject(p2);
+		em.persist(e3);
+		e4.addProject(p2);
+		em.persist(e4);
+		e5.addProject(p2);
+		em.persist(e5);
 
 		em.flush();
-	}
-
-	@AfterClass
-	public static void oneTimeTearDown()
-	{
-		em.getTransaction().rollback();
 	}
 
 	@Test
@@ -96,7 +136,7 @@ public class TestSpringLookup
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void testSimpleSelect()
+	public void simpleSelectEmployee()
 	{
 		//
 		// FIRST NAME
@@ -145,34 +185,81 @@ public class TestSpringLookup
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void testMultiSelect()
+	public void multiSelectEmployee()
 	{
-		Query selectByFirstLastName = em
-				.createQuery("select e from Employee e where e.firstName = ?1 and e.lastName = ?2");
+		Query selectByFirstLastName = em.createQuery("select e from Employee e where e.firstName = ?1 and e.lastName = ?2");
 		selectByFirstLastName.setParameter(1, "Carl").setParameter(2, "Hall");
 		List<Employee> employees = (List<Employee>) selectByFirstLastName.getResultList();
 		assertNotNull(employees);
 		assertEquals(1, employees.size());
 
-		selectByFirstLastName = em
-				.createQuery("select e from Employee e where e.firstName = ?1 and e.lastName = ?2");
+		selectByFirstLastName = em.createQuery("select e from Employee e where e.firstName = ?1 and e.lastName = ?2");
 		selectByFirstLastName.setParameter(1, "Carl").setParameter(2, "Johnson");
 		employees = (List<Employee>) selectByFirstLastName.getResultList();
 		assertNotNull(employees);
 		assertEquals(0, employees.size());
 
-		selectByFirstLastName = em
-				.createQuery("select e from Employee e where e.firstName = ?1 and e.lastName = ?2");
+		selectByFirstLastName = em.createQuery("select e from Employee e where e.firstName = ?1 and e.lastName = ?2");
 		selectByFirstLastName.setParameter(1, "Tommy").setParameter(2, "Hall");
 		employees = (List<Employee>) selectByFirstLastName.getResultList();
 		assertNotNull(employees);
 		assertEquals(0, employees.size());
 
-		selectByFirstLastName = em
-				.createQuery("select e from Employee e where e.firstName = ?1 and e.lastName = ?2");
+		selectByFirstLastName = em.createQuery("select e from Employee e where e.firstName = ?1 and e.lastName = ?2");
 		selectByFirstLastName.setParameter(1, "Wrong").setParameter(2, "Dude");
 		employees = (List<Employee>) selectByFirstLastName.getResultList();
 		assertNotNull(employees);
 		assertEquals(0, employees.size());
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void selectProjects()
+	{
+		Query selectProject = em.createQuery("select p from Project p");
+		List<Project> projects = (List<Project>) selectProject.getResultList();
+		assertNotNull(projects);
+		assertEquals(2, projects.size());
+
+		selectProject = em.createQuery("select p from Project p where p.name = ?1");
+		selectProject.setParameter(1, "Test Project 1");
+		projects = (List<Project>) selectProject.getResultList();
+		assertNotNull(projects);
+		assertEquals(1, projects.size());
+
+		selectProject = em.createQuery("select p from Project p where p.name = ?1");
+		selectProject.setParameter(1, "Test Project K");
+		projects = (List<Project>) selectProject.getResultList();
+		assertNotNull(projects);
+		assertEquals(0, projects.size());
+	}
+
+	@Test
+	public void selectEmployeeByAddress()
+	{
+		
+	}
+
+	@Test
+	public void selectEmployeesByProjects()
+	{
+		
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void selectProjectsByEmployee()
+	{
+		Query select = em.createQuery("select e.projects from Employee e where e.firstName = ?1");
+		select.setParameter(1, "Carl");
+		List<Project> projects = (List<Project>) select.getResultList();
+		assertNotNull(projects);
+		assertEquals(1, projects.size());
+
+		select = em.createQuery("select e.projects from Employee e where e.lastName = ?1");
+		select.setParameter(1, "Freeman");
+		projects = (List<Project>) select.getResultList();
+		assertNotNull(projects);
+		assertEquals(2, projects.size());
 	}
 }
