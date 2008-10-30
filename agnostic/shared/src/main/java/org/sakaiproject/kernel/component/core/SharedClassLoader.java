@@ -19,7 +19,7 @@ package org.sakaiproject.kernel.component.core;
 
 import com.google.inject.Inject;
 
-import org.sakaiproject.kernel.api.ClasspathDependency;
+import org.sakaiproject.kernel.api.Dependency;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
 import org.sakaiproject.kernel.api.DependencyResolverService;
 import org.sakaiproject.kernel.api.Kernel;
@@ -51,7 +51,7 @@ public class SharedClassLoader extends ComponentClassLoader {
    * @param classifier
    * @throws ComponentSpecificationException 
    */
-  public void addDependency(ClasspathDependency classpathDependency) throws ComponentSpecificationException {
+  public void addDependency(Dependency classpathDependency) throws ComponentSpecificationException {
     URL classPathUrl = dependencyResolverService.resolve(getURLs(),
         classpathDependency);
     if (classPathUrl != null) {

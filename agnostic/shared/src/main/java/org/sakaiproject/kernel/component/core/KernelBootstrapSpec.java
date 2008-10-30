@@ -17,9 +17,8 @@
  */
 package org.sakaiproject.kernel.component.core;
 
-import org.sakaiproject.kernel.api.ClasspathDependency;
-import org.sakaiproject.kernel.api.ComponentDependency;
 import org.sakaiproject.kernel.api.ComponentSpecification;
+import org.sakaiproject.kernel.api.Dependency;
 import org.sakaiproject.kernel.api.PackageExport;
 import org.sakaiproject.kernel.util.ComponentSpecificationUtil;
 
@@ -39,8 +38,8 @@ public class KernelBootstrapSpec implements ComponentSpecification {
   /**
    * An empty list of component dependencies.
    */
-  private ComponentDependency[] componentDependencies = new ComponentDependency[0];
-  private ClasspathDependency[] dependencies = new ClasspathDependency[0];
+  private Dependency[] componentDependencies = new Dependency[0];
+  private Dependency[] dependencies = new Dependency[0];
   private PackageExport[] exports = new PackageExport[0];
 
   /**
@@ -69,7 +68,7 @@ public class KernelBootstrapSpec implements ComponentSpecification {
    * @return an array of dependencies.
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getDependencies()
    */
-  public ComponentDependency[] getComponentDependencies() {
+  public Dependency[] getComponentDependencies() {
     return componentDependencies;
   }
 
@@ -104,7 +103,7 @@ public class KernelBootstrapSpec implements ComponentSpecification {
    * 
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getDependencies()
    */
-  public ClasspathDependency[] getDependencies() {
+  public Dependency[] getDependencies() {
 
     return dependencies;
   }

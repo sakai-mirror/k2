@@ -29,7 +29,7 @@ import org.sakaiproject.kernel.component.KernelImpl;
 import org.sakaiproject.kernel.component.core.Maven2DependencyResolver;
 import org.sakaiproject.kernel.component.core.PackageRegistryServiceImpl;
 import org.sakaiproject.kernel.component.core.SharedClassLoader;
-import org.sakaiproject.kernel.component.model.ClasspathDependencyImpl;
+import org.sakaiproject.kernel.component.model.DependencyImpl;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -67,7 +67,7 @@ public class SharedClassloaderTest {
     
     
     
-    ClasspathDependencyImpl cpdep = new ClasspathDependencyImpl();
+    DependencyImpl cpdep = new DependencyImpl();
     cpdep.setGroupId("org.sakaiproject.kernel2.agnostic");
     cpdep.setArtifactId("server");
     cpdep.setVersion("0.1-SNAPSHOT");

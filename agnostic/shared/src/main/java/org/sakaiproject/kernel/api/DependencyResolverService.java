@@ -43,6 +43,6 @@ public interface DependencyResolverService {
    *         added.
    * @throws ComponentSpecificationException 
    */
-  URL resolve(URL[] urls, ClasspathDependency classpathDependency) throws ComponentSpecificationException;
+  URL resolve(URL[] urls, Dependency classpathDependency) throws ComponentSpecificationException;
 
 }

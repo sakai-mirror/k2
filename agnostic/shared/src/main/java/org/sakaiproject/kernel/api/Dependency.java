@@ -21,7 +21,7 @@ package org.sakaiproject.kernel.api;
 /**
  * 
  */
-public interface ClasspathDependency {
+public interface Dependency {
 
   /**
    * @return
@@ -47,5 +47,10 @@ public interface ClasspathDependency {
    * @return
    */
    DependencyScope getScope();
+
+  /**
+   * @return
+   */
+  boolean isManaged();
 
 }

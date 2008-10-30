@@ -19,19 +19,24 @@ package org.sakaiproject.kernel.component.model;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
-import org.sakaiproject.kernel.api.ClasspathDependency;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.api.Dependency;
 import org.sakaiproject.kernel.api.DependencyScope;
 
 /**
  * 
  */
 @XStreamAlias("dependency")
-public class ClasspathDependencyImpl implements ClasspathDependency {
-  private String groupId;
-  private String artifactId;
-  private String version;
-  private String classifier;
+public class DependencyImpl implements Dependency {
+  private static final Log LOG = LogFactory.getLog(DependencyImpl.class);
+  private String groupId = "";
+  private String artifactId = "";
+  private String version = "";
+  private String classifier = "";
   private DependencyScope scope = DependencyScope.LOCAL;
+  private String type = "jar";
+  private boolean unmanaged = false;
 
   /**
    * @return the groupId
@@ -92,16 +97,17 @@ public class ClasspathDependencyImpl implements ClasspathDependency {
   public void setClassifier(String classifier) {
     this.classifier = classifier;
   }
-  
+
   /**
    * @return the scope
    */
   public DependencyScope getScope() {
     return scope;
   }
-  
+
   /**
-   * @param scope the scope to set
+   * @param scope
+   *          the scope to set
    */
   public void setScope(DependencyScope scope) {
     this.scope = scope;
@@ -109,9 +115,79 @@ public class ClasspathDependencyImpl implements ClasspathDependency {
 
   /**
    * {@inheritDoc}
-   * @see org.sakaiproject.kernel.api.ClasspathDependency#getType()
+   * 
+   * @see org.sakaiproject.kernel.api.Dependency#getType()
    */
   public String getType() {
-    return "jar";
+    return type;
   }
+
+  /**
+   * @param type
+   *          the type to set
+   */
+  public void setType(String type) {
+    this.type = type;
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    String s = nullTrim(groupId) + ":" + nullTrim(artifactId) + ":"
+        + nullTrim(version) + nullTrim(classifier) + ":" + nullTrim(type);
+    LOG.info("String [" + s + "]");
+    return s;
+  }
+
+  /**
+   * @param type2
+   * @return
+   */
+  private static String nullTrim(String string) {
+    if (string == null) {
+      return "";
+    }
+    return string.trim();
+  }
+
+  /**
+   * @param groupId2
+   * @param artifactId2
+   * @param version2
+   * @param classifier2
+   * @param string
+   * @return
+   */
+  public static String toString(String groupId, String artifactId,
+      String version, String classifier, String type) {
+    return nullTrim(groupId) + ":" + nullTrim(artifactId) + ":"
+        + nullTrim(version) + nullTrim(classifier) + ":" + nullTrim(type);
+  }
+
+  /**
+   * @param unmanaged
+   *          the unmanaged to set
+   */
+  public void setUnmanaged(boolean unmanaged) {
+    this.unmanaged = unmanaged;
+  }
+
+  /**
+   * @return the unmanaged
+   */
+  public boolean isUnmanaged() {
+    return unmanaged;
+  }
+
+  /**
+   * @return the unmanaged
+   */
+  public boolean isManaged() {
+    return !unmanaged;
+  }
+
 }

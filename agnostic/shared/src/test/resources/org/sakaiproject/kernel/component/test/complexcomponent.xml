@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component xmlns="http://ns.sakaiproject.org/2008/components">
-	<name>complextcomponent</name>
+	<groupId>org.sakaiproject.kernel2.agnostic
+	</groupId>
+	<artifactId>complextcomponent</artifactId>
+	<version>0.1-SNAPSHOT</version>
 	<documentation>A more complex component with some documentation
 	</documentation>
 	<activator>org.sakaiproject.simple</activator>
@@ -14,18 +17,26 @@
 		</dependency>
 	</dependencies>
 	<componentDependencies>
-		<componentDependency>
-			<componentName>component1</componentName>
-			<managed>false</managed>
-		</componentDependency>
-		<componentDependency>
-			<componentName>component2</componentName>
-			<managed>false</managed>
-		</componentDependency>
-		<componentDependency>
-			<componentName>component3</componentName>
-			<managed>false</managed>
-		</componentDependency>
+		<dependency>
+			<groupId>org.sakaiproject.kernel2.agnostic
+			</groupId>
+			<artifactId>component1</artifactId>
+			<version>0.1-SNAPSHOT</version>
+			<unmanaged>true</unmanaged>
+		</dependency>
+		<dependency>
+			<groupId>org.sakaiproject.kernel2.agnostic
+			</groupId>
+			<artifactId>component1</artifactId>
+			<version>0.1-SNAPSHOT</version>
+			<unmanaged>true</unmanaged>
+		</dependency>
+		<dependency>
+			<groupId>org.sakaiproject.kernel2.agnostic
+			</groupId>
+			<artifactId>component1</artifactId>
+			<version>0.1-SNAPSHOT</version>
+			<unmanaged>true</unmanaged>
+		</dependency>
 	</componentDependencies>
-	<managed>false</managed>
 </component>

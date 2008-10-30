@@ -19,7 +19,7 @@ package org.sakaiproject.kernel.component.core;
 
 import com.google.inject.Inject;
 
-import org.sakaiproject.kernel.api.ClasspathDependency;
+import org.sakaiproject.kernel.api.Dependency;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
 import org.sakaiproject.kernel.api.DependencyResolverService;
 
@@ -51,9 +51,9 @@ public class Maven2DependencyResolver implements DependencyResolverService {
    * @throws ComponentSpecificationException
    * 
    * @see org.sakaiproject.kernel.api.DependencyResolverService#resolve(java.net.URL[],
-   *      org.sakaiproject.kernel.api.ClasspathDependency)
+   *      org.sakaiproject.kernel.api.Dependency)
    */
-  public URL resolve(URL[] urls, ClasspathDependency classpathDependency)
+  public URL resolve(URL[] urls, Dependency classpathDependency)
       throws ComponentSpecificationException {
     File resource = new File(new File(new File(
         classpathDependency.getGroupId().replace('.', File.separatorChar), classpathDependency.getArtifactId()),

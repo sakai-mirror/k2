@@ -30,7 +30,7 @@ public interface ComponentSpecification {
   /**
    * @return an list of classpath dependencies
    */
-  ClasspathDependency[] getDependencies();
+  Dependency[] getDependencies();
 
   /**
    * @return the packages that will be exported
@@ -47,7 +47,7 @@ public interface ComponentSpecification {
   /**
    * @return an array of ComponentDependencies that this component depends upon.
    */
-  ComponentDependency[] getComponentDependencies();
+  Dependency[] getComponentDependencies();
 
   String getDefinition();
 

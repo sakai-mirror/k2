@@ -20,10 +20,9 @@ package org.sakaiproject.kernel.component;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.Annotations;
 
-import org.sakaiproject.kernel.api.ClasspathDependency;
-import org.sakaiproject.kernel.api.ComponentDependency;
 import org.sakaiproject.kernel.api.ComponentSpecification;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
+import org.sakaiproject.kernel.api.Dependency;
 import org.sakaiproject.kernel.api.PackageExport;
 import org.sakaiproject.kernel.component.model.Component;
 import org.sakaiproject.kernel.util.ComponentSpecificationUtil;
@@ -60,11 +59,11 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
   /**
    * dependencies of the component.
    */
-  private ComponentDependency[] componentDependencies;
+  private Dependency[] componentDependencies;
   /**
    * The classpath dependencies of this component
    */
-  private ClasspathDependency[] dependencies;
+  private Dependency[] dependencies;
 
   @SuppressWarnings("unused")
   private String source;
@@ -112,17 +111,17 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
             "A component must have an activator");
       }
 
-      List<ComponentDependency> cdeps = component.getComponentDependencies();
+      List<Dependency> cdeps = component.getComponentDependencies();
       if (cdeps == null) {
-        componentDependencies = new ComponentDependency[0];
+        componentDependencies = new Dependency[0];
       } else {
-        componentDependencies = cdeps.toArray(new ComponentDependency[0]);
+        componentDependencies = cdeps.toArray(new Dependency[0]);
       }
-      List<ClasspathDependency> deps = component.getDependencies();
+      List<Dependency> deps = component.getDependencies();
       if (deps == null) {
-        dependencies = new ClasspathDependency[0];
+        dependencies = new Dependency[0];
       } else {
-        dependencies = deps.toArray(new ClasspathDependency[0]);
+        dependencies = deps.toArray(new Dependency[0]);
       }
       List<PackageExport> exs = component.getExports();
       if (exs == null) {
@@ -149,7 +148,7 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
    * @return an array of URL's representing the classpath for the component.
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getClassPathURLs()
    */
-  public ClasspathDependency[] getClassPathDependencies() {
+  public Dependency[] getClassPathDependencies() {
     return dependencies;
   }
 
@@ -166,7 +165,7 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
    * @return an array of dependencies for this component.
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getComponentDependencies()
    */
-  public ComponentDependency[] getComponentDependencies() {
+  public Dependency[] getComponentDependencies() {
     return componentDependencies;
   }
 
@@ -177,7 +176,7 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
    * @see org.sakaiproject.kernel.api.ComponentSpecification#isManaged()
    */
   public boolean isManaged() {
-    return component.getManaged();
+    return !component.isUnmanaged();
   }
 
   /**
@@ -211,7 +210,7 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
    * 
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getDependencies()
    */
-  public ClasspathDependency[] getDependencies() {
+  public Dependency[] getDependencies() {
     return dependencies;
   }
 

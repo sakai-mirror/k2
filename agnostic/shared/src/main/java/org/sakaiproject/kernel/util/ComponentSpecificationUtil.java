@@ -17,9 +17,8 @@
  */
 package org.sakaiproject.kernel.util;
 
-import org.sakaiproject.kernel.api.ClasspathDependency;
-import org.sakaiproject.kernel.api.ComponentDependency;
 import org.sakaiproject.kernel.api.ComponentSpecification;
+import org.sakaiproject.kernel.api.Dependency;
 
 /**
  * 
@@ -31,16 +30,16 @@ public class ComponentSpecificationUtil {
   public static String formatDescription(ComponentSpecification cs) {
     StringBuilder sb = new StringBuilder();
     sb.append(cs.getName()).append("->(");
-    ComponentDependency[] componentDependencies = cs.getComponentDependencies();
+    Dependency[] componentDependencies = cs.getComponentDependencies();
     for (int i = 0; i < componentDependencies.length - 1; i++) {
-      sb.append(componentDependencies[i].getComponentName()).append(",");
+      sb.append(componentDependencies[i].toString()).append(",");
     }
     if (componentDependencies.length > 0) {
       sb.append(componentDependencies[componentDependencies.length - 1]
-          .getComponentName());
+          .toString());
     }
     sb.append("),(");
-    ClasspathDependency[] dependencies = cs.getDependencies();
+    Dependency[] dependencies = cs.getDependencies();
     for (int i = 0; i < dependencies.length - 1; i++) {
       sb.append(dependencies[i]).append(",");
     }

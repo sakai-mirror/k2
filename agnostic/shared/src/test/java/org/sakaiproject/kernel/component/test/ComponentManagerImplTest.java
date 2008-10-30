@@ -17,7 +17,9 @@
  */
 package org.sakaiproject.kernel.component.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
@@ -124,6 +126,7 @@ public class ComponentManagerImplTest {
     List<ComponentSpecification> cs = new ArrayList<ComponentSpecification>();
     for (int i = 0; i < 5; i++) {
       cs.add(new URLComponentSpecificationImpl(null,BASE + "-good-" + i + ".xml"));
+      LOG.info("Loaded Component "+BASE + "-good-" + i + ".xml");
     }
     cm.loadComponents(cs);
     List<ComponentSpecification> startOrder = cm.getStartOrder(cs);

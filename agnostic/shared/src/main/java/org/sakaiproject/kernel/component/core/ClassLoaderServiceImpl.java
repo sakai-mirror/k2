@@ -20,7 +20,7 @@ package org.sakaiproject.kernel.component.core;
 import com.google.inject.Inject;
 
 import org.sakaiproject.kernel.api.ClassLoaderService;
-import org.sakaiproject.kernel.api.ClasspathDependency;
+import org.sakaiproject.kernel.api.Dependency;
 import org.sakaiproject.kernel.api.ComponentSpecification;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
 import org.sakaiproject.kernel.api.DependencyResolverService;
@@ -66,7 +66,7 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
     if ( spec.getComponentClasspath()  != null ) {
       urls.add(spec.getComponentClasspath());
     }
-    for ( ClasspathDependency dependency : spec.getDependencies() ) {
+    for ( Dependency dependency : spec.getDependencies() ) {
       switch (dependency.getScope()) {
       case LOCAL:
         URL[] u = urls.toArray(new URL[0]);
@@ -84,7 +84,7 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
       cl = new ComponentClassLoader(packageRegistryService,urls.toArray(new URL[0]),sharedClassLoader);
     }
     // add the shared dependencies
-    for ( ClasspathDependency dependency : spec.getDependencies() ) {
+    for ( Dependency dependency : spec.getDependencies() ) {
       switch (dependency.getScope()) {
       case SHARE:
         sharedClassLoader.addDependency(dependency);

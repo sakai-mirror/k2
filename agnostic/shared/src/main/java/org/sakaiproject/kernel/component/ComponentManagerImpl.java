@@ -22,10 +22,10 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.ClassLoaderService;
 import org.sakaiproject.kernel.api.ComponentActivator;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
-import org.sakaiproject.kernel.api.ComponentDependency;
 import org.sakaiproject.kernel.api.ComponentManager;
 import org.sakaiproject.kernel.api.ComponentSpecification;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
+import org.sakaiproject.kernel.api.Dependency;
 import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.KernelConfigurationException;
 import org.sakaiproject.kernel.api.ServiceSpec;
@@ -128,9 +128,6 @@ public class ComponentManagerImpl implements ComponentManager {
   public boolean startComponent(ComponentSpecification spec)
       throws KernelConfigurationException, ComponentSpecificationException {
 
-    // create a new component classloader
-    // load the component spec.
-    ClassLoader cl = kernel.getParentComponentClassLoader();
 
     ClassLoader currentClassloader = Thread.currentThread()
         .getContextClassLoader();
@@ -145,9 +142,9 @@ public class ComponentManagerImpl implements ComponentManager {
 
     try {
 
-      for (ComponentDependency dependant : spec.getComponentDependencies()) {
-        if (dependant.isManaged()) {
-          startComponent(componentsByName.get(dependant.getComponentName()));
+      for (Dependency dependant : spec.getComponentDependencies()) {
+        if (!dependant.isManaged() ) {
+          startComponent(componentsByName.get(dependant.toString()));
         }
       }
 
@@ -277,9 +274,9 @@ public class ComponentManagerImpl implements ComponentManager {
           speclevel.put(spec, plevel);
           unstable.add(spec);
         }
-        for (ComponentDependency d : spec.getComponentDependencies()) {
+        for (Dependency d : spec.getComponentDependencies()) {
           ComponentSpecification cs = componentsByName
-              .get(d.getComponentName());
+              .get(d.toString());
           if (cs == null && !errors.contains(spec)) {
             errors.add(spec);
           } else {
@@ -307,11 +304,11 @@ public class ComponentManagerImpl implements ComponentManager {
       message
           .append("\n\tERROR:The component dependency graph has unsatisfield dependencies\n");
       for (ComponentSpecification spec : errors) {
-        for (ComponentDependency d : spec.getComponentDependencies()) {
-          if (!componentsByName.containsKey(d.getComponentName())) {
+        for (Dependency d : spec.getComponentDependencies()) {
+          if (!componentsByName.containsKey(d.toString())) {
             message.append("\t\tComponent ").append(spec.getName()).append(
                 " depends on unsatisfied depedency ").append(
-                d.getComponentName()).append("\n");
+                d.toString()).append("\n");
           }
         }
       }
@@ -366,9 +363,9 @@ public class ComponentManagerImpl implements ComponentManager {
    *      .kernel.api.ComponentSpecification)
    */
   public boolean stopComponent(ComponentSpecification spec) {
-    for (ComponentDependency dependant : spec.getComponentDependencies()) {
+    for (Dependency dependant : spec.getComponentDependencies()) {
       if (dependant.isManaged()) {
-        stopComponent(startedComponents.get(dependant.getComponentName()));
+        stopComponent(startedComponents.get(dependant.toString()));
       }
     }
     ComponentActivator activator = components.get(spec);

@@ -17,9 +17,8 @@
  */
 package org.sakaiproject.kernel.component.test.mock;
 
-import org.sakaiproject.kernel.api.ClasspathDependency;
-import org.sakaiproject.kernel.api.ComponentDependency;
 import org.sakaiproject.kernel.api.ComponentSpecification;
+import org.sakaiproject.kernel.api.Dependency;
 import org.sakaiproject.kernel.api.PackageExport;
 import org.sakaiproject.kernel.util.ComponentSpecificationUtil;
 
@@ -87,8 +86,8 @@ public class MockComponentSpecificationImpl implements ComponentSpecification {
    * 
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getComponentDependencies()
    */
-  public ComponentDependency[] getComponentDependencies() {
-    return new ComponentDependency[0];
+  public Dependency[] getComponentDependencies() {
+    return new Dependency[0];
   }
 
   /**
@@ -96,8 +95,8 @@ public class MockComponentSpecificationImpl implements ComponentSpecification {
    * 
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getDependencies()
    */
-  public ClasspathDependency[] getDependencies() {
-    return new ClasspathDependency[0];
+  public Dependency[] getDependencies() {
+    return new Dependency[0];
   }
 
   /**
