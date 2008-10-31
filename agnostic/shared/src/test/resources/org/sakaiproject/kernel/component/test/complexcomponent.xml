@@ -27,14 +27,14 @@
 		<dependency>
 			<groupId>org.sakaiproject.kernel2.agnostic
 			</groupId>
-			<artifactId>component1</artifactId>
+			<artifactId>component2</artifactId>
 			<version>0.1-SNAPSHOT</version>
 			<unmanaged>true</unmanaged>
 		</dependency>
 		<dependency>
 			<groupId>org.sakaiproject.kernel2.agnostic
 			</groupId>
-			<artifactId>component1</artifactId>
+			<artifactId>component3</artifactId>
 			<version>0.1-SNAPSHOT</version>
 			<unmanaged>true</unmanaged>
 		</dependency>
