@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.sakaiproject.kernel2</groupId>
+		<artifactId>base</artifactId>
+		<version>1-SNAPSHOT</version>
+	</parent>
+	<name>bootstrap</name>
+	<groupId>org.sakaiproject.kernel2.agnostic</groupId>
+	<artifactId>bootstrap</artifactId>
+	<version>0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<dependencies>
+		<dependency>
+			<groupId>org.sakaiproject.kernel2.agnostic</groupId>
+			<artifactId>assembly</artifactId>
+			<version>0.1-SNAPSHOT</version>
+			<classifier>kernel-loader</classifier>
+			<type>zip</type>
+		</dependency>
+		<dependency>
+			<groupId>tomcat.tomcat</groupId>
+			<artifactId>tomcat</artifactId>
+			<version>5.5.26</version>
+			<type>zip</type>
+		</dependency>
+		<dependency>
+			<groupId>tomcat.tomcat</groupId>
+			<artifactId>tomcat</artifactId>
+			<version>5.5.26</version>
+			<type>zip</type>
+		</dependency>
+		<dependency>
+			<groupId>org.sakaiproject.kernel2.agnostic</groupId>
+			<artifactId>kernel</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+	<repositories>
+		<repository>
+			<id>sakai-maven</id>
+			<name>Sakai Maven Repo</name>
+			<layout>default</layout>
+			<url>http://source.sakaiproject.org/maven2</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>compile</id>
+						<phase>compile</phase>
+						<configuration>
+							<tasks>
+                 <!-- unzip tomcat -->
+								<delete dir="${basedir}/target/runtime" />
+								<unzip
+									src="${settings.localRepository}/tomcat/tomcat/tomcat/5.5.26/tomcat-5.5.26.zip"
+									dest="${basedir}/target/unpack" overwrite="true" />
+								<move file="${basedir}/target/unpack/apache-tomcat-5.5.26"
+									tofile="${basedir}/target/runtime" />
+                 <!-- unzip the overlay -->
+								<unzip
+									src="${settings.localRepository}/org/sakaiproject/kernel2/agnostic/assembly/0.1-SNAPSHOT/assembly-0.1-SNAPSHOT-kernel-core.zip"
+									dest="${basedir}/target/runtime" overwrite="true" />
+                 <!-- execute tomcat -->
+								<chmod file="${basedir}/target/runtime/bin/catalina.sh"
+									perm="775" />
+								<chmod file="${basedir}/target/runtime/bin/setclasspath.sh"
+									perm="775" />
+								<chmod file="${basedir}/start.sh" perm="775" />
+								<exec dir="${basedir}" executable="${basedir}/start.sh"
+									failonerror="true">
+								</exec>
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
