@@ -158,7 +158,7 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
    *      getComponentActivatorClassName()
    */
   public String getComponentActivatorClassName() {
-    return component.getActivator();
+    return component.getActivator().trim();
   }
 
   /**
@@ -184,7 +184,7 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getDefinition()
    */
   public String getDefinition() {
-    return specification;
+    return specification.trim();
   }
 
   /**
@@ -192,7 +192,7 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getName()
    */
   public String getName() {
-    return component.getName();
+    return component.getName().trim();
   }
 
   /**

@@ -32,7 +32,7 @@ public class PackageExportImpl implements PackageExport {
    * @return the name
    */
   public String getName() {
-    return name;
+    return name.trim();
   }
   
   /**

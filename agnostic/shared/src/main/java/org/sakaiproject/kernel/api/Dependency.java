@@ -53,4 +53,9 @@ public interface Dependency {
    */
   boolean isManaged();
 
+  /**
+   * @return
+   */
+  String getClassifier();
+
 }

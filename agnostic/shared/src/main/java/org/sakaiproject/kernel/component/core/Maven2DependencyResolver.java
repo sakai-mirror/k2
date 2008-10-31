@@ -55,15 +55,41 @@ public class Maven2DependencyResolver implements DependencyResolverService {
    */
   public URL resolve(URL[] urls, Dependency classpathDependency)
       throws ComponentSpecificationException {
-    File resource = new File(new File(new File(
-        classpathDependency.getGroupId().replace('.', File.separatorChar), classpathDependency.getArtifactId()),
-        classpathDependency.getVersion()), classpathDependency.getArtifactId()
-        + "-" + classpathDependency.getVersion() + "."
-        + classpathDependency.getType());
+    String groupId = classpathDependency.getGroupId().replace('.',
+        File.separatorChar);
+    String artifactId = classpathDependency.getArtifactId();
+    String version = classpathDependency.getVersion();
+    if (version == null || version.trim().length() == 0 || groupId == null
+        || groupId.trim().length() == 0 || artifactId == null
+        || artifactId.trim().length() == 0) {
+      throw new ComponentSpecificationException(
+          "GroupId, ArtifactId and Version must all be specified on " +
+          "dependencies that are resolved GroupId="
+              + groupId + " Artifact=" + artifactId + " Version=" + version);
+    }
+    groupId = groupId.trim();
+    artifactId = artifactId.trim();
+    version = version.trim();
+    String type = classpathDependency.getType();
+    if ( type == null ||  type.trim().length() == 0 ) {
+      type = "jar";
+    } 
+    type = type.trim();
+    
+    String classifier = classpathDependency.getClassifier();
+    if ( classifier != null && classifier.trim().length() > 0 ) {
+      classifier = "-"+classifier.trim();
+    } else {
+      classifier = "";
+    }
+    
+    File resource = new File(new File(new File(groupId, artifactId), version),
+        artifactId + "-" + version + classifier + "." + type);
     File localResource = new File(repo, resource.getPath());
     if (!localResource.exists()) {
       throw new ComponentSpecificationException(
-          "Resource does not exist locally " + classpathDependency+ " reslved as " + localResource.getAbsolutePath());
+          "Resource does not exist locally " + classpathDependency
+              + " resloved as " + localResource.getAbsolutePath());
     }
     URL u;
     try {

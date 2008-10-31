@@ -73,7 +73,7 @@ public class KernelModule extends AbstractModule {
     this.kernel = kernel;
     InputStream is = null;
     try {
-      is = ResourceLoader.openResource(DEFAULT_PROPERTIES);
+      is = ResourceLoader.openResource(DEFAULT_PROPERTIES,this.getClass().getClassLoader());
       properties = new Properties();
       properties.load(is);
     } catch (IOException e) {

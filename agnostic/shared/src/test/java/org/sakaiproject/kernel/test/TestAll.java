@@ -20,7 +20,9 @@ package org.sakaiproject.kernel.test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
+import org.sakaiproject.kernel.component.core.test.ClassLoaderServiceTest;
 import org.sakaiproject.kernel.component.core.test.ComponentClassloaderTest;
+import org.sakaiproject.kernel.component.core.test.ComponentLoaderServiceImplTest;
 import org.sakaiproject.kernel.component.core.test.Maven2DependencyResolverTest;
 import org.sakaiproject.kernel.component.core.test.PackageRegistryServiceTest;
 import org.sakaiproject.kernel.component.test.ComponentManagerImplTest;
@@ -43,7 +45,9 @@ import org.sakaiproject.kernel.util.test.StringUtilsTest;
     ComponentManagerImplTest.class, KernelImplTest.class,
     ServiceManagerImplTest.class, KernelLifecycleTest.class,
     URLComponentSpecificationImplTest.class,
-    PackageRegistryServiceTest.class
+    PackageRegistryServiceTest.class,
+    ComponentLoaderServiceImplTest.class,
+    ClassLoaderServiceTest.class
 
 })
 public class TestAll {

@@ -122,7 +122,17 @@ public class KernelBootstrapModule extends AbstractModule {
         Properties localProperties = new Properties();
         localProperties.load(is);
         for (Entry<Object, Object> o : localProperties.entrySet()) {
-          properties.put(o.getKey(), o.getValue());
+          String k = o.getKey().toString();
+          if ( k.startsWith("+") ) {
+           String p = properties.getProperty(k.substring(1));
+           if ( p != null ) {
+             properties.put(k.substring(1), p+o.getValue());
+           } else {
+             properties.put(o.getKey(), o.getValue());
+           }
+          } else {
+           properties.put(o.getKey(), o.getValue());
+          }
         }
         LOG.info("Loaded " + localProperties.size() + " properties from "
             + localPropertiesLocation);

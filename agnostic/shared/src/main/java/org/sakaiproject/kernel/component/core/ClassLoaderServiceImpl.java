@@ -19,11 +19,14 @@ package org.sakaiproject.kernel.component.core;
 
 import com.google.inject.Inject;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.ClassLoaderService;
 import org.sakaiproject.kernel.api.Dependency;
 import org.sakaiproject.kernel.api.ComponentSpecification;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
 import org.sakaiproject.kernel.api.DependencyResolverService;
+import org.sakaiproject.kernel.api.DependencyScope;
 import org.sakaiproject.kernel.api.PackageExport;
 import org.sakaiproject.kernel.api.PackageRegistryService;
 
@@ -36,6 +39,7 @@ import java.util.List;
  */
 public class ClassLoaderServiceImpl implements ClassLoaderService {
 
+  private static final Log LOG = LogFactory.getLog(ClassLoaderServiceImpl.class);
   private SharedClassLoader sharedClassLoader;
   private PackageRegistryService packageRegistryService;
   private DependencyResolverService dependencyResolverService;
@@ -67,14 +71,14 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
       urls.add(spec.getComponentClasspath());
     }
     for ( Dependency dependency : spec.getDependencies() ) {
-      switch (dependency.getScope()) {
-      case LOCAL:
+      if ( dependency.getScope() == null || DependencyScope.LOCAL.equals(dependency.getScope())) {
         URL[] u = urls.toArray(new URL[0]);
         URL url = dependencyResolverService.resolve(u, dependency);
         if ( url != null ) {
           urls.add(url);
+        } else {
+          LOG.warn(spec.getName()+"::Did not add dependency "+dependency+" to local component classloader ");
         }
-        break;
       }
     }
     ClassLoader cl = null;
@@ -85,15 +89,15 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
     }
     // add the shared dependencies
     for ( Dependency dependency : spec.getDependencies() ) {
-      switch (dependency.getScope()) {
-      case SHARE:
+      if ( DependencyScope.SHARE.equals(dependency.getScope())) {
+        LOG.info(spec.getName()+"::Adding Shared Dependency "+dependency);
         sharedClassLoader.addDependency(dependency);
-        break;
       }
     }
     
     // export the packages
     for ( PackageExport pe : spec.getExports() ) {
+      LOG.info(spec.getName()+"::Exported "+pe.getName());
       packageRegistryService.addExport(pe.getName(), cl);
     }
     

@@ -73,12 +73,14 @@ public class ComponentClassLoader extends URLClassLoader {
       ClassLoader classLoader = packageRegistryService.findClassloader(name);
       if (classLoader != null) {
         try {
-          LOG.info("Using export ClassLoader "+classLoader);
+
+          if (LOG.isDebugEnabled()) {
+            LOG.debug("Using export ClassLoader " + classLoader);
+          }
           c = classLoader.loadClass(name);
           if (LOG.isDebugEnabled()) {
-            LOG.debug("loaded " + c);
+            LOG.debug("Got Exported Class " + c + " from " + classLoader);
           }
-          LOG.info("Got Exported Class "+c+" from "+classLoader);
         } catch (ClassNotFoundException e) {
           ex = e;
         }
@@ -93,7 +95,9 @@ public class ComponentClassLoader extends URLClassLoader {
     if (c == null) {
       try {
         c = this.findClass(name);
-        LOG.info("Got Internal Class "+c+" from "+this);
+        if (LOG.isDebugEnabled()) {
+          LOG.debug("Got Internal Class " + c + " from " + this);
+        }
       } catch (ClassNotFoundException e) {
         ex = e;
       }
@@ -102,7 +106,9 @@ public class ComponentClassLoader extends URLClassLoader {
     if (c == null) {
       try {
         c = getParent().loadClass(name);
-        LOG.info("Got Parent Class "+c+" from "+getParent());
+        if (LOG.isDebugEnabled()) {
+          LOG.debug("Got Parent Class " + c + " from " + getParent());
+        }
       } catch (ClassNotFoundException e) {
         ex = e;
       }

@@ -111,7 +111,24 @@ public class ComponentLoaderServiceImplTest {
     ComponentLoaderServiceImpl cl = new ComponentLoaderServiceImpl(cm);
     cl.load(baseFile.getPath(), false);
     ComponentSpecification[] specs = cm.getStartedComponents();
-    assertEquals(2, specs.length);
+    assertEquals(2, specs.length);    
+  }
+  /**
+   * Test method for {@link org.sakaiproject.kernel.component.core.ComponentLoaderServiceImpl#load(java.lang.String, boolean)}.
+   * @throws KernelConfigurationException 
+   * @throws ComponentSpecificationException 
+   * @throws IOException 
+   */
+  @Test
+  public void testLoadSingle() throws IOException, ComponentSpecificationException, KernelConfigurationException {
+    MockComponentManager cm = new MockComponentManager();
+    ComponentLoaderServiceImpl cl = new ComponentLoaderServiceImpl(cm);
+    File singleJar = new File(baseFile,"testfile1single.jar");
+    createComponent(singleJar, COMPONENT1);
+
+    cl.load(singleJar.getPath(), false);
+    ComponentSpecification[] specs = cm.getStartedComponents();
+    assertEquals(1, specs.length);    
   }
 
 }
