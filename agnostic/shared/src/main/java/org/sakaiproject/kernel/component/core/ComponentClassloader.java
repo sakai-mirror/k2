@@ -36,6 +36,12 @@ public class ComponentClassLoader extends URLClassLoader {
 
   private static final Log LOG = LogFactory.getLog(ComponentClassLoader.class);
   private PackageRegistryService packageRegistryService;
+  /**
+   * This is used to ensure that once a classloader is resolving exports, it
+   * doesn't try and re-resolve exports. This goes for all classloaders, not just
+   * this instance, hence why its static.
+   */
+  private static ThreadLocal<String> exporting = new ThreadLocal<String>();
   private static final ThreadLocal<String> spacing = new ThreadLocal<String>() {
     /**
      * {@inheritDoc}
@@ -69,28 +75,37 @@ public class ComponentClassLoader extends URLClassLoader {
     ClassNotFoundException ex = null;
 
     // load from exports first
-    if (c == null && packageRegistryService != null) {
-      ClassLoader classLoader = packageRegistryService.findClassloader(name);
-      if (classLoader != null) {
-        try {
+    if (exporting.get() == null) {
+      try {
+        exporting.set("1");
 
-          if (LOG.isDebugEnabled()) {
-            LOG.debug("Using export ClassLoader " + classLoader);
+        if (c == null && packageRegistryService != null) {
+          ClassLoader classLoader = packageRegistryService
+              .findClassloader(name);
+          if (classLoader != null) {
+            try {
+
+              if (LOG.isDebugEnabled()) {
+                LOG.debug("Using export ClassLoader " + classLoader);
+              }
+              c = classLoader.loadClass(name);
+              if (LOG.isDebugEnabled()) {
+                LOG.debug("Got Exported Class " + c + " from " + classLoader);
+              }
+            } catch (ClassNotFoundException e) {
+              ex = e;
+            }
           }
-          c = classLoader.loadClass(name);
+        } else {
           if (LOG.isDebugEnabled()) {
-            LOG.debug("Got Exported Class " + c + " from " + classLoader);
+            LOG.info("Not Loading from exports ");
           }
-        } catch (ClassNotFoundException e) {
-          ex = e;
         }
-      }
-    } else {
-      if (LOG.isDebugEnabled()) {
-        LOG.info("Not Loading from exports ");
+
+      } finally {
+        exporting.set(null);
       }
     }
-
     // then load internally
     if (c == null) {
       try {
