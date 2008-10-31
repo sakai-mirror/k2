@@ -113,9 +113,9 @@ public class KernelLoader implements LifecycleListener {
   private void start() throws Exception {
     ObjectName pname = new ObjectName(MBEAN_CONTAINER);
     Service service = getService(pname);
-    LOG.warn("Got service as " + service);
+    LOG.info("Got service as " + service);
     engine = (Engine) service.getContainer();
-    LOG.warn("Got engine as " + engine + " with classloader " + engine.getClass().getClassLoader()
+    LOG.info("Got engine as " + engine + " with classloader " + engine.getClass().getClassLoader()
         + " and with parent classloader " + engine.getParentClassLoader());
     sharedClassloader = engine.getParentClassLoader();
     ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
@@ -137,7 +137,7 @@ public class KernelLoader implements LifecycleListener {
    * @throws Exception if the kernel component cant be stopped
    */
   private void stop() throws Exception {
-    System.err.println("Stopping Component Manger");
+    LOG.info("Stopping Component Manger");
     ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
     Thread.currentThread().setContextClassLoader(sharedClassloader);
     try {

@@ -23,6 +23,8 @@ import com.google.inject.Scopes;
 import com.google.inject.name.Names;
 import com.google.inject.spi.Message;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.ClassLoaderService;
 import org.sakaiproject.kernel.api.ComponentLoaderService;
 import org.sakaiproject.kernel.api.ComponentManager;
@@ -37,9 +39,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Properties;
+import java.util.Map.Entry;
 
 /**
- * A Guice module used to create the bootstrap component.
+ * A Guice module used to create the bootstrap component. This class configures
+ * the kernel bootstrap component, using the classpath resource
+ * kernel.properties. The deployer of sakai may override the kernel properties
+ * using the System property SAKAI_KERNEL_PROPERTIES to specify a resource (in
+ * ResourceLoader form) that contains properties to be overridden.
  */
 public class KernelBootstrapModule extends AbstractModule {
 
@@ -47,6 +54,19 @@ public class KernelBootstrapModule extends AbstractModule {
    * Location of the kernel properties.
    */
   private final static String DEFAULT_PROPERTIES = "res://kernel.properties";
+
+  /**
+   * the environment variable that contains overrides to kernel properties 
+   */
+  private static final String LOCAL_PROPERTIES = "SAKAI_KERNEL_PROPERTIES";
+
+  /**
+   * The System property name that contains overrides to the kernel properties resource
+   */
+  private static final String SYS_LOCAL_PROPERTIES = "sakai.kernel.properties";
+  
+  private static final Log LOG = LogFactory.getLog(KernelBootstrapModule.class);
+
 
   /**
    * The properties for the kernel
@@ -61,6 +81,10 @@ public class KernelBootstrapModule extends AbstractModule {
   /**
    * Create a Guice module for the kernel bootstrap.
    * 
+   * This loads properties from res://kernel.properites and looks for the
+   * environment variable SAKAI_KERNEL_PROPERTIES for the location of local
+   * overrides
+   * 
    * @param kernel
    *          the kernel performing the bootstrap.
    */
@@ -71,9 +95,45 @@ public class KernelBootstrapModule extends AbstractModule {
       is = ResourceLoader.openResource(DEFAULT_PROPERTIES);
       properties = new Properties();
       properties.load(is);
+      LOG.info("Loaded " + properties.size() + " properties from "
+          + DEFAULT_PROPERTIES);
     } catch (IOException e) {
       throw new CreationException(Arrays.asList(new Message(
           "Unable to load properties: " + DEFAULT_PROPERTIES)));
+    } finally {
+      try {
+        if (is != null) {
+          is.close();
+        }
+      } catch (IOException e) {
+        // dont care about this.
+      }
+    }
+    // load local properties if specified as a system property
+    String localPropertiesLocation = System.getenv(LOCAL_PROPERTIES);
+    String sysLocalPropertiesLocation = System.getProperty(SYS_LOCAL_PROPERTIES);
+    if ( sysLocalPropertiesLocation != null ) {
+      localPropertiesLocation = sysLocalPropertiesLocation;
+    }
+    try {
+      if (localPropertiesLocation != null
+          && localPropertiesLocation.trim().length() > 0) {
+        is = ResourceLoader.openResource(localPropertiesLocation);
+        Properties localProperties = new Properties();
+        localProperties.load(is);
+        for (Entry<Object, Object> o : localProperties.entrySet()) {
+          properties.put(o.getKey(), o.getValue());
+        }
+        LOG.info("Loaded " + localProperties.size() + " properties from "
+            + localPropertiesLocation);
+      } else {
+        LOG.info("No Local Properties Override, set system property "
+            + LOCAL_PROPERTIES
+            + " to a resource location to override kernel properties");
+      }
+    } catch (IOException e) {
+      throw new CreationException(Arrays.asList(new Message(
+          "Unable to load properties: " + localPropertiesLocation)));
     } finally {
       try {
         if (is != null) {
@@ -124,7 +184,6 @@ public class KernelBootstrapModule extends AbstractModule {
         .in(Scopes.SINGLETON);
   }
 
-  
   /**
    * @return the properties
    */

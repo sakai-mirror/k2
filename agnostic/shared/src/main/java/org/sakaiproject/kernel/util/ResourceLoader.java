@@ -62,7 +62,7 @@ public class ResourceLoader {
       return new ByteArrayInputStream(resource.substring(INLINE.length()).getBytes("UTF-8"));
     } else if ( resource.startsWith(FILE ) ) {
       return new FileInputStream(resource.substring(FILE.length()));
-    } else if ( resource.indexOf("://") > 0) {
+    } else if ( resource.startsWith("jar:") || resource.indexOf("://") > 0) {
       URL url = new URL(resource);
       return url.openStream();
     } else {

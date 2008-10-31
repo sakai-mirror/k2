@@ -51,6 +51,7 @@ public class FileUtil {
     FileFilter ff = new FileFilter() {
 
       public boolean accept(File pathname) {
+       
         if (pathname.isDirectory()) {
           return true;
         }
@@ -59,7 +60,6 @@ public class FileUtil {
 
     };
     addFile(f, list, ff);
-    // TODO Auto-generated method stub
     return list.toArray(new File[0]);
   }
 
@@ -71,7 +71,7 @@ public class FileUtil {
   private static void addFile(File f, List<File> list, FileFilter ff) {
     if (f.exists()) {
       if (f.isDirectory()) {
-        for (File fn : f.listFiles(ff)) {
+         for (File fn : f.listFiles(ff)) {
           if (fn.isDirectory()) {
             addFile(fn, list, ff);
           } else {

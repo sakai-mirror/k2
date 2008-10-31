@@ -81,7 +81,9 @@ public class KernelBootstrapActivator implements ComponentActivator {
     Injector injector = Guice.createInjector(kbmodule);
     for (Class<?> c : KERNEL_SERVICES) {
       Object s = injector.getInstance(c);
-      LOG.info("Loaded " + c + " as " + s);
+      if (LOG.isDebugEnabled()) {
+        LOG.debug("Loaded " + c + " as " + s);
+      }
     }
 
     ServiceManager serviceManager = kernel.getServiceManager();
@@ -93,7 +95,11 @@ public class KernelBootstrapActivator implements ComponentActivator {
         throw new ComponentActivatorException("Failed to register service " + c
             + " cause:" + e.getMessage(), e);
       }
-      LOG.info("Registerd " + c + " as " + s);
+      if (LOG.isDebugEnabled()) {
+        LOG.debug("Registerd " + c + " as " + s);
+      } else {
+        LOG.info("Registerd service " + c);
+      }
     }
 
     // finally invoke the component loader

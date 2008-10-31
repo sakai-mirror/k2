@@ -35,14 +35,14 @@ public final class LoaderEnvironment {
   }
 
   /**
-   * The default name of the kernel lifecycle class. This is used where no other method has been
-   * used to define this.
+   * The default name of the kernel lifecycle class. This is used where no other
+   * method has been used to define this.
    */
-  private static final String DEFAULT_LIFECYCLE_CLASS =
-    "org.sakaiproject.kernel.component.KernelLifecycle";
+  private static final String DEFAULT_LIFECYCLE_CLASS = "org.sakaiproject.kernel.component.KernelLifecycle";
   /**
-   * The name of the system property that defines the lifecycle class. This is also used in the
-   * properties file, loader.properties. System properties override loader.properties.
+   * The name of the system property that defines the lifecycle class. This is
+   * also used in the properties file, loader.properties. System properties
+   * override loader.properties.
    */
   public static final String SYS_LIFECYCLE_PROPERTY = "sakai.kernel.lifecycle";
   /**
@@ -56,34 +56,45 @@ public final class LoaderEnvironment {
 
   /**
    * get the Lifecycle Class. This is defined in loader.properties with the key
-   * sakai.kernel.lifecycle, or as a system property of the same name or as an environment variable
-   * SAKAI_KERNEL_LIFECYCLE
-   *
-   * @param <T> the type of the lifecycle class
-   * @param classLoader the classloader to use to create the class.
+   * sakai.kernel.lifecycle, or as a system property of the same name or as an
+   * environment variable SAKAI_KERNEL_LIFECYCLE
+   * 
+   * @param <T>
+   *          the type of the lifecycle class
+   * @param classLoader
+   *          the classloader to use to create the class.
    * @return A new instance of the lifecycle class.
-   * @throws ClassNotFoundException if the class can't be found.
+   * @throws ClassNotFoundException
+   *           if the class can't be found.
    */
   @SuppressWarnings("unchecked")
   public static <T> T getLifecyleClass(final ClassLoader classLoader)
       throws ClassNotFoundException {
-    InputStream in = LoaderEnvironment.class.getClassLoader().getResourceAsStream("loader.properties");
+    InputStream in = LoaderEnvironment.class.getClassLoader()
+        .getResourceAsStream("loader.properties");
+
     Properties p = new Properties();
     try {
       p.load(in);
       in.close();
     } catch (Exception ioex) {
-      LOG.warn("No Kernel Lifecycle Properties loaded " + ioex.getMessage());
+      LOG
+          .warn("No Lifecycle Loader Properties (/loader.properties in the server classpath)  loaded: "
+              + ioex.getMessage());
     }
-    String lifecycleClass = p.getProperty(SYS_LIFECYCLE_PROPERTY, DEFAULT_LIFECYCLE_CLASS);
+    String lifecycleClass = p.getProperty(SYS_LIFECYCLE_PROPERTY,
+        DEFAULT_LIFECYCLE_CLASS);
     String sysLifecycleClass = System.getProperty(SYS_LIFECYCLE_PROPERTY);
     String envLifecycleClass = System.getenv().get(ENV_LIFECYCLE_PROPERTY);
-    if (envLifecycleClass != null && envLifecycleClass.trim().length() > 0) {
-      LOG.info("Environment Override " + envLifecycleClass + " replaces " + lifecycleClass);
-      lifecycleClass = envLifecycleClass;
-    } else if (sysLifecycleClass != null && sysLifecycleClass.trim().length() > 0) {
-      LOG.info("Environment Override " + sysLifecycleClass + " replaces " + lifecycleClass);
+    if (sysLifecycleClass != null && sysLifecycleClass.trim().length() > 0) {
+      LOG.info("Environment Override " + sysLifecycleClass + " replaces "
+          + lifecycleClass);
       lifecycleClass = sysLifecycleClass;
+    } else if (envLifecycleClass != null
+        && envLifecycleClass.trim().length() > 0) {
+      LOG.info("Environment Override " + envLifecycleClass + " replaces "
+          + lifecycleClass);
+      lifecycleClass = envLifecycleClass;
     }
     LOG.info("Loading " + lifecycleClass + " using " + classLoader);
     T clazz = (T) classLoader.loadClass(lifecycleClass);

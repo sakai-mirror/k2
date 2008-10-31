@@ -64,20 +64,24 @@ public class ComponentLoaderServiceImpl implements ComponentLoaderService  {
     // convert the location set into a list of URLs
     List<URL> locations = new ArrayList<URL>();
     for (String location : StringUtils.split(componentLocations,';')) {
+      location = location.trim();
       if (location.endsWith(".jar")) {
         if (location.indexOf("://") < 0) {
           location = "file:/" + location;
         }
         locations.add(new URL(location));
       }
-      for (File f : FileUtil.findAll(location, "*.jar")) {
+      LOG.info("Locating Components in "+location );
+      for (File f : FileUtil.findAll(location, ".jar")) {
         String path = f.getCanonicalPath();
         if (path.indexOf("://") < 0) {
-          path = "file:/" + path;
+          path = "file://" + path;
         }
+        LOG.info("    added component:"+path);
         locations.add(new URL(path));
       }
     }
+    LOG.info("    bundle contains "+locations.size()+" components");
 
     // bind to the parent classloader ?
     ClassLoader parent = null;
@@ -96,9 +100,12 @@ public class ComponentLoaderServiceImpl implements ComponentLoaderService  {
       String source = componentSpecXml;
       if (source.endsWith(COMPONENT_SPEC_XML)) {
         source = source
-            .substring(source.length() - COMPONENT_SPEC_XML.length());
+            .substring(0,source.length() - COMPONENT_SPEC_XML.length() - 2);
       }
-      LOG.info("Adding Component " + url);
+      if ( source.startsWith("jar:") ) {
+        source = source.substring(4);
+      }
+      LOG.info("Adding Component " + url + " from "+source);
       specs.add(new URLComponentSpecificationImpl(source, componentSpecXml));
     }
     uclassloader = null;
