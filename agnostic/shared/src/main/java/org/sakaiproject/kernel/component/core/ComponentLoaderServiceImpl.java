@@ -25,8 +25,11 @@ import org.sakaiproject.kernel.api.ComponentLoaderService;
 import org.sakaiproject.kernel.api.ComponentManager;
 import org.sakaiproject.kernel.api.ComponentSpecification;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
+import org.sakaiproject.kernel.api.Dependency;
+import org.sakaiproject.kernel.api.DependencyResolverService;
 import org.sakaiproject.kernel.api.KernelConfigurationException;
 import org.sakaiproject.kernel.component.URLComponentSpecificationImpl;
+import org.sakaiproject.kernel.component.model.DependencyImpl;
 import org.sakaiproject.kernel.util.FileUtil;
 import org.sakaiproject.kernel.util.StringUtils;
 
@@ -47,16 +50,19 @@ public class ComponentLoaderServiceImpl implements ComponentLoaderService {
   private static final Log LOG = LogFactory
       .getLog(ComponentLoaderServiceImpl.class);
   private ComponentManager componentManager;
+  private DependencyResolverService dependencyResolverService;
 
   /**
+   * @param dependencyResolverService 
    * @throws IOException
    * @throws ComponentSpecificationException
    * @throws KernelConfigurationException
    * 
    */
   @Inject
-  public ComponentLoaderServiceImpl(ComponentManager componentManager) {
+  public ComponentLoaderServiceImpl(ComponentManager componentManager, DependencyResolverService dependencyResolverService) {
     this.componentManager = componentManager;
+    this.dependencyResolverService = dependencyResolverService;
   }
 
   public void load(String componentLocations, boolean fromClassloader)
@@ -66,7 +72,12 @@ public class ComponentLoaderServiceImpl implements ComponentLoaderService {
     List<URL> locations = new ArrayList<URL>();
     for (String location : StringUtils.split(componentLocations, ';')) {
       location = location.trim();
-      if (location.endsWith(".jar")) {
+      if (location.startsWith("maven-repo")) {
+        Dependency dep = DependencyImpl.fromString(location);
+        URL u = dependencyResolverService.resolve(null, dep);
+        LOG.info("added component:" + u);
+        locations.add(u);
+      } else if (location.endsWith(".jar")) {
         if (location.indexOf("://") < 0) {
           File f = new File(location);
           if (!f.exists()) {

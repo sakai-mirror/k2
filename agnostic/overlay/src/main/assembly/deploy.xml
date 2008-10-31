@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <assembly>
-  <id>kernel-loader</id>
+  <id>kernel-core</id>
   <formats>
     <format>zip</format>
   </formats>

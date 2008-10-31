@@ -26,6 +26,7 @@ import org.sakaiproject.kernel.api.ComponentSpecification;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
 import org.sakaiproject.kernel.api.KernelConfigurationException;
 import org.sakaiproject.kernel.component.core.ComponentLoaderServiceImpl;
+import org.sakaiproject.kernel.component.core.Maven2DependencyResolver;
 import org.sakaiproject.kernel.component.test.mock.MockComponentManager;
 import org.sakaiproject.kernel.util.FileUtil;
 import org.sakaiproject.kernel.util.ResourceLoader;
@@ -108,7 +109,8 @@ public class ComponentLoaderServiceImplTest {
   @Test
   public void testLoad() throws IOException, ComponentSpecificationException, KernelConfigurationException {
     MockComponentManager cm = new MockComponentManager();
-    ComponentLoaderServiceImpl cl = new ComponentLoaderServiceImpl(cm);
+    Maven2DependencyResolver dependencyResolver = new Maven2DependencyResolver();
+    ComponentLoaderServiceImpl cl = new ComponentLoaderServiceImpl(cm, dependencyResolver);
     cl.load(baseFile.getPath(), false);
     ComponentSpecification[] specs = cm.getStartedComponents();
     assertEquals(2, specs.length);    
@@ -122,7 +124,8 @@ public class ComponentLoaderServiceImplTest {
   @Test
   public void testLoadSingle() throws IOException, ComponentSpecificationException, KernelConfigurationException {
     MockComponentManager cm = new MockComponentManager();
-    ComponentLoaderServiceImpl cl = new ComponentLoaderServiceImpl(cm);
+    Maven2DependencyResolver dependencyResolver = new Maven2DependencyResolver();
+    ComponentLoaderServiceImpl cl = new ComponentLoaderServiceImpl(cm, dependencyResolver);
     File singleJar = new File(baseFile,"testfile1single.jar");
     createComponent(singleJar, COMPONENT1);
 

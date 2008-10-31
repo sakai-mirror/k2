@@ -25,6 +25,7 @@ import org.sakaiproject.kernel.component.core.test.ComponentClassloaderTest;
 import org.sakaiproject.kernel.component.core.test.ComponentLoaderServiceImplTest;
 import org.sakaiproject.kernel.component.core.test.Maven2DependencyResolverTest;
 import org.sakaiproject.kernel.component.core.test.PackageRegistryServiceTest;
+import org.sakaiproject.kernel.component.core.test.SharedClassloaderTest;
 import org.sakaiproject.kernel.component.test.ComponentManagerImplTest;
 import org.sakaiproject.kernel.component.test.KernelImplTest;
 import org.sakaiproject.kernel.component.test.KernelLifecycleTest;
@@ -47,7 +48,8 @@ import org.sakaiproject.kernel.util.test.StringUtilsTest;
     URLComponentSpecificationImplTest.class,
     PackageRegistryServiceTest.class,
     ComponentLoaderServiceImplTest.class,
-    ClassLoaderServiceTest.class
+    ClassLoaderServiceTest.class,
+    SharedClassloaderTest.class
 
 })
 public class TestAll {

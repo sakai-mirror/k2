@@ -217,6 +217,7 @@ public class ComponentManagerImpl implements ComponentManager {
       }
       String dc = p.getProperty(DEFAULT_COMPONENTS);
       List<ComponentSpecification> toStart = new ArrayList<ComponentSpecification>();
+      LOG.info("Starting "+dc);
       if (dc != null) {
         String[] defaultComponents = StringUtils.split(dc,';');
         for (String d : defaultComponents) {

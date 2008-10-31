@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.Dependency;
 import org.sakaiproject.kernel.api.DependencyScope;
+import org.sakaiproject.kernel.util.StringUtils;
 
 /**
  * 
@@ -188,6 +189,20 @@ public class DependencyImpl implements Dependency {
    */
   public boolean isManaged() {
     return !unmanaged;
+  }
+
+  /**
+   * @param location
+   * @return
+   */
+  public static Dependency fromString(String location) {
+    String[] l = StringUtils.split(location, ':');
+    DependencyImpl d = new DependencyImpl();
+    d.setGroupId(l[1]);
+    d.setArtifactId(l[2]);
+    d.setVersion(l[3]);
+    d.setType(l[4]);
+    return d;
   }
 
 }
