@@ -59,7 +59,7 @@ public class SharedClassloaderTest {
 
     // Check the class in not visible
     try {
-      cc.loadClass("org.sakaiproject.kernel.loader.server.SwitchedClassLoader");
+      cc.loadClass("org.apache.commons.lang.text.StrTokenizer");
       fail();
     } catch (ClassNotFoundException e) {
     }
@@ -68,9 +68,9 @@ public class SharedClassloaderTest {
     
     
     DependencyImpl cpdep = new DependencyImpl();
-    cpdep.setGroupId("org.sakaiproject.kernel2.agnostic");
-    cpdep.setArtifactId("server");
-    cpdep.setVersion("0.1-SNAPSHOT");
+    cpdep.setGroupId("commons-lang");
+    cpdep.setArtifactId("commons-lang");
+    cpdep.setVersion("2.3");
     cpdep.setScope(DependencyScope.SHARE);
     
     cc.addDependency(cpdep);
@@ -79,7 +79,7 @@ public class SharedClassloaderTest {
 
     // load something from the exported classloader
     try {
-      Class<?> c = cc.loadClass("org.sakaiproject.kernel.loader.server.SwitchedClassLoader");
+      Class<?> c = cc.loadClass("org.apache.commons.lang.text.StrTokenizer");
       assertSame(cc, c.getClassLoader());
     } catch (ClassNotFoundException e) {
       fail();

@@ -97,9 +97,11 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
     
     // export the packages
     for ( PackageExport pe : spec.getExports() ) {
-      LOG.info(spec.getName()+"::Exported "+pe.getName());
+      LOG.info(spec.getName()+"::Exported ["+pe.getName()+"]");
       packageRegistryService.addExport(pe.getName(), cl);
     }
+    
+    
     
     return cl;
   }

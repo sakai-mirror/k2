@@ -23,8 +23,11 @@ import static org.junit.Assert.fail;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
+import org.sakaiproject.kernel.api.DependencyScope;
 import org.sakaiproject.kernel.component.core.ComponentClassLoader;
+import org.sakaiproject.kernel.component.core.Maven2DependencyResolver;
 import org.sakaiproject.kernel.component.core.PackageRegistryServiceImpl;
+import org.sakaiproject.kernel.component.model.DependencyImpl;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,14 +44,21 @@ public class ComponentClassloaderTest {
 
 
   @Test
-  public void testExportedPackages() throws MalformedURLException, IOException {
+  public void testExportedPackages() throws Exception {
     PackageRegistryServiceImpl prs = new PackageRegistryServiceImpl(); 
     ClassLoader exportClassloader = this.getClass().getClassLoader();
     prs.addExport("org.sakaiproject.kernel.component.test", exportClassloader);
+    
+    Maven2DependencyResolver dependencyResolver = new Maven2DependencyResolver();
+    DependencyImpl cpdep = new DependencyImpl();
+    cpdep.setGroupId("commons-lang");
+    cpdep.setArtifactId("commons-lang");
+    cpdep.setVersion("2.3");
+    cpdep.setScope(DependencyScope.SHARE);
+    
     URL[] urls = new URL[1];
-    File f = new File("../server/target/classes/");
-    // classpaths to directories must end in / ... bad! / is a separator
-    urls[0] = new URL("file://"+f.getCanonicalPath()+"/");
+    urls[0] = dependencyResolver.resolve(null, cpdep);
+    
     
     ComponentClassLoader cc = new ComponentClassLoader(prs,urls,exportClassloader);
     LOG.info("Classloader Structure is "+cc.toString());
@@ -68,7 +78,7 @@ public class ComponentClassloaderTest {
     }
     // load something thats only in the ComponentClassloader
     try {
-      Class<?> c = cc.loadClass("org.sakaiproject.kernel.loader.server.SwitchedClassLoader");
+      Class<?> c = cc.loadClass("org.apache.commons.lang.text.StrTokenizer");
       assertSame(cc, c.getClassLoader());
     } catch (ClassNotFoundException e) {
       LOG.error("Failed ",e);
