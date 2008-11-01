@@ -17,6 +17,8 @@
  */
 package org.sakaiproject.kernel.api;
 
+import java.util.Map;
+
 
 /**
  * Provides an in memory tree register for classloaders that load exported
@@ -58,4 +60,6 @@ public interface PackageRegistryService {
    * @return the classloader.
    */
   ClassLoader findClassloader(String packageName);
+  
+  Map<String, String> getExports();
 }

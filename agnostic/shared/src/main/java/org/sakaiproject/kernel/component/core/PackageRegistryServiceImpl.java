@@ -21,6 +21,10 @@ import org.sakaiproject.kernel.api.ComponentSpecificationException;
 import org.sakaiproject.kernel.api.PackageRegistryService;
 import org.sakaiproject.kernel.util.StringUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 /**
  * Provides a tree implementation of the package register
  */
@@ -124,6 +128,27 @@ public class PackageRegistryServiceImpl implements
       t += setChildClassLoaders(pe, childClassLoader, parentClassloader);
     }
     return t;
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.PackageRegistryService#getExports()
+   */
+  public Map<String, String> getExports() {
+    Map<String, String> flattenedMap = new HashMap<String, String>();
+    loadExports("",root,flattenedMap);
+    return flattenedMap;
+  }
+
+  /**
+   * @param root2
+   * @param flattenedMap
+   */
+  private void loadExports(String base, PackageExport pe, Map<String, String> flattenedMap) {
+    flattenedMap.put(base,String.valueOf(pe.getClassLoader()));
+    for (Entry<String, PackageExport> npe : pe.entrySet() ) {
+      loadExports(base+npe.getKey()+".", npe.getValue(), flattenedMap);
+    }
   }
 
 }
