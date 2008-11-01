@@ -17,7 +17,7 @@
 			<groupId>org.sakaiproject.kernel2.agnostic</groupId>
 			<artifactId>assembly</artifactId>
 			<version>0.1-SNAPSHOT</version>
-			<classifier>kernel-loader</classifier>
+			<classifier>kernel-core</classifier>
 			<type>zip</type>
 		</dependency>
 		<dependency>
