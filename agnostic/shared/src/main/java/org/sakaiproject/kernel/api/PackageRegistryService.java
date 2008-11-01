@@ -41,7 +41,7 @@ public interface PackageRegistryService {
    *          the classloader
    * @throws ComponentSpecificationException
    */
-  void addExport(String stub, ClassLoader classLoader)
+  void addExport(String stub, ClassExporter classLoader)
       throws ComponentSpecificationException;
 
   /**
@@ -59,7 +59,7 @@ public interface PackageRegistryService {
    *          the name of the package to find the classloader for.
    * @return the classloader.
    */
-  ClassLoader findClassloader(String packageName);
+  ClassExporter findClassloader(String packageName);
   
   Map<String, String> getExports();
 }

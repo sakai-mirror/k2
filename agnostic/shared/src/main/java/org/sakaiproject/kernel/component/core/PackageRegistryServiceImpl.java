@@ -17,6 +17,7 @@
  */
 package org.sakaiproject.kernel.component.core;
 
+import org.sakaiproject.kernel.api.ClassExporter;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
 import org.sakaiproject.kernel.api.PackageRegistryService;
 import org.sakaiproject.kernel.util.StringUtils;
@@ -42,18 +43,18 @@ public class PackageRegistryServiceImpl implements
    * @see org.sakaiproject.kernel.api.ExportedPackagedRegistryService#addExport(java.lang.String,
    *      java.lang.ClassLoader)
    */
-  public void addExport(String stub, ClassLoader classLoader) {
+  public void addExport(String stub, ClassExporter classExporter) {
     String[] elements = StringUtils.split(stub,'.');
     PackageExport p = root;
     for (String element : elements ) {
       PackageExport np = p.get(element);
       if (np == null) {
-        np = new PackageExport(element,p.getClassLoader());
+        np = new PackageExport(element,p.getClassExporter());
         p.put(element, np);
       }
       p = np;
     }
-    p.setClassLoader(classLoader);
+    p.setClassExporter(classExporter);
   }
 
   /**
@@ -62,7 +63,8 @@ public class PackageRegistryServiceImpl implements
    * 
    * @see org.sakaiproject.kernel.api.ExportedPackagedRegistryService#findClassloader(java.lang.String)
    */
-  public ClassLoader findClassloader(String packageName) {
+  public ClassExporter findClassloader(String packageName) {
+    packageName = packageName.replace('/', '.');
     String[] elements = StringUtils.split(packageName,'.');
     PackageExport p = root;
     for (String element : elements ) {
@@ -72,7 +74,7 @@ public class PackageRegistryServiceImpl implements
       }
       p = np;
     }
-    return p.getClassLoader();
+    return p.getClassExporter();
   }
 
 
@@ -98,13 +100,13 @@ public class PackageRegistryServiceImpl implements
     }
     if ( key != null ) {
       PackageExport child = container.get(key);
-      ClassLoader parentClassloader = container.getClassLoader();
+      ClassExporter parentClassloader = container.getClassExporter();
       
-      if ( setChildClassLoaders(child,child.getClassLoader(),parentClassloader) == 0) {
+      if ( setChildClassLoaders(child,child.getClassExporter(),parentClassloader) == 0) {
         // if there are no other classloaders in in the child tree, remove the child tree alltogether.
         container.remove(key);
       } else {
-        child.setClassLoader(parentClassloader);
+        child.setClassExporter(parentClassloader);
       }
     }
   }
@@ -116,11 +118,11 @@ public class PackageRegistryServiceImpl implements
    * @return
    */
   private int setChildClassLoaders(PackageExport child,
-      ClassLoader childClassLoader, ClassLoader parentClassloader) {
+      ClassExporter childClassLoader, ClassExporter parentClassloader) {
     int t = 0;
     for ( PackageExport pe : child.values() ) {
-      if ( pe.getClassLoader() == childClassLoader ) {
-        pe.setClassLoader(parentClassloader);
+      if ( pe.getClassExporter() == childClassLoader ) {
+        pe.setClassExporter(parentClassloader);
       } else {
         // found a classloader that is not the child classloader, so increment the counter
         t++;
@@ -145,7 +147,7 @@ public class PackageRegistryServiceImpl implements
    * @param flattenedMap
    */
   private void loadExports(String base, PackageExport pe, Map<String, String> flattenedMap) {
-    flattenedMap.put(base,String.valueOf(pe.getClassLoader()));
+    flattenedMap.put(base,String.valueOf(pe.getClassExporter()));
     for (Entry<String, PackageExport> npe : pe.entrySet() ) {
       loadExports(base+npe.getKey()+".", npe.getValue(), flattenedMap);
     }

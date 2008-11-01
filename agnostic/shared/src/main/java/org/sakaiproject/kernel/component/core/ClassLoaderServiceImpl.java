@@ -21,6 +21,7 @@ import com.google.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.api.ClassExporter;
 import org.sakaiproject.kernel.api.ClassLoaderService;
 import org.sakaiproject.kernel.api.Dependency;
 import org.sakaiproject.kernel.api.ComponentSpecification;
@@ -39,7 +40,8 @@ import java.util.List;
  */
 public class ClassLoaderServiceImpl implements ClassLoaderService {
 
-  private static final Log LOG = LogFactory.getLog(ClassLoaderServiceImpl.class);
+  private static final Log LOG = LogFactory
+      .getLog(ClassLoaderServiceImpl.class);
   private SharedClassLoader sharedClassLoader;
   private PackageRegistryService packageRegistryService;
   private DependencyResolverService dependencyResolverService;
@@ -60,49 +62,54 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
 
   /**
    * {@inheritDoc}
-   * @throws ComponentSpecificationException 
+   * 
+   * @throws ComponentSpecificationException
    * 
    * @see org.sakaiproject.kernel.api.ClassLoaderService#getComponentClassLoader(org.sakaiproject.kernel.api.ComponentSpecification,
    *      java.lang.ClassLoader)
    */
-  public ClassLoader getComponentClassLoader(ComponentSpecification spec) throws ComponentSpecificationException {
+  public ClassLoader getComponentClassLoader(ComponentSpecification spec)
+      throws ComponentSpecificationException {
     List<URL> urls = new ArrayList<URL>();
-    if ( spec.getComponentClasspath()  != null ) {
+    if (spec.getComponentClasspath() != null) {
       urls.add(spec.getComponentClasspath());
     }
-    for ( Dependency dependency : spec.getDependencies() ) {
-      if ( dependency.getScope() == null || DependencyScope.LOCAL.equals(dependency.getScope())) {
+    for (Dependency dependency : spec.getDependencies()) {
+      if (dependency.getScope() == null
+          || DependencyScope.LOCAL.equals(dependency.getScope())) {
         URL[] u = urls.toArray(new URL[0]);
         URL url = dependencyResolverService.resolve(u, dependency);
-        if ( url != null ) {
+        if (url != null) {
           urls.add(url);
         } else {
-          LOG.warn(spec.getName()+"::Did not add dependency "+dependency+" to local component classloader ");
+          LOG.warn(spec.getName() + "::Did not add dependency " + dependency
+              + " to local component classloader ");
         }
       }
     }
     ClassLoader cl = null;
-    if ( spec.isKernelBootstrap() && urls.size() == 0 ) {
+    if (spec.isKernelBootstrap() && urls.size() == 0) {
       cl = this.getClass().getClassLoader();
     } else {
-      cl = new ComponentClassLoader(packageRegistryService,urls.toArray(new URL[0]),sharedClassLoader);
+      cl = new ComponentClassLoader(packageRegistryService, urls
+          .toArray(new URL[0]), sharedClassLoader);
     }
     // add the shared dependencies
-    for ( Dependency dependency : spec.getDependencies() ) {
-      if ( DependencyScope.SHARE.equals(dependency.getScope())) {
-        LOG.info(spec.getName()+"::Adding Shared Dependency "+dependency);
+    for (Dependency dependency : spec.getDependencies()) {
+      if (DependencyScope.SHARE.equals(dependency.getScope())) {
+        LOG.info(spec.getName() + "::Adding Shared Dependency " + dependency);
         sharedClassLoader.addDependency(dependency);
       }
     }
-    
-    // export the packages
-    for ( PackageExport pe : spec.getExports() ) {
-      LOG.info(spec.getName()+"::Exported ["+pe.getName()+"]");
-      packageRegistryService.addExport(pe.getName(), cl);
+
+    if (cl instanceof ClassExporter) {
+      // export the packages
+      for (PackageExport pe : spec.getExports()) {
+        LOG.info(spec.getName() + "::Exported [" + pe.getName() + "]");
+        packageRegistryService.addExport(pe.getName(), (ClassExporter) cl);
+      }
     }
-    
-    
-    
+
     return cl;
   }
 }

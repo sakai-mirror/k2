@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
 import org.junit.Test;
+import org.sakaiproject.kernel.api.ClassExporter;
 import org.sakaiproject.kernel.component.core.PackageRegistryServiceImpl;
 
 import java.net.URL;
@@ -39,9 +40,9 @@ public class PackageRegistryServiceTest {
   @Test
   public void testAddExport() {
     
-    ClassLoader apiLoader = new URLClassLoader(new URL[0]);
-    ClassLoader special = new URLClassLoader(new URL[0]);
-    ClassLoader specialsomewhere = new URLClassLoader(new URL[0]);
+    ClassExporter apiLoader = new MockClassExport(new URLClassLoader(new URL[0]));
+    ClassExporter special = new MockClassExport(new URLClassLoader(new URL[0]));
+    ClassExporter specialsomewhere = new MockClassExport(new URLClassLoader(new URL[0]));
     PackageRegistryServiceImpl registry = new PackageRegistryServiceImpl();
     registry.addExport("org.sakaiproject.kernel.api", apiLoader);
     registry.addExport("org.sakaiproject.kernel.api.something.special", special);

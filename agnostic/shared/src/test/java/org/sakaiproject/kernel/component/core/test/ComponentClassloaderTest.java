@@ -23,15 +23,13 @@ import static org.junit.Assert.fail;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
+import org.sakaiproject.kernel.api.ClassExporter;
 import org.sakaiproject.kernel.api.DependencyScope;
 import org.sakaiproject.kernel.component.core.ComponentClassLoader;
 import org.sakaiproject.kernel.component.core.Maven2DependencyResolver;
 import org.sakaiproject.kernel.component.core.PackageRegistryServiceImpl;
 import org.sakaiproject.kernel.component.model.DependencyImpl;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -47,7 +45,7 @@ public class ComponentClassloaderTest {
   public void testExportedPackages() throws Exception {
     PackageRegistryServiceImpl prs = new PackageRegistryServiceImpl(); 
     ClassLoader exportClassloader = this.getClass().getClassLoader();
-    prs.addExport("org.sakaiproject.kernel.component.test", exportClassloader);
+    prs.addExport("org.sakaiproject.kernel.component.test", new MockClassExport(exportClassloader));
     
     Maven2DependencyResolver dependencyResolver = new Maven2DependencyResolver();
     DependencyImpl cpdep = new DependencyImpl();
@@ -60,7 +58,7 @@ public class ComponentClassloaderTest {
     urls[0] = dependencyResolver.resolve(null, cpdep);
     
     
-    ComponentClassLoader cc = new ComponentClassLoader(prs,urls,exportClassloader);
+    ComponentClassLoader cc = new ComponentClassLoader(prs,urls,this.getClass().getClassLoader());
     LOG.info("Classloader Structure is "+cc.toString());
     // test for a non found, look at code coverage to check that the export was checked. 
     try {
@@ -73,6 +71,8 @@ public class ComponentClassloaderTest {
     try {
       Class<?> c = cc.loadClass("org.sakaiproject.kernel.component.test.KernelLifecycleTest");
       assertSame(exportClassloader, c.getClassLoader());
+      Object o = c.newInstance();
+      LOG.info("Exported Object is "+o);
     } catch (ClassNotFoundException e) {
       fail();
     }
@@ -80,6 +80,8 @@ public class ComponentClassloaderTest {
     try {
       Class<?> c = cc.loadClass("org.apache.commons.lang.text.StrTokenizer");
       assertSame(cc, c.getClassLoader());
+      Object o = c.newInstance();
+      LOG.info("Component Object is "+o);
     } catch (ClassNotFoundException e) {
       LOG.error("Failed ",e);
       fail();

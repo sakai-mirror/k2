@@ -23,6 +23,7 @@ import static org.junit.Assert.fail;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
+import org.sakaiproject.kernel.api.ClassExporter;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
 import org.sakaiproject.kernel.api.DependencyScope;
 import org.sakaiproject.kernel.component.KernelImpl;
@@ -39,23 +40,23 @@ import java.net.MalformedURLException;
  */
 public class SharedClassloaderTest {
 
-
   private static final Log LOG = LogFactory.getLog(SharedClassloaderTest.class);
 
-
   @Test
-  public void testExportedPackages() throws MalformedURLException, IOException, ComponentSpecificationException {
-    PackageRegistryServiceImpl prs = new PackageRegistryServiceImpl(); 
+  public void testExportedPackages() throws MalformedURLException, IOException,
+      ComponentSpecificationException {
+    PackageRegistryServiceImpl prs = new PackageRegistryServiceImpl();
     Maven2DependencyResolver dependencyResolver = new Maven2DependencyResolver();
     KernelImpl kernel = new KernelImpl();
-    
+
     // add an export that wont be used
-    ClassLoader exportClassloader = this.getClass().getClassLoader();
+    ClassExporter exportClassloader = new MockClassExport(this.getClass()
+        .getClassLoader());
     prs.addExport("org.sakaiproject.kernel.component.test", exportClassloader);
-    
-    
-    SharedClassLoader cc = new SharedClassLoader(prs,dependencyResolver,kernel);
-    LOG.info("Classloader Structure is "+cc.toString());
+
+    SharedClassLoader cc = new SharedClassLoader(prs, dependencyResolver,
+        kernel);
+    LOG.info("Classloader Structure is " + cc.toString());
 
     // Check the class in not visible
     try {
@@ -64,18 +65,15 @@ public class SharedClassloaderTest {
     } catch (ClassNotFoundException e) {
     }
 
-    
-    
-    
     DependencyImpl cpdep = new DependencyImpl();
     cpdep.setGroupId("commons-lang");
     cpdep.setArtifactId("commons-lang");
     cpdep.setVersion("2.3");
     cpdep.setScope(DependencyScope.SHARE);
-    
+
     cc.addDependency(cpdep);
 
-    LOG.info("Classloader Structure after add is  "+cc.toString());
+    LOG.info("Classloader Structure after add is  " + cc.toString());
 
     // load something from the exported classloader
     try {
@@ -84,6 +82,6 @@ public class SharedClassloaderTest {
     } catch (ClassNotFoundException e) {
       fail();
     }
-    
+
   }
 }

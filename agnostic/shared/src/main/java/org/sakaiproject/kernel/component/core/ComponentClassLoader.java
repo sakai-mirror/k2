@@ -19,8 +19,10 @@ package org.sakaiproject.kernel.component.core;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.api.ClassExporter;
 import org.sakaiproject.kernel.api.PackageRegistryService;
 
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.LinkedHashMap;
@@ -32,16 +34,11 @@ import java.util.Map;
  * addition it acts exactly in the same way the URLClassloader operates,
  * resolving to the parent.
  */
-public class ComponentClassLoader extends URLClassLoader {
+public class ComponentClassLoader extends URLClassLoader implements
+    ClassExporter {
 
   private static final Log LOG = LogFactory.getLog(ComponentClassLoader.class);
   private PackageRegistryService packageRegistryService;
-  /**
-   * This is used to ensure that once a classloader is resolving exports, it
-   * doesn't try and re-resolve exports. This goes for all classloaders, not just
-   * this instance, hence why its static.
-   */
-  private static ThreadLocal<String> exporting = new ThreadLocal<String>();
   private static final ThreadLocal<String> spacing = new ThreadLocal<String>() {
     /**
      * {@inheritDoc}
@@ -74,38 +71,28 @@ public class ComponentClassLoader extends URLClassLoader {
     Class<?> c = findLoadedClass(name);
     ClassNotFoundException ex = null;
 
-    // load from exports first
-    if (exporting.get() == null) {
-      try {
-        exporting.set("1");
+    if ( c == null && packageRegistryService != null) {
+      ClassExporter exporter = packageRegistryService.findClassloader(name);
+      if (exporter != null) {
+        try {
 
-        if (c == null && packageRegistryService != null) {
-          ClassLoader classLoader = packageRegistryService
-              .findClassloader(name);
-          if (classLoader != null) {
-            try {
-
-              if (LOG.isDebugEnabled()) {
-                LOG.debug("Using export ClassLoader " + classLoader);
-              }
-              c = classLoader.loadClass(name);
-              if (LOG.isDebugEnabled()) {
-                LOG.debug("Got Exported Class " + c + " from " + classLoader);
-              }
-            } catch (ClassNotFoundException e) {
-              ex = e;
-            }
-          }
-        } else {
           if (LOG.isDebugEnabled()) {
-            LOG.info("Not Loading from exports ");
+            LOG.debug("Using export ClassLoader " + exporter);
           }
+          c = exporter.loadExportedClass(name);
+          if (LOG.isDebugEnabled()) {
+            LOG.debug("Got Exported Class " + c + " from " + exporter);
+          }
+        } catch (ClassNotFoundException e) {
+          ex = e;
         }
-
-      } finally {
-        exporting.set(null);
+      }
+    } else {
+      if (LOG.isDebugEnabled()) {
+        LOG.info("Not Loading from exports ");
       }
     }
+
     // then load internally
     if (c == null) {
       try {
@@ -135,15 +122,30 @@ public class ComponentClassLoader extends URLClassLoader {
     if (c == null)
       throw ex;
 
-    if (resolve)
+    if (resolve) {
       resolveClass(c);
+    }
 
     if (LOG.isDebugEnabled()) {
       LOG.debug("loaded " + c + " from " + c.getClassLoader());
     }
+    return c;
 
+  }
+  /**
+   * {@inheritDoc}
+   * @throws ClassNotFoundException 
+   * 
+   * @see org.sakaiproject.kernel.api.ClassExporter#loadExportedClass(java.lang.String)
+   */
+  public Class<?> loadExportedClass(String name) throws ClassNotFoundException {
+    Class<?> c = findLoadedClass(name);
+    if (c == null) {
+        c = this.findClass(name);
+    }
     return c;
   }
+
 
   /**
    * {@inheritDoc}
@@ -182,6 +184,39 @@ public class ComponentClassLoader extends URLClassLoader {
     } finally {
       spacing.set(t);
     }
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.apache.catalina.loader.WebappClassLoader#getResourceAsStream(java.lang.String)
+   */
+  @Override
+  public InputStream getResourceAsStream(String name) {
+    InputStream in = null;
+    if (packageRegistryService != null) {
+      ClassExporter exporter = packageRegistryService.findClassloader(name);
+      if (exporter != null) {
+
+        in = exporter.getExportedResourceAsStream(name);
+
+        if (in != null) {
+          if (LOG.isDebugEnabled())
+            LOG.debug("Loaded from Export " + in);
+          return in;
+        }
+      }
+    }
+    return super.getResourceAsStream(name);
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.kernel.api.ClassExporter#getExportedResourceAsStream(java.lang.String)
+   */
+  public InputStream getExportedResourceAsStream(String name) {
+    return super.getResourceAsStream(name);
   }
 
 }

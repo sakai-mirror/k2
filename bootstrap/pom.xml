@@ -79,6 +79,7 @@
 								<chmod file="${basedir}/start.sh" perm="775" />
 								<exec dir="${basedir}" executable="${basedir}/start.sh"
 									failonerror="true">
+                                                                     <arg value="run" />
 								</exec>
 							</tasks>
 						</configuration>

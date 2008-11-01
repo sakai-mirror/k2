@@ -22,6 +22,7 @@ import static org.junit.Assert.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.sakaiproject.kernel.api.ClassExporter;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
 import org.sakaiproject.kernel.component.KernelImpl;
 import org.sakaiproject.kernel.component.URLComponentSpecificationImpl;
@@ -48,7 +49,7 @@ public class ClassLoaderServiceTest {
     KernelImpl kernel = new KernelImpl();
     
     // add an export that wont be used
-    ClassLoader exportClassloader = this.getClass().getClassLoader();
+    ClassExporter exportClassloader = new MockClassExport(this.getClass().getClassLoader());
     prs.addExport("org.sakaiproject.kernel.component.test", exportClassloader);
     
     

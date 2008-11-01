@@ -17,92 +17,144 @@
  */
 package org.sakaiproject.kernel.loader.server.tomcat5;
 
-import org.apache.catalina.Lifecycle;
-import org.apache.catalina.LifecycleEvent;
-import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.loader.WebappClassLoader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.sakaiproject.kernel.loader.common.CommonLifecycleEvent;
-import org.sakaiproject.kernel.loader.common.CommonLifecycleListener;
+import org.sakaiproject.kernel.loader.common.CommonObjectConfigurationException;
 import org.sakaiproject.kernel.loader.common.CommonObjectManager;
 
+import java.io.InputStream;
+import java.net.URL;
+
 /**
- * This class provides a classloader that may be used underneath other components to 
- * give control over the structure of the application. In the case of tomcat all webapps share
- * the same common classloader. This bean will enable us to construct our own parent classloader to 
- * those webapps that may contain a different class resolution structure.
+ * This class provides a classloader that may be used underneath other
+ * components to give control over the structure of the application. In the case
+ * of tomcat all webapps share the same common classloader. It is registered
  */
-public class SakaiSharedClassLoader extends WebappClassLoader implements LifecycleListener,
-    CommonLifecycleListener {
-  private static final Log LOG = LogFactory.getLog(SakaiSharedClassLoader.class);
-  private CommonObjectManager commonObjectManager;
-  private ClassLoader parentClassLoader;
+public class SakaiSharedClassLoader extends WebappClassLoader {
+  private static final Log LOG = LogFactory
+      .getLog(SakaiSharedClassLoader.class);
+  private ClassLoader containerClassloader;
 
   /**
    * 
    */
   public SakaiSharedClassLoader() {
     super();
-    super.addLifecycleListener(this);
+    containerClassloader = getContainerClassloader();
+    LOG
+        .debug("====================================CREATING CLASSLOADER ===========================");
   }
 
   public SakaiSharedClassLoader(ClassLoader parent) {
     super(parent);
-    super.addLifecycleListener(this);
+    containerClassloader = getContainerClassloader();
+
+    LOG
+        .debug("====================================CREATING CLASSLOADER Parent : "
+            + parent);
+
+  }
+
+  /**
+   * @param pcl
+   * @return
+   */
+  private ClassLoader getContainerClassloader() {
+    ClassLoader parentClassLoader = null;
+    try {
+      CommonObjectManager commonObjectManager = new CommonObjectManager(
+          "sharedclassloader");
+      parentClassLoader = commonObjectManager.getManagedObject();
+    } catch (CommonObjectConfigurationException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    LOG.debug("Using Custom Shared Classloader Ok Using parent as  "
+        + parentClassLoader);
+    return parentClassLoader;
   }
 
   /*
    * (non-Javadoc)
    * 
-   * @see org.apache.catalina.LifecycleListener#lifecycleEvent(org.apache.catalina.LifecycleEvent)
+   * @see java.lang.ClassLoader#loadClass(java.lang.String, boolean)
    */
-  public void lifecycleEvent(LifecycleEvent event) {
-    try {
-      String type = event.getType();
-      LOG.debug("At " + type);
-      if (Lifecycle.INIT_EVENT.equals(type)) {
-        commonObjectManager = new CommonObjectManager("sharedclassloader");
-        commonObjectManager.addListener(this);
-        parentClassLoader = commonObjectManager.getManagedObject();
-        this.setParentClassLoader(parentClassLoader);
-        LOG.info("Parent Classloader has been set to " + parentClassLoader);
+  @Override
+  public synchronized Class<?> loadClass(String name, boolean resolve)
+      throws ClassNotFoundException {
+    Class<?> c = findLoadedClass(name);
+    ClassNotFoundException ex = null;
 
-        LOG.debug("INIT");
-      } else if (Lifecycle.BEFORE_START_EVENT.equals(type)) {
-        LOG.debug("Before Start");
-        start();
-      } else if (Lifecycle.START_EVENT.equals(type)) {
-        LOG.debug("Start");
-      } else if (Lifecycle.AFTER_START_EVENT.equals(type)) {
-        LOG.debug("After Start");
-      } else if (Lifecycle.PERIODIC_EVENT.equals(type)) {
-        LOG.debug("Periodic");
-      } else if (Lifecycle.BEFORE_STOP_EVENT.equals(type)) {
-        LOG.debug("Before Stop");
-      } else if (Lifecycle.STOP_EVENT.equals(type)) {
-        LOG.debug("Stop");
-      } else if (Lifecycle.AFTER_STOP_EVENT.equals(type)) {
-        LOG.debug("After Stop");
-        stop();
-      } else if (Lifecycle.DESTROY_EVENT.equals(type)) {
-        LOG.debug("Destroy ");
-        parentClassLoader = null;
-        commonObjectManager.removeListener(this);
-        commonObjectManager = null;
-
-      } else {
-        LOG.warn("Unrecognised Container Lifecycle Event ");
+    if (c == null && containerClassloader != null) {
+      try {
+        c = containerClassloader.loadClass(name);
+        if (LOG.isDebugEnabled())
+          LOG.debug("loaded " + c);
+      } catch (ClassNotFoundException e) {
+        ex = e;
       }
-    } catch (Exception ex) {
-      LOG.error("Failed to start Component Context ", ex);
     }
+
+    if (c == null) {
+      try {
+        c = super.loadClass(name, resolve);
+      } catch (ClassNotFoundException e) {
+        ex = e;
+      }
+    }
+
+    if (LOG.isDebugEnabled())
+      LOG.debug("Resolved " + name + " as " + c);
+    if (c == null)
+      throw ex;
+
+    if (LOG.isDebugEnabled())
+      LOG.debug("loaded " + c + " from " + c.getClassLoader());
+
+    return c;
   }
 
-  public void lifecycleEvent(CommonLifecycleEvent event) {
-    // TODO Should pull the webapp down on stop, but in reality the shared bundle never gets
-    // unloaded
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.ClassLoader#getResource(java.lang.String)
+   */
+  @Override
+  public URL getResource(String name) {
+    URL url = null;
+    url = containerClassloader.getResource(name);
+
+    if (url == null) {
+      url = super.getResource(name);
+
+      if (url == null && name.startsWith("/")) {
+        url = super.getResource(name.substring(1));
+      }
+    }
+    return url;
   }
 
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.apache.catalina.loader.WebappClassLoader#getResourceAsStream(java.lang.String)
+   */
+  @Override
+  public InputStream getResourceAsStream(String name) {
+    InputStream in = null;
+    if (containerClassloader != null) {
+      in = containerClassloader.getResourceAsStream(name);
+
+      if (in != null) {
+        if (LOG.isDebugEnabled())
+          LOG.debug("loaded " + in);
+        return in;
+      }
+    }
+    in = super.getResourceAsStream(name);
+    return in;
+  }
 }

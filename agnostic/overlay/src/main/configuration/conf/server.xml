@@ -46,11 +46,16 @@
     <Engine name="Catalina" defaultHost="localhost">
       <Host name="localhost" appBase="webapps"
        unpackWARs="true" autoDeploy="true"
-       xmlValidation="false" xmlNamespaceAware="false"
+       xmlValidation="false" xmlNamespaceAware="false" 
+       >
+       <!-- 
        configClass="org.sakaiproject.kernel.loader.server.tomcat5.SakaiContextConfig"
        >
+        -->
+       
+      
       </Host>
-
+	
     </Engine>
 
   </Service>
