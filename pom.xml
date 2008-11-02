@@ -61,10 +61,10 @@
   <!-- ====================================================================== -->
   <mailingLists>
     <mailingList>
-      <name>Shindig Dev List</name>
+      <name>Sakai Kernel Dev List</name>
       <subscribe>sakai-kernel-subscribe@groups.google.com</subscribe>
       <unsubscribe>sakai-kernel-unsubscribe@groups.google.com</unsubscribe>
-      <post>shindig-kernel@groups.google.com</post>
+      <post>sakai-kernel@groups.google.com</post>
       <archive>http://groups.google.com/sakai-kernel/</archive>
     </mailingList>
   </mailingLists>
@@ -391,7 +391,15 @@
   <!-- R E P O S I T O R I E S                                                -->
   <!-- ====================================================================== -->
   <repositories>
-
+    <repository>
+      <id>sakai-maven</id>
+      <name>Sakai Maven Repo</name>
+      <layout>default</layout>
+      <url>http://source.sakaiproject.org/maven2</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
   </repositories>
 
   <!-- ====================================================================== -->
