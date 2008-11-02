@@ -76,7 +76,7 @@ Class <%=testclass%> was not found.
   String resource = testclass.replace('.', '/') + ".class";
   InputStream in = this.getClass().getClassLoader().getResourceAsStream(
       resource);
-  if (in == null) {
+  if (in != null) {
 %> 
 Found Resource Stream for <%=resource%> as : 
 <%=in%>
