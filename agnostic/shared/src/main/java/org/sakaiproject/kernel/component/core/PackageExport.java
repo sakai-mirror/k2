@@ -17,7 +17,7 @@
  */
 package org.sakaiproject.kernel.component.core;
 
-import org.sakaiproject.kernel.api.ClassExporter;
+import org.sakaiproject.kernel.api.Exporter;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -37,7 +37,7 @@ public class PackageExport extends ConcurrentHashMap<String, PackageExport> {
   /**
    * The classloader to use for package stubs that end here in the tree.
    */
-  private ClassExporter classExporter;
+  private Exporter exporter;
   /**
    * The name of the package at this point.
    */
@@ -53,9 +53,9 @@ public class PackageExport extends ConcurrentHashMap<String, PackageExport> {
    *          the classloader to use with this package and all unspecified child
    *          packages.
    */
-  public PackageExport(String packageName, ClassExporter classExporter) {
+  public PackageExport(String packageName, Exporter exporter) {
     this.packageName = packageName;
-    this.classExporter = classExporter;
+    this.exporter = exporter;
   }
 
 
@@ -68,16 +68,16 @@ public class PackageExport extends ConcurrentHashMap<String, PackageExport> {
 
 
   /**
-   * @return the classExporter
+   * @return the exporter
    */
-  public ClassExporter getClassExporter() {
-    return classExporter;
+  public Exporter getClassExporter() {
+    return exporter;
   }
   
   /**
-   * @param classExporter the classExporter to set
+   * @param exporter the exporter to set
    */
-  public void setClassExporter(ClassExporter classExporter) {
-    this.classExporter = classExporter;
+  public void setClassExporter(Exporter exporter) {
+    this.exporter = exporter;
   }
 }

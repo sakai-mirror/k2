@@ -20,7 +20,8 @@ package org.sakaiproject.kernel.api;
 import java.io.IOException;
 
 /**
- * 
+ * The component loader service performs the job of loading components into the
+ * kernel.
  */
 public interface ComponentLoaderService {
 

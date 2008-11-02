@@ -17,8 +17,11 @@
  */
 package org.sakaiproject.kernel.component.core;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+
 import org.sakaiproject.kernel.api.ComponentSpecification;
-import org.sakaiproject.kernel.api.Dependency;
+import org.sakaiproject.kernel.api.Artifact;
 import org.sakaiproject.kernel.api.PackageExport;
 import org.sakaiproject.kernel.util.ComponentSpecificationUtil;
 
@@ -34,14 +37,15 @@ public class KernelBootstrapSpec implements ComponentSpecification {
    */
   private static final String SPECIFICATION = "<name>"
       + KernelBootstrapSpec.class.getName()
-      + "</name><classpath>kernel</classpath><dependencies/>";
+      + "</name><classpath>kernel</classpath><artifacts/>";
   /**
-   * An empty list of component dependencies.
+   * An empty list of component artifacts.
    */
-  private Dependency[] componentDependencies = new Dependency[0];
-  private Dependency[] dependencies = new Dependency[0];
+  private Artifact[] componentDependencies = new Artifact[0];
+  private Artifact[] artifacts = new Artifact[0];
   private PackageExport[] exports = new PackageExport[0];
-
+  private Artifact artifact = new KernelBootstrapArtifact();
+  
   /**
    * We don't want any special classloader, so return a null classpath.
    * 
@@ -65,10 +69,10 @@ public class KernelBootstrapSpec implements ComponentSpecification {
 
   /**
    * 
-   * @return an array of dependencies.
+   * @return an array of artifacts.
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getDependencies()
    */
-  public Dependency[] getComponentDependencies() {
+  public Artifact[] getComponentDependencies() {
     return componentDependencies;
   }
 
@@ -103,9 +107,9 @@ public class KernelBootstrapSpec implements ComponentSpecification {
    * 
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getDependencies()
    */
-  public Dependency[] getDependencies() {
+  public Artifact[] getDependencies() {
 
-    return dependencies;
+    return artifacts;
   }
 
   /**
@@ -131,6 +135,14 @@ public class KernelBootstrapSpec implements ComponentSpecification {
    */
   public boolean isKernelBootstrap() {
     return true;
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.ComponentSpecification#getComponentArtifact()
+   */
+  public Artifact getComponentArtifact() {
+    return artifact;
   }
 
 }

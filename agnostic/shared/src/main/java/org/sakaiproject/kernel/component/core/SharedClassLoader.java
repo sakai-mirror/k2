@@ -18,10 +18,11 @@
 package org.sakaiproject.kernel.component.core;
 
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
-import org.sakaiproject.kernel.api.Dependency;
+import org.sakaiproject.kernel.api.Artifact;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
-import org.sakaiproject.kernel.api.DependencyResolverService;
+import org.sakaiproject.kernel.api.ArtifactResolverService;
 import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.PackageRegistryService;
 
@@ -35,13 +36,14 @@ import java.net.URL;
  */
 public class SharedClassLoader extends ComponentClassLoader {
 
-  private DependencyResolverService dependencyResolverService;
+  public static final String SHARED_CLASSLOADER_ARTIFACT = "shared.classloader.artifact";
+  private ArtifactResolverService artifactResolverService;
 
   @Inject
   public SharedClassLoader(PackageRegistryService packageRegistryService,
-      DependencyResolverService dependencyResolverService, Kernel kernel) {
-    super(packageRegistryService,new URL[0],kernel.getParentComponentClassLoader());
-    this.dependencyResolverService = dependencyResolverService;
+      ArtifactResolverService artifactResolverService, @Named(SHARED_CLASSLOADER_ARTIFACT) Artifact artifact, Kernel kernel) {
+    super(packageRegistryService,new URL[0],kernel.getParentComponentClassLoader(),artifact);
+    this.artifactResolverService = artifactResolverService;
   }
 
   /**
@@ -51,8 +53,8 @@ public class SharedClassLoader extends ComponentClassLoader {
    * @param classifier
    * @throws ComponentSpecificationException 
    */
-  public void addDependency(Dependency classpathDependency) throws ComponentSpecificationException {
-    URL classPathUrl = dependencyResolverService.resolve(getURLs(),
+  public void addDependency(Artifact classpathDependency) throws ComponentSpecificationException {
+    URL classPathUrl = artifactResolverService.resolve(getURLs(),
         classpathDependency);
     if (classPathUrl != null) {
       addURL(classPathUrl);

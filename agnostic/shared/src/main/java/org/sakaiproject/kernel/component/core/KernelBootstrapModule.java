@@ -25,10 +25,11 @@ import com.google.inject.spi.Message;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.api.Artifact;
 import org.sakaiproject.kernel.api.ClassLoaderService;
 import org.sakaiproject.kernel.api.ComponentLoaderService;
 import org.sakaiproject.kernel.api.ComponentManager;
-import org.sakaiproject.kernel.api.DependencyResolverService;
+import org.sakaiproject.kernel.api.ArtifactResolverService;
 import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.PackageRegistryService;
 import org.sakaiproject.kernel.api.ServiceManager;
@@ -56,17 +57,17 @@ public class KernelBootstrapModule extends AbstractModule {
   private final static String DEFAULT_PROPERTIES = "res://kernel.properties";
 
   /**
-   * the environment variable that contains overrides to kernel properties 
+   * the environment variable that contains overrides to kernel properties
    */
   private static final String LOCAL_PROPERTIES = "SAKAI_KERNEL_PROPERTIES";
 
   /**
-   * The System property name that contains overrides to the kernel properties resource
+   * The System property name that contains overrides to the kernel properties
+   * resource
    */
   private static final String SYS_LOCAL_PROPERTIES = "sakai.kernel.properties";
-  
-  private static final Log LOG = LogFactory.getLog(KernelBootstrapModule.class);
 
+  private static final Log LOG = LogFactory.getLog(KernelBootstrapModule.class);
 
   /**
    * The properties for the kernel
@@ -111,8 +112,9 @@ public class KernelBootstrapModule extends AbstractModule {
     }
     // load local properties if specified as a system property
     String localPropertiesLocation = System.getenv(LOCAL_PROPERTIES);
-    String sysLocalPropertiesLocation = System.getProperty(SYS_LOCAL_PROPERTIES);
-    if ( sysLocalPropertiesLocation != null ) {
+    String sysLocalPropertiesLocation = System
+        .getProperty(SYS_LOCAL_PROPERTIES);
+    if (sysLocalPropertiesLocation != null) {
       localPropertiesLocation = sysLocalPropertiesLocation;
     }
     try {
@@ -123,15 +125,15 @@ public class KernelBootstrapModule extends AbstractModule {
         localProperties.load(is);
         for (Entry<Object, Object> o : localProperties.entrySet()) {
           String k = o.getKey().toString();
-          if ( k.startsWith("+") ) {
-           String p = properties.getProperty(k.substring(1));
-           if ( p != null ) {
-             properties.put(k.substring(1), p+o.getValue());
-           } else {
-             properties.put(o.getKey(), o.getValue());
-           }
+          if (k.startsWith("+")) {
+            String p = properties.getProperty(k.substring(1));
+            if (p != null) {
+              properties.put(k.substring(1), p + o.getValue());
+            } else {
+              properties.put(o.getKey(), o.getValue());
+            }
           } else {
-           properties.put(o.getKey(), o.getValue());
+            properties.put(o.getKey(), o.getValue());
           }
         }
         LOG.info("Loaded " + localProperties.size() + " properties from "
@@ -190,8 +192,12 @@ public class KernelBootstrapModule extends AbstractModule {
         Scopes.SINGLETON);
     bind(ClassLoaderService.class).to(ClassLoaderServiceImpl.class).in(
         Scopes.SINGLETON);
-    bind(DependencyResolverService.class).to(Maven2DependencyResolver.class)
-        .in(Scopes.SINGLETON);
+    bind(ArtifactResolverService.class).to(Maven2ArtifactResolver.class).in(
+        Scopes.SINGLETON);
+
+    bind(Artifact.class).annotatedWith(
+        Names.named(SharedClassLoader.SHARED_CLASSLOADER_ARTIFACT)).to(
+        SharedClassloaderArtifact.class);
   }
 
   /**

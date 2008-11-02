@@ -48,6 +48,14 @@
   </issueManagement>
 
 
+  <modules>
+       <module>agnostic</module>
+       <module>kernel</module>
+       <module>component-sample</module>
+       <module>webapp-sample</module>
+  </modules>
+
+
   <!-- ====================================================================== -->
   <!-- M A I L I N G   L I S T S                                              -->
   <!-- ====================================================================== -->

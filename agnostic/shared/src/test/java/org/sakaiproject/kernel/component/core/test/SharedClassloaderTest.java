@@ -23,14 +23,16 @@ import static org.junit.Assert.fail;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
-import org.sakaiproject.kernel.api.ClassExporter;
+import org.sakaiproject.kernel.api.Exporter;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
 import org.sakaiproject.kernel.api.DependencyScope;
 import org.sakaiproject.kernel.component.KernelImpl;
-import org.sakaiproject.kernel.component.core.Maven2DependencyResolver;
+import org.sakaiproject.kernel.component.core.Maven2ArtifactResolver;
 import org.sakaiproject.kernel.component.core.PackageRegistryServiceImpl;
 import org.sakaiproject.kernel.component.core.SharedClassLoader;
+import org.sakaiproject.kernel.component.core.SharedClassloaderArtifact;
 import org.sakaiproject.kernel.component.model.DependencyImpl;
+import org.sakaiproject.kernel.component.test.mock.MockArtifact;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -46,16 +48,16 @@ public class SharedClassloaderTest {
   public void testExportedPackages() throws MalformedURLException, IOException,
       ComponentSpecificationException {
     PackageRegistryServiceImpl prs = new PackageRegistryServiceImpl();
-    Maven2DependencyResolver dependencyResolver = new Maven2DependencyResolver();
+    Maven2ArtifactResolver dependencyResolver = new Maven2ArtifactResolver();
     KernelImpl kernel = new KernelImpl();
 
     // add an export that wont be used
-    ClassExporter exportClassloader = new MockClassExport(this.getClass()
-        .getClassLoader());
+    Exporter exportClassloader = new MockClassExport(this.getClass()
+        .getClassLoader(),new MockArtifact("unused-exporter"));
     prs.addExport("org.sakaiproject.kernel.component.test", exportClassloader);
 
     SharedClassLoader cc = new SharedClassLoader(prs, dependencyResolver,
-        kernel);
+        new SharedClassloaderArtifact(), kernel);
     LOG.info("Classloader Structure is " + cc.toString());
 
     // Check the class in not visible

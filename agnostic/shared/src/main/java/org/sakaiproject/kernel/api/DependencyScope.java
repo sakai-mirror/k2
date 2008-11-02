@@ -18,8 +18,15 @@
 package org.sakaiproject.kernel.api;
 
 /**
- * 
+ * Defines the scope of an artifact.
  */
 public enum DependencyScope {
-  SHARE, LOCAL;
+  /**
+   * Indicates that the dependency should be made available to shared space.
+   */
+  SHARE,
+  /**
+   * Indicates that the dependency is only available in the current classloader.
+   */
+  LOCAL;
 }

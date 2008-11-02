@@ -17,44 +17,46 @@
  */
 package org.sakaiproject.kernel.api;
 
-
 /**
- * 
+ * The artifact interface represents an artifact. This may be an component
+ * dependency or a classpath dependency or a component. The model closely
+ * follows Maven 2's artifact model.
  */
-public interface Dependency {
+public interface Artifact {
 
   /**
-   * @return
+   * @return the group ID of the artifact
    */
   String getGroupId();
 
   /**
-   * @return
+   * @return the artifact ID
    */
   String getArtifactId();
 
   /**
-   * @return
+   * @return the version of the artifact
    */
   String getVersion();
 
   /**
-   * @return
+   * @return the type of the artifact, eg jar
    */
   String getType();
 
   /**
-   * @return
+   * @return scope of the dependency in this context
    */
-   DependencyScope getScope();
+  DependencyScope getScope();
 
   /**
-   * @return
+   * @return true if the dependency is a managed dependency indicating it should
+   *         be started
    */
   boolean isManaged();
 
   /**
-   * @return
+   * @return the classifier for the version eg jdk15
    */
   String getClassifier();
 

@@ -20,9 +20,9 @@ package org.sakaiproject.kernel.api;
 import java.net.URL;
 
 /**
- * Resolves dependency specifications into URLs
+ * Resolves artifacts into URLs
  */
-public interface DependencyResolverService {
+public interface ArtifactResolverService {
 
   /**
    * Convert a specification for a jar into a URL to be added to a set of URL's.
@@ -43,6 +43,6 @@ public interface DependencyResolverService {
    *         added.
    * @throws ComponentSpecificationException 
    */
-  URL resolve(URL[] urls, Dependency classpathDependency) throws ComponentSpecificationException;
+  URL resolve(URL[] urls, Artifact classpathDependency) throws ComponentSpecificationException;
 
 }

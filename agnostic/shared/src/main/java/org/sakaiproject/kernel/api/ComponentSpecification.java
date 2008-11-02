@@ -25,12 +25,12 @@ import java.net.URL;
  * list of classpath urls to build a classpath and it may optionally specify and
  * activation classloader.
  */
-public interface ComponentSpecification {
+public interface ComponentSpecification  {
 
   /**
    * @return an list of classpath dependencies
    */
-  Dependency[] getDependencies();
+  Artifact[] getDependencies();
 
   /**
    * @return the packages that will be exported
@@ -47,7 +47,7 @@ public interface ComponentSpecification {
   /**
    * @return an array of ComponentDependencies that this component depends upon.
    */
-  Dependency[] getComponentDependencies();
+  Artifact[] getComponentDependencies();
 
   String getDefinition();
 
@@ -70,5 +70,11 @@ public interface ComponentSpecification {
    * @return true if the component is part of the kernel bootstrap
    */
   boolean isKernelBootstrap();
+  
+  
+  /**
+   * @return the artifact for this component
+   */
+  Artifact getComponentArtifact();
 
 }

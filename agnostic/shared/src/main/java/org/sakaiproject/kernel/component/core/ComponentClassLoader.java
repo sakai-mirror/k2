@@ -19,8 +19,10 @@ package org.sakaiproject.kernel.component.core;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.sakaiproject.kernel.api.ClassExporter;
+import org.sakaiproject.kernel.api.Artifact;
+import org.sakaiproject.kernel.api.Exporter;
 import org.sakaiproject.kernel.api.PackageRegistryService;
+import org.sakaiproject.kernel.component.model.DependencyImpl;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -35,10 +37,11 @@ import java.util.Map;
  * resolving to the parent.
  */
 public class ComponentClassLoader extends URLClassLoader implements
-    ClassExporter {
+    Exporter {
 
   private static final Log LOG = LogFactory.getLog(ComponentClassLoader.class);
   private PackageRegistryService packageRegistryService;
+  private Artifact artifact;
   private static final ThreadLocal<String> spacing = new ThreadLocal<String>() {
     /**
      * {@inheritDoc}
@@ -55,9 +58,10 @@ public class ComponentClassLoader extends URLClassLoader implements
    * 
    */
   public ComponentClassLoader(PackageRegistryService packageRegistryService,
-      URL[] urls, ClassLoader parent) {
+      URL[] urls, ClassLoader parent, Artifact artifact) {
     super(urls, parent);
     this.packageRegistryService = packageRegistryService;
+    this.artifact = artifact;
   }
 
   /*
@@ -72,7 +76,7 @@ public class ComponentClassLoader extends URLClassLoader implements
     ClassNotFoundException ex = null;
 
     if ( c == null && packageRegistryService != null) {
-      ClassExporter exporter = packageRegistryService.findClassloader(name);
+      Exporter exporter = packageRegistryService.findClassloader(name);
       if (exporter != null) {
         try {
 
@@ -136,7 +140,7 @@ public class ComponentClassLoader extends URLClassLoader implements
    * {@inheritDoc}
    * @throws ClassNotFoundException 
    * 
-   * @see org.sakaiproject.kernel.api.ClassExporter#loadExportedClass(java.lang.String)
+   * @see org.sakaiproject.kernel.api.Exporter#loadExportedClass(java.lang.String)
    */
   public Class<?> loadExportedClass(String name) throws ClassNotFoundException {
     Class<?> c = findLoadedClass(name);
@@ -158,7 +162,7 @@ public class ComponentClassLoader extends URLClassLoader implements
     try {
       String bl = t + " :         ";
       StringBuilder sb = new StringBuilder();
-      sb.append(super.toString()).append("\n");
+      sb.append(DependencyImpl.toString(artifact)).append("(").append(super.toString()).append(")\n");
       sb.append(bl).append("Contents :");
       for (URL u : getURLs()) {
         sb.append("\n").append(bl).append(u);
@@ -195,7 +199,7 @@ public class ComponentClassLoader extends URLClassLoader implements
   public InputStream getResourceAsStream(String name) {
     InputStream in = null;
     if (packageRegistryService != null) {
-      ClassExporter exporter = packageRegistryService.findClassloader(name);
+      Exporter exporter = packageRegistryService.findResourceloader(name);
       if (exporter != null) {
 
         in = exporter.getExportedResourceAsStream(name);
@@ -213,10 +217,18 @@ public class ComponentClassLoader extends URLClassLoader implements
   /**
    * {@inheritDoc}
    * 
-   * @see org.sakaiproject.kernel.api.ClassExporter#getExportedResourceAsStream(java.lang.String)
+   * @see org.sakaiproject.kernel.api.Exporter#getExportedResourceAsStream(java.lang.String)
    */
   public InputStream getExportedResourceAsStream(String name) {
     return super.getResourceAsStream(name);
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.Exporter#getArtifact()
+   */
+  public Artifact getArtifact() {
+    return artifact;
   }
 
 }

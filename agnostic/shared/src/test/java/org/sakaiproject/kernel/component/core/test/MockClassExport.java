@@ -17,27 +17,30 @@
  */
 package org.sakaiproject.kernel.component.core.test;
 
-import org.sakaiproject.kernel.api.ClassExporter;
+import org.sakaiproject.kernel.api.Artifact;
+import org.sakaiproject.kernel.api.Exporter;
 
 import java.io.InputStream;
 
 /**
  * 
  */
-public class MockClassExport implements ClassExporter {
+public class MockClassExport implements Exporter {
 
   private ClassLoader classLoader;
+  private Artifact artifact;
 
   /**
    * @param classLoader
    */
-  public MockClassExport(ClassLoader classLoader) {
+  public MockClassExport(ClassLoader classLoader, Artifact artifact) {
     this.classLoader = classLoader;
+    this.artifact = artifact;
   }
 
   /**
    * {@inheritDoc}
-   * @see org.sakaiproject.kernel.api.ClassExporter#getExportedResourceAsStream(java.lang.String)
+   * @see org.sakaiproject.kernel.api.Exporter#getExportedResourceAsStream(java.lang.String)
    */
   public InputStream getExportedResourceAsStream(String name) {
     return classLoader.getResourceAsStream(name);
@@ -45,10 +48,18 @@ public class MockClassExport implements ClassExporter {
 
   /**
    * {@inheritDoc}
-   * @see org.sakaiproject.kernel.api.ClassExporter#loadExportedClass(java.lang.String)
+   * @see org.sakaiproject.kernel.api.Exporter#loadExportedClass(java.lang.String)
    */
   public Class<?> loadExportedClass(String name) throws ClassNotFoundException {
     return classLoader.loadClass(name);
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.Exporter#getArtifact()
+   */
+  public Artifact getArtifact() {
+    return artifact;
   }
 
 }

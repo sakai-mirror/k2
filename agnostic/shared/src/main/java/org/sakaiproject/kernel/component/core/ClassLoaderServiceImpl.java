@@ -21,12 +21,12 @@ import com.google.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.sakaiproject.kernel.api.ClassExporter;
+import org.sakaiproject.kernel.api.Exporter;
 import org.sakaiproject.kernel.api.ClassLoaderService;
-import org.sakaiproject.kernel.api.Dependency;
+import org.sakaiproject.kernel.api.Artifact;
 import org.sakaiproject.kernel.api.ComponentSpecification;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
-import org.sakaiproject.kernel.api.DependencyResolverService;
+import org.sakaiproject.kernel.api.ArtifactResolverService;
 import org.sakaiproject.kernel.api.DependencyScope;
 import org.sakaiproject.kernel.api.PackageExport;
 import org.sakaiproject.kernel.api.PackageRegistryService;
@@ -44,19 +44,19 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
       .getLog(ClassLoaderServiceImpl.class);
   private SharedClassLoader sharedClassLoader;
   private PackageRegistryService packageRegistryService;
-  private DependencyResolverService dependencyResolverService;
+  private ArtifactResolverService artifactResolverService;
 
   /**
-   * @param dependencyResolverService
+   * @param artifactResolverService
    * 
    */
   @Inject
   public ClassLoaderServiceImpl(SharedClassLoader sharedClassLoader,
       PackageRegistryService packageRegistryService,
-      DependencyResolverService dependencyResolverService) {
+      ArtifactResolverService artifactResolverService) {
     this.sharedClassLoader = sharedClassLoader;
     this.packageRegistryService = packageRegistryService;
-    this.dependencyResolverService = dependencyResolverService;
+    this.artifactResolverService = artifactResolverService;
     // TODO Auto-generated constructor stub
   }
 
@@ -74,15 +74,15 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
     if (spec.getComponentClasspath() != null) {
       urls.add(spec.getComponentClasspath());
     }
-    for (Dependency dependency : spec.getDependencies()) {
-      if (dependency.getScope() == null
-          || DependencyScope.LOCAL.equals(dependency.getScope())) {
+    for (Artifact artifact : spec.getDependencies()) {
+      if (artifact.getScope() == null
+          || DependencyScope.LOCAL.equals(artifact.getScope())) {
         URL[] u = urls.toArray(new URL[0]);
-        URL url = dependencyResolverService.resolve(u, dependency);
+        URL url = artifactResolverService.resolve(u, artifact);
         if (url != null) {
           urls.add(url);
         } else {
-          LOG.warn(spec.getName() + "::Did not add dependency " + dependency
+          LOG.warn(spec.getName() + "::Did not add dependency " + artifact
               + " to local component classloader ");
         }
       }
@@ -92,21 +92,21 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
       cl = this.getClass().getClassLoader();
     } else {
       cl = new ComponentClassLoader(packageRegistryService, urls
-          .toArray(new URL[0]), sharedClassLoader);
+          .toArray(new URL[0]), sharedClassLoader,spec.getComponentArtifact());
     }
     // add the shared dependencies
-    for (Dependency dependency : spec.getDependencies()) {
-      if (DependencyScope.SHARE.equals(dependency.getScope())) {
-        LOG.info(spec.getName() + "::Adding Shared Dependency " + dependency);
-        sharedClassLoader.addDependency(dependency);
+    for (Artifact artifact : spec.getDependencies()) {
+      if (DependencyScope.SHARE.equals(artifact.getScope())) {
+        LOG.info(spec.getName() + "::Adding Shared Artifact " + artifact);
+        sharedClassLoader.addDependency(artifact);
       }
     }
 
-    if (cl instanceof ClassExporter) {
+    if (cl instanceof Exporter) {
       // export the packages
       for (PackageExport pe : spec.getExports()) {
         LOG.info(spec.getName() + "::Exported [" + pe.getName() + "]");
-        packageRegistryService.addExport(pe.getName(), (ClassExporter) cl);
+        packageRegistryService.addExport(pe.getName(), (Exporter) cl);
       }
     }
 

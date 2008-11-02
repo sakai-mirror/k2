@@ -27,7 +27,7 @@ import org.sakaiproject.kernel.api.ComponentActivator;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.api.ComponentLoaderService;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
-import org.sakaiproject.kernel.api.DependencyResolverService;
+import org.sakaiproject.kernel.api.ArtifactResolverService;
 import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.KernelConfigurationException;
 import org.sakaiproject.kernel.api.PackageRegistryService;
@@ -54,11 +54,11 @@ public class KernelBootstrapActivator implements ComponentActivator {
   private static final Class<?>[] KERNEL_SERVICES = {
       KernelInjectorService.class, SharedClassLoaderContainer.class,
       ShutdownService.class, PackageRegistryService.class,
-      DependencyResolverService.class, ClassLoaderService.class,
+      ArtifactResolverService.class, ClassLoaderService.class,
       ComponentLoaderService.class };
   private static final Class<?>[] EXPORTED_KERNEL_SERVICES = {
       SharedClassLoaderContainer.class, ShutdownService.class,
-      PackageRegistryService.class, DependencyResolverService.class,
+      PackageRegistryService.class, ArtifactResolverService.class,
       ClassLoaderService.class, ComponentLoaderService.class };
   /**
    * The kernel in which this bootstrap was activated.

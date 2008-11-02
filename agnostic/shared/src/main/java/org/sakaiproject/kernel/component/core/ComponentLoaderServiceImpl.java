@@ -25,8 +25,8 @@ import org.sakaiproject.kernel.api.ComponentLoaderService;
 import org.sakaiproject.kernel.api.ComponentManager;
 import org.sakaiproject.kernel.api.ComponentSpecification;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
-import org.sakaiproject.kernel.api.Dependency;
-import org.sakaiproject.kernel.api.DependencyResolverService;
+import org.sakaiproject.kernel.api.Artifact;
+import org.sakaiproject.kernel.api.ArtifactResolverService;
 import org.sakaiproject.kernel.api.KernelConfigurationException;
 import org.sakaiproject.kernel.component.URLComponentSpecificationImpl;
 import org.sakaiproject.kernel.component.model.DependencyImpl;
@@ -50,19 +50,19 @@ public class ComponentLoaderServiceImpl implements ComponentLoaderService {
   private static final Log LOG = LogFactory
       .getLog(ComponentLoaderServiceImpl.class);
   private ComponentManager componentManager;
-  private DependencyResolverService dependencyResolverService;
+  private ArtifactResolverService artifactResolverService;
 
   /**
-   * @param dependencyResolverService 
+   * @param artifactResolverService 
    * @throws IOException
    * @throws ComponentSpecificationException
    * @throws KernelConfigurationException
    * 
    */
   @Inject
-  public ComponentLoaderServiceImpl(ComponentManager componentManager, DependencyResolverService dependencyResolverService) {
+  public ComponentLoaderServiceImpl(ComponentManager componentManager, ArtifactResolverService artifactResolverService) {
     this.componentManager = componentManager;
-    this.dependencyResolverService = dependencyResolverService;
+    this.artifactResolverService = artifactResolverService;
   }
 
   public void load(String componentLocations, boolean fromClassloader)
@@ -73,8 +73,8 @@ public class ComponentLoaderServiceImpl implements ComponentLoaderService {
     for (String location : StringUtils.split(componentLocations, ';')) {
       location = location.trim();
       if (location.startsWith("maven-repo")) {
-        Dependency dep = DependencyImpl.fromString(location);
-        URL u = dependencyResolverService.resolve(null, dep);
+        Artifact dep = DependencyImpl.fromString(location);
+        URL u = artifactResolverService.resolve(null, dep);
         LOG.info("added component:" + u);
         locations.add(u);
       } else if (location.endsWith(".jar")) {

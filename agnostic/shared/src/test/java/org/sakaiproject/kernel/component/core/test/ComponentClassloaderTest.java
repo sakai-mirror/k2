@@ -23,12 +23,12 @@ import static org.junit.Assert.fail;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
-import org.sakaiproject.kernel.api.ClassExporter;
 import org.sakaiproject.kernel.api.DependencyScope;
 import org.sakaiproject.kernel.component.core.ComponentClassLoader;
-import org.sakaiproject.kernel.component.core.Maven2DependencyResolver;
+import org.sakaiproject.kernel.component.core.Maven2ArtifactResolver;
 import org.sakaiproject.kernel.component.core.PackageRegistryServiceImpl;
 import org.sakaiproject.kernel.component.model.DependencyImpl;
+import org.sakaiproject.kernel.component.test.mock.MockArtifact;
 
 import java.net.URL;
 
@@ -45,9 +45,9 @@ public class ComponentClassloaderTest {
   public void testExportedPackages() throws Exception {
     PackageRegistryServiceImpl prs = new PackageRegistryServiceImpl(); 
     ClassLoader exportClassloader = this.getClass().getClassLoader();
-    prs.addExport("org.sakaiproject.kernel.component.test", new MockClassExport(exportClassloader));
+    prs.addExport("org.sakaiproject.kernel.component.test", new MockClassExport(exportClassloader, new MockArtifact("test1")));
     
-    Maven2DependencyResolver dependencyResolver = new Maven2DependencyResolver();
+    Maven2ArtifactResolver dependencyResolver = new Maven2ArtifactResolver();
     DependencyImpl cpdep = new DependencyImpl();
     cpdep.setGroupId("commons-lang");
     cpdep.setArtifactId("commons-lang");
@@ -58,7 +58,7 @@ public class ComponentClassloaderTest {
     urls[0] = dependencyResolver.resolve(null, cpdep);
     
     
-    ComponentClassLoader cc = new ComponentClassLoader(prs,urls,this.getClass().getClassLoader());
+    ComponentClassLoader cc = new ComponentClassLoader(prs,urls,this.getClass().getClassLoader(), cpdep);
     LOG.info("Classloader Structure is "+cc.toString());
     // test for a non found, look at code coverage to check that the export was checked. 
     try {

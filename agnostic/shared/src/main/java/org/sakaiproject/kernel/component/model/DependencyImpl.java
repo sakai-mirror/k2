@@ -21,7 +21,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.sakaiproject.kernel.api.Dependency;
+import org.sakaiproject.kernel.api.Artifact;
 import org.sakaiproject.kernel.api.DependencyScope;
 import org.sakaiproject.kernel.util.StringUtils;
 
@@ -29,7 +29,7 @@ import org.sakaiproject.kernel.util.StringUtils;
  * 
  */
 @XStreamAlias("dependency")
-public class DependencyImpl implements Dependency {
+public class DependencyImpl implements Artifact {
   private static final Log LOG = LogFactory.getLog(DependencyImpl.class);
   private String groupId = "";
   private String artifactId = "";
@@ -117,7 +117,7 @@ public class DependencyImpl implements Dependency {
   /**
    * {@inheritDoc}
    * 
-   * @see org.sakaiproject.kernel.api.Dependency#getType()
+   * @see org.sakaiproject.kernel.api.Artifact#getType()
    */
   public String getType() {
     return type;
@@ -155,19 +155,6 @@ public class DependencyImpl implements Dependency {
     return string.trim();
   }
 
-  /**
-   * @param groupId2
-   * @param artifactId2
-   * @param version2
-   * @param classifier2
-   * @param string
-   * @return
-   */
-  public static String toString(String groupId, String artifactId,
-      String version, String classifier, String type) {
-    return nullTrim(groupId) + ":" + nullTrim(artifactId) + ":"
-        + nullTrim(version) + nullTrim(classifier) + ":" + nullTrim(type);
-  }
 
   /**
    * @param unmanaged
@@ -195,7 +182,7 @@ public class DependencyImpl implements Dependency {
    * @param location
    * @return
    */
-  public static Dependency fromString(String location) {
+  public static Artifact fromString(String location) {
     String[] l = StringUtils.split(location, ':');
     DependencyImpl d = new DependencyImpl();
     d.setGroupId(l[1]);
@@ -203,6 +190,15 @@ public class DependencyImpl implements Dependency {
     d.setVersion(l[3]);
     d.setType(l[4]);
     return d;
+  }
+
+  /**
+   * @param artifact
+   * @return
+   */
+  public static String toString(Artifact artifact) {
+    return nullTrim(artifact.getGroupId()) + ":" + nullTrim(artifact.getArtifactId()) + ":"
+    + nullTrim(artifact.getVersion()) + nullTrim(artifact.getClassifier()) + ":" + nullTrim(artifact.getType());
   }
 
 }

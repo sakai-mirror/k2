@@ -19,7 +19,7 @@ package org.sakaiproject.kernel.component.model;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
-import org.sakaiproject.kernel.api.Dependency;
+import org.sakaiproject.kernel.api.Artifact;
 import org.sakaiproject.kernel.api.DependencyScope;
 import org.sakaiproject.kernel.api.PackageExport;
 
@@ -31,7 +31,7 @@ import java.util.List;
  * Mapped to the component element.
  */
 @XStreamAlias("component")
-public class Component {
+public class Component implements Artifact {
 
   public static final Class<?>[] CLASSES = { Component.class,
       DependencyImpl.class, DependencyScope.class, PackageExportImpl.class };
@@ -45,14 +45,14 @@ public class Component {
    * element.
    */
   @XStreamAlias(value = "componentDependencies", impl = ArrayList.class)
-  private List<Dependency> componentDependencies;
+  private List<Artifact> componentDependencies;
 
   /**
    * A list of classpath dependencies mapped to the classpath-dependencies
    * element.
    */
   @XStreamAlias(value = "dependencies", impl = ArrayList.class)
-  private List<Dependency> classpathDependencies;
+  private List<Artifact> classpathDependencies;
 
   /**
    * A list of classpath dependencies mapped to the classpath-dependencies
@@ -106,7 +106,7 @@ public class Component {
   /**
    * @return a list of component dependencies.
    */
-  public List<Dependency> getComponentDependencies() {
+  public List<Artifact> getComponentDependencies() {
     return componentDependencies;
   }
 
@@ -114,7 +114,7 @@ public class Component {
    * @param componentDependencies
    *          the componentDependencies to set
    */
-  public void setComponentDependencies(List<Dependency> componentDependencies) {
+  public void setComponentDependencies(List<Artifact> componentDependencies) {
     this.componentDependencies = componentDependencies;
   }
 
@@ -136,7 +136,7 @@ public class Component {
   /**
    * @return the classpathDependencies
    */
-  public List<Dependency> getDependencies() {
+  public List<Artifact> getDependencies() {
     return classpathDependencies;
   }
 
@@ -144,7 +144,7 @@ public class Component {
    * @param classpathDependencies
    *          the classpathDependencies to set
    */
-  public void setDependencies(List<Dependency> classpathDependencies) {
+  public void setDependencies(List<Artifact> classpathDependencies) {
     this.classpathDependencies = classpathDependencies;
   }
 
@@ -225,7 +225,7 @@ public class Component {
 
   public String getName() {
     return DependencyImpl
-        .toString(groupId, artifactId, version, classifier, "");
+        .toString(this);
   }
 
   /**
@@ -241,6 +241,30 @@ public class Component {
    */
   public boolean isUnmanaged() {
     return unmanaged;
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.Artifact#getScope()
+   */
+  public DependencyScope getScope() {
+    return DependencyScope.LOCAL;
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.Artifact#getType()
+   */
+  public String getType() {
+    return "";
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.Artifact#isManaged()
+   */
+  public boolean isManaged() {
+    return !isManaged();
   }
 
 }

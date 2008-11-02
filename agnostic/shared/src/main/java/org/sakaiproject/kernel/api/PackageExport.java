@@ -18,12 +18,12 @@
 package org.sakaiproject.kernel.api;
 
 /**
- * 
+ * Represents a package being exported from a component.
  */
 public interface PackageExport {
 
   /**
-   * @return
+   * @return the name of the package to be exported.
    */
   String getName();
 

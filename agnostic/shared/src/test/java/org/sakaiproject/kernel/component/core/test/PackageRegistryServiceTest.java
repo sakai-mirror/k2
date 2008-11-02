@@ -21,8 +21,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
 import org.junit.Test;
-import org.sakaiproject.kernel.api.ClassExporter;
+import org.sakaiproject.kernel.api.Exporter;
 import org.sakaiproject.kernel.component.core.PackageRegistryServiceImpl;
+import org.sakaiproject.kernel.component.test.mock.MockArtifact;
 
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -32,52 +33,112 @@ import java.net.URLClassLoader;
  */
 public class PackageRegistryServiceTest {
 
-
-
   /**
-   * Test method for {@link org.sakaiproject.kernel.component.core.PackageRegistryServiceImpl#addExport(java.lang.String, java.lang.ClassLoader)}.
+   * Test method for
+   * {@link org.sakaiproject.kernel.component.core.PackageRegistryServiceImpl#addExport(java.lang.String, java.lang.ClassLoader)}
+   * .
    */
   @Test
   public void testAddExport() {
-    
-    ClassExporter apiLoader = new MockClassExport(new URLClassLoader(new URL[0]));
-    ClassExporter special = new MockClassExport(new URLClassLoader(new URL[0]));
-    ClassExporter specialsomewhere = new MockClassExport(new URLClassLoader(new URL[0]));
+
+    Exporter apiLoader = new MockClassExport(new URLClassLoader(new URL[0]),
+        new MockArtifact("apiloader"));
+    Exporter special = new MockClassExport(new URLClassLoader(new URL[0]),
+        new MockArtifact("special"));
+    Exporter specialsomewhere = new MockClassExport(new URLClassLoader(
+        new URL[0]), new MockArtifact("specialsomewhere"));
     PackageRegistryServiceImpl registry = new PackageRegistryServiceImpl();
     registry.addExport("org.sakaiproject.kernel.api", apiLoader);
-    registry.addExport("org.sakaiproject.kernel.api.something.special", special);
-    registry.addExport("org.sakaiproject.kernel.api.something.special2.somewhere", specialsomewhere);
-    registry.addExport("org.sakaiproject.kernel.api.something.special.somewhere.else", specialsomewhere);
-    
+    registry
+        .addExport("org.sakaiproject.kernel.api.something.special", special);
+    registry.addExport(
+        "org.sakaiproject.kernel.api.something.special2.somewhere",
+        specialsomewhere);
+    registry.addExport(
+        "org.sakaiproject.kernel.api.something.special.somewhere.else",
+        specialsomewhere);
+
     assertNull(registry.findClassloader("com.ibm"));
     assertNull(registry.findClassloader("org.sakaiproject.kernel"));
-    assertSame(apiLoader, registry.findClassloader("org.sakaiproject.kernel.api"));
-    assertSame(apiLoader, registry.findClassloader("org.sakaiproject.kernel.api.user.util.other.Test123"));
-    assertSame(apiLoader, registry.findClassloader("org.sakaiproject.kernel.api.something"));
-    assertSame(apiLoader, registry.findClassloader("org.sakaiproject.kernel.api.something.special2"));
-    assertSame(special, registry.findClassloader("org.sakaiproject.kernel.api.something.special"));
-    assertSame(special, registry.findClassloader("org.sakaiproject.kernel.api.something.special.Test12345"));
-    assertSame(specialsomewhere, registry.findClassloader("org.sakaiproject.kernel.api.something.special2.somewhere"));
-    assertSame(specialsomewhere, registry.findClassloader("org.sakaiproject.kernel.api.something.special2.somewhere.xsye.ses.Test321"));
-    assertSame(special, registry.findClassloader("org.sakaiproject.kernel.api.something.special.somewhere.Test213"));
-    assertSame(specialsomewhere, registry.findClassloader("org.sakaiproject.kernel.api.something.special.somewhere.else.Test213"));
-    
-    registry.removeExport("org.sakaiproject.kernel.api.something.special");
-    assertSame(apiLoader, registry.findClassloader("org.sakaiproject.kernel.api.something.special"));
-    assertSame(apiLoader, registry.findClassloader("org.sakaiproject.kernel.api.something.special.Test12345"));
-    assertSame(specialsomewhere, registry.findClassloader("org.sakaiproject.kernel.api.something.special2.somewhere"));
-    assertSame(specialsomewhere, registry.findClassloader("org.sakaiproject.kernel.api.something.special2.somewhere.xsye.ses.Test321"));
-    assertSame(apiLoader, registry.findClassloader("org.sakaiproject.kernel.api.something.special.somewhere.Test213"));
-    assertSame(specialsomewhere, registry.findClassloader("org.sakaiproject.kernel.api.something.special.somewhere.else.Test213"));
-    
-    registry.removeExport("org.sakaiproject.kernel.api.something.special.somewhere.else");
-    assertSame(apiLoader, registry.findClassloader("org.sakaiproject.kernel.api.something.special"));
-    assertSame(apiLoader, registry.findClassloader("org.sakaiproject.kernel.api.something.special.Test12345"));
-    assertSame(specialsomewhere, registry.findClassloader("org.sakaiproject.kernel.api.something.special2.somewhere"));
-    assertSame(specialsomewhere, registry.findClassloader("org.sakaiproject.kernel.api.something.special2.somewhere.xsye.ses.Test321"));
-    assertSame(apiLoader, registry.findClassloader("org.sakaiproject.kernel.api.something.special.somewhere.Test213"));
-    assertSame(apiLoader, registry.findClassloader("org.sakaiproject.kernel.api.something.special.somewhere.else.Test213"));
-  }
+    assertSame(apiLoader, registry
+        .findClassloader("org.sakaiproject.kernel.api"));
+    assertSame(apiLoader, registry
+        .findClassloader("org.sakaiproject.kernel.api.user.util.other.Test123"));
+    assertSame(apiLoader, registry
+        .findClassloader("org.sakaiproject.kernel.api.something"));
+    assertSame(apiLoader, registry
+        .findClassloader("org.sakaiproject.kernel.api.something.special2"));
+    assertSame(special, registry
+        .findClassloader("org.sakaiproject.kernel.api.something.special"));
+    assertSame(
+        special,
+        registry
+            .findClassloader("org.sakaiproject.kernel.api.something.special.Test12345"));
+    assertSame(
+        specialsomewhere,
+        registry
+            .findClassloader("org.sakaiproject.kernel.api.something.special2.somewhere"));
+    assertSame(
+        specialsomewhere,
+        registry
+            .findClassloader("org.sakaiproject.kernel.api.something.special2.somewhere.xsye.ses.Test321"));
+    assertSame(
+        special,
+        registry
+            .findClassloader("org.sakaiproject.kernel.api.something.special.somewhere.Test213"));
+    assertSame(
+        specialsomewhere,
+        registry
+            .findClassloader("org.sakaiproject.kernel.api.something.special.somewhere.else.Test213"));
 
+    registry.removeExport("org.sakaiproject.kernel.api.something.special");
+    assertSame(apiLoader, registry
+        .findClassloader("org.sakaiproject.kernel.api.something.special"));
+    assertSame(
+        apiLoader,
+        registry
+            .findClassloader("org.sakaiproject.kernel.api.something.special.Test12345"));
+    assertSame(
+        specialsomewhere,
+        registry
+            .findClassloader("org.sakaiproject.kernel.api.something.special2.somewhere"));
+    assertSame(
+        specialsomewhere,
+        registry
+            .findClassloader("org.sakaiproject.kernel.api.something.special2.somewhere.xsye.ses.Test321"));
+    assertSame(
+        apiLoader,
+        registry
+            .findClassloader("org.sakaiproject.kernel.api.something.special.somewhere.Test213"));
+    assertSame(
+        specialsomewhere,
+        registry
+            .findClassloader("org.sakaiproject.kernel.api.something.special.somewhere.else.Test213"));
+
+    registry
+        .removeExport("org.sakaiproject.kernel.api.something.special.somewhere.else");
+    assertSame(apiLoader, registry
+        .findClassloader("org.sakaiproject.kernel.api.something.special"));
+    assertSame(
+        apiLoader,
+        registry
+            .findClassloader("org.sakaiproject.kernel.api.something.special.Test12345"));
+    assertSame(
+        specialsomewhere,
+        registry
+            .findClassloader("org.sakaiproject.kernel.api.something.special2.somewhere"));
+    assertSame(
+        specialsomewhere,
+        registry
+            .findClassloader("org.sakaiproject.kernel.api.something.special2.somewhere.xsye.ses.Test321"));
+    assertSame(
+        apiLoader,
+        registry
+            .findClassloader("org.sakaiproject.kernel.api.something.special.somewhere.Test213"));
+    assertSame(
+        apiLoader,
+        registry
+            .findClassloader("org.sakaiproject.kernel.api.something.special.somewhere.else.Test213"));
+  }
 
 }

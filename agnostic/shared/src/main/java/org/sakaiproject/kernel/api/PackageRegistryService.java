@@ -19,47 +19,59 @@ package org.sakaiproject.kernel.api;
 
 import java.util.Map;
 
-
 /**
- * Provides an in memory tree register for classloaders that load exported
- * packages.
+ * Provides an in memory tree register for exporters that load exported
+ * resources and classes.
  */
 public interface PackageRegistryService {
 
   /**
-   * Add a classloader for the package, creating the pathway to the package and
-   * setting the classloader at this package to the supplied classloader. If
-   * there is already a classloader for this precise package, then it will be
-   * replaced. If there is a classloader of a child package, this classloader
-   * will take precedence for all packages that do not match that classloader
-   * package path, but that classloader will take precedence for any package
+   * Add a exporter for the package, creating the pathway to the package and
+   * setting the exporter at this package to the supplied exporter. If
+   * there is already a exporter for this precise package, then it will be
+   * replaced. If there is a exporter of a child package, this exporter
+   * will take precedence for all packages that do not match that exporter
+   * package path, but that exporter will take precedence for any package
    * path that matches that package path.
    * 
    * @param stub
-   *          the package stub that identifies this classloader
+   *          the package stub that identifies this exporter
    * @param classLoader
-   *          the classloader
+   *          the exporter
    * @throws ComponentSpecificationException
    */
-  void addExport(String stub, ClassExporter classLoader)
+  void addExport(String stub, Exporter classLoader)
       throws ComponentSpecificationException;
 
   /**
-   * Remove an classloader export, and all child exports for a package path.
+   * Remove an exporter export, and all child exports for a package path.
    * 
    * @param stub
-   *          the classloader stub.
+   *          the exporter stub.
    */
   void removeExport(String stub);
 
   /**
-   * Find a classloader for a package
+   * Find an Exporter for a class or package
    * 
    * @param packageName
-   *          the name of the package to find the classloader for.
-   * @return the classloader.
+   *          the name of the package to find the exporter for.
+   * @return the exporter that manages the class or package.
    */
-  ClassExporter findClassloader(String packageName);
-  
+  Exporter findClassloader(String packageName);
+
+  /**
+   * Find an exporter for a resource path.
+   * 
+   * @param resource
+   *          the name of the resource to find the exporter for.
+   * @return the exporter responsible for the resource.
+   */
+  Exporter findResourceloader(String resource);
+
+  /**
+   * Get a list of exports.
+   * @return a list of exports
+   */
   Map<String, String> getExports();
 }

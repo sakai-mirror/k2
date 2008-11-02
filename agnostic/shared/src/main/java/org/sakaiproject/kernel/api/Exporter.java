@@ -20,21 +20,37 @@ package org.sakaiproject.kernel.api;
 import java.io.InputStream;
 
 /**
- * 
+ * This interface defines a class exporter, normally this will be implemented by
+ * the classloader that is exporting the class. Care must be taken in
+ * implementation since infinite recursion is possible if a class exporter
+ * inadvertently invokes another class exporter.
  */
-public interface ClassExporter {
+public interface Exporter {
 
   /**
+   * Load the exported class.
+   * 
    * @param name
-   * @return
-   * @throws ClassNotFoundException 
+   *          the name of the class
+   * @return the class associated with the name
+   * @throws ClassNotFoundException
+   *           if the class was not found
    */
   Class<?> loadExportedClass(String name) throws ClassNotFoundException;
 
   /**
+   * Get the exported resource as a stream.
+   * 
    * @param name
-   * @return
+   *          the path to the resource
+   * @return an InputStream for the resource, or null if the resource was not
+   *         found.
    */
   InputStream getExportedResourceAsStream(String name);
+
+  /**
+   * @return the artifact that created this exporter.
+   */
+  Artifact getArtifact();
 
 }

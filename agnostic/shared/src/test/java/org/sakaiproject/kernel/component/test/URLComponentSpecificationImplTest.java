@@ -28,7 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
-import org.sakaiproject.kernel.api.Dependency;
+import org.sakaiproject.kernel.api.Artifact;
 import org.sakaiproject.kernel.api.DependencyScope;
 import org.sakaiproject.kernel.api.PackageExport;
 import org.sakaiproject.kernel.component.URLComponentSpecificationImpl;
@@ -82,7 +82,7 @@ public class URLComponentSpecificationImplTest {
     cd1.setGroupId("org.sakaiproject.kernel.components");
     cd1.setArtifactId("component2");
     c.setUnmanaged(true);
-    List<Dependency> cdl = new ArrayList<Dependency>();
+    List<Artifact> cdl = new ArrayList<Artifact>();
     cdl.add(cd);
     cdl.add(cd1);
     c.setComponentDependencies(cdl);
@@ -99,7 +99,7 @@ public class URLComponentSpecificationImplTest {
     cpd2.setVersion("0.1-SNAPSHOT");
     cpd2.setScope(DependencyScope.SHARE);
 
-    List<Dependency> cpdl = new ArrayList<Dependency>();
+    List<Artifact> cpdl = new ArrayList<Artifact>();
     cpdl.add(cpd1);
     cpdl.add(cpd2);
 

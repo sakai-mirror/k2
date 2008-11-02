@@ -18,7 +18,7 @@
 package org.sakaiproject.kernel.component.test.mock;
 
 import org.sakaiproject.kernel.api.ComponentSpecification;
-import org.sakaiproject.kernel.api.Dependency;
+import org.sakaiproject.kernel.api.Artifact;
 import org.sakaiproject.kernel.api.PackageExport;
 import org.sakaiproject.kernel.util.ComponentSpecificationUtil;
 
@@ -32,6 +32,7 @@ public class MockComponentSpecificationImpl implements ComponentSpecification {
   private static final String SPECIFICATION = "<name>"
       + MockComponentSpecificationImpl.class.getName() + "</name>"
       + "<classpath>test</classpath>" + "<dependencies/>";
+  private Artifact artifact = new MockArtifact("mock-component-spec");
 
   /*
    * (non-Javadoc)
@@ -86,8 +87,8 @@ public class MockComponentSpecificationImpl implements ComponentSpecification {
    * 
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getComponentDependencies()
    */
-  public Dependency[] getComponentDependencies() {
-    return new Dependency[0];
+  public Artifact[] getComponentDependencies() {
+    return new Artifact[0];
   }
 
   /**
@@ -95,8 +96,8 @@ public class MockComponentSpecificationImpl implements ComponentSpecification {
    * 
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getDependencies()
    */
-  public Dependency[] getDependencies() {
-    return new Dependency[0];
+  public Artifact[] getDependencies() {
+    return new Artifact[0];
   }
 
   /**
@@ -124,6 +125,15 @@ public class MockComponentSpecificationImpl implements ComponentSpecification {
    */
   public boolean isKernelBootstrap() {
     return false;
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.kernel.api.ComponentSpecification#getComponentArtifact()
+   */
+  public Artifact getComponentArtifact() {
+    return artifact;
   }
 
 }

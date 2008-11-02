@@ -18,7 +18,7 @@
 package org.sakaiproject.kernel.util;
 
 import org.sakaiproject.kernel.api.ComponentSpecification;
-import org.sakaiproject.kernel.api.Dependency;
+import org.sakaiproject.kernel.api.Artifact;
 
 /**
  * 
@@ -30,7 +30,7 @@ public class ComponentSpecificationUtil {
   public static String formatDescription(ComponentSpecification cs) {
     StringBuilder sb = new StringBuilder();
     sb.append(cs.getName()).append("->(");
-    Dependency[] componentDependencies = cs.getComponentDependencies();
+    Artifact[] componentDependencies = cs.getComponentDependencies();
     for (int i = 0; i < componentDependencies.length - 1; i++) {
       sb.append(componentDependencies[i].toString()).append(",");
     }
@@ -39,7 +39,7 @@ public class ComponentSpecificationUtil {
           .toString());
     }
     sb.append("),(");
-    Dependency[] dependencies = cs.getDependencies();
+    Artifact[] dependencies = cs.getDependencies();
     for (int i = 0; i < dependencies.length - 1; i++) {
       sb.append(dependencies[i]).append(",");
     }

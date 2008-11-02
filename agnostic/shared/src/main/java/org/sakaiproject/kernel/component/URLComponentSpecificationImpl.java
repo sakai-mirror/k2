@@ -22,7 +22,7 @@ import com.thoughtworks.xstream.annotations.Annotations;
 
 import org.sakaiproject.kernel.api.ComponentSpecification;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
-import org.sakaiproject.kernel.api.Dependency;
+import org.sakaiproject.kernel.api.Artifact;
 import org.sakaiproject.kernel.api.PackageExport;
 import org.sakaiproject.kernel.component.model.Component;
 import org.sakaiproject.kernel.util.ComponentSpecificationUtil;
@@ -57,13 +57,13 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
    */
   private Component component;
   /**
-   * dependencies of the component.
+   * artifacts of the component.
    */
-  private Dependency[] componentDependencies;
+  private Artifact[] componentDependencies;
   /**
-   * The classpath dependencies of this component
+   * The classpath artifacts of this component
    */
-  private Dependency[] dependencies;
+  private Artifact[] artifacts;
 
   @SuppressWarnings("unused")
   private String source;
@@ -111,17 +111,17 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
             "A component must have an activator");
       }
 
-      List<Dependency> cdeps = component.getComponentDependencies();
+      List<Artifact> cdeps = component.getComponentDependencies();
       if (cdeps == null) {
-        componentDependencies = new Dependency[0];
+        componentDependencies = new Artifact[0];
       } else {
-        componentDependencies = cdeps.toArray(new Dependency[0]);
+        componentDependencies = cdeps.toArray(new Artifact[0]);
       }
-      List<Dependency> deps = component.getDependencies();
+      List<Artifact> deps = component.getDependencies();
       if (deps == null) {
-        dependencies = new Dependency[0];
+        artifacts = new Artifact[0];
       } else {
-        dependencies = deps.toArray(new Dependency[0]);
+        artifacts = deps.toArray(new Artifact[0]);
       }
       List<PackageExport> exs = component.getExports();
       if (exs == null) {
@@ -148,8 +148,8 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
    * @return an array of URL's representing the classpath for the component.
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getClassPathURLs()
    */
-  public Dependency[] getClassPathDependencies() {
-    return dependencies;
+  public Artifact[] getClassPathDependencies() {
+    return artifacts;
   }
 
   /**
@@ -162,16 +162,16 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
   }
 
   /**
-   * @return an array of dependencies for this component.
+   * @return an array of artifacts for this component.
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getComponentDependencies()
    */
-  public Dependency[] getComponentDependencies() {
+  public Artifact[] getComponentDependencies() {
     return componentDependencies;
   }
 
   /**
    * @return true if the component is actively managed by the component manager.
-   *         Managed components are started as dependencies of other components.
+   *         Managed components are started as artifacts of other components.
    *         If they are not managed, the must be explicitly started.
    * @see org.sakaiproject.kernel.api.ComponentSpecification#isManaged()
    */
@@ -210,8 +210,8 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
    * 
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getDependencies()
    */
-  public Dependency[] getDependencies() {
-    return dependencies;
+  public Artifact[] getDependencies() {
+    return artifacts;
   }
 
   /**
@@ -236,6 +236,14 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
    */
   public boolean isKernelBootstrap() {
     return false;
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.ComponentSpecification#getComponentArtifact()
+   */
+  public Artifact getComponentArtifact() {
+    return component;
   }
 
 }

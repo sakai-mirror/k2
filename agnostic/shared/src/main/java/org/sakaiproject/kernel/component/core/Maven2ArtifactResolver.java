@@ -19,9 +19,9 @@ package org.sakaiproject.kernel.component.core;
 
 import com.google.inject.Inject;
 
-import org.sakaiproject.kernel.api.Dependency;
+import org.sakaiproject.kernel.api.Artifact;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
-import org.sakaiproject.kernel.api.DependencyResolverService;
+import org.sakaiproject.kernel.api.ArtifactResolverService;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,7 +30,7 @@ import java.net.URL;
 /**
  * 
  */
-public class Maven2DependencyResolver implements DependencyResolverService {
+public class Maven2ArtifactResolver implements ArtifactResolverService {
 
   private File repo;
 
@@ -38,7 +38,7 @@ public class Maven2DependencyResolver implements DependencyResolverService {
    * 
    */
   @Inject
-  public Maven2DependencyResolver() {
+  public Maven2ArtifactResolver() {
     // TODO Auto-generated constructor stub
     repo = new File(new File(System.getProperty("user.home"), ".m2"),
         "repository");
@@ -50,10 +50,10 @@ public class Maven2DependencyResolver implements DependencyResolverService {
    * 
    * @throws ComponentSpecificationException
    * 
-   * @see org.sakaiproject.kernel.api.DependencyResolverService#resolve(java.net.URL[],
-   *      org.sakaiproject.kernel.api.Dependency)
+   * @see org.sakaiproject.kernel.api.ArtifactResolverService#resolve(java.net.URL[],
+   *      org.sakaiproject.kernel.api.Artifact)
    */
-  public URL resolve(URL[] urls, Dependency classpathDependency)
+  public URL resolve(URL[] urls, Artifact classpathDependency)
       throws ComponentSpecificationException {
     String groupId = classpathDependency.getGroupId().replace('.',
         File.separatorChar);

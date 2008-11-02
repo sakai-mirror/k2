@@ -17,19 +17,17 @@
  */
 package org.sakaiproject.kernel.component.core.test;
 
-import static org.junit.Assert.*;
-
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.sakaiproject.kernel.api.ClassExporter;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
+import org.sakaiproject.kernel.api.Exporter;
 import org.sakaiproject.kernel.component.KernelImpl;
 import org.sakaiproject.kernel.component.URLComponentSpecificationImpl;
 import org.sakaiproject.kernel.component.core.ClassLoaderServiceImpl;
-import org.sakaiproject.kernel.component.core.Maven2DependencyResolver;
+import org.sakaiproject.kernel.component.core.Maven2ArtifactResolver;
 import org.sakaiproject.kernel.component.core.PackageRegistryServiceImpl;
 import org.sakaiproject.kernel.component.core.SharedClassLoader;
+import org.sakaiproject.kernel.component.core.SharedClassloaderArtifact;
+import org.sakaiproject.kernel.component.test.mock.MockArtifact;
 
 /**
  * 
@@ -37,30 +35,37 @@ import org.sakaiproject.kernel.component.core.SharedClassLoader;
 public class ClassLoaderServiceTest {
   private static final String COMPONENT1 = "res://org/sakaiproject/kernel/component/core/test/component1.xml";
 
-
   /**
-   * Test method for {@link org.sakaiproject.kernel.component.core.ClassLoaderServiceImpl#getComponentClassLoader(org.sakaiproject.kernel.api.ComponentSpecification)}.
-   * @throws ComponentSpecificationException 
+   * Test method for
+   * {@link org.sakaiproject.kernel.component.core.ClassLoaderServiceImpl#getComponentClassLoader(org.sakaiproject.kernel.api.ComponentSpecification)}
+   * .
+   * 
+   * @throws ComponentSpecificationException
    */
   @Test
-  public void testGetComponentClassLoader() throws ComponentSpecificationException {
-    PackageRegistryServiceImpl prs = new PackageRegistryServiceImpl(); 
-    Maven2DependencyResolver dependencyResolver = new Maven2DependencyResolver();
+  public void testGetComponentClassLoader()
+      throws ComponentSpecificationException {
+    PackageRegistryServiceImpl prs = new PackageRegistryServiceImpl();
+    Maven2ArtifactResolver dependencyResolver = new Maven2ArtifactResolver();
     KernelImpl kernel = new KernelImpl();
-    
-    // add an export that wont be used
-    ClassExporter exportClassloader = new MockClassExport(this.getClass().getClassLoader());
-    prs.addExport("org.sakaiproject.kernel.component.test", exportClassloader);
-    
-    
-    SharedClassLoader sharedClassLoader = new SharedClassLoader(prs,dependencyResolver,kernel);
 
-    ClassLoaderServiceImpl cls = new ClassLoaderServiceImpl(sharedClassLoader,prs,dependencyResolver);
-    
-    URLComponentSpecificationImpl componentSpec = new URLComponentSpecificationImpl(null,COMPONENT1);
-    
+    // add an export that wont be used
+    Exporter exportClassloader = new MockClassExport(this.getClass()
+        .getClassLoader(), new MockArtifact("test-exporter"));
+    prs.addExport("org.sakaiproject.kernel.component.test", exportClassloader);
+
+    SharedClassLoader sharedClassLoader = new SharedClassLoader(prs,
+        dependencyResolver, new SharedClassloaderArtifact(), kernel);
+
+    ClassLoaderServiceImpl cls = new ClassLoaderServiceImpl(sharedClassLoader,
+        prs, dependencyResolver);
+
+    URLComponentSpecificationImpl componentSpec = new URLComponentSpecificationImpl(
+        null, COMPONENT1);
+
+    @SuppressWarnings("unused")
     ClassLoader cl = cls.getComponentClassLoader(componentSpec);
-    
+
   }
 
 }

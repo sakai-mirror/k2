@@ -17,18 +17,24 @@
  */
 package org.sakaiproject.kernel.api;
 
-
 /**
- * 
+ * A service to provide Classloaders to the kernel based on component
+ * specifications. These classloaders should be fully populate with the the
+ * class path elements in the component specification, and where appropriate
+ * packages should be exported and dependencies injected into the shared
+ * classloader. The resulting classloader should configured and ready for use.
  */
 public interface ClassLoaderService {
 
   /**
    * Create a ComponentClassLoader based on the specification
-   * @param spec the ComponentSpecification
+   * 
+   * @param spec
+   *          the ComponentSpecification
    * @return the new Component Classloader
-   * @throws ComponentSpecificationException 
+   * @throws ComponentSpecificationException
    */
-  ClassLoader getComponentClassLoader(ComponentSpecification spec) throws ComponentSpecificationException;
+  ClassLoader getComponentClassLoader(ComponentSpecification spec)
+      throws ComponentSpecificationException;
 
 }
