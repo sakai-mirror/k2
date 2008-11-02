@@ -401,6 +401,16 @@
       </snapshots>
     </repository>
   </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>Sakai Plugin Repo</id>
+      <url>http://source.sakaiproject.org/maven2</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </pluginRepository>
+  </pluginRepositories>
+
 
   <!-- ====================================================================== -->
   <!-- D E P E N D E N C I E S                                                -->
