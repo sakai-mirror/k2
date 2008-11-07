@@ -121,4 +121,12 @@ public class UnboundJCRServiceImpl implements JCRService {
     return false;
   }
 
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.jcr.JCRService#getDefaultWorkspace()
+   */
+  public String getDefaultWorkspace() {
+    return DEFAULT_WORKSPACE;
+  }
+
 }

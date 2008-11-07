@@ -120,4 +120,11 @@ public interface JCRService {
    */
   boolean hasActiveSession();
 
+  /**
+   * The name of the default JCR workspace
+   * 
+   * @return
+   */
+  String getDefaultWorkspace();
+
 }
