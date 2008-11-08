@@ -18,6 +18,7 @@
 package org.sakaiproject.kernel.component.core;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 
 import org.sakaiproject.kernel.api.Artifact;
@@ -34,6 +35,7 @@ import java.net.URL;
  * add urls to the shared classpath. It only provides loading of classes and not
  * resources from the exported classes.
  */
+@Singleton
 public class SharedClassLoader extends ComponentClassLoader {
 
   public static final String SHARED_CLASSLOADER_ARTIFACT = "shared.classloader.artifact";
