@@ -21,6 +21,13 @@
 			<type>jar</type>
 		</dependency>
 		<dependency>
+			<groupId>org.sakaiproject.kernel2.agnostic</groupId>
+			<artifactId>kernel</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+			<type>jar</type>
+		</dependency>
+		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
 			<version>1.0.4</version>

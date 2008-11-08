@@ -17,6 +17,8 @@
  */
 package org.sakaiproject.componentsample;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.componentsample.api.HelloWorldService;
 import org.sakaiproject.componentsample.core.HelloWorldServiceImpl;
 import org.sakaiproject.componentsample.core.InternalDateServiceImpl;
@@ -26,12 +28,16 @@ import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.ServiceManager;
 import org.sakaiproject.kernel.api.ServiceManagerException;
 import org.sakaiproject.kernel.api.ServiceSpec;
+import org.sakaiproject.kernel.api.jcr.JCRService;
+
+import javax.jcr.Repository;
 
 /**
  * This class brings the component up and down on demand
  */
 public class Activator implements ComponentActivator {
 
+  private static final Log LOG = LogFactory.getLog(Activator.class);
   /**
    * We might need to know which kernel this activator is attached to, its
    * possible to have more than one in a JVM
@@ -52,10 +58,20 @@ public class Activator implements ComponentActivator {
     InternalDateServiceImpl internalDateService = new InternalDateServiceImpl();
     HelloWorldService helloWorldService = new HelloWorldServiceImpl(
         internalDateService);
+    
 
     // thats it. my service is ready to go, so lets register it
     // get the service manager
     ServiceManager serviceManager = kernel.getServiceManager();
+    
+    // just for fun.. resolve the JCRService and get a reference to the respository.
+    LOG.info("Getting JCR =============================");
+    JCRService service = serviceManager.getService(new ServiceSpec(JCRService.class));
+    Repository repo = service.getRepository();
+    for ( String k : repo.getDescriptorKeys() ) {
+      LOG.info("  JCR Repo Key "+k+"::"+repo.getDescriptor(k));
+    }
+    LOG.info("Logged In OK-=============================");
 
     // create a ServiceSpecification for the class I want to register,
     // the class here MUST be a class that was exported (see component.xml)

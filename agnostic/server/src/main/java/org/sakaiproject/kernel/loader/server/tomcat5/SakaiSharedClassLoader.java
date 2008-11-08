@@ -43,7 +43,11 @@ public class SakaiSharedClassLoader extends WebappClassLoader {
     super();
     containerClassloader = getContainerClassloader();
     LOG
-        .debug("====================================CREATING CLASSLOADER ===========================");
+        .info("====================================CREATING WEBAPP CLASSLOADER\n"
+            + "Parent :\n"
+            + parent
+            + "\nKernel Shared Classloader:\n"
+            + containerClassloader + "\nParent Classloader:\n" + parent);
   }
 
   public SakaiSharedClassLoader(ClassLoader parent) {
@@ -51,8 +55,11 @@ public class SakaiSharedClassLoader extends WebappClassLoader {
     containerClassloader = getContainerClassloader();
 
     LOG
-        .debug("====================================CREATING CLASSLOADER Parent : "
-            + parent);
+        .info("====================================CREATING WEBAPP CLASSLOADER\n"
+            + "Parent :\n"
+            + parent
+            + "\nKernel Shared Classloader:\n"
+            + containerClassloader + "\nParent Classloader:\n" + parent);
 
   }
 
@@ -60,7 +67,7 @@ public class SakaiSharedClassLoader extends WebappClassLoader {
    * @param pcl
    * @return
    */
-  private ClassLoader getContainerClassloader() {
+  protected ClassLoader getContainerClassloader() {
     ClassLoader parentClassLoader = null;
     try {
       CommonObjectManager commonObjectManager = new CommonObjectManager(
@@ -89,6 +96,7 @@ public class SakaiSharedClassLoader extends WebappClassLoader {
     if (c == null && containerClassloader != null) {
       try {
         c = containerClassloader.loadClass(name);
+
         if (LOG.isDebugEnabled())
           LOG.debug("loaded " + c);
       } catch (ClassNotFoundException e) {
@@ -115,7 +123,6 @@ public class SakaiSharedClassLoader extends WebappClassLoader {
     return c;
   }
 
-
   /*
    * (non-Javadoc)
    * 
@@ -125,7 +132,6 @@ public class SakaiSharedClassLoader extends WebappClassLoader {
   public URL getResource(String name) {
     URL url = null;
     url = containerClassloader.getResource(name);
-
     if (url == null) {
       url = super.getResource(name);
 
@@ -135,7 +141,6 @@ public class SakaiSharedClassLoader extends WebappClassLoader {
     }
     return url;
   }
-
 
   /**
    * {@inheritDoc}

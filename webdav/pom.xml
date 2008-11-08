@@ -51,5 +51,11 @@
 			<artifactId>jackrabbit-webdav</artifactId>
 			<version>1.4</version>
 		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.0</version>
+			<scope>runtime</scope>
+		</dependency>
 	</dependencies>
 </project>
