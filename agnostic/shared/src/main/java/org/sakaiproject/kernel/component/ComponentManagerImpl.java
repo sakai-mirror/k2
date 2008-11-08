@@ -128,6 +128,9 @@ public class ComponentManagerImpl implements ComponentManager {
   public boolean startComponent(ComponentSpecification spec)
       throws KernelConfigurationException, ComponentSpecificationException {
 
+    if (components.containsKey(spec)) {
+      return true;
+    }
 
     ClassLoader currentClassloader = Thread.currentThread()
         .getContextClassLoader();
@@ -143,7 +146,7 @@ public class ComponentManagerImpl implements ComponentManager {
     try {
 
       for (Artifact dependant : spec.getComponentDependencies()) {
-        if (!dependant.isManaged() ) {
+        if (!dependant.isManaged()) {
           startComponent(componentsByName.get(dependant.toString()));
         }
       }
@@ -158,7 +161,7 @@ public class ComponentManagerImpl implements ComponentManager {
         throw new ComponentSpecificationException(
             "Unable to find activator class "
                 + spec.getComponentActivatorClassName() + " using "
-                + componentClassloader,e);
+                + componentClassloader, e);
       }
 
       ComponentActivator activator = null;
@@ -168,7 +171,7 @@ public class ComponentManagerImpl implements ComponentManager {
         throw new ComponentSpecificationException("The Activator class "
             + spec.getComponentActivatorClassName() + " loaded using "
             + componentClassloader
-            + " does not implement the ComponentActivator interface ",e);
+            + " does not implement the ComponentActivator interface ", e);
       }
 
       activator.activate(kernel);
@@ -217,9 +220,9 @@ public class ComponentManagerImpl implements ComponentManager {
       }
       String dc = p.getProperty(DEFAULT_COMPONENTS);
       List<ComponentSpecification> toStart = new ArrayList<ComponentSpecification>();
-      LOG.info("Starting "+dc);
+      LOG.info("Starting " + dc);
       if (dc != null) {
-        String[] defaultComponents = StringUtils.split(dc,';');
+        String[] defaultComponents = StringUtils.split(dc, ';');
         for (String d : defaultComponents) {
           d = d.trim();
           if (d.length() > 0) {
@@ -276,8 +279,7 @@ public class ComponentManagerImpl implements ComponentManager {
           unstable.add(spec);
         }
         for (Artifact d : spec.getComponentDependencies()) {
-          ComponentSpecification cs = componentsByName
-              .get(d.toString());
+          ComponentSpecification cs = componentsByName.get(d.toString());
           if (cs == null && !errors.contains(spec)) {
             errors.add(spec);
           } else {
@@ -308,8 +310,8 @@ public class ComponentManagerImpl implements ComponentManager {
         for (Artifact d : spec.getComponentDependencies()) {
           if (!componentsByName.containsKey(d.toString())) {
             message.append("\t\tComponent ").append(spec.getName()).append(
-                " depends on unsatisfied depedency ").append(
-                d.toString()).append("\n");
+                " depends on unsatisfied depedency ").append(d.toString())
+                .append("\n");
           }
         }
       }
