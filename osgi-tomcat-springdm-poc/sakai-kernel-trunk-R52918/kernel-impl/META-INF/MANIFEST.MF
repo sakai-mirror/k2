@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: sakai_kernel_impl
-Bundle-SymbolicName: sakai_kernel_impl
-Bundle-Version: 1.0.0
-Import-Package: org.apache.commons.logging, org.sakaiproject.id.api
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
