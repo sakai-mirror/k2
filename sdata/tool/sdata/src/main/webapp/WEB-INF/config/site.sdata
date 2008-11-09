@@ -1,0 +1,8 @@
+1.classname=org.sakaiproject.sdata.services.site.SiteHandler
+1.baseurl=/site
+1.locationbase=
+1.referencebase=/site
+1.basepath=/site
+1.locks=GET:site.read,PUT:content.revise.any,HEAD:content.read,POST:content.revise.any,DELETE:content.delete.any
+1.function.rp=org.sakaiproject.sdata.services.site.SiteRemovePageFunction
+1.function.at=org.sakaiproject.sdata.services.site.SiteAddToolFunction
