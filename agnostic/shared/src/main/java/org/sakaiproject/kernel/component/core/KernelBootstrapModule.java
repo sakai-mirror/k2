@@ -93,7 +93,7 @@ public class KernelBootstrapModule extends AbstractModule {
     this.kernel = kernel;
     InputStream is = null;
     try {
-      is = ResourceLoader.openResource(DEFAULT_PROPERTIES);
+      is = ResourceLoader.openResource(DEFAULT_PROPERTIES,this.getClass().getClassLoader());
       properties = new Properties();
       properties.load(is);
       LOG.info("Loaded " + properties.size() + " properties from "
@@ -120,7 +120,7 @@ public class KernelBootstrapModule extends AbstractModule {
     try {
       if (localPropertiesLocation != null
           && localPropertiesLocation.trim().length() > 0) {
-        is = ResourceLoader.openResource(localPropertiesLocation);
+        is = ResourceLoader.openResource(localPropertiesLocation,this.getClass().getClassLoader());
         Properties localProperties = new Properties();
         localProperties.load(is);
         for (Entry<Object, Object> o : localProperties.entrySet()) {

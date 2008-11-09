@@ -36,57 +36,49 @@ import javax.jcr.Session;
 /**
  * Perfoms basic repository startup.
  * 
- * @author ieb
  */
-public class SakaiRepositoryStartup implements StartupAction
-{
-	private static final Log log = LogFactory.getLog(SakaiRepositoryStartup.class);
+public class SakaiRepositoryStartup implements StartupAction {
+  private static final Log log = LogFactory
+      .getLog(SakaiRepositoryStartup.class);
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sakaiproject.kernel.jcr.api.internal.StartupAction#startup(javax.jcr.Session)
-	 */
-	public void startup(Session s)
-	{
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.jcr.api.internal.StartupAction#startup(javax.jcr.Session)
+   */
+  public void startup(Session s) {
 
-		try
-		{
-			WorkspaceImpl workspace = (WorkspaceImpl) s.getWorkspace();
-			List<String> existingWorkspaces = Arrays.asList(workspace
-					.getAccessibleWorkspaceNames());
-			if (!existingWorkspaces.contains(JCRServiceImpl.DEFAULT_WORKSPACE))
-			{
-				if (log.isDebugEnabled()) log.debug("Creating Workspace Sakai ");
-				workspace.createWorkspace(JCRServiceImpl.DEFAULT_WORKSPACE);
-				log.info("Created default Sakai Jackrabbit Workspace: "
-						+ JCRServiceImpl.DEFAULT_WORKSPACE);
-			}
-			if (!s.getRootNode().hasNode("testdata"))
-			{
-				if (log.isDebugEnabled())
-				{
-					log.debug("Creating Test Data ");
-				}
-				s.getRootNode().addNode("testdata", "nt:unstructured");
-				if (log.isDebugEnabled())
-				{
-					log.debug("Added Test Data Node Under Root");
-				}
-			}
-			else
-			{
-				if (log.isDebugEnabled())
-				{
-					log.debug("Added Test Data Node Under Already present");
-				}
-			}
-		}
-		catch (RepositoryException ex)
-		{
-			throw new IllegalStateException(
-					"Failed to add Sakai Jackrabbit JCR root node, JCR workspace/repository failure",
-					ex);
-		}
-	}
+    try {
+      WorkspaceImpl workspace = (WorkspaceImpl) s.getWorkspace();
+      List<String> existingWorkspaces = Arrays.asList(workspace
+          .getAccessibleWorkspaceNames());
+      if (!existingWorkspaces.contains(JCRServiceImpl.DEFAULT_WORKSPACE)) {
+        if (log.isInfoEnabled())
+          log.info("Creating Workspace Sakai ");
+        workspace.createWorkspace(JCRServiceImpl.DEFAULT_WORKSPACE);
+        log.info("Created default Sakai Jackrabbit Workspace: "
+            + JCRServiceImpl.DEFAULT_WORKSPACE);
+      }
+      if (!s.getRootNode().hasNode("testdata")) {
+        if (log.isInfoEnabled()) {
+          log.info("Creating Test Data ");
+        }
+        s.getRootNode().addNode("testdata", "nt:unstructured");
+        if (log.isInfoEnabled()) {
+          log.info("Added Test Data Node Under Root");
+        }
+      } else {
+        if (log.isInfoEnabled()) {
+          log.info("Added Test Data Node Under Already present");
+        }
+      }
+
+    } catch (RepositoryException ex) {
+      log.info("Failed to startup repo", ex);
+      throw new IllegalStateException(
+          "Failed to add Sakai Jackrabbit JCR root node, JCR workspace/repository failure",
+          ex);
+    } catch (Throwable t) {
+      t.printStackTrace();
+    }
+  }
 }

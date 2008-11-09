@@ -33,7 +33,8 @@ public interface StartupAction
 	 * Performs an action on startup
 	 * 
 	 * @param s
+	 * @throws RepositoryStartupException 
 	 */
-	void startup(Session s);
+	void startup(Session s) throws RepositoryStartupException;
 
 }

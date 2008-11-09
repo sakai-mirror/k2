@@ -29,10 +29,11 @@ import org.sakaiproject.kernel.api.ServiceManager;
 import org.sakaiproject.kernel.api.ShutdownService;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.component.core.guice.ServiceProvider;
+import org.sakaiproject.kernel.initialization.InitializationActionProvider;
+import org.sakaiproject.kernel.internal.api.InitializationAction;
 import org.sakaiproject.kernel.jcr.api.internal.StartupAction;
-import org.sakaiproject.kernel.jcr.jackrabbit.RepositoryBuilder;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
-import org.sakaiproject.kernel.jcr.jackrabbit.sakai.StartupActionProvicer;
+import org.sakaiproject.kernel.jcr.jackrabbit.sakai.StartupActionProvider;
 import org.sakaiproject.kernel.util.ResourceLoader;
 
 import java.io.IOException;
@@ -73,7 +74,8 @@ public class KernelModule extends AbstractModule {
     this.kernel = kernel;
     InputStream is = null;
     try {
-      is = ResourceLoader.openResource(DEFAULT_PROPERTIES,this.getClass().getClassLoader());
+      is = ResourceLoader.openResource(DEFAULT_PROPERTIES, this.getClass()
+          .getClassLoader());
       properties = new Properties();
       properties.load(is);
     } catch (IOException e) {
@@ -113,9 +115,7 @@ public class KernelModule extends AbstractModule {
     bind(Kernel.class).toInstance(kernel);
     bind(ServiceManager.class).toInstance(serviceManager);
     bind(ComponentManager.class).toInstance(kernel.getComponentManager());
-    
-    
-    
+
     bind(ShutdownService.class).toProvider(
         new ServiceProvider<ShutdownService>(serviceManager,
             ShutdownService.class));
@@ -123,12 +123,17 @@ public class KernelModule extends AbstractModule {
     // JCR setup
     TypeLiteral<List<StartupAction>> startupActionType = new TypeLiteral<List<StartupAction>>() {
     };
-    bind(startupActionType).annotatedWith(
-        Names.named(RepositoryBuilder.NAME_STARTUP_ACTIONS)).toProvider(
-        StartupActionProvicer.class);
+    bind(startupActionType).toProvider(StartupActionProvider.class);
 
     bind(Credentials.class).annotatedWith(
         Names.named(JCRService.NAME_CREDENTIALS)).to(SakaiJCRCredentials.class);
+
+    // Kernel initialization
+    TypeLiteral<List<InitializationAction>> initializationActionType = new TypeLiteral<List<InitializationAction>>() {
+    };
+    bind(initializationActionType).toProvider(InitializationActionProvider.class);
+    
+    
   }
 
 }

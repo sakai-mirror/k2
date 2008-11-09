@@ -45,14 +45,10 @@ public class SakaiSessionProvider implements SessionProvider {
   public Session getSession(HttpServletRequest request, Repository rep,
       String workspace) throws LoginException {
 
-    // we do not accept the anonymous session for WebDAV !
-    if (request.getAuthType() == null) {
-      throw new LoginException("Authentication required for WebDAV");
-    }
-
     try {
       return jcrService.login();
     } catch (RepositoryException e) {
+      LOG.error("Login Failed ",e);
       throw new LoginException("Authentication for WebDAV, failed ", e);
     }
   }

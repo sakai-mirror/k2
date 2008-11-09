@@ -118,7 +118,7 @@ public class URLComponentSpecificationImplTest {
 
     String specification = attachXSD(xstream.toXML(c));
     LOG.info(specification);
-    InputStream xsd = ResourceLoader.openResource(COMPONENTS_XSD);
+    InputStream xsd = ResourceLoader.openResource(COMPONENTS_XSD,this.getClass().getClassLoader());
     String errors = XSDValidator.validate(specification, xsd);
     LOG.info(errors);
     assertEquals("", errors);

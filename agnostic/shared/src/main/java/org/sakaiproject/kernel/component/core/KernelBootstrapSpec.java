@@ -17,11 +17,8 @@
  */
 package org.sakaiproject.kernel.component.core;
 
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
-
-import org.sakaiproject.kernel.api.ComponentSpecification;
 import org.sakaiproject.kernel.api.Artifact;
+import org.sakaiproject.kernel.api.ComponentSpecification;
 import org.sakaiproject.kernel.api.PackageExport;
 import org.sakaiproject.kernel.util.ComponentSpecificationUtil;
 

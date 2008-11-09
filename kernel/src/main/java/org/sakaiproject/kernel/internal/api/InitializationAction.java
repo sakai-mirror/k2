@@ -15,37 +15,21 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.jcr.jackrabbit.sakai;
-
-import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.google.inject.Provider;
-
-import org.sakaiproject.kernel.jcr.api.internal.StartupAction;
-
-import java.util.ArrayList;
-import java.util.List;
+package org.sakaiproject.kernel.internal.api;
 
 /**
- * 
+ * Parts of the kernel need initialization. Anything that wants to perform
+ * initialization should create a class that implements this API. This is part
+ * of the internal kernel API
  */
-public class StartupActionProvicer implements Provider<List<StartupAction>> {
+public interface InitializationAction {
 
-  private List<StartupAction> startupActions;
   /**
+   * Perform the initialization action.
    * 
+   * @throws KernelInitializtionException
+   *           if there is a problem with initialization.
    */
- @Inject
-  public StartupActionProvicer(Injector injector) {
-     startupActions = new ArrayList<StartupAction>();
-     startupActions.add(injector.getInstance(SakaiRepositoryStartup.class));
-  }
-  /**
-   * {@inheritDoc}
-   * @see com.google.inject.Provider#get()
-   */
-  public List<StartupAction> get() {
-    return startupActions;
-  }
+  void init() throws KernelInitializtionException;
 
 }

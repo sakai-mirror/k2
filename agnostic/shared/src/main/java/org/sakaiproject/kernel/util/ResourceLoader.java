@@ -42,58 +42,53 @@ public class ResourceLoader {
    *          a URI pointing to the resource, URI's starting res:// mean
    *          resources from the classpath and inline:// means the rest of the
    *          uri is the resource. Anything else is resolved as a file.
+   * @param classLoader
+   *          the classloader to perform the search in, this must be supplied as
+   *          most users of this method will not be in the same classloader as
+   *          this class.
    * @return the input stream for the resource. It is the callers responsibility
    *         to close this stream.
    * @throws IOException
    *           if the resource could not be opened.
    */
-  public static InputStream openResource(String resource) throws IOException {
-    return openResource(resource,ResourceLoader.class.getClassLoader());
-  }
-  
-  public static InputStream openResource(String resource, ClassLoader classLoader) throws IOException {
+  public static InputStream openResource(String resource,
+      ClassLoader classLoader) throws IOException {
     if (resource.startsWith(RESOURCE)) {
       InputStream in = classLoader.getResourceAsStream(resource.substring(6));
-      if ( in == null ) {
-        throw new IOException("Unable to find resource "+resource+" using "+classLoader);
+      if (in == null) {
+        throw new IOException("Unable to find resource " + resource + " using "
+            + classLoader);
       }
       return in;
     } else if (resource.startsWith(INLINE)) {
-      return new ByteArrayInputStream(resource.substring(INLINE.length()).getBytes("UTF-8"));
-    } else if ( resource.startsWith(FILE ) ) {
+      return new ByteArrayInputStream(resource.substring(INLINE.length())
+          .getBytes("UTF-8"));
+    } else if (resource.startsWith(FILE)) {
       return new FileInputStream(resource.substring(FILE.length()));
-    } else if ( resource.startsWith("jar:") || resource.indexOf("://") > 0) {
+    } else if (resource.startsWith("jar:") || resource.indexOf("://") > 0) {
       URL url = new URL(resource);
       return url.openStream();
     } else {
       return new FileInputStream(resource);
     }
   }
-  
 
   /**
    * Read a resource into a string.
    * 
    * @param d
-   *          the URI for the resource, @see openResource(String resource)
+   *          the URI for the resource, @see openResource(String resource,
+   *          ClassLoader classLoader)
+   * @param classLoader
+   *          the classLoader to use to load the resource.
    * @return the contents of the resource.
    * @throws IOException
    *           if there was a problem opening the resource.
    */
-  public static String readResource(String resource) throws IOException {
-    return readResource(resource,ResourceLoader.class.getClassLoader());
-  }
-
-  /**
-   * @param repositoryConfigTemplate
-   * @param classLoader
-   * @return
-   * @throws IOException 
-   */
-  public static String readResource(String resource,
-      ClassLoader classLoader) throws IOException {
-    BufferedReader in = new BufferedReader(new InputStreamReader(
-        openResource(resource,classLoader)));
+  public static String readResource(String resource, ClassLoader classLoader)
+      throws IOException {
+    BufferedReader in = new BufferedReader(new InputStreamReader(openResource(
+        resource, classLoader)));
     StringBuilder sb = new StringBuilder();
     try {
       for (String line = in.readLine(); line != null; line = in.readLine()) {
@@ -108,10 +103,11 @@ public class ResourceLoader {
   /**
    * @param nextElement
    * @return
-   * @throws IOException 
+   * @throws IOException
    */
   public static String readResource(URL url) throws IOException {
-    BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+    BufferedReader in = new BufferedReader(new InputStreamReader(url
+        .openStream()));
     StringBuilder sb = new StringBuilder();
     try {
       for (String line = in.readLine(); line != null; line = in.readLine()) {

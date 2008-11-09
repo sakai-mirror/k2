@@ -36,6 +36,8 @@ import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.user.AuthenticationManager;
 import org.sakaiproject.kernel.api.user.UserDirectoryService;
+import org.sakaiproject.kernel.internal.api.KernelInitialization;
+import org.sakaiproject.kernel.internal.api.KernelInitializtionException;
 
 /**
  *
@@ -44,9 +46,8 @@ public class Activator implements ComponentActivator {
 
   public static final Class<?>[] SERVICE_CLASSES = { JCRService.class,
       JCRRegistrationService.class, JCRNodeFactoryService.class,
-       UserDirectoryService.class,
-      AuthenticationManager.class, CacheManagerService.class,
-      SessionManagerService.class };
+      UserDirectoryService.class, AuthenticationManager.class,
+      CacheManagerService.class, SessionManagerService.class };
   private static final Log LOG = LogFactory.getLog(Activator.class);
   @SuppressWarnings("unused")
   private Kernel kernel;
@@ -62,12 +63,11 @@ public class Activator implements ComponentActivator {
    */
   public void activate(Kernel kernel) throws ComponentActivatorException {
     // Start the injector for the kernel
-    
-    
+
     this.kernel = kernel;
     this.serviceManager = kernel.getServiceManager();
     this.injector = Guice.createInjector(new KernelModule(kernel));
-    
+
     // export the services.
     try {
       for (Class<?> serviceClass : SERVICE_CLASSES) {
@@ -76,6 +76,13 @@ public class Activator implements ComponentActivator {
     } catch (ServiceManagerException e) {
       throw new ComponentActivatorException(
           "Failed to start Kernel Component ", e);
+    }
+
+    try {
+      injector.getInstance(KernelInitialization.class).initKernel();
+    } catch (KernelInitializtionException e1) {
+      throw new ComponentActivatorException(
+          "Failed to initialize the Kernel into a Ready State ", e1);
     }
 
   }
@@ -88,7 +95,7 @@ public class Activator implements ComponentActivator {
    */
   private void exportService(Class<?> serviceClass)
       throws ServiceManagerException {
-    LOG.info("Exporting "+serviceClass);
+    LOG.info("Exporting " + serviceClass);
     serviceManager.registerService(new ServiceSpec(serviceClass), injector
         .getInstance(serviceClass));
   }
@@ -116,6 +123,5 @@ public class Activator implements ComponentActivator {
       ((RequiresStop) service).stop();
     }
   }
-  
-  
+
 }

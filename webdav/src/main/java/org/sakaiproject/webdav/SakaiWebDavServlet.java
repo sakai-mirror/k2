@@ -78,6 +78,8 @@ public class SakaiWebDavServlet extends SimpleWebdavServlet {
   @Override
   protected void service(HttpServletRequest request,
       HttpServletResponse response) throws ServletException, IOException {
+    
+    
 
     final String pinfo = request.getPathInfo();
 
@@ -99,10 +101,12 @@ public class SakaiWebDavServlet extends SimpleWebdavServlet {
           uri += "/";
         }
         uri += jcrService.getDefaultWorkspace();
+        LOG.info("Sending redirect to "+uri+" pathInfo=["+pinfo+"]");
         response.sendRedirect(uri);
       }
 
     } else {
+      LOG.info("Super ");
 
       super.service(request, response);
     }

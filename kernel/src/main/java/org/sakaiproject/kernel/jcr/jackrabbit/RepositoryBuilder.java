@@ -33,7 +33,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.core.RepositoryImpl;
 import org.apache.jackrabbit.core.config.RepositoryConfig;
 import org.apache.jackrabbit.core.nodetype.NodeTypeManagerImpl;
-import org.sakaiproject.kernel.jcr.api.internal.StartupAction;
 import org.sakaiproject.kernel.jcr.jackrabbit.persistance.BundleDbSharedPersistenceManager;
 import org.sakaiproject.kernel.jcr.jackrabbit.persistance.DerbySharedPersistenceManager;
 import org.sakaiproject.kernel.jcr.jackrabbit.persistance.MSSqlSharedPersistenceManager;
@@ -48,8 +47,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -146,12 +143,11 @@ public class RepositoryBuilder {
   public static final String NAME_NODE_TYPE_CONFIGURATION = "nodeTypeConfiguration"
       + BASE_NAME;
 
-  public static final String NAME_STARTUP_ACTIONS = "startupActions"
-      + BASE_NAME;
 
   private static final ThreadLocal<Injector> injectorHolder = new ThreadLocal<Injector>();
 
   private RepositoryImpl repository;
+
 
   // private String repositoryConfig;
 
@@ -215,9 +211,7 @@ public class RepositoryBuilder {
       @Named(NAME_REPOSITORY_CONFIG_LOCATION) String repositoryConfigTemplate,
       @Named(NAME_NODE_TYPE_CONFIGURATION) String nodeTypeConfiguration,
       @Named(NAME_NAMESPACES_MAP) String namespacesConfiguration,
-      @Named(NAME_STARTUP_ACTIONS) List<StartupAction> startupActions,
-      Injector injector)
-      throws IOException, RepositoryException {
+      Injector injector) throws IOException, RepositoryException {
 
     dbURL = dbURL.replaceAll("&", "&amp;");
 
@@ -257,10 +251,11 @@ public class RepositoryBuilder {
       injectorHolder.set(injector);
       RepositoryConfig rc = RepositoryConfig.create(bais, repositoryHome);
       repository = RepositoryImpl.create(rc);
-      
-      Runtime.getRuntime().addShutdownHook(new Thread(){
+
+      Runtime.getRuntime().addShutdownHook(new Thread() {
         /**
          * {@inheritDoc}
+         * 
          * @see java.lang.Thread#run()
          */
         @Override
@@ -268,8 +263,7 @@ public class RepositoryBuilder {
           RepositoryBuilder.this.stop();
         }
       });
-      setup(namespacesConfiguration, nodeTypeConfiguration, startupActions);
-
+      setup(namespacesConfiguration, nodeTypeConfiguration);
     } finally {
       injectorHolder.set(null);
       bais.close();
@@ -281,9 +275,10 @@ public class RepositoryBuilder {
   public void stop() {
     if (repository != null) {
       try {
-        
+
         repository.shutdown();
-        log.info("An A No current connection exception from the version manager is normal, if the version manager hasnt been used");
+        log
+            .info("An A No current connection exception from the version manager is normal, if the version manager hasnt been used");
       } catch (Exception ex) {
         log.warn("Repository Shutdown failed, this may be normal "
             + ex.getMessage());
@@ -295,7 +290,7 @@ public class RepositoryBuilder {
 
   @SuppressWarnings("unchecked")
   private void setup(String namespacesConfiguration,
-      String nodeTypeConfiguration, List<StartupAction> startupActions)
+      String nodeTypeConfiguration)
       throws RepositoryException, IOException {
     SakaiJCRCredentials ssp = new SakaiJCRCredentials();
     Session s = repository.login(ssp);
@@ -350,18 +345,14 @@ public class RepositoryBuilder {
 
         }
       }
-      if (startupActions != null) {
-        for (Iterator<StartupAction> i = startupActions.iterator(); i.hasNext();) {
-          i.next().startup(s);
-        }
-      }
-
       s.save();
     } finally {
       s.logout();
     }
 
   }
+  
+
 
   /**
    * @return
@@ -369,6 +360,5 @@ public class RepositoryBuilder {
   public static Injector getStartupInjector() {
     return injectorHolder.get();
   }
-
 
 }

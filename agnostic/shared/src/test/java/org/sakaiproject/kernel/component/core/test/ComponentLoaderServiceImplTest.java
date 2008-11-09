@@ -75,7 +75,7 @@ public class ComponentLoaderServiceImplTest {
     JarOutputStream jarOutput = new JarOutputStream(new FileOutputStream(f));
     JarEntry jarEntry = new JarEntry("SAKAI-INF/component.xml");
     jarOutput.putNextEntry(jarEntry);
-    String componentXml = ResourceLoader.readResource(component);
+    String componentXml = ResourceLoader.readResource(component,this.getClass().getClassLoader());
     jarOutput.write(componentXml.getBytes("UTF-8"));
     jarOutput.closeEntry();
     jarOutput.close();

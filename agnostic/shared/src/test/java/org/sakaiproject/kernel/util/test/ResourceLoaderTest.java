@@ -74,30 +74,30 @@ public class ResourceLoaderTest {
   public void testOpenResourceString() throws IOException {
 
     InputStream in = ResourceLoader
-        .openResource("res://org/sakaiproject/kernel/component/test/complexcomponent.xml");
+        .openResource("res://org/sakaiproject/kernel/component/test/complexcomponent.xml",this.getClass().getClassLoader());
     assertNotNull(in);
     in.close();
     try {
-      in = ResourceLoader.openResource("res://sdfkjsdlkfjsdlfkjsd lkfjsdkl ");
+      in = ResourceLoader.openResource("res://sdfkjsdlkfjsdlfkjsd lkfjsdkl ",this.getClass().getClassLoader());
       fail();
     } catch (IOException e) {
     }
     in.close();
-    in = ResourceLoader.openResource("inline://sdfkjsdlkfjsdlfkjsd lkfjsdkl ");
+    in = ResourceLoader.openResource("inline://sdfkjsdlkfjsdlfkjsd lkfjsdkl ",this.getClass().getClassLoader());
     assertNotNull(in);
     in.close();
 
-    in = ResourceLoader.openResource("http://www.sakaiproject.org");
+    in = ResourceLoader.openResource("http://www.sakaiproject.org",this.getClass().getClassLoader());
     assertNotNull(in);
     in.close();
 
     File f = new File(baseFile, "testfile1.txt");
     String path = f.getAbsolutePath();
-    in = ResourceLoader.openResource(path);
+    in = ResourceLoader.openResource(path,this.getClass().getClassLoader());
     assertNotNull(in);
     in.close();
 
-    in = ResourceLoader.openResource("file:/" + path);
+    in = ResourceLoader.openResource("file:/" + path,this.getClass().getClassLoader());
     assertNotNull(in);
     in.close();
 
@@ -128,7 +128,7 @@ public class ResourceLoaderTest {
   @Test
   public void testReadResourceString() throws IOException {
     String in = ResourceLoader.readResource(
-        "res://org/sakaiproject/kernel/component/test/complexcomponent.xml");
+        "res://org/sakaiproject/kernel/component/test/complexcomponent.xml",this.getClass().getClassLoader());
     assertNotNull(in);
     assertTrue(in.length()> 0);
   }

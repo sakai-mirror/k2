@@ -207,7 +207,7 @@ public class ComponentManagerImpl implements ComponentManager {
       // load a list of components urls from a properties file.
       Properties p = new Properties();
       InputStream in = ResourceLoader
-          .openResource(DEFAULT_COMPONENTS_PROPERTIES);
+          .openResource(DEFAULT_COMPONENTS_PROPERTIES,this.getClass().getClassLoader());
       try {
         if (in != null) {
           p.load(in);
