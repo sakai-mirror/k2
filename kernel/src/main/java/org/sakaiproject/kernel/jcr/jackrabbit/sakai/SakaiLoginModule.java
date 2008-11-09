@@ -75,12 +75,9 @@ public class SakaiLoginModule implements LoginModule {
    * @throws KernelConfigurationException
    */
   public SakaiLoginModule() throws KernelConfigurationException {
-    long s = System.currentTimeMillis();
     KernelManager km = new KernelManager();
     this.userDirectoryService = km.getService(UserDirectoryService.class);
     this.authenticationManager = km.getService(AuthenticationManager.class);
-    long e = System.currentTimeMillis();
-    System.err.println(" Login module started "+(e-s));
   }
 
   /**

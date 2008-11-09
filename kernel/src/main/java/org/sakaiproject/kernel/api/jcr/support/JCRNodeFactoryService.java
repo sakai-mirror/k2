@@ -102,4 +102,5 @@ public interface JCRNodeFactoryService
 	Node getNode(String nodePath) throws RepositoryException,
 			JCRNodeFactoryServiceException;
 
+
 }

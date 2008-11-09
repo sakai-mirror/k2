@@ -51,8 +51,6 @@ public class SakaiResourceLocator implements DavResourceLocator {
       buf.append("/");
     }
     href = buf.toString();
-    
-    System.err.println("Repository Path is resourcePath="+resourcePath+" href="+href);
   }
 
   /**

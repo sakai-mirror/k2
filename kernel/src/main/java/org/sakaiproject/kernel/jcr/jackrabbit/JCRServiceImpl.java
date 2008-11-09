@@ -91,6 +91,7 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
     return login();
   }
 
+  
   public Session login() throws LoginException, RepositoryException {
     Session session = null;
     SessionHolder sh = getSessionHolder();
@@ -202,7 +203,7 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
    * @see org.sakaiproject.kernel.api.jcr.JCRService#getDefaultWorkspace()
    */
   public String getDefaultWorkspace() {
-    return DEFAULT_WORKSPACE;
+    return "";
   }
 
 }

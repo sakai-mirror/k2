@@ -38,46 +38,55 @@
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>compile</id>
-						<phase>compile</phase>
-						<configuration>
-							<tasks>
+	<profiles>
+		<profile>
+			<id>run</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>compile</id>
+								<phase>compile</phase>
+								<configuration>
+									<tasks>
                  <!-- unzip tomcat -->
-								<delete dir="${basedir}/target/runtime" />
-								<unzip
-									src="${settings.localRepository}/tomcat/tomcat/tomcat/5.5.26/tomcat-5.5.26.zip"
-									dest="${basedir}/target/unpack" overwrite="true" />
-								<move file="${basedir}/target/unpack/apache-tomcat-5.5.26"
-									tofile="${basedir}/target/runtime" />
+										<delete dir="${basedir}/target/runtime" />
+										<unzip
+											src="${settings.localRepository}/tomcat/tomcat/tomcat/5.5.26/tomcat-5.5.26.zip"
+											dest="${basedir}/target/unpack" overwrite="true" />
+										<move file="${basedir}/target/unpack/apache-tomcat-5.5.26"
+											tofile="${basedir}/target/runtime" />
+										<delete dir="${basedir}/target/runtime/webapps/webdav" />
                  <!-- unzip the overlay -->
-								<unzip
-									src="${settings.localRepository}/org/sakaiproject/kernel2/agnostic/assembly/0.1-SNAPSHOT/assembly-0.1-SNAPSHOT-kernel-core.zip"
-									dest="${basedir}/target/runtime" overwrite="true" />
+										<unzip
+											src="${settings.localRepository}/org/sakaiproject/kernel2/agnostic/assembly/0.1-SNAPSHOT/assembly-0.1-SNAPSHOT-kernel-core.zip"
+											dest="${basedir}/target/runtime" overwrite="true" />
+										<unzip
+											src="${settings.localRepository}/org/sakaiproject/kernel2/agnostic/webapps-assembly/0.1-SNAPSHOT/webapps-assembly-0.1-SNAPSHOT-kernel-core.zip"
+											dest="${basedir}/target/runtime" overwrite="true" />
                  <!-- execute tomcat -->
-								<chmod file="${basedir}/target/runtime/bin/catalina.sh"
-									perm="775" />
-								<chmod file="${basedir}/target/runtime/bin/setclasspath.sh"
-									perm="775" />
-								<chmod file="${basedir}/start.sh" perm="775" />
-								<exec dir="${basedir}" executable="${basedir}/start.sh"
-									failonerror="true">
-                                                                     <arg value="run" />
-								</exec>
-							</tasks>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
+										<chmod file="${basedir}/target/runtime/bin/catalina.sh"
+											perm="775" />
+										<chmod file="${basedir}/target/runtime/bin/setclasspath.sh"
+											perm="775" />
+										<chmod file="${basedir}/start.sh" perm="775" />
+										<exec dir="${basedir}" executable="${basedir}/start.sh"
+											failonerror="true">
+											<arg value="run" />
+										</exec>
+									</tasks>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>

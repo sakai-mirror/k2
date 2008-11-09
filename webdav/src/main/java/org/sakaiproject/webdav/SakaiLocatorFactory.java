@@ -43,7 +43,6 @@ public class SakaiLocatorFactory implements DavLocatorFactory {
    *      java.lang.String)
    */
   public DavResourceLocator createResourceLocator(String prefix, String href) {
-    System.err.println("Resource is "+href);
     if (href == null) {
       throw new IllegalArgumentException("Request handle must not be null.");
     }
@@ -108,7 +107,6 @@ public class SakaiLocatorFactory implements DavLocatorFactory {
    */
   public DavResourceLocator createResourceLocator(String prefix,
       String workspacePath, String resourcePath, boolean isResourcePath) {
-    System.err.println("Resource Path is "+resourcePath);
       return new SakaiResourceLocator(prefix, workspacePath, resourcePath, this);
   }
 

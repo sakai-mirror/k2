@@ -114,7 +114,6 @@ public class KernelLoader {
         return;
       }
       stopping = true;
-      System.err.println("Stopping Component Manger");
       try {
         kernelLifecycle.stop();
         failed = false;

@@ -20,7 +20,7 @@
     <module>common</module>
     <module>server</module>
     <module>server-test</module>
-    <module>overlay</module>
+    <module>assembly</module>
     <module>webapp-test</module>
     <module>integration</module>
   </modules>

@@ -48,12 +48,30 @@
   </issueManagement>
 
 
-  <modules>
-       <module>agnostic</module>
-       <module>kernel</module>
-       <module>component-sample</module>
-       <module>webapp-sample</module>
-  </modules>
+  <profiles>
+    <profile>
+       <id>build</id>
+       <activation>
+          <activeByDefault>true</activeByDefault>
+       </activation>
+       <modules>
+            <module>agnostic</module>
+            <module>kernel</module>
+            <module>component-sample</module>
+            <module>webapp-sample</module>
+            <module>webdav</module>
+       </modules>
+    </profile>
+    <profile>
+       <id>run</id>
+       <activation>
+          <activeByDefault>false</activeByDefault>
+       </activation>
+       <modules>
+          <module>bootstrap</module>
+       </modules>
+     </profile>
+  </profiles>
 
 
   <!-- ====================================================================== -->
