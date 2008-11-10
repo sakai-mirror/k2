@@ -60,6 +60,7 @@
             <module>component-sample</module>
             <module>webapp-sample</module>
             <module>webdav</module>
+	    <module>webapps-assembly</module>
        </modules>
     </profile>
     <profile>
