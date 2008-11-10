@@ -69,6 +69,7 @@
        </activation>
        <modules>
           <module>bootstrap</module>
+          <module>webapps-assembly</module>
        </modules>
      </profile>
   </profiles>
