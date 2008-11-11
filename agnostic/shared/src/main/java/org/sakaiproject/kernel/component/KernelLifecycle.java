@@ -112,9 +112,15 @@ public class KernelLifecycle implements CommonLifecycle<Kernel> {
       lastLoadDate = new Date();
       
       // Start the kernel
+      MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+      RequiredModelMBean model = new RequiredModelMBean(createMBeanInfo());
+      model.setManagedResource(this, "objectReference");
+      ObjectName kernelName = new ObjectName(Kernel.MBEAN_KERNEL);
+      mbs.registerMBean(model, kernelName);
       
       
       kernel = new KernelImpl();
+           
       kernel.start();
 
       // Start the service manager
@@ -129,14 +135,6 @@ public class KernelLifecycle implements CommonLifecycle<Kernel> {
       
       
 
-      MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-
-      
-      
-      RequiredModelMBean model = new RequiredModelMBean(createMBeanInfo());
-      model.setManagedResource(this, "objectReference");
-      ObjectName kernel = new ObjectName(Kernel.MBEAN_KERNEL);
-      mbs.registerMBean(model, kernel);
 
       
       
