@@ -26,7 +26,8 @@
 						<phase>process-test-resources</phase>
 						<configuration>
 							<tasks>
-							    <echo>Downloading Resources needed for tests, expect a pause with no feedback, please be patient (&lt;500K)</echo>
+								<echo>Downloading Resources needed for tests, expect
+									a pause with no feedback, please be patient (&lt;500K)</echo>
 								<exec dir="${basedir}" executable="mvn">
 									<arg value="-f" />
 									<arg value="${basedir}/resources/pom.xml" />
@@ -44,42 +45,28 @@
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-			<version>1.0.4</version>
-			<scope>provided</scope>
-			<type>jar</type>
-		</dependency>
-		<dependency>
 			<groupId>org.sakaiproject.kernel2.agnostic</groupId>
 			<artifactId>common</artifactId>
 			<version>${project.version}</version>
 			<scope>provided</scope>
-			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
-			<version>1.0.4</version>
 			<scope>provided</scope>
-			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.guice</groupId>
 			<artifactId>guice</artifactId>
-			<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>xstream</groupId>
 			<artifactId>xstream</artifactId>
-			<version>1.2.2</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
-			<version>2.4</version>
 			<scope>provided</scope>
-			<type>jar</type>
 		</dependency>
 	</dependencies>
 </project>

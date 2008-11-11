@@ -16,14 +16,8 @@
 		<dependency>
 			<groupId>org.sakaiproject.kernel2.agnostic</groupId>
 			<artifactId>assembly</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>${project.version}</version>
 			<classifier>kernel-core</classifier>
-			<type>zip</type>
-		</dependency>
-		<dependency>
-			<groupId>tomcat.tomcat</groupId>
-			<artifactId>tomcat</artifactId>
-			<version>5.5.26</version>
 			<type>zip</type>
 		</dependency>
 		<dependency>
@@ -35,7 +29,7 @@
 		<dependency>
 			<groupId>org.sakaiproject.kernel2.agnostic</groupId>
 			<artifactId>kernel</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 	<profiles>
@@ -62,10 +56,10 @@
 										<delete dir="${basedir}/target/runtime/webapps/webdav" />
                  <!-- unzip the overlay -->
 										<unzip
-											src="${settings.localRepository}/org/sakaiproject/kernel2/agnostic/assembly/0.1-SNAPSHOT/assembly-0.1-SNAPSHOT-kernel-core.zip"
+											src="${settings.localRepository}/org/sakaiproject/kernel2/agnostic/assembly/${project.version}/assembly-${project.version}-kernel-core.zip"
 											dest="${basedir}/target/runtime" overwrite="true" />
 										<unzip
-											src="${settings.localRepository}/org/sakaiproject/kernel2/agnostic/webapps-assembly/0.1-SNAPSHOT/webapps-assembly-0.1-SNAPSHOT-kernel-core.zip"
+											src="${settings.localRepository}/org/sakaiproject/kernel2/agnostic/webapps-assembly/${project.version}/webapps-assembly-${project.version}-kernel-core.zip"
 											dest="${basedir}/target/runtime" overwrite="true" />
                  <!-- execute tomcat -->
 										<chmod file="${basedir}/target/runtime/bin/catalina.sh"
