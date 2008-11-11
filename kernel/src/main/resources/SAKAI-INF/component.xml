@@ -11,6 +11,9 @@
 		<export>
 			<name>org.sakaiproject.kernel.api</name>
 		</export>
+		<export>
+			<name>org.sakaiproject.kernel.webapp.public</name>
+		</export>
 	</exports>
 	<dependencies>
 		<dependency>

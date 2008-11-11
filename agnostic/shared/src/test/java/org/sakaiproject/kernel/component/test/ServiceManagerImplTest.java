@@ -30,7 +30,10 @@ import org.sakaiproject.kernel.api.ServiceSpec;
 import org.sakaiproject.kernel.component.KernelImpl;
 import org.sakaiproject.kernel.component.ServiceManagerImpl;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  *
@@ -148,12 +151,14 @@ public class ServiceManagerImplTest {
   public void testGetServices() throws ServiceManagerException {
     ServiceManagerImpl serviceManager = new ServiceManagerImpl(kernel);
     serviceManager.start();
-    Object service = new Object();
-    serviceManager.registerService(new ServiceSpec(ServiceManager.class), service);
-    serviceManager.registerService(new ServiceSpec(ServiceManagerImpl.class), service);
-    Collection<ServiceManager> registeredServices = serviceManager.getServices(new ServiceSpec(ServiceManager.class,true));
+    List<String> list = new ArrayList<String>();
+    Collection<String> c = new HashSet<String>();
+    
+    serviceManager.registerService(new ServiceSpec(Collection.class), c);
+    serviceManager.registerService(new ServiceSpec(List.class), list);
+    Collection<ServiceManager> registeredServices = serviceManager.getServices(new ServiceSpec(Collection.class,true));
     assertEquals(2, registeredServices.size());
-    registeredServices = serviceManager.getServices(new ServiceSpec(ServiceManagerImpl.class,true));
+    registeredServices = serviceManager.getServices(new ServiceSpec(List.class,true));
     assertEquals(1, registeredServices.size());
     serviceManager.stop();
   }

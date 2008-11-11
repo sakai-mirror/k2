@@ -22,6 +22,8 @@ import com.google.inject.Singleton;
 
 import org.sakaiproject.kernel.session.SessionManagerServiceImpl;
 
+import javax.servlet.ServletRequest;
+
 /**
  * 
  */
@@ -35,12 +37,11 @@ public interface SessionManagerService {
    */
   Session getCurrentSession();
   
-  
+
   /**
-   * Attach the supplied session ID to the current request
-   * @param sessionID
+   * @param request
    */
-  void bindSession(String sessionID);
+  void bindRequest(ServletRequest request);
   
   
   

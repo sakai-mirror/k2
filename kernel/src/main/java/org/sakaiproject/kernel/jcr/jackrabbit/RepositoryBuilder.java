@@ -143,11 +143,9 @@ public class RepositoryBuilder {
   public static final String NAME_NODE_TYPE_CONFIGURATION = "nodeTypeConfiguration"
       + BASE_NAME;
 
-
   private static final ThreadLocal<Injector> injectorHolder = new ThreadLocal<Injector>();
 
   private RepositoryImpl repository;
-
 
   // private String repositoryConfig;
 
@@ -278,9 +276,9 @@ public class RepositoryBuilder {
 
         repository.shutdown();
         log
-            .info("An A No current connection exception from the version manager is normal, if the version manager hasnt been used");
+            .debug("An A No current connection exception from the version manager is normal, if the version manager hasnt been used");
       } catch (Exception ex) {
-        log.warn("Repository Shutdown failed, this may be normal "
+        log.debug("Repository Shutdown failed, this may be normal "
             + ex.getMessage());
       }
       repository = null;
@@ -290,8 +288,7 @@ public class RepositoryBuilder {
 
   @SuppressWarnings("unchecked")
   private void setup(String namespacesConfiguration,
-      String nodeTypeConfiguration)
-      throws RepositoryException, IOException {
+      String nodeTypeConfiguration) throws RepositoryException, IOException {
     SakaiJCRCredentials ssp = new SakaiJCRCredentials();
     Session s = repository.login(ssp);
     try {
@@ -351,8 +348,6 @@ public class RepositoryBuilder {
     }
 
   }
-  
-
 
   /**
    * @return

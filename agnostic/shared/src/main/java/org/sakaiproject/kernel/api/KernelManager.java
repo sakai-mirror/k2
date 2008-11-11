@@ -88,6 +88,7 @@ public class KernelManager {
     try {
       return (T) getKernel().getServiceManager().getService(ss);
     } catch (KernelConfigurationException e) {
+      e.printStackTrace();
       return null;
     }
   }

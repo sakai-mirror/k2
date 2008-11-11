@@ -29,23 +29,17 @@ import javax.servlet.http.HttpServletRequest;
  * 
  * @author ieb
  */
-public interface ResourceDefinitionFactory
-{
+public interface ResourceDefinitionFactory {
 
-	/**
-	 * Create a ResourceDefinition from the request object. If there is a
-	 * problem with the reques, a SDataException should be thrown with the
-	 * correct http status code and message.
-	 * 
-	 * @param request
-	 * @return
-	 * @throws SDataException
-	 */
-	ResourceDefinition getSpec(HttpServletRequest request) throws SDataException;
-
-	/**
-	 * Destroy the factory and cleanup any handlers that have allocated resources
-	 */
-	void destroy();
+  /**
+   * Create a ResourceDefinition from the request object. If there is a problem
+   * with the reques, a SDataException should be thrown with the correct http
+   * status code and message.
+   * 
+   * @param request
+   * @return
+   * @throws SDataException
+   */
+  ResourceDefinition getSpec(HttpServletRequest request) throws SDataException;
 
 }

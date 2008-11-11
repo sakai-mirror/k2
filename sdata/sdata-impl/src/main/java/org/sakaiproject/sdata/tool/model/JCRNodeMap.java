@@ -21,6 +21,9 @@
 
 package org.sakaiproject.sdata.tool.model;
 
+import org.sakaiproject.kernel.api.jcr.JCRConstants;
+import org.sakaiproject.sdata.tool.api.ResourceDefinition;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,156 +38,134 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 import javax.jcr.nodetype.NodeType;
 
-import org.sakaiproject.jcr.api.JCRConstants;
-import org.sakaiproject.sdata.tool.api.ResourceDefinition;
-
 /**
  * @author ieb
  */
-public class JCRNodeMap extends HashMap<String, Object>
-{
-	/**
+public class JCRNodeMap extends HashMap<String, Object> {
+  /**
 	 * 
 	 */
-	private static final long serialVersionUID = -7045000748456348620L;
+  private static final long serialVersionUID = -7045000748456348620L;
 
-	/**
-	 * @throws RepositoryException
-	 */
-	public JCRNodeMap(Node n, int depth, ResourceDefinition rp)
-			throws RepositoryException
-	{
-		depth--;
-		put("primaryNodeType", n.getPrimaryNodeType().getName());
-		put("mixinNodeType", getMixinTypes(n));
-		put("properties", getProperties(n));
-		put("name", n.getName());
-		if (rp != null)
-		{
-			put("path", rp.getExternalPath(n.getPath()));
-		}
+  /**
+   * @throws RepositoryException
+   */
+  public JCRNodeMap(Node n, int depth, ResourceDefinition rp)
+      throws RepositoryException {
+    depth--;
+    put("primaryNodeType", n.getPrimaryNodeType().getName());
+    put("mixinNodeType", getMixinTypes(n));
+    put("properties", getProperties(n));
+    put("name", n.getName());
+    if (rp != null) {
+      put("path", rp.getExternalPath(n.getPath()));
+    }
 
-		NodeType nt = n.getPrimaryNodeType();
+    NodeType nt = n.getPrimaryNodeType();
 
-		if (JCRConstants.NT_FILE.equals(nt.getName()))
-		{
-			addFile(n);
-		}
-		else
-		{
-			if (depth >= 0)
-			{
+    if (JCRConstants.NT_FILE.equals(nt.getName())) {
+      addFile(n);
+    } else {
+      if (depth >= 0) {
 
-				Map<String, Object> nodes = new HashMap<String, Object>();
-				NodeIterator ni = n.getNodes();
-				int i = 0;
-				while (ni.hasNext())
-				{
-					Node cn = ni.nextNode();
-					Map<String, Object> m = new JCRNodeMap(cn, depth, rp);
-					m.put("position", String.valueOf(i));
-					nodes.put(cn.getName(), m);
-					i++;
-				}
-				put("nitems", nodes.size());
-				put("items", nodes);
-			}
-		}
-	}
+        Map<String, Object> nodes = new HashMap<String, Object>();
+        NodeIterator ni = n.getNodes();
+        int i = 0;
+        while (ni.hasNext()) {
+          Node cn = ni.nextNode();
+          Map<String, Object> m = new JCRNodeMap(cn, depth, rp);
+          m.put("position", String.valueOf(i));
+          nodes.put(cn.getName(), m);
+          i++;
+        }
+        put("nitems", nodes.size());
+        put("items", nodes);
+      }
+    }
+  }
 
-	/**
-	 * @param n
-	 * @throws RepositoryException
-	 */
-	private void addFile(Node n) throws RepositoryException
-	{
-		Node resource = n.getNode(JCRConstants.JCR_CONTENT);
-		Property lastModified = resource.getProperty(JCRConstants.JCR_LASTMODIFIED);
-		Property content = resource.getProperty(JCRConstants.JCR_DATA);
-		put("lastModified", lastModified.getDate().getTime());
-		put("mimeType", resource.getProperty(JCRConstants.JCR_MIMETYPE).getString());
-		if (resource.hasProperty(JCRConstants.JCR_ENCODING))
-		{
-			put("encoding", resource.getProperty(JCRConstants.JCR_ENCODING).getString());
-		}
-		put("length", String.valueOf(content.getLength()));
-	}
+  /**
+   * @param n
+   * @throws RepositoryException
+   */
+  private void addFile(Node n) throws RepositoryException {
+    Node resource = n.getNode(JCRConstants.JCR_CONTENT);
+    Property lastModified = resource.getProperty(JCRConstants.JCR_LASTMODIFIED);
+    Property content = resource.getProperty(JCRConstants.JCR_DATA);
+    put("lastModified", lastModified.getDate().getTime());
+    put("mimeType", resource.getProperty(JCRConstants.JCR_MIMETYPE).getString());
+    if (resource.hasProperty(JCRConstants.JCR_ENCODING)) {
+      put("encoding", resource.getProperty(JCRConstants.JCR_ENCODING)
+          .getString());
+    }
+    put("length", String.valueOf(content.getLength()));
+  }
 
-	/**
-	 * @param n
-	 * @return
-	 * @throws RepositoryException
-	 */
-	private Map<String, Object> getProperties(Node n) throws RepositoryException
-	{
-		Map<String, Object> m = new HashMap<String, Object>();
-		for (PropertyIterator pi = n.getProperties(); pi.hasNext();)
-		{
-			Property p = pi.nextProperty();
-			String name = p.getName();
-			boolean multiValue = p.getDefinition().isMultiple();
-			if (multiValue)
-			{
-				Value[] v = p.getValues();
-				Object[] o = new String[v.length];
-				for (int i = 0; i < o.length; i++)
-				{
-					o[i] = formatType(v[i]);
-				}
-				m.put(name, o);
-			}
-			else
-			{
-				Value v = p.getValue();
-				m.put(name, formatType(v));
+  /**
+   * @param n
+   * @return
+   * @throws RepositoryException
+   */
+  private Map<String, Object> getProperties(Node n) throws RepositoryException {
+    Map<String, Object> m = new HashMap<String, Object>();
+    for (PropertyIterator pi = n.getProperties(); pi.hasNext();) {
+      Property p = pi.nextProperty();
+      String name = p.getName();
+      boolean multiValue = p.getDefinition().isMultiple();
+      if (multiValue) {
+        Value[] v = p.getValues();
+        Object[] o = new String[v.length];
+        for (int i = 0; i < o.length; i++) {
+          o[i] = formatType(v[i]);
+        }
+        m.put(name, o);
+      } else {
+        Value v = p.getValue();
+        m.put(name, formatType(v));
 
-			}
-		}
-		return m;
-	}
+      }
+    }
+    return m;
+  }
 
-	/**
-	 * @param value
-	 * @return
-	 * @throws RepositoryException
-	 */
-	private Object formatType(Value value) throws RepositoryException
-	{
-		switch (value.getType())
-		{
-			case PropertyType.BOOLEAN:
-				return String.valueOf(value.getBoolean());
-			case PropertyType.BINARY:
-				return "--binary--";
-			case PropertyType.DATE:
-				return value.getDate().getTime();
-			case PropertyType.DOUBLE:
-				return String.valueOf(value.getDouble());
-			case PropertyType.LONG:
-				return String.valueOf(value.getLong());
-			case PropertyType.NAME:
-			case PropertyType.PATH:
-			case PropertyType.REFERENCE:
-			case PropertyType.STRING:
-				return value.getString();
-			default:
-				return "--undefined--";
-		}
-	}
+  /**
+   * @param value
+   * @return
+   * @throws RepositoryException
+   */
+  private Object formatType(Value value) throws RepositoryException {
+    switch (value.getType()) {
+    case PropertyType.BOOLEAN:
+      return String.valueOf(value.getBoolean());
+    case PropertyType.BINARY:
+      return "--binary--";
+    case PropertyType.DATE:
+      return value.getDate().getTime();
+    case PropertyType.DOUBLE:
+      return String.valueOf(value.getDouble());
+    case PropertyType.LONG:
+      return String.valueOf(value.getLong());
+    case PropertyType.NAME:
+    case PropertyType.PATH:
+    case PropertyType.REFERENCE:
+    case PropertyType.STRING:
+      return value.getString();
+    default:
+      return "--undefined--";
+    }
+  }
 
-	/**
-	 * @param n
-	 * @return
-	 * @throws RepositoryException
-	 */
-	private String[] getMixinTypes(Node n) throws RepositoryException
-	{
-		List<String> mixins = new ArrayList<String>();
-		for (NodeType nt : n.getMixinNodeTypes())
-		{
-			mixins.add(nt.getName());
-		}
-		return mixins.toArray(new String[0]);
-	}
+  /**
+   * @param n
+   * @return
+   * @throws RepositoryException
+   */
+  private String[] getMixinTypes(Node n) throws RepositoryException {
+    List<String> mixins = new ArrayList<String>();
+    for (NodeType nt : n.getMixinNodeTypes()) {
+      mixins.add(nt.getName());
+    }
+    return mixins.toArray(new String[0]);
+  }
 
 }

@@ -15,18 +15,39 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.api.session;
+package org.sakaiproject.kernel.webapp;
 
-import javax.servlet.http.HttpSession;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
 
 /**
  * 
  */
-public interface Session extends HttpSession {
+public class SakaiServletResponse extends HttpServletResponseWrapper {
+
+  private String cookieName;
 
   /**
-   * @return
+   * @param response
+   * @param sessionManagerService 
    */
-  String getUserId();
+  public SakaiServletResponse(ServletResponse response, String cookieName) {
+    super((HttpServletResponse) response);
+    this.cookieName = cookieName;
+  }
+  
+  /**
+   * {@inheritDoc}
+   * @see javax.servlet.http.HttpServletResponseWrapper#addCookie(javax.servlet.http.Cookie)
+   */
+  @Override
+  public void addCookie(Cookie cookie) {
+    if ( cookieName.equals(cookie.getName()) )  {
+      cookie.setPath("/");
+    }
+    super.addCookie(cookie);
+  }
 
 }

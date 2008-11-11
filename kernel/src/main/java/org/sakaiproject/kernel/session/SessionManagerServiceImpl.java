@@ -25,6 +25,9 @@ import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
 import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
+import org.sakaiproject.kernel.webapp.SakaiServletRequest;
+
+import javax.servlet.ServletRequest;
 
 /**
  * 
@@ -33,21 +36,15 @@ import org.sakaiproject.kernel.api.session.SessionManagerService;
 public class SessionManagerServiceImpl implements SessionManagerService {
 
   /**
-   * the key used for session, (every byte is sacred) 
+   * the key used for session, (every byte is sacred)
    */
-  private static final String CURRENT_SESSION = "_s";
   private static final String REQUEST_CACHE = "request";
-  private static final String SESSION_CACHE = "sessions";
-  /**
-   * the session cache is a cluster wide cache of session, depending on the setup of the cache manger this may be replicated.
-   */
-  private Cache<Session> sessionCache;
+  private static final String CURRENT_REQUEST = "_r";
   private CacheManagerService cacheManagerService;
 
   @Inject
   public SessionManagerServiceImpl(CacheManagerService cacheManagerService) {
     this.cacheManagerService = cacheManagerService;
-    sessionCache = cacheManagerService.getCache(SESSION_CACHE, CacheScope.CLUSTERREPLICATED);
   }
 
   /**
@@ -56,20 +53,26 @@ public class SessionManagerServiceImpl implements SessionManagerService {
    * @see org.sakaiproject.kernel.api.session.SessionManagerService#getCurrentSession()
    */
   public Session getCurrentSession() {
-    Cache<Object> requestScope = cacheManagerService.getCache(REQUEST_CACHE, CacheScope.REQUEST);
-    return (Session) requestScope.get(CURRENT_SESSION);
+    Cache<Object> requestScope = cacheManagerService.getCache(REQUEST_CACHE,
+        CacheScope.REQUEST);
+    SakaiServletRequest request = (SakaiServletRequest) requestScope
+        .get(CURRENT_REQUEST);
+    return request.getSakaiSession();
   }
 
   /**
    * {@inheritDoc}
-   * @see org.sakaiproject.kernel.api.session.SessionManagerService#bindSession(java.lang.String)
+   * 
+   * @see org.sakaiproject.kernel.api.session.SessionManagerService#bindRequest(javax.servlet.ServletRequest)
    */
-  public void bindSession(String sessionID) {
-    Session session = sessionCache.get(sessionID);
-    Cache<Object> requestScope = cacheManagerService.getCache(REQUEST_CACHE, CacheScope.REQUEST);
-    requestScope.put(CURRENT_SESSION, session);
+  public void bindRequest(ServletRequest request) {
+    if ( !(request instanceof SakaiServletRequest) ) {
+      throw new RuntimeException("Requests can only be bound by the SakaiRequestFilter ");
+    }
+    Cache<Object> requestScope = cacheManagerService.getCache(REQUEST_CACHE,
+        CacheScope.REQUEST);
+    requestScope.put(CURRENT_REQUEST, request);
   }
-  
-  
+
 
 }

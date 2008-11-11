@@ -28,7 +28,6 @@ import org.sakaiproject.sdata.tool.api.ResourceDefinition;
 import org.sakaiproject.sdata.tool.api.ResourceDefinitionFactory;
 import org.sakaiproject.sdata.tool.api.SDataException;
 import org.sakaiproject.sdata.tool.api.SecurityAssertion;
-import org.sakaiproject.tool.api.Tool;
 
 /**
  * <p>
@@ -47,80 +46,71 @@ import org.sakaiproject.tool.api.Tool;
  * 
  * @author ieb
  */
-public class UserResourceDefinitionFactory implements ResourceDefinitionFactory
-{
+public class UserResourceDefinitionFactory implements ResourceDefinitionFactory {
 
-	private String basePath;
+  private String basePath;
 
-	private SecurityAssertion nullSecurityAssertion = new NullSecurityAssertion();
+  private SecurityAssertion nullSecurityAssertion = new NullSecurityAssertion();
 
-	/**
-	 * TODO Javadoc
-	 * 
-	 * @param basePath
-	 */
-	public UserResourceDefinitionFactory(String basePath)
-	{
-		this.basePath = basePath;
-	}
-	
-	public void destroy() 
-	{
-		
-	}
+  /**
+   * TODO Javadoc
+   * 
+   * @param basePath
+   */
+  public UserResourceDefinitionFactory(String basePath) {
+    this.basePath = basePath;
+  }
 
-	/**
-	 * TODO Javadoc
-	 * 
-	 * @param path
-	 * @return
-	 * @throws SDataException
-	 */
-	public ResourceDefinition getSpec(HttpServletRequest request) throws SDataException
-	{
-		request.setAttribute(Tool.NATIVE_URL, Tool.NATIVE_URL);
+  public void destroy() {
 
-		String path = request.getPathInfo();
+  }
 
-		if (path.endsWith("/"))
-		{
-			path = path.substring(0, path.length() - 1);
-		}
-		int lastSlash = path.lastIndexOf("/");
-		String lastElement = path.substring(lastSlash + 1);
+  /**
+   * TODO Javadoc
+   * 
+   * @param path
+   * @return
+   * @throws SDataException
+   */
+  public ResourceDefinition getSpec(HttpServletRequest request)
+      throws SDataException {
 
-		int version = -1;
-		if (lastElement.length() > 0)
-		{
-			char c = lastElement.charAt(0);
-			if (Character.isDigit(c))
-			{
-				version = Integer.parseInt(lastElement);
-				path = path.substring(0, lastSlash);
-			}
-		}
+    String path = request.getPathInfo();
 
-		String user = request.getRemoteUser();
-		if (user == null || user.trim().length() == 0)
-		{
-			throw new SDataException(HttpServletResponse.SC_UNAUTHORIZED,
-					"User must be logged in to use preference service ");
-		}
+    if (path.endsWith("/")) {
+      path = path.substring(0, path.length() - 1);
+    }
+    int lastSlash = path.lastIndexOf("/");
+    String lastElement = path.substring(lastSlash + 1);
 
-		String pathPrefix = PathPrefix.getPrefix(user);
+    int version = -1;
+    if (lastElement.length() > 0) {
+      char c = lastElement.charAt(0);
+      if (Character.isDigit(c)) {
+        version = Integer.parseInt(lastElement);
+        path = path.substring(0, lastSlash);
+      }
+    }
 
-		path = pathPrefix + path;
+    String user = request.getRemoteUser();
+    if (user == null || user.trim().length() == 0) {
+      throw new SDataException(HttpServletResponse.SC_UNAUTHORIZED,
+          "User must be logged in to use preference service ");
+    }
 
-		String f = request.getParameter("f"); // function
-		String d = request.getParameter("d"); // function
-		int depth = 1;
-		if (d != null && d.trim().length() > 0)
-		{
-			depth = Integer.parseInt(d);
-		}
+    String pathPrefix = PathPrefix.getPrefix(user);
 
-		return new ResourceDefinitionImpl(request.getMethod(), f, depth, basePath, path,
-				version, nullSecurityAssertion);
-	}
+    path = pathPrefix + path;
+
+    String f = request.getParameter("f"); // function
+    String d = request.getParameter("d"); // function
+    int depth = 1;
+    if (d != null && d.trim().length() > 0) {
+      depth = Integer.parseInt(d);
+    }
+
+    return new ResourceDefinitionImpl(request.getMethod(), f, depth, basePath,
+        path, version, nullSecurityAssertion);
+  }
 
 }

@@ -84,6 +84,11 @@ public class Activator implements ComponentActivator {
       throw new ComponentActivatorException(
           "Failed to initialize the Kernel into a Ready State ", e1);
     }
+    
+    LOG.info("Services:\n");
+    for ( ServiceSpec s : serviceManager.getServices()) {
+      LOG.info("\t"+s);
+    }
 
   }
 

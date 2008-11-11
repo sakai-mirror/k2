@@ -76,11 +76,13 @@ public class ServiceSpec {
   public boolean matches(ServiceSpec serviceSpec) {
     if (equals(serviceSpec)) {
       return true;
-    } else if (ofType) {
+    } else if (ofType) {      
       return getServiceClass().isAssignableFrom(serviceSpec.getServiceClass());
     }
     return false;
   }
+
+
 
   /**
    * @return the service class of this ServiceSpec.

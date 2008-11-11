@@ -21,6 +21,16 @@
 
 package org.sakaiproject.sdata.tool.functions;
 
+import com.google.inject.Inject;
+
+import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
+import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
+import org.sakaiproject.sdata.tool.api.Handler;
+import org.sakaiproject.sdata.tool.api.ResourceDefinition;
+import org.sakaiproject.sdata.tool.api.SDataException;
+import org.sakaiproject.sdata.tool.api.SDataFunction;
+import org.sakaiproject.sdata.tool.model.JCRNodeMap;
+
 import java.io.IOException;
 
 import javax.jcr.Node;
@@ -28,81 +38,51 @@ import javax.jcr.RepositoryException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.sakaiproject.Kernel;
-import org.sakaiproject.jcr.support.api.JCRNodeFactoryService;
-import org.sakaiproject.jcr.support.api.JCRNodeFactoryServiceException;
-import org.sakaiproject.sdata.tool.model.JCRNodeMap;
-import org.sakaiproject.sdata.tool.api.Handler;
-import org.sakaiproject.sdata.tool.api.ResourceDefinition;
-import org.sakaiproject.sdata.tool.api.SDataException;
-import org.sakaiproject.sdata.tool.api.SDataFunction;
-
 /**
  * @author ieb
  */
-public class JCRCreateFolder implements SDataFunction
-{
+public class JCRCreateFolder implements SDataFunction {
 
-	private JCRNodeFactoryService jcrNodeFactory;
+  private JCRNodeFactoryService jcrNodeFactory;
 
-	public JCRCreateFolder()
-	{
+  @Inject
+  public JCRCreateFolder(JCRNodeFactoryService jcrNodeFactoryService) {
+    this.jcrNodeFactory = jcrNodeFactoryService;
+  }
 
-		jcrNodeFactory = Kernel.jcrNodeFactoryService();
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.sakaiproject.sdata.tool.api.SDataFunction#call(org.sakaiproject.sdata
+   * .tool.api.Handler, javax.servlet.http.HttpServletRequest,
+   * javax.servlet.http.HttpServletResponse, java.lang.Object)
+   */
+  public void call(Handler handler, HttpServletRequest request,
+      HttpServletResponse response, Object target, ResourceDefinition rp)
+      throws SDataException {
 
-	}
+    SDataFunctionUtil.checkMethod(request.getMethod(), "POST");
+    try {
+      Node n = jcrNodeFactory.createFolder(rp.getRepositoryPath());
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sakaiproject.sdata.tool.api.SDataFunction#call(org.sakaiproject.sdata.tool.api.Handler,
-	 *      javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse, java.lang.Object)
-	 */
-	public void call(Handler handler, HttpServletRequest request,
-			HttpServletResponse response, Object target, ResourceDefinition rp)
-			throws SDataException
-	{
+      JCRNodeMap outputMap = new JCRNodeMap(n, rp.getDepth(), rp);
+      handler.sendMap(request, response, outputMap);
 
-		SDataFunctionUtil.checkMethod(request.getMethod(), "POST");
-		try
-		{
-			Node n = jcrNodeFactory.createFolder(rp.getRepositoryPath());
+    } catch (JCRNodeFactoryServiceException e) {
+      throw new SDataException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e
+          .getMessage());
+    } catch (RepositoryException e) {
+      throw new SDataException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e
+          .getMessage());
+    } catch (IOException e) {
+      throw new SDataException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e
+          .getMessage());
+    }
 
-			JCRNodeMap outputMap = new JCRNodeMap(n, rp.getDepth(), rp);
-			handler.sendMap(request, response, outputMap);
+  }
 
-		}
-		catch (JCRNodeFactoryServiceException e)
-		{
-			throw new SDataException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e
-					.getMessage());
-		}
-		catch (RepositoryException e)
-		{
-			throw new SDataException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e
-					.getMessage());
-		}
-		catch (IOException e)
-		{
-			throw new SDataException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e
-					.getMessage());
-		}
-
-		/*
-		 * try { Node n = (Node) target; JCRNodeMap nm = new
-		 * JCRNodeMap(n,rp.getDepth(),rp); handler.sendMap(request, response,
-		 * nm); } catch (RepositoryException rex) { throw new
-		 * SDataException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, rex
-		 * .getMessage()); } catch (IOException e) { throw new
-		 * SDataException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e
-		 * .getMessage()); }
-		 */
-
-	}
-
-	public void destroy() 
-	{
-	}
+  public void destroy() {
+  }
 
 }

@@ -32,169 +32,153 @@ import org.sakaiproject.sdata.tool.api.SecurityAssertion;
  * 
  * @author ieb
  */
-public class ResourceDefinitionImpl implements ResourceDefinition
-{
+public class ResourceDefinitionImpl implements ResourceDefinition {
 
-	private static final Log log = LogFactory.getLog(ResourceDefinitionImpl.class);
+  private static final Log log = LogFactory
+      .getLog(ResourceDefinitionImpl.class);
 
-	protected String path;
+  protected String path;
 
-	protected int version;
+  protected int version;
 
-	protected String basePath;
+  protected String basePath;
 
-	protected String repoPath;
+  protected String repoPath;
 
-	protected String function;
+  protected String function;
 
-	protected int depth;
+  protected int depth;
 
-	protected SecurityAssertion assertion;
+  protected SecurityAssertion assertion;
 
-	protected String method;
+  protected String method;
 
-	/**
-	 * Create a filesystem or content resource definition bean
-	 * 
-	 * @param request
-	 * @param inbasePath
-	 *        the base path of the resource in the repository
-	 * @param inpath
-	 *        the path reference in the request
-	 * @param method
-	 *        the method bein applied
-	 * @param depth
-	 * @param version
-	 *        the version being requested.
-	 * @throws SDataException
-	 */
-	public ResourceDefinitionImpl(String method, String f, int depth, String inbasePath,
-			String inpath, int inversion, SecurityAssertion assertion)
-			throws SDataException
-	{
-		if (log.isDebugEnabled())
-		{
-			log.debug("ResourceDef: Base:" + inbasePath + ": path:" + inpath
-					+ ": version:" + inversion);
-		}
-		this.path = inpath;
-		this.version = inversion;
-		this.basePath = String.valueOf(inbasePath);
+  /**
+   * Create a filesystem or content resource definition bean
+   * 
+   * @param request
+   * @param inbasePath
+   *          the base path of the resource in the repository
+   * @param inpath
+   *          the path reference in the request
+   * @param method
+   *          the method bein applied
+   * @param depth
+   * @param version
+   *          the version being requested.
+   * @throws SDataException
+   */
+  public ResourceDefinitionImpl(String method, String f, int depth,
+      String inbasePath, String inpath, int inversion,
+      SecurityAssertion assertion) throws SDataException {
+    if (log.isDebugEnabled()) {
+      log.debug("ResourceDef: Base:" + inbasePath + ": path:" + inpath
+          + ": version:" + inversion);
+    }
+    this.path = inpath;
+    this.version = inversion;
+    this.basePath = String.valueOf(inbasePath);
 
-		this.function = f;
-		this.depth = depth;
-		this.method = method;
-		this.assertion = assertion;
-		if (basePath.endsWith("/"))
-		{
-			repoPath = basePath + path;
-		}
-		else
-		{
-			repoPath = basePath + "/" + path;
-		}
-		repoPath = cleanPath(repoPath);
-		repoPath = repoPath.replaceAll("//", "/");
-		if (repoPath.length() > 1 && repoPath.endsWith("/"))
-		{
-			repoPath = repoPath.substring(0, repoPath.length() - 1);
-		}
-		if (!repoPath.startsWith("/"))
-		{
-			repoPath = "/" + repoPath;
-		}
+    this.function = f;
+    this.depth = depth;
+    this.method = method;
+    this.assertion = assertion;
+    if (basePath.endsWith("/")) {
+      repoPath = basePath + path;
+    } else {
+      repoPath = basePath + "/" + path;
+    }
+    repoPath = cleanPath(repoPath);
+    repoPath = repoPath.replaceAll("//", "/");
+    if (repoPath.length() > 1 && repoPath.endsWith("/")) {
+      repoPath = repoPath.substring(0, repoPath.length() - 1);
+    }
+    if (!repoPath.startsWith("/")) {
+      repoPath = "/" + repoPath;
+    }
 
-		assertion.check(method, repoPath);
-	}
+    assertion.check(method, repoPath);
+  }
 
-	/**
-	 * Clean the path up, removing // and training /, this is per the JCR spec, 
-	 * however CHS requires a trailing / on all collections, which (IMHO) is wrong.
-	 * 
-	 * @param repoPath2
-	 * @return
-	 */
-	protected String cleanPath(String p)
-	{
-		p = p.replaceAll("//", "/");
-		if (p.length() > 1 && p.endsWith("/"))
-		{
-			p = p.substring(0, p.length() - 1);
-		}
-		if (!p.startsWith("/"))
-		{
-			p = "/" + p;
-		}
-		return p;
+  /**
+   * Clean the path up, removing // and training /, this is per the JCR spec,
+   * however CHS requires a trailing / on all collections, which (IMHO) is
+   * wrong.
+   * 
+   * @param repoPath2
+   * @return
+   */
+  protected String cleanPath(String p) {
+    p = p.replaceAll("//", "/");
+    if (p.length() > 1 && p.endsWith("/")) {
+      p = p.substring(0, p.length() - 1);
+    }
+    if (!p.startsWith("/")) {
+      p = "/" + p;
+    }
+    return p;
 
-	}
+  }
 
-	/**
-	 * Get the repository path of this bean
-	 * 
-	 * @return
-	 */
-	public String getRepositoryPath()
-	{
-		return repoPath;
-	}
+  /**
+   * Get the repository path of this bean
+   * 
+   * @return
+   */
+  public String getRepositoryPath() {
+    return repoPath;
+  }
 
-	/**
-	 * Convert the path to an external path removing any repository prefix.
-	 * 
-	 * @param path2
-	 * @return
-	 */
-	public String getExternalPath(String path)
-	{
-		if (path == null)
-		{
-			return null;
-		}
-		if (path.startsWith(basePath))
-		{
-			return cleanPath(path.substring(basePath.length()));
-		}
-		return path;
-	}
+  /**
+   * Convert the path to an external path removing any repository prefix.
+   * 
+   * @param path2
+   * @return
+   */
+  public String getExternalPath(String path) {
+    if (path == null) {
+      return null;
+    }
+    if (path.startsWith(basePath)) {
+      return cleanPath(path.substring(basePath.length()));
+    }
+    return path;
+  }
 
-	/**
-	 * Get the repository path for a given local resource
-	 * 
-	 * @param name
-	 * @return
-	 */
-	public String getRepositoryPath(String name)
-	{
-		return cleanPath(repoPath + "/" + name);
-	}
+  /**
+   * Get the repository path for a given local resource
+   * 
+   * @param name
+   * @return
+   */
+  public String getRepositoryPath(String name) {
+    return cleanPath(repoPath + "/" + name);
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sakaiproject.sdata.tool.api.ResourceDefinition#isPrivate()
-	 */
-	public boolean isPrivate()
-	{
-		return false;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.sakaiproject.sdata.tool.api.ResourceDefinition#isPrivate()
+   */
+  public boolean isPrivate() {
+    return false;
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sakaiproject.sdata.tool.api.ResourceDefinition#getFunctionDefinition()
-	 */
-	public String getFunctionDefinition()
-	{
-		return function;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.sakaiproject.sdata.tool.api.ResourceDefinition#getFunctionDefinition()
+   */
+  public String getFunctionDefinition() {
+    return function;
+  }
 
-	/**
-	 * Get the depth of the request for recursive queries.
-	 */
-	public int getDepth()
-	{
-		return depth;
-	}
+  /**
+   * Get the depth of the request for recursive queries.
+   */
+  public int getDepth() {
+    return depth;
+  }
 
 }

@@ -113,7 +113,8 @@ public class JCRHandler extends AbstractHandler {
   private static final String RESOURCE_FUNCTION_FACTORY = BASE_NAME
       + ".resourceFuntionFactory";
 
-  private static final String RESOURCE_SERIALIZER = BASE_NAME + "resourceSerialzer";
+  private static final String RESOURCE_SERIALIZER = BASE_NAME
+      + "resourceSerialzer";
 
   private String basePath;
 

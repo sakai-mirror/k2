@@ -96,7 +96,7 @@ public class SharedClassLoaderContainer implements RequiresStop, CommonObject {
       LOG.info("Shared Classloader Container stopped Ok");
     } catch (JMException e) {
       LOG
-          .info(
+          .debug(
               "Cant stop the shared classloader bean, this will cause problems if the kernel is restarted in this jvm "
                   + e.getMessage(), e);
     }

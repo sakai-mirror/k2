@@ -21,9 +21,7 @@
 
 package org.sakaiproject.sdata.tool.util;
 
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
+import com.google.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,90 +29,64 @@ import org.sakaiproject.sdata.tool.api.ResourceDefinition;
 import org.sakaiproject.sdata.tool.api.ResourceDefinitionFactory;
 import org.sakaiproject.sdata.tool.api.SDataException;
 import org.sakaiproject.sdata.tool.api.SecurityAssertion;
-import org.sakaiproject.tool.api.Tool;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Base Class for a resource definition factory
  * 
  * @author ieb
  */
-public class ResourceDefinitionFactoryImpl implements ResourceDefinitionFactory
-{
+public class ResourceDefinitionFactoryImpl implements ResourceDefinitionFactory {
 
-	private static final Log log = LogFactory.getLog(ResourceDefinitionFactoryImpl.class);
+  private static final Log log = LogFactory
+      .getLog(ResourceDefinitionFactoryImpl.class);
 
-	private String basePath;
+  private String basePath;
 
-	private String baseUrl;
+  private String baseUrl;
 
-	private SecurityAssertion securityAssertion;
+  private SecurityAssertion securityAssertion;
 
-	/**
-	 * construct a resource definition factory with a base URL and a base Path.
-	 * 
-	 * @param config
-	 * @param basePath
-	 * @param basePath2
-	 */
-	public ResourceDefinitionFactoryImpl(Map<String, String> config, String baseUrl,
-			String basePath)
-	{
-		this.basePath = basePath;
-		this.baseUrl = baseUrl;
-		securityAssertion = new PathSecurityAssertion(config);
-		log.info("Definition Factory Created with base path as " + basePath);
-	}
+  @Inject
+  public ResourceDefinitionFactoryImpl(String baseUrl, String basePath,
+      SecurityAssertion securityAssertion) {
+    this.basePath = basePath;
+    this.baseUrl = baseUrl;
+    this.securityAssertion = securityAssertion;
+    log.info("Definition Factory Created with base path as " + basePath);
+  }
 
-	public ResourceDefinitionFactoryImpl(Map<String, String> config, String baseUrl,
-			String basePath, SecurityAssertion securityAssertion)
-	{
-		this.basePath = basePath;
-		this.baseUrl = baseUrl;
-		this.securityAssertion = securityAssertion;
-		log.info("Definition Factory Created with base path as " + basePath);
-	}
+  /**
+   * Get the ResourceDefinition bean based on the request
+   * 
+   * @param path
+   * @return
+   * @throws SDataException
+   */
+  public ResourceDefinition getSpec(final HttpServletRequest request)
+      throws SDataException {
 
-	public void destroy() 
-	{
-		
-	}
+    String path = request.getPathInfo();
+    path = path.substring(baseUrl.length());
 
-	/**
-	 * Get the ResourceDefinition bean based on the request
-	 * 
-	 * @param path
-	 * @return
-	 * @throws SDataException
-	 */
-	public ResourceDefinition getSpec(final HttpServletRequest request)
-			throws SDataException
-	{
+    if (path.endsWith("/")) {
+      path = path.substring(0, path.length() - 1);
+    }
 
-		request.setAttribute(Tool.NATIVE_URL, Tool.NATIVE_URL);
-
-		String path = request.getPathInfo();
-		path = path.substring(baseUrl.length());
-
-		if (path.endsWith("/"))
-		{
-			path = path.substring(0, path.length() - 1);
-		}
-
-		String v = request.getParameter("v"); // version
-		int version = -1;
-		if (v != null && v.trim().length() > 0)
-		{
-			version = Integer.parseInt(v);
-		}
-		String f = request.getParameter("f"); // function
-		String d = request.getParameter("d"); // function
-		int depth = 1;
-		if (d != null && d.trim().length() > 0)
-		{
-			depth = Integer.parseInt(d);
-		}
-		return new ResourceDefinitionImpl(request.getMethod(), f, depth, basePath, path,
-				version, securityAssertion);
-	}
+    String v = request.getParameter("v"); // version
+    int version = -1;
+    if (v != null && v.trim().length() > 0) {
+      version = Integer.parseInt(v);
+    }
+    String f = request.getParameter("f"); // function
+    String d = request.getParameter("d"); // function
+    int depth = 1;
+    if (d != null && d.trim().length() > 0) {
+      depth = Integer.parseInt(d);
+    }
+    return new ResourceDefinitionImpl(request.getMethod(), f, depth, basePath,
+        path, version, securityAssertion);
+  }
 
 }

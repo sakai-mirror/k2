@@ -25,24 +25,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @author ieb
  */
-public interface SDataFunction
-{
+public interface SDataFunction {
 
-	/**
-	 * @param handler
-	 * @param request
-	 * @param response
-	 * @param target
-	 * @throws SDataException
-	 */
-	void call(Handler handler, HttpServletRequest request, HttpServletResponse response,
-			Object target, ResourceDefinition rp) throws SDataException;
-
-	void destroy();
-
-	
-
+  /**
+   * @param handler
+   * @param request
+   * @param response
+   * @param target
+   * @throws SDataException
+   */
+  void call(Handler handler, HttpServletRequest request,
+      HttpServletResponse response, Object target, ResourceDefinition rp)
+      throws SDataException;
 
 }

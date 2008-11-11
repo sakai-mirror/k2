@@ -32,65 +32,47 @@ import org.sakaiproject.sdata.tool.api.SDataFunction;
 /**
  * @author ieb
  */
-public class ResourceFunctionFactoryImpl implements ResourceFunctionFactory
-{
+public class ResourceFunctionFactoryImpl implements ResourceFunctionFactory {
 
-	private static final Log log = LogFactory.getLog(ResourceFunctionFactoryImpl.class);
+  private static final Log log = LogFactory
+      .getLog(ResourceFunctionFactoryImpl.class);
 
-	private Map<String, SDataFunction> functions = new HashMap<String, SDataFunction>();
+  private Map<String, SDataFunction> functions = new HashMap<String, SDataFunction>();
 
-	/**
-	 * @param config
-	 */
-	public ResourceFunctionFactoryImpl(Map<String, String> config)
-	{
-		ClassLoader cl = this.getClass().getClassLoader();
-		for (String k : config.keySet())
-		{
-			if (k.startsWith("function."))
-			{
-				log.info("Loading SDataFunction " + k + ":" + config.get(k));
-				try
-				{
-					Class<?> c = (Class<?>) cl.loadClass(config
-							.get(k));
-					SDataFunction sdf = (SDataFunction) c.newInstance();
-					functions.put(k.substring("function.".length()), sdf);
-				}
-				catch (ClassNotFoundException e)
-				{
-					log.error("Failed to load class for key " + k + ":" + e.getMessage());
-				}
-				catch (InstantiationException e)
-				{
-					log.error("Failed to load class for key " + k, e);
-				}
-				catch (IllegalAccessException e)
-				{
-					log.error("Failed to load class for key " + k, e);
-				}
+  /**
+   * @param config
+   */
+  public ResourceFunctionFactoryImpl(Map<String, String> config) {
+    ClassLoader cl = this.getClass().getClassLoader();
+    for (String k : config.keySet()) {
+      if (k.startsWith("function.")) {
+        log.info("Loading SDataFunction " + k + ":" + config.get(k));
+        try {
+          Class<?> c = (Class<?>) cl.loadClass(config.get(k));
+          SDataFunction sdf = (SDataFunction) c.newInstance();
+          functions.put(k.substring("function.".length()), sdf);
+        } catch (ClassNotFoundException e) {
+          log.error("Failed to load class for key " + k + ":" + e.getMessage());
+        } catch (InstantiationException e) {
+          log.error("Failed to load class for key " + k, e);
+        } catch (IllegalAccessException e) {
+          log.error("Failed to load class for key " + k, e);
+        }
 
-			}
-		}
+      }
+    }
 
-	}
-	
-	public void destroy() 
-	{
-		for ( SDataFunction sdf : functions.values() ) 
-		{
-			sdf.destroy();
-		}
-	}
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sakaiproject.sdata.tool.ResourceFunctionFactory#getFunction(java.lang.String)
-	 */
-	public SDataFunction getFunction(String definition)
-	{
-		return functions.get(definition);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.sakaiproject.sdata.tool.ResourceFunctionFactory#getFunction(java.lang
+   * .String)
+   */
+  public SDataFunction getFunction(String definition) {
+    return functions.get(definition);
+  }
 
 }

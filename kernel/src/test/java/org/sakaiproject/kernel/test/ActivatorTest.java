@@ -17,6 +17,8 @@
  */
 package org.sakaiproject.kernel.test;
 
+import static org.junit.Assert.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.After;
@@ -24,13 +26,21 @@ import org.junit.Before;
 import org.junit.Test;
 import org.sakaiproject.kernel.Activator;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
+import org.sakaiproject.kernel.api.ComponentManager;
+import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.KernelConfigurationException;
+import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.RequiresStop;
+import org.sakaiproject.kernel.api.ServiceManager;
 import org.sakaiproject.kernel.api.ServiceSpec;
 import org.sakaiproject.kernel.api.ShutdownService;
 import org.sakaiproject.kernel.component.ComponentManagerImpl;
 import org.sakaiproject.kernel.component.KernelImpl;
+import org.sakaiproject.kernel.component.KernelLifecycle;
 import org.sakaiproject.kernel.component.ServiceManagerImpl;
+import org.sakaiproject.kernel.util.FileUtil;
+
+import java.io.File;
 
 /**
  * 
@@ -38,29 +48,31 @@ import org.sakaiproject.kernel.component.ServiceManagerImpl;
 public class ActivatorTest {
 
   private static final Log LOG = LogFactory.getLog(ActivatorTest.class);
-  private KernelImpl kernel;
-  private ComponentManagerImpl componentManager;
-  private ServiceManagerImpl serviceManager;
+  private Kernel kernel;
+  private ComponentManager componentManager;
+  private ServiceManager serviceManager;
+  private KernelLifecycle lifecycle;
 
   @Before
   public void start() throws KernelConfigurationException {
-    // If there are problems with startup and shutdown, these will prevent the problem
-    //FileUtil.deleteAll(new File("target/jcr"));
-    //FileUtil.deleteAll(new File("target/testdb"));
-    kernel = new KernelImpl();
-    kernel.start();
-    serviceManager = new ServiceManagerImpl(kernel);
-    serviceManager.start();
-    componentManager = new ComponentManagerImpl(kernel);
-    componentManager.start();
+    // If there are problems with startup and shutdown, these will prevent the
+    // problem
+    FileUtil.deleteAll(new File("target/jcr"));
+    FileUtil.deleteAll(new File("target/testdb"));
+    assertFalse(new File("target/jcr").exists());
+    lifecycle = new KernelLifecycle();
+    lifecycle.start();
+
+    KernelManager kernelManager = new KernelManager();
+    kernel = kernelManager.getKernel();
+    serviceManager = kernel.getServiceManager();
+    componentManager = kernel.getComponentManager();
   }
 
   @After
   public void stop() {
     try {
-      componentManager.stop();
-      serviceManager.stop();
-      kernel.stop();
+      lifecycle.stop();
     } catch (Exception ex) {
       LOG.info("Failed to stop kernel ", ex);
     }

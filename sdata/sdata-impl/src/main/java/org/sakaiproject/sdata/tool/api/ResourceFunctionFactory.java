@@ -24,15 +24,12 @@ package org.sakaiproject.sdata.tool.api;
 /**
  * @author ieb
  */
-public interface ResourceFunctionFactory
-{
+public interface ResourceFunctionFactory {
 
-	/**
-	 * @param rp
-	 * @return
-	 */
-	SDataFunction getFunction(String definition);
-
-	void destroy();
+  /**
+   * @param rp
+   * @return
+   */
+  SDataFunction getFunction(String definition);
 
 }
