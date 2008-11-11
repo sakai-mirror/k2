@@ -8,7 +8,9 @@
   <fileSets>
     <fileSet>
       <outputDirectory></outputDirectory>
-      <directory>src/main/configuration</directory><includes>
+      <directory>src/main/configuration
+      </directory>
+      <includes>
         <include>**/*</include>
       </includes>
     </fileSet>
@@ -16,7 +18,8 @@
   <dependencySets>
     <dependencySet>
       <outputDirectory>webapps/</outputDirectory>
-      <outputFileNameMapping>${artifact.artifactId}.war</outputFileNameMapping>
+      <outputFileNameMapping>${artifact.artifactId}.war
+      </outputFileNameMapping>
       <includes>
         <include>*:war:*</include>
       </includes>

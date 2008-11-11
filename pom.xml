@@ -1,83 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <groupId>org.sakaiproject.kernel2</groupId>
   <artifactId>base</artifactId>
   <version>1-SNAPSHOT</version>
   <packaging>pom</packaging>
-
   <name>Sakai Kernel Project Experiments</name>
-  <description>
-    Kernel Experiments to evaluate approaches and generate Proof of Concept implementations.
-  </description>
+  <description> Kernel Experiments to evaluate approaches and generate Proof of Concept
+    implementations. </description>
   <url>http://groups.google.com/sakai-kernel</url>
   <inceptionYear>2008</inceptionYear>
-
   <prerequisites>
     <maven>2.0.6</maven>
   </prerequisites>
-
   <scm>
     <connection>scm:svn:https://source.sakaiproject.org/contrib/k2/trunk</connection>
     <developerConnection>scm:svn:https://source.sakaiproject.org/contrib/k2/trunk</developerConnection>
     <url>https://source.sakaiproject.org/viewsvn/k2/trunk/?root=contrib</url>
   </scm>
-
   <issueManagement>
     <system>jira</system>
     <url>http://jira.sakaiproject.org/jira/browse/KERN</url>
   </issueManagement>
-
-
   <profiles>
     <profile>
-       <id>build</id>
-       <activation>
-          <activeByDefault>true</activeByDefault>
-       </activation>
-       <modules>
-            <module>agnostic</module>
-            <module>kernel</module>
-            <module>component-sample</module>
-            <module>webapp-sample</module>
-            <module>webdav</module>
-	    <module>webapps-assembly</module>
-       </modules>
+      <id>build</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>agnostic</module>
+        <module>kernel</module>
+        <module>component-sample</module>
+        <module>webapp-sample</module>
+        <module>webdav</module>
+        <module>webapps-assembly</module>
+      </modules>
     </profile>
     <profile>
-       <id>run</id>
-       <activation>
-          <activeByDefault>false</activeByDefault>
-       </activation>
-       <modules>
-          <module>bootstrap</module>
-          <module>webapps-assembly</module>
-       </modules>
-     </profile>
+      <id>run</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <modules>
+        <module>bootstrap</module>
+        <module>webapps-assembly</module>
+      </modules>
+    </profile>
   </profiles>
-
-
-  <!-- ====================================================================== -->
-  <!-- M A I L I N G   L I S T S                                              -->
+  <!-- ===================================================================== -->
+  <!-- M A I L I N G L I S T S -->
   <!-- ====================================================================== -->
   <mailingLists>
     <mailingList>
@@ -88,22 +61,13 @@
       <archive>http://groups.google.com/sakai-kernel/</archive>
     </mailingList>
   </mailingLists>
-
   <!-- ====================================================================== -->
-  <!-- B U I L D                                                              -->
+  <!-- B U I L D -->
   <!-- ====================================================================== -->
   <build>
     <defaultGoal>install</defaultGoal>
-
-
-  
-      
-  
-
-
     <plugins>
-    
-    <plugin>
+      <plugin>
         <inherited>true</inherited>
         <groupId>org.sakaiproject.maven.plugins</groupId>
         <artifactId>sakai</artifactId>
@@ -116,14 +80,12 @@
 <!-- this is relative to the this pom.xml directory -->
               <directory>${basedir}/src/webapp</directory>
               <includes>
-		<include>**/*.*</include>
-	      </includes>
+                <include>**/*.*</include>
+              </includes>
             </resource>
           </webResources>
         </configuration>
       </plugin>
-      
-      
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
@@ -133,9 +95,9 @@
         <artifactId>maven-eclipse-plugin</artifactId>
         <version>2.5.1</version>
         <!--
-                <configuration>
-                  <projectNameTemplate>${project.groupId}-${project.artifactId}</projectNameTemplate>
-                </configuration>
+          <configuration>
+          <projectNameTemplate>${project.groupId}-${project.artifactId}</projectNameTemplate>
+          </configuration>
         -->
       </plugin>
       <plugin>
@@ -166,69 +128,53 @@
           <attach>true</attach>
         </configuration>
       </plugin>
-
-       <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>cobertura-maven-plugin</artifactId>
-            <version>2.2</version>
-            <configuration>
-                <check>
-                    <haltOnFailure>false</haltOnFailure>
-                    <regexes>
-                        <regex>
-                            <pattern>org.sakaiproject.kernel.*</pattern>
-                            <branchRate>90</branchRate>
-                            <lineRate>90</lineRate>
-                        </regex>
-                    </regexes>
-                </check>
-                <instrumentation>
-                    <includes>
-                        <include>org/sakaiproject/kernel/**/*.class</include>
-                    </includes>
-                </instrumentation>
-            </configuration>
-            <executions>
-                <execution>
-                    <id>clean</id>
-                    <phase>pre-site</phase>
-                    <goals>
-                        <goal>clean</goal>
-                    </goals>
-                </execution>
-                <execution>
-                    <id>instrument</id>
-                    <phase>site</phase>
-                    <goals>
-                        <goal>instrument</goal>
-                        <goal>cobertura</goal>
-                        <goal>check</goal>
-                    </goals>
-                </execution>
-            </executions>
-        </plugin>
-<!--
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
-        <artifactId>rat-maven-plugin</artifactId>
-        <version>1.0-alpha-3</version>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <version>2.2</version>
+        <configuration>
+          <check>
+            <haltOnFailure>false</haltOnFailure>
+            <regexes>
+              <regex>
+                <pattern>org.sakaiproject.kernel.*</pattern>
+                <branchRate>90</branchRate>
+                <lineRate>90</lineRate>
+              </regex>
+            </regexes>
+          </check>
+          <instrumentation>
+            <includes>
+              <include>org/sakaiproject/kernel/**/*.class</include>
+            </includes>
+          </instrumentation>
+        </configuration>
         <executions>
           <execution>
-            <phase>verify</phase>
+            <id>clean</id>
+            <phase>pre-site</phase>
             <goals>
+              <goal>clean</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>instrument</id>
+            <phase>site</phase>
+            <goals>
+              <goal>instrument</goal>
+              <goal>cobertura</goal>
               <goal>check</goal>
             </goals>
           </execution>
         </executions>
-        <configuration>
-          <includes>
-            <include>**/*.java</include>
-          </includes>
-        </configuration>
-      </plugin> 
--->
+      </plugin>
+      <!--
+        <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>rat-maven-plugin</artifactId>
+        <version>1.0-alpha-3</version> <executions> <execution> <phase>verify</phase> <goals>
+        <goal>check</goal> </goals> </execution> </executions> <configuration> <includes>
+        <include>**/*.java</include> </includes> </configuration> </plugin>
+      -->
     </plugins>
-
     <pluginManagement>
       <plugins>
         <plugin>
@@ -258,8 +204,9 @@
           <artifactId>maven-jetty-plugin</artifactId>
           <version>6.1.9</version>
         </plugin>
-
-        <!-- set versions of common plugins for reproducibility, ordered alphabetically -->
+        <!--
+          set versions of common plugins for reproducibility, ordered alphabetically
+        -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-deploy-plugin</artifactId>
@@ -326,7 +273,7 @@
     </pluginManagement>
   </build>
   <!-- ====================================================================== -->
-  <!-- R E P O R T I N G                                                      -->
+  <!-- R E P O R T I N G -->
   <!-- ====================================================================== -->
   <reporting>
     <plugins>
@@ -335,35 +282,35 @@
         <artifactId>findbugs-maven-plugin</artifactId>
         <version>1.2</version>
       </plugin>
-       <plugin>
-         <groupId>org.apache.maven.plugins</groupId>
-         <artifactId>maven-checkstyle-plugin</artifactId>
-         <configuration>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <configuration>
           <configLocation>site/checkstyle.xml</configLocation>
         </configuration>
-       </plugin>
-       <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>cobertura-maven-plugin</artifactId>
-       </plugin>
-       <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-javadoc-plugin</artifactId>
-          <configuration>
-             <aggregate>true</aggregate>
-             <links>
-               <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
-               <link>http://java.sun.com/products/servlet/2.3/javadoc/</link>
-               <link>http://www.json.org/javadoc/</link>
-               <link>http://junit.sourceforge.net/javadoc/</link>
-             </links>
-          </configuration>
-       </plugin>
-       <plugin>
-         <groupId>org.codehaus.mojo</groupId>
-         <artifactId>jxr-maven-plugin</artifactId>
-       </plugin>      
-       <plugin>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <aggregate>true</aggregate>
+          <links>
+            <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
+            <link>http://java.sun.com/products/servlet/2.3/javadoc/</link>
+            <link>http://www.json.org/javadoc/</link>
+            <link>http://junit.sourceforge.net/javadoc/</link>
+          </links>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jxr-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>jdepend-maven-plugin</artifactId>
       </plugin>
@@ -383,22 +330,15 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-report-plugin</artifactId>
       </plugin>
-<!--
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>rat-maven-plugin</artifactId>
-        <version>1.0-alpha-3</version>
-        <configuration>
-          <includes>
-            <include>**/*.java</include>
-          </includes>
-        </configuration>
-      </plugin> 
--->
+      <!--
+        <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>rat-maven-plugin</artifactId>
+        <version>1.0-alpha-3</version> <configuration> <includes> <include>**/*.java</include>
+        </includes> </configuration> </plugin>
+      -->
     </plugins>
   </reporting>
   <!-- ====================================================================== -->
-  <!-- D I S T R I B U T I O N  M A N A G E M E N T                           -->
+  <!-- D I S T R I B U T I O N M A N A G E M E N T -->
   <!-- ====================================================================== -->
   <distributionManagement>
     <site>
@@ -406,9 +346,8 @@
       <url>${site.localurl}</url>
     </site>
   </distributionManagement>
-
   <!-- ====================================================================== -->
-  <!-- R E P O S I T O R I E S                                                -->
+  <!-- R E P O S I T O R I E S -->
   <!-- ====================================================================== -->
   <repositories>
     <repository>
@@ -430,10 +369,10 @@
       </releases>
     </pluginRepository>
   </pluginRepositories>
-
-
   <!-- ====================================================================== -->
-  <!-- D E P E N D E N C I E S                                                -->
+  <!--
+    D E P E N D E N C I E S
+  -->
   <!-- ====================================================================== -->
   <dependencies>
     <dependency>
@@ -443,7 +382,6 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
   <dependencyManagement>
     <dependencies>
       <!-- external dependencies -->
@@ -509,6 +447,91 @@
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty</artifactId>
         <version>6.1.9</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-logging</groupId>
+        <artifactId>commons-logging</artifactId>
+        <version>1.0.4</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.jcr</groupId>
+        <artifactId>jcr</artifactId>
+        <version>1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>jackrabbit-core</artifactId>
+        <version>1.4</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>jackrabbit-api</artifactId>
+        <version>1.4</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>jackrabbit-jcr-commons</artifactId>
+        <version>1.4</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>jackrabbit-jcr-commons</artifactId>
+        <version>1.4</version>
+      </dependency>
+      <dependency>
+        <groupId>net.sf.ehcache</groupId>
+        <artifactId>ehcache</artifactId>
+        <version>1.4.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
+        <version>2.4</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>jackrabbit-jcr-server</artifactId>
+        <version>1.4</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>jackrabbit-webdav</artifactId>
+        <version>1.4</version>
+      </dependency>
+      <dependency>
+        <groupId>httpunit</groupId>
+        <artifactId>httpunit</artifactId>
+        <version>1.6.2</version>
+      </dependency>
+      <dependency>
+        <groupId>xstream</groupId>
+        <artifactId>xstream</artifactId>
+        <version>1.2.2</version>
+      </dependency>
+      <dependency>
+        <groupId>tomcat</groupId>
+        <artifactId>catalina</artifactId>
+        <version>tomcat-5.5.26</version>
+      </dependency>
+      <dependency>
+        <groupId>tomcat</groupId>
+        <artifactId>naming-resources</artifactId>
+        <version>tomcat-5.5.26</version>
+      </dependency>
+      <dependency>
+        <groupId>net.sourceforge.htmlunit</groupId>
+        <artifactId>htmlunit</artifactId>
+        <version>2.1</version>
+      </dependency>
+      <dependency>
+        <groupId>xerces</groupId>
+        <artifactId>xercesImpl</artifactId>
+        <version>2.8.1</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
