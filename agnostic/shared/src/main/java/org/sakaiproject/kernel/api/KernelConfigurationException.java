@@ -21,7 +21,7 @@ package org.sakaiproject.kernel.api;
  * Indicates that there was an error configuring the kernel, the message should
  * indicate the nature of the error.
  */
-public class KernelConfigurationException extends Exception {
+public class KernelConfigurationException extends RuntimeException {
 
   /**
    * Object serial ID.
