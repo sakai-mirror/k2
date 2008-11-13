@@ -22,9 +22,9 @@
 package org.sakaiproject.sdata.tool.util;
 
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.sdata.tool.JCRHandler;
 import org.sakaiproject.sdata.tool.api.ResourceDefinition;
 import org.sakaiproject.sdata.tool.api.ResourceDefinitionFactory;
 import org.sakaiproject.sdata.tool.api.SDataException;
@@ -39,9 +39,6 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class ResourceDefinitionFactoryImpl implements ResourceDefinitionFactory {
 
-  private static final Log log = LogFactory
-      .getLog(ResourceDefinitionFactoryImpl.class);
-
   private String basePath;
 
   private String baseUrl;
@@ -49,16 +46,29 @@ public class ResourceDefinitionFactoryImpl implements ResourceDefinitionFactory 
   private SecurityAssertion securityAssertion;
 
   @Inject
-  public ResourceDefinitionFactoryImpl(String baseUrl, String basePath,
-      SecurityAssertion securityAssertion) {
+  public ResourceDefinitionFactoryImpl() {
+  }
+  /**
+   * @param basePath the basePath to set
+   */
+  public void setBasePath(String basePath) {
     this.basePath = basePath;
+  }
+  /**
+   * @param baseUrl the baseUrl to set
+   */
+  public void setBaseUrl(String baseUrl) {
     this.baseUrl = baseUrl;
+  }
+  /**
+   * @param securityAssertion the securityAssertion to set
+   */
+  public void setSecurityAssertion(SecurityAssertion securityAssertion) {
     this.securityAssertion = securityAssertion;
-    log.info("Definition Factory Created with base path as " + basePath);
   }
 
   /**
-   * Get the ResourceDefinition bean based on the request
+   * /** Get the ResourceDefinition bean based on the request
    * 
    * @param path
    * @return

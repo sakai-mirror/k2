@@ -21,15 +21,15 @@
 
 package org.sakaiproject.sdata.tool;
 
+import com.google.inject.Inject;
 import com.google.inject.name.Named;
-
-import java.util.Map;
 
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.sdata.tool.api.HandlerSerialzer;
 import org.sakaiproject.sdata.tool.api.ResourceDefinitionFactory;
-import org.sakaiproject.sdata.tool.api.ResourceFunctionFactory;
-import org.sakaiproject.sdata.tool.util.UserResourceDefinitionFactory;
+import org.sakaiproject.sdata.tool.api.SDataFunction;
+
+import java.util.Map;
 
 /**
  * A user storage servlet performs storage based on the logged in user, as
@@ -40,22 +40,22 @@ import org.sakaiproject.sdata.tool.util.UserResourceDefinitionFactory;
  * 
  * @author ieb
  */
-public abstract class JCRUserStorageHandler extends JCRHandler
+public class JCRUserStorageHandler extends JCRHandler
 {
 
-  private static final String BASE_NAME = "org.sakaiproject.sdata.tool";
+  private static final String BASE_NAME = "jcruserhandler";
 
-  private static final String BASE_PATH = BASE_NAME + ".basePath";
+  public static final String BASE_PATH = BASE_NAME + ".basePath";
 
-  private static final String BASE_URL = BASE_NAME + ".baseUL";
+  public static final String BASE_URL = BASE_NAME + ".baseURL";
 
-  private static final String RESOURCE_DEFINITION_FACTORY = BASE_NAME
+  public static final String RESOURCE_DEFINITION_FACTORY = BASE_NAME
       + ".resourceDefinitionFactory";
 
-  private static final String RESOURCE_FUNCTION_FACTORY = BASE_NAME
+  public static final String RESOURCE_FUNCTION_FACTORY = BASE_NAME
       + ".resourceFuntionFactory";
 
-  private static final String RESOURCE_SERIALIZER = BASE_NAME + "resourceSerialzer";
+  public static final String RESOURCE_SERIALIZER = BASE_NAME + "resourceSerialzer";
 
 
 	/**
@@ -65,10 +65,11 @@ public abstract class JCRUserStorageHandler extends JCRHandler
    * @param resourceDefinitionFactory
    * @param resourceFunctionFactory
    */
+  @Inject
   public JCRUserStorageHandler(@Named(BASE_PATH) String basePath,
       @Named(BASE_URL) String baseUrl, JCRNodeFactoryService jcrNodeFactory,
       @Named(RESOURCE_DEFINITION_FACTORY) ResourceDefinitionFactory resourceDefinitionFactory,
-      @Named(RESOURCE_FUNCTION_FACTORY) ResourceFunctionFactory resourceFunctionFactory,
+      @Named(RESOURCE_FUNCTION_FACTORY) Map<String, SDataFunction> resourceFunctionFactory,
       @Named(RESOURCE_SERIALIZER) HandlerSerialzer serializer) {
     super(basePath, baseUrl, jcrNodeFactory, resourceDefinitionFactory,
         resourceFunctionFactory,serializer);

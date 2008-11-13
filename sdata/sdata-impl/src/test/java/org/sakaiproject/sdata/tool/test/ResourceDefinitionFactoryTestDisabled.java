@@ -21,30 +21,19 @@
 
 package org.sakaiproject.sdata.tool.test;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import junit.framework.TestCase;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.sakaiproject.Kernel;
-import org.sakaiproject.authz.api.SecurityService;
-import org.sakaiproject.sdata.tool.api.ResourceDefinition;
-import org.sakaiproject.sdata.tool.api.ResourceDefinitionFactory;
-import org.sakaiproject.sdata.tool.api.SDataException;
-import org.sakaiproject.sdata.tool.util.ResourceDefinitionFactoryImpl;
 
 /**
  * @author ieb
  */
-public class ResourceDefinitionFactoryUnitT extends TestCase
+public class ResourceDefinitionFactoryTestDisabled 
 {
 
+  /**
+   * <pre>
 	protected static final Map<String, Object> componentMap = new HashMap<String, Object>();
 
 	private static final Log log = LogFactory
-			.getLog(ResourceDefinitionFactoryUnitT.class);
+			.getLog(ResourceDefinitionFactoryTest.class);
 
 	private String[] basePaths = { "/", "/sakai", "/sakai/", null, "" };
 
@@ -53,8 +42,8 @@ public class ResourceDefinitionFactoryUnitT extends TestCase
 
 	/**
 	 * @param arg0
-	 */
-	public ResourceDefinitionFactoryUnitT(String arg0)
+	 * /
+	public ResourceDefinitionFactoryTest(String arg0)
 	{
 		super(arg0);
 	}
@@ -63,7 +52,7 @@ public class ResourceDefinitionFactoryUnitT extends TestCase
 	 * (non-Javadoc)
 	 * 
 	 * @see junit.framework.TestCase#setUp()
-	 */
+	 * /
 	protected void setUp() throws Exception
 	{
 		MockSecurityService securityService = new MockSecurityService();
@@ -78,7 +67,7 @@ public class ResourceDefinitionFactoryUnitT extends TestCase
 	 * (non-Javadoc)
 	 * 
 	 * @see junit.framework.TestCase#tearDown()
-	 */
+	  * /
 	protected void tearDown() throws Exception
 	{
 		super.tearDown();
@@ -86,14 +75,15 @@ public class ResourceDefinitionFactoryUnitT extends TestCase
 
 	/**
 	 * 
-	 */
+	 * /
 	public void testCreation()
 	{
 		for (String basePath : basePaths)
 		{
 			Map<String, String> config = new HashMap<String, String>();
-			ResourceDefinitionFactory rdf = new ResourceDefinitionFactoryImpl(config, "",
-					basePath);
+			ResourceDefinitionFactoryImpl rdf = new ResourceDefinitionFactoryImpl();
+			rdf.setBasePath(basePath);
+			rdf.setBaseUrl("");
 			for (String testPath : testPaths)
 			{
 				MockResourceDefinitionRequest request = new MockResourceDefinitionRequest(
@@ -109,7 +99,7 @@ public class ResourceDefinitionFactoryUnitT extends TestCase
 					 * System.err.println(basePath + ":" + testPath +
 					 * ":getRepositoryPath(extra):" +
 					 * rd.getRepositoryPath("extra"));
-					 */
+					 * /
 					String rp = rd.getRepositoryPath();
 
 					assertTrue("Repository Paths must not be null ", rp != null);
@@ -155,5 +145,6 @@ public class ResourceDefinitionFactoryUnitT extends TestCase
 		}
 
 	}
-
+	</pre>
+	*/
 }

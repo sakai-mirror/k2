@@ -21,32 +21,33 @@
 
 package org.sakaiproject.sdata.tool.test;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.junit.Test;
+import org.sakaiproject.sdata.tool.util.PathPrefix;
 
 /**
  * @author ieb
  */
-public class TestAll extends TestCase
+public class PathPrefixTest 
 {
 
+	private static final String[] testUsers = new String[] { null, "", "~test", "ieb236" };
+
+	private static final Log log = LogFactory.getLog(PathPrefixTest.class);
+
+	
 	/**
-	 * @return
+	 * 
 	 */
-	public static Test suite()
+	@Test
+	public void testGetPath()
 	{
-		TestSuite suite = new TestSuite("Test for org.sakaiproject.sdata.tool.test");
-		// $JUnit-BEGIN$
-		suite.addTestSuite(PathPrefixUnitT.class);
-		suite.addTestSuite(ResourceDefinitionFactoryUnitT.class);
-		suite.addTestSuite(UserResourceDefinitionFactoryUnitT.class);
-		suite.addTestSuite(PathSecurityAssertionUnitT.class);
-		suite.addTestSuite(ControllerServletUnitT.class);
-		suite.addTestSuite(RFC1123DateUnitT.class);
-		suite.addTestSuite(CHSHandlerUnitT.class);
-		// $JUnit-END$
-		return suite;
+
+		for (String user : testUsers)
+		{
+			log.info("User:" + user + ":" + PathPrefix.getPrefix(user));
+		}
 	}
 
 }

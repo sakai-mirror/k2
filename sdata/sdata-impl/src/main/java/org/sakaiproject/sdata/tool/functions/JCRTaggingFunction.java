@@ -21,6 +21,8 @@
 
 package org.sakaiproject.sdata.tool.functions;
 
+import com.google.inject.Inject;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
@@ -67,6 +69,7 @@ public class JCRTaggingFunction extends JCRSDataFunction {
   private JCRTagging jcrTagging;
   private JCRNodeFactoryService jcrNodeFactoryService;
 
+  @Inject
   public JCRTaggingFunction(JCRTagging jcrTagging,
       JCRNodeFactoryService jcrNodeFactoryService) {
     this.jcrTagging = jcrTagging;

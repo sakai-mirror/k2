@@ -27,6 +27,7 @@ import com.google.inject.Injector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.sdata.tool.api.Handler;
+import org.sakaiproject.sdata.tool.configuration.SDataModule;
 
 import java.io.IOException;
 import java.util.Map;
@@ -294,6 +295,7 @@ public class ControllerServlet extends HttpServlet {
    */
   public Handler getHandler(HttpServletRequest request) {
     String pathInfo = request.getPathInfo();
+    System.err.println("Path Info is "+pathInfo);
     if (log.isDebugEnabled()) {
       log.debug("Path is " + pathInfo);
     }
@@ -303,7 +305,7 @@ public class ControllerServlet extends HttpServlet {
     if (pathInfo == null)
       return null;
 
-    char[] path = request.getPathInfo().trim().toCharArray();
+    char[] path = pathInfo.trim().toCharArray();
     if (path.length < 1)
       return null;
     int start = 0;
@@ -314,7 +316,8 @@ public class ControllerServlet extends HttpServlet {
     for (; end < path.length && path[end] != '/'; end++)
       ;
     String key = new String(path, start, end - start);
-    return configuration.getHandlerRegister().get("/" + key);
+    System.err.println("Getting handler ["+key+"]");
+    return configuration.getHandlerRegister().get(key);
   }
 
   /*
@@ -333,4 +336,11 @@ public class ControllerServlet extends HttpServlet {
         + ":" + req.getRequestURL());
   }
 
+  
+  /**
+   * @return the nullHandler
+   */
+  public Handler getNullHandler() {
+    return nullHandler;
+  }
 }

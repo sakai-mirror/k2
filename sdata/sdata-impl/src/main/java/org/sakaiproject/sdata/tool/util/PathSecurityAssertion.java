@@ -95,8 +95,6 @@ public class PathSecurityAssertion implements SecurityAssertion {
    */
   private String baseReference;
 
-  private boolean inTest = false;
-
   /**
    * Construct a PathSecurityAssertion class based on the standard configuration
    * map. The Map may have init parameters as defined by BASE_LOCATION_INIT,
@@ -109,13 +107,31 @@ public class PathSecurityAssertion implements SecurityAssertion {
    * @param config
    */
   @Inject
-  public PathSecurityAssertion(String baseLocation, String baseReference,
-      Map<String, String> locks, boolean inTest) {
-    this.baseLocation = baseLocation;
-    this.baseReference = baseReference;
-    this.locks = locks;
-    this.inTest = inTest;
+  public PathSecurityAssertion() {
   }
+  
+  /**
+   * @param baseLocation the baseLocation to set
+   */
+  public void setBaseLocation(String baseLocation) {
+    this.baseLocation = baseLocation;
+  }
+  
+  /**
+   * @param locks the locks to set
+   */
+  public void setLocks(Map<String, String> locks) {
+    this.locks = locks;
+  }
+  
+  /**
+   * @param baseReference the baseReference to set
+   */
+  public void setBaseReference(String baseReference) {
+    this.baseReference = baseReference;
+  }
+  
+  
 
   /**
    * Performs the security assertion based on the resourceLocation, from the
@@ -129,9 +145,6 @@ public class PathSecurityAssertion implements SecurityAssertion {
   public void check(String method, String resourceLocation)
       throws SDataException {
 
-    if (inTest) {
-      return;
-    }
     if (!(baseLocation.length() == 0)
         && (resourceLocation == null || !resourceLocation
             .startsWith(baseLocation))) {

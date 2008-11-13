@@ -21,37 +21,22 @@
 
 package org.sakaiproject.sdata.tool.test;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import junit.framework.TestCase;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.sakaiproject.Kernel;
-import org.sakaiproject.content.api.ContentCollection;
-import org.sakaiproject.content.api.ContentCollectionEdit;
-import org.sakaiproject.content.api.ContentHostingService;
-import org.sakaiproject.exception.IdInvalidException;
-import org.sakaiproject.exception.IdUnusedException;
-import org.sakaiproject.exception.IdUsedException;
-import org.sakaiproject.exception.InconsistentException;
-import org.sakaiproject.exception.PermissionException;
-import org.sakaiproject.exception.TypeException;
 
 /**
  * @author ieb
  */
 public class CHSHandlerUnitT extends TestCase
 {
-
+/**
+ * <pre>
 	protected static final Map<String, Object> componentMap = new HashMap<String, Object>();
 
 	protected static final Log log = LogFactory.getLog(CHSHandlerUnitT.class);
 
 	/**
 	 * @param arg0
-	 */
+	 * /
 	public CHSHandlerUnitT(String arg0)
 	{
 		super(arg0);
@@ -61,7 +46,7 @@ public class CHSHandlerUnitT extends TestCase
 	 * (non-Javadoc)
 	 * 
 	 * @see junit.framework.TestCase#setUp()
-	 */
+	 * /
 	protected void setUp() throws Exception
 	{
 		super.setUp();
@@ -74,7 +59,7 @@ public class CHSHandlerUnitT extends TestCase
 			 * (non-Javadoc)
 			 * 
 			 * @see org.sakaiproject.sdata.tool.test.MockContentHostingService#getCollection(java.lang.String)
-			 */
+			 * /
 			@Override
 			public ContentCollection getCollection(String path) throws IdUnusedException,
 					TypeException, PermissionException
@@ -96,7 +81,7 @@ public class CHSHandlerUnitT extends TestCase
 			 * (non-Javadoc)
 			 * 
 			 * @see org.sakaiproject.sdata.tool.test.MockContentHostingService#addCollection(java.lang.String)
-			 */
+			 * /
 			@Override
 			public ContentCollectionEdit addCollection(String path)
 					throws IdUsedException, IdInvalidException, PermissionException,
@@ -116,7 +101,7 @@ public class CHSHandlerUnitT extends TestCase
 	 * (non-Javadoc)
 	 * 
 	 * @see junit.framework.TestCase#tearDown()
-	 */
+	 * /
 	protected void tearDown() throws Exception
 	{
 		super.tearDown();
@@ -151,4 +136,6 @@ public class CHSHandlerUnitT extends TestCase
 		name = chsH.testGetName(new MockContentResource("/sdfsdf/sdfsdfsdf/rtert.pdf/"));
 		assertEquals("rtert.pdf", name);
 	}
+	</pre>
+	*/
 }

@@ -21,28 +21,14 @@
 
 package org.sakaiproject.sdata.tool.test;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.ServletException;
-
-import junit.framework.TestCase;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.sakaiproject.Kernel;
-import org.sakaiproject.authz.api.AuthzGroupService;
-import org.sakaiproject.entity.api.EntityManager;
-import org.sakaiproject.sdata.tool.api.SDataException;
-import org.sakaiproject.sdata.tool.util.PathSecurityAssertion;
-import org.sakaiproject.tool.api.SessionManager;
 
 /**
  * @author ieb
  */
-public class PathSecurityAssertionUnitT extends TestCase
+public class PathSecurityAssertionTestDisabled 
 {
-
+/**
+ * <pre>
 	private static final Log log = LogFactory.getLog(PathSecurityAssertionUnitT.class);
 
 	protected static final Map<String, Object> componentMap = new HashMap<String, Object>();
@@ -67,7 +53,7 @@ public class PathSecurityAssertionUnitT extends TestCase
 
 	/**
 	 * @param arg0
-	 */
+	 * /
 	public PathSecurityAssertionUnitT(String arg0)
 	{
 		super(arg0);
@@ -77,7 +63,7 @@ public class PathSecurityAssertionUnitT extends TestCase
 	 * (non-Javadoc)
 	 * 
 	 * @see junit.framework.TestCase#setUp()
-	 */
+	 * /
 	protected void setUp() throws Exception
 	{
 
@@ -89,7 +75,7 @@ public class PathSecurityAssertionUnitT extends TestCase
 	 * (non-Javadoc)
 	 * 
 	 * @see junit.framework.TestCase#tearDown()
-	 */
+	 * /
 	protected void tearDown() throws Exception
 	{
 		super.tearDown();
@@ -144,5 +130,8 @@ public class PathSecurityAssertionUnitT extends TestCase
 		}
 
 	}
+	
+	</pre>
+	*/
 
 }

@@ -15,34 +15,46 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.sdata.tool;
+package org.sakaiproject.sdata.tool.configuration;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.inject.name.Named;
 
+import org.sakaiproject.sdata.tool.JCRHandler;
+import org.sakaiproject.sdata.tool.JCRUserStorageHandler;
 import org.sakaiproject.sdata.tool.api.Handler;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * 
  */
-public class SDataConfiguration {
+public class SDataHandlerProvider implements Provider<Map<String, Handler>> {
 
-  private Map<String, Handler> handlers;
+  private Map<String, Handler> handlerMap;
+
   /**
-   * @param handlers 
    * 
    */
   @Inject
-  public SDataConfiguration(Map<String, Handler> handlers) {
-    this.handlers = handlers;
+  public SDataHandlerProvider(JCRHandler jcrHandler,
+      JCRUserStorageHandler jcrUserStorageHandler,
+      @Named("jcrhandler.basePath") String jcrPath,
+      @Named("jcruserhandler.basePath") String jcrUserPath) {
+    handlerMap = new HashMap<String, Handler>();
+    handlerMap.put(jcrPath, jcrHandler);
+    handlerMap.put(jcrUserPath, jcrUserStorageHandler);
   }
+
   /**
-   * @return
+   * {@inheritDoc}
+   * 
+   * @see com.google.inject.Provider#get()
    */
-  public Map<String, Handler> getHandlerRegister() {
-    System.err.println("Handlers are "+handlers);
-    return handlers;
+  public Map<String, Handler> get() {
+    return handlerMap;
   }
 
 }

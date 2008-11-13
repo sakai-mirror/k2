@@ -21,9 +21,13 @@
 
 package org.sakaiproject.sdata.tool.util;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.sakaiproject.sdata.tool.JCRUserStorageHandler;
 import org.sakaiproject.sdata.tool.api.ResourceDefinition;
 import org.sakaiproject.sdata.tool.api.ResourceDefinitionFactory;
 import org.sakaiproject.sdata.tool.api.SDataException;
@@ -57,7 +61,8 @@ public class UserResourceDefinitionFactory implements ResourceDefinitionFactory 
    * 
    * @param basePath
    */
-  public UserResourceDefinitionFactory(String basePath) {
+  @Inject
+  public UserResourceDefinitionFactory(@Named(JCRUserStorageHandler.BASE_PATH) String basePath) {
     this.basePath = basePath;
   }
 

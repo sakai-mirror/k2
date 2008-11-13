@@ -42,4 +42,5 @@ public interface ResourceDefinitionFactory {
    */
   ResourceDefinition getSpec(HttpServletRequest request) throws SDataException;
 
+
 }

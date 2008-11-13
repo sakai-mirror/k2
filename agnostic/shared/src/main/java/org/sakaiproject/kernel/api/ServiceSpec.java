@@ -87,7 +87,7 @@ public class ServiceSpec {
   /**
    * @return the service class of this ServiceSpec.
    */
-  private Class<?> getServiceClass() {
+  public Class<?> getServiceClass() {
     return serviceClass;
   }
 

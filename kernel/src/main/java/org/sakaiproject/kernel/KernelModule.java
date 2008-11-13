@@ -74,6 +74,7 @@ public class KernelModule extends AbstractModule {
     this.kernel = kernel;
     InputStream is = null;
     try {
+      System.err.println("Loading "+DEFAULT_PROPERTIES+" from "+this.getClass().getClassLoader());
       is = ResourceLoader.openResource(DEFAULT_PROPERTIES, this.getClass()
           .getClassLoader());
       properties = new Properties();

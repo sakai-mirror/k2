@@ -36,7 +36,6 @@ import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.sdata.tool.api.HandlerSerialzer;
 import org.sakaiproject.sdata.tool.api.ResourceDefinition;
 import org.sakaiproject.sdata.tool.api.ResourceDefinitionFactory;
-import org.sakaiproject.sdata.tool.api.ResourceFunctionFactory;
 import org.sakaiproject.sdata.tool.api.SDataException;
 import org.sakaiproject.sdata.tool.api.SDataFunction;
 import org.sakaiproject.sdata.tool.model.JCRNodeMap;
@@ -99,22 +98,25 @@ public class JCRHandler extends AbstractHandler {
 
   private static final String LAST_MODIFIED = "Last-Modified";
 
-  private static final Object REAL_UPLOAD_NAME = "realname";
+  private static final String REAL_UPLOAD_NAME = "realname";
 
-  private static final String BASE_NAME = "org.sakaiproject.sdata.tool";
+  private static final String BASE_NAME = "jcrhandler";
 
-  private static final String BASE_PATH = BASE_NAME + ".basePath";
+  public static final String BASE_PATH = BASE_NAME + ".basePath";
 
-  private static final String BASE_URL = BASE_NAME + ".baseUL";
+  public static final String BASE_URL = BASE_NAME + ".baseURL";
 
-  private static final String RESOURCE_DEFINITION_FACTORY = BASE_NAME
+  public static final String RESOURCE_DEFINITION_FACTORY = BASE_NAME
       + ".resourceDefinitionFactory";
 
-  private static final String RESOURCE_FUNCTION_FACTORY = BASE_NAME
+  public static final String RESOURCE_FUNCTION_FACTORY = BASE_NAME
       + ".resourceFuntionFactory";
 
-  private static final String RESOURCE_SERIALIZER = BASE_NAME
+  public static final String RESOURCE_SERIALIZER = BASE_NAME
       + "resourceSerialzer";
+
+  public static final String SECURITY_ASSERTION = BASE_NAME
+      + "securityAssertion";
 
   private String basePath;
 
@@ -124,10 +126,11 @@ public class JCRHandler extends AbstractHandler {
 
   private String baseUrl;
 
-  private ResourceFunctionFactory resourceFunctionFactory;
+  private Map<String, SDataFunction> resourceFunctionFactory;
 
   /**
    * @param serializer
+   * @param securityAssertion
    * 
    */
   @Inject
@@ -136,7 +139,7 @@ public class JCRHandler extends AbstractHandler {
       @Named(BASE_URL) String baseUrl,
       JCRNodeFactoryService jcrNodeFactory,
       @Named(RESOURCE_DEFINITION_FACTORY) ResourceDefinitionFactory resourceDefinitionFactory,
-      @Named(RESOURCE_FUNCTION_FACTORY) ResourceFunctionFactory resourceFunctionFactory,
+      @Named(RESOURCE_FUNCTION_FACTORY) Map<String, SDataFunction> resourceFunctionFactory,
       @Named(RESOURCE_SERIALIZER) HandlerSerialzer serializer) {
     this.basePath = basePath;
     this.baseUrl = baseUrl;
@@ -144,6 +147,7 @@ public class JCRHandler extends AbstractHandler {
     this.resourceDefinitionFactory = resourceDefinitionFactory;
     this.resourceFunctionFactory = resourceFunctionFactory;
     this.serializer = serializer;
+
   }
 
   /*
@@ -409,7 +413,7 @@ public class JCRHandler extends AbstractHandler {
 
         NodeType nt = n.getPrimaryNodeType();
 
-        SDataFunction m = resourceFunctionFactory.getFunction(rp
+        SDataFunction m = resourceFunctionFactory.get(rp
             .getFunctionDefinition());
         if (m != null) {
           m.call(this, request, response, n, rp);
@@ -679,7 +683,7 @@ public class JCRHandler extends AbstractHandler {
 
           Node n = jcrNodeFactory.getNode(rp.getRepositoryPath());
 
-          SDataFunction m = resourceFunctionFactory.getFunction(rp
+          SDataFunction m = resourceFunctionFactory.get(rp
               .getFunctionDefinition());
           if (m != null) {
             m.call(this, request, response, n, rp);

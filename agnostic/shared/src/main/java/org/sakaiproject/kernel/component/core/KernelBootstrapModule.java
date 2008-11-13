@@ -59,13 +59,13 @@ public class KernelBootstrapModule extends AbstractModule {
   /**
    * the environment variable that contains overrides to kernel properties
    */
-  private static final String LOCAL_PROPERTIES = "SAKAI_KERNEL_PROPERTIES";
+  public static final String LOCAL_PROPERTIES = "SAKAI_KERNEL_PROPERTIES";
 
   /**
    * The System property name that contains overrides to the kernel properties
    * resource
    */
-  private static final String SYS_LOCAL_PROPERTIES = "sakai.kernel.properties";
+  public static final String SYS_LOCAL_PROPERTIES = "sakai.kernel.properties";
 
   private static final Log LOG = LogFactory.getLog(KernelBootstrapModule.class);
 

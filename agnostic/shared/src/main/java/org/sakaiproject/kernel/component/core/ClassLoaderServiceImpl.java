@@ -18,6 +18,7 @@
 package org.sakaiproject.kernel.component.core;
 
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,6 +46,7 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
   private SharedClassLoader sharedClassLoader;
   private PackageRegistryService packageRegistryService;
   private ArtifactResolverService artifactResolverService;
+  private boolean classloaderIsolation;
 
   /**
    * @param artifactResolverService
@@ -53,11 +55,12 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
   @Inject
   public ClassLoaderServiceImpl(SharedClassLoader sharedClassLoader,
       PackageRegistryService packageRegistryService,
-      ArtifactResolverService artifactResolverService) {
+      ArtifactResolverService artifactResolverService,
+      @Named("kernel.classloadeIsolation") boolean classloaderIsolation ) {
     this.sharedClassLoader = sharedClassLoader;
     this.packageRegistryService = packageRegistryService;
     this.artifactResolverService = artifactResolverService;
-    // TODO Auto-generated constructor stub
+    this.classloaderIsolation = classloaderIsolation;
   }
 
   /**
@@ -88,7 +91,8 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
       }
     }
     ClassLoader cl = null;
-    if (spec.isKernelBootstrap() && urls.size() == 0) {
+    if (!classloaderIsolation || (spec.isKernelBootstrap() && urls.size() == 0)) {
+      System.err.println("No Classloader Isolation");
       cl = this.getClass().getClassLoader();
     } else {
       cl = new ComponentClassLoader(packageRegistryService, urls
