@@ -18,17 +18,6 @@
   <inceptionYear>2008</inceptionYear>
   <packaging>jar</packaging>
   <build>
-    <testResources>
-      <testResource>
-        <directory>${basedir}/src/test</directory>
-        <includes>
-          <include>**/*.cnd</include>
-          <include>**/*.xml</include>
-          <include>**/*.txt</include>
-          <include>**/*.properties</include>
-        </includes>
-      </testResource>
-    </testResources>
     <plugins>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>

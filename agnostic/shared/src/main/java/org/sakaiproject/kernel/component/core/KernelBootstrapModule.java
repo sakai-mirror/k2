@@ -144,6 +144,7 @@ public class KernelBootstrapModule extends AbstractModule {
             + " to a resource location to override kernel properties");
       }
     } catch (IOException e) {
+      LOG.info("Failed to startup ",e);
       throw new CreationException(Arrays.asList(new Message(
           "Unable to load properties: " + localPropertiesLocation)));
     } finally {
