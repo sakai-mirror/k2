@@ -28,7 +28,10 @@
               <tasks>
                 <echo>Downloading Resources needed for tests,
                   expect a pause with no feedback, please be patient (&lt;500K)</echo>
-								<exec dir="${basedir}" executable="mvn">
+								<condition property="mvn" value="mvn.bat" else="mvn">
+									<os family="windows"/>
+								</condition>
+								<exec dir="${basedir}" executable="${mvn}">
 									<arg value="-f" />
 									<arg value="${basedir}/resources/pom.xml" />
 									<arg value="compile" />

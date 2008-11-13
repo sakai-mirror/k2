@@ -93,7 +93,7 @@ public class Maven2ArtifactResolver implements ArtifactResolverService {
     }
     URL u;
     try {
-      u = new URL("file://" + localResource.getCanonicalPath());
+        u = new URL("file", "", localResource.getCanonicalPath());
     } catch (IOException e) {
       throw new ComponentSpecificationException("Unable to create URL for  "
           + classpathDependency, e);

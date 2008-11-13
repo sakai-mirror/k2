@@ -84,9 +84,9 @@ public class ComponentLoaderServiceImpl implements ComponentLoaderService {
             LOG.warn("Jar file " + f.getAbsolutePath()
                 + " does not exist, will be ignored ");
           } else {
-            location = "file://" + f.getCanonicalPath();
-            LOG.info("added component:" + location);
-            locations.add(new URL(location));
+            URL url = new URL("file", "", f.getCanonicalPath());
+            LOG.info("added component:" + url);
+            locations.add(url);
           }
         } else {
           LOG.info("added component:" + location);
@@ -95,12 +95,15 @@ public class ComponentLoaderServiceImpl implements ComponentLoaderService {
       } else {
         LOG.info("Locating Components in " + location);
         for (File f : FileUtil.findAll(location, ".jar")) {
+          URL url;
           String path = f.getCanonicalPath();
           if (path.indexOf("://") < 0) {
-            path = "file://" + path;
+            url = new URL("file" , "", path);
+          } else {
+        	url = new URL(path);
           }
-          LOG.info("    added component:" + path);
-          locations.add(new URL(path));
+          LOG.info("    added component:" + url);
+          locations.add(url);
         }
       }
     }
