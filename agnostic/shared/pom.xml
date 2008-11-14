@@ -31,7 +31,7 @@
 								<condition property="mvn" value="mvn.bat" else="mvn">
 									<os family="windows"/>
 								</condition>
-								<exec dir="${basedir}" executable="${mvn}">
+								<exec dir="${basedir}" executable="${mvn}" failonerror="false">
 									<arg value="-f" />
 									<arg value="${basedir}/resources/pom.xml" />
 									<arg value="compile" />
