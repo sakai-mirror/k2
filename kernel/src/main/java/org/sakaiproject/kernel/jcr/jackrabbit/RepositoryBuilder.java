@@ -225,7 +225,7 @@ public class RepositoryBuilder {
     String contentStr = ResourceLoader.readResource(repositoryConfigTemplate,
         this.getClass().getClassLoader());
 
-    contentStr = contentStr.toString().replaceAll(DB_URL, dbURL);
+    contentStr = contentStr.replaceAll(DB_URL, dbURL);
     contentStr = contentStr.replaceAll(DB_USER, dbUser);
     contentStr = contentStr.replaceAll(DB_PASS, dbPass);
     contentStr = contentStr.replaceAll(DB_DRIVER, dbDriver);
