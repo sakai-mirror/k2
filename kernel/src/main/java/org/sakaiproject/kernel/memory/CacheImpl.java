@@ -35,8 +35,10 @@ public class CacheImpl<V> implements Cache<V> {
    * @param name
    */
   public CacheImpl(CacheManager cacheManager, String name) {
-    if (cacheName == null) {
+    if (name == null) {
       cacheName = "default";
+    } else {
+      cacheName = name;
     }
     synchronized (cacheManager) {
       cache = cacheManager.getCache(cacheName);
