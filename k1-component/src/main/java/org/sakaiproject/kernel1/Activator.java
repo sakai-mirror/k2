@@ -66,7 +66,7 @@ import javax.jcr.Repository;
 public class Activator implements ComponentActivator {
 
   private static final String K1_COMPONENT_LOCATION = "k1.component.location";
-  public static final String K1_PROPERTIES = "k1.properties";
+  public static final String K1_PROPERTIES = "res://k1.properties";
   private static final Log LOG = LogFactory.getLog(Activator.class);
   /**
    * We might need to know which kernel this activator is attached to, its
@@ -74,7 +74,7 @@ public class Activator implements ComponentActivator {
    */
   private Kernel kernel;
   
-  private Properties properties;
+  private Properties properties = new Properties();
   
   private List<String> ifcClassNames = new ArrayList<String>();
   
@@ -209,7 +209,7 @@ public class Activator implements ComponentActivator {
         }
       }
     }
-    LOG.info("    bundle contains " + locations.size() + " api classes");
+    LOG.info("    bundle contains " + locations.size() + " uri's");
 
     
     // find all the instances
@@ -254,11 +254,13 @@ public class Activator implements ComponentActivator {
     
     
     List<Class> ifcClasses = new ArrayList<Class>();
+    String className = null;
     for(Iterator<String> i = ifcClassNames.iterator();i.hasNext();){
     	try {
-			ifcClasses.add(Class.forName(i.next()));
+    		className = i.next();
+			ifcClasses.add(Class.forName(className));
 		} catch (ClassNotFoundException e) {
-			LOG.error("Can't find " +i+ " in the classpath");
+			LOG.error("Can't find '" +className+ "' in the classpath");
 			i.remove(); /// with a sharp stick 
 			e.printStackTrace();
 		}

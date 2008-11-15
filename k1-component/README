@@ -6,7 +6,7 @@ This is an attempt to boot strap k1 as a k2 component
 It will first attempt to startup the Spring Component Manager, then crawl thrue the api classes found in the kernel-api jar and register each bean under the correct api anem.
 
 add this to the component.locations property in the bootstrap project:
-k1-component:0.1-SNAPSHOT:jar
+maven-repo:org.sakaiproject.kernel2.agnostic:k1-component:0.1-SNAPSHOT:jar
 
 
 orignial readme txt below
