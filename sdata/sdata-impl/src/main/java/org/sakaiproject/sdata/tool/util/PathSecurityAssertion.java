@@ -25,7 +25,8 @@ import com.google.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.sakaiproject.sdata.tool.SDataAccessException;
+import org.sakaiproject.kernel.api.authz.AuthzResolverService;
+import org.sakaiproject.kernel.api.authz.PermissionQuery;
 import org.sakaiproject.sdata.tool.api.SDataException;
 import org.sakaiproject.sdata.tool.api.SecurityAssertion;
 
@@ -43,36 +44,6 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class PathSecurityAssertion implements SecurityAssertion {
 
-  /**
-   * the init parameter name for baseLocation
-   */
-  private static final String BASE_LOCATION_INIT = "locationbase";
-
-  /**
-   * The default setting for the baseLocation
-   */
-  private static final String DEFAULT_BASE_LOCATION = "";
-
-  /**
-   * the init parameter for baseResource
-   */
-  private static final String BASE_REFERENCE_INIT = "referencebase";
-
-  /**
-   * the default value for base resource
-   */
-  private static final String DEFAULT_BASE_REFERENCE = "";
-
-  /**
-   * the init parameter name for the lock map
-   */
-  private static final String LOCK_MAP_INIT = "locks";
-
-  /**
-   * the default lock map
-   */
-  private static final String DEFAULT_LOCK_MAP = "GET:content.read,PUT:content.revise.any,HEAD:content.read,POST:content.revise.any,DELETE:content.delete.any";
-
   private static final Log log = LogFactory.getLog(PathSecurityAssertion.class);
 
   /**
@@ -82,56 +53,63 @@ public class PathSecurityAssertion implements SecurityAssertion {
    * and baseResource is prepended to the patch to generate a full resource
    * location suitable for using with the security service.
    */
-  private String baseLocation;
+  private String baseUrl;
 
   /**
    * A map mapping http methods to locks
    */
-  private Map<String, String> locks;
+  private Map<String, PermissionQuery> locks;
 
   /**
    * this is prepended to the resource path, after normalizing (ie removing
    * baseLocation) and before sending to the Sakai security service.
    */
-  private String baseReference;
+  private String baseResource;
 
   /**
-   * Construct a PathSecurityAssertion class based on the standard configuration
-   * map. The Map may have init parameters as defined by BASE_LOCATION_INIT,
-   * BASE_RESOURCE_LOCATION_INIT, LOCK_MAP_INIT
-   * 
-   * @param baseReference
-   * @param locks
-   * @param inTest
-   * 
-   * @param config
+   * The AuthzResolverService performs the resolution of security assertions
+   * once the path and method have been translated into a permissions query and
+   * a resource path.
+   */
+  private AuthzResolverService authzResolverService;
+
+  /**
    */
   @Inject
-  public PathSecurityAssertion() {
+  public PathSecurityAssertion(AuthzResolverService authzResolverService) {
+    this.authzResolverService = authzResolverService;
   }
-  
+
   /**
-   * @param baseLocation the baseLocation to set
+   * @param baseUrl
+   *          the baseUrl to set, this it the stub of the url coming into the
+   *          assertion that will be handled by this assertion
    */
-  public void setBaseLocation(String baseLocation) {
-    this.baseLocation = baseLocation;
+  public void setBaseURL(String baseUrl) {
+    this.baseUrl = baseUrl;
   }
-  
+
   /**
-   * @param locks the locks to set
+   * @param baseResource
+   *          the baseResource, having remove the base URL from the url coming
+   *          in, the base resource is added to generate the path in the
+   *          repository on which the assertion is made.
    */
-  public void setLocks(Map<String, String> locks) {
+  public void setBaseResource(String baseResource) {
+    this.baseResource = baseResource;
+  }
+
+  /**
+   * @param locks
+   *          locks provide a translation between the method being used on the
+   *          url GET, POST, PUT etc and the permission that will be required to
+   *          pass the assertion. Against each method there is a PermissionQuery
+   *          that, if matching should be satisfied for the permission to be
+   *          granted.
+   */
+  public void setLocks(Map<String, PermissionQuery> locks) {
     this.locks = locks;
   }
-  
-  /**
-   * @param baseReference the baseReference to set
-   */
-  public void setBaseReference(String baseReference) {
-    this.baseReference = baseReference;
-  }
-  
-  
 
   /**
    * Performs the security assertion based on the resourceLocation, from the
@@ -139,31 +117,29 @@ public class PathSecurityAssertion implements SecurityAssertion {
    * SDataException with Forbidden if the resource location is outside the
    * configured range, or if permission is denied.
    * 
+   * @param method
+   *          the http method being used
+   * @param urlPath
+   *          the path of the url, excluding host, protocol, port and query
+   *          string, but including everything else.
    * @see org.sakaiproject.sdata.tool.api.SecurityAssertion#check(java.lang.String,java.lang.String,
    *      java.lang.String)
    */
-  public void check(String method, String resourceLocation)
-      throws SDataException {
+  public void check(String method, String urlPath) throws SDataException {
 
-    if (!(baseLocation.length() == 0)
-        && (resourceLocation == null || !resourceLocation
-            .startsWith(baseLocation))) {
-      log.info("Denied " + method + " on [" + resourceLocation
-          + "] base mismatch [" + baseLocation + "]");
+    if (!(baseUrl.length() == 0)
+        && (urlPath == null || !urlPath.startsWith(baseUrl))) {
+      log.info("Denied " + method + " on [" + urlPath + "] base mismatch ["
+          + baseUrl + "]");
       throw new SDataException(HttpServletResponse.SC_FORBIDDEN,
           "Access Forbidden");
     }
-    String resourceReference = baseReference
-        + resourceLocation.substring(baseLocation.length());
-    String resourceLock = getResourceLock(method);
+    String resourceReference = baseResource
+        + urlPath.substring(baseUrl.length());
+    PermissionQuery resourceLock = getResourceLock(method);
 
-    // TODO: implement security
+    authzResolverService.check(resourceReference, resourceLock);
 
-    log.info("All Denied " + method + ":" + resourceLock + " on "
-        + resourceLocation + " baseReference:[" + baseReference
-        + "] baseLocation:[" + baseLocation + "]");
-    throw new SDataAccessException(HttpServletResponse.SC_FORBIDDEN,
-        "Access denied for operation " + method);
   }
 
   /**
@@ -172,7 +148,7 @@ public class PathSecurityAssertion implements SecurityAssertion {
    * @param method
    * @return
    */
-  private String getResourceLock(String method) {
+  protected PermissionQuery getResourceLock(String method) {
     return locks.get(method);
   }
 

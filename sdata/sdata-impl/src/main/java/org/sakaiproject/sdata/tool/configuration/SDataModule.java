@@ -29,8 +29,11 @@ import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.ServiceManager;
 import org.sakaiproject.kernel.api.ServiceSpec;
+import org.sakaiproject.kernel.api.authz.AuthzResolverService;
+import org.sakaiproject.kernel.api.authz.PermissionQueryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.component.core.SharedClassLoaderContainer;
+import org.sakaiproject.kernel.component.core.guice.ServiceProvider;
 import org.sakaiproject.kernel.util.ResourceLoader;
 import org.sakaiproject.sdata.tool.JCRHandler;
 import org.sakaiproject.sdata.tool.JCRUserStorageHandler;
@@ -132,33 +135,18 @@ public class SDataModule extends AbstractModule {
     KernelManager km = new KernelManager();
     Kernel k = km.getKernel();
     ServiceManager sm = k.getServiceManager();
-    
-    SharedClassLoaderContainer scl = sm.getService(new ServiceSpec(SharedClassLoaderContainer.class));
-    ClassLoader cl = scl.getManagedObject();
-    Class<JCRNodeFactoryService> c = null;
-    try {
-      c = (Class<JCRNodeFactoryService>) cl.loadClass(JCRNodeFactoryService.class.getName());
-    } catch (ClassNotFoundException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    ServiceSpec js = new ServiceSpec(c);
-    for (ServiceSpec ss : sm.getServices()) {
 
-      if (ss.matches(js)) {
-        LOG.info("Match found " + ss + " " + js);
-      } else {
-        LOG.info("Mismatch \n" + ss.getServiceClass() + ":"
-            + ss.getServiceClass().getClass().getClassLoader() + "\n"
-            + js.getServiceClass() + ":"
-            + js.getServiceClass().getClass().getClassLoader() + "\n"
-            + "Mismatch \n" + ss.getServiceClass().equals(js.getServiceClass())
-            + "\n");
-      }
-    }
-    JCRNodeFactoryService nodeServiceFacotry = km
-        .getService(c);
-    bind(JCRNodeFactoryService.class).toInstance(nodeServiceFacotry);
+    // get the services we depend on
+    bind(JCRNodeFactoryService.class).toProvider(
+        new ServiceProvider<JCRNodeFactoryService>(sm,
+            JCRNodeFactoryService.class));
+    bind(PermissionQueryService.class).toProvider(
+        new ServiceProvider<PermissionQueryService>(sm,
+            PermissionQueryService.class));
+    bind(AuthzResolverService.class).toProvider(
+        new ServiceProvider<AuthzResolverService>(sm,
+            AuthzResolverService.class));
+    
 
   }
 

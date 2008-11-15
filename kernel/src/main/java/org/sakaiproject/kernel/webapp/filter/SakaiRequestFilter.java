@@ -24,6 +24,8 @@ package org.sakaiproject.kernel.webapp.filter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.KernelManager;
+import org.sakaiproject.kernel.api.authz.PermissionDeniedException;
+import org.sakaiproject.kernel.api.authz.UnauthorizedException;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
@@ -39,6 +41,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * 
@@ -62,11 +65,12 @@ public class SakaiRequestFilter implements Filter {
 
   /**
    * {@inheritDoc}
+   * 
    * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
    */
   public void init(FilterConfig config) throws ServletException {
-    cookieName  = config.getInitParameter(COOKIE_NAME);
-    if ( cookieName == null || cookieName.trim().length() == 0) {
+    cookieName = config.getInitParameter(COOKIE_NAME);
+    if (cookieName == null || cookieName.trim().length() == 0) {
       cookieName = DEFAULT_COOKIE_NAME;
     }
     timeOn = "true".equals(config.getInitParameter(TIME_REQUEST));
@@ -74,8 +78,8 @@ public class SakaiRequestFilter implements Filter {
     sessionManagerService = kernelManager
         .getService(SessionManagerService.class);
     cacheManagerService = kernelManager.getService(CacheManagerService.class);
-    LOG.info(" SessionManagerService "+sessionManagerService);
-    LOG.info(" Cache Manager Service "+cacheManagerService);
+    LOG.info(" SessionManagerService " + sessionManagerService);
+    LOG.info(" Cache Manager Service " + cacheManagerService);
   }
 
   /**
@@ -89,12 +93,15 @@ public class SakaiRequestFilter implements Filter {
 
   /**
    * {@inheritDoc}
-   * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)
+   * 
+   * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
+   *      javax.servlet.ServletResponse, javax.servlet.FilterChain)
    */
   public void doFilter(ServletRequest request, ServletResponse response,
       FilterChain chain) throws IOException, ServletException {
     SakaiServletRequest wrequest = new SakaiServletRequest(request);
-    SakaiServletResponse wresponse = new SakaiServletResponse(response,cookieName);
+    SakaiServletResponse wresponse = new SakaiServletResponse(response,
+        cookieName);
     sessionManagerService.bindRequest(wrequest);
     try {
 
@@ -102,6 +109,7 @@ public class SakaiRequestFilter implements Filter {
         long start = System.currentTimeMillis();
         try {
           chain.doFilter(wrequest, wresponse);
+
         } finally {
           long end = System.currentTimeMillis();
           HttpServletRequest hrequest = (HttpServletRequest) request;
@@ -111,6 +119,15 @@ public class SakaiRequestFilter implements Filter {
       } else {
         chain.doFilter(wrequest, wresponse);
       }
+    } catch (UnauthorizedException ape) {
+      // catch any Unauthorized exceptions and send a 401
+      wresponse.reset();
+      wresponse
+          .sendError(HttpServletResponse.SC_UNAUTHORIZED, ape.getMessage());
+    } catch (PermissionDeniedException pde) {
+      // catch any permission denied exceptions, and send a 403
+      wresponse.reset();
+      wresponse.sendError(HttpServletResponse.SC_FORBIDDEN, pde.getMessage());
     } finally {
       cacheManagerService.unbind(CacheScope.REQUEST);
     }

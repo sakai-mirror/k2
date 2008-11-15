@@ -30,6 +30,8 @@ import org.apache.commons.fileupload.sdata.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.sdata.util.Streams;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.api.authz.PermissionDeniedException;
+import org.sakaiproject.kernel.api.authz.UnauthorizedException;
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
@@ -331,6 +333,15 @@ public class JCRHandler extends AbstractHandler {
       } else {
         response.setStatus(HttpServletResponse.SC_NO_CONTENT);
       }
+    } catch (UnauthorizedException ape) {
+      // catch any Unauthorized exceptions and send a 401
+      response.reset();
+      response
+          .sendError(HttpServletResponse.SC_UNAUTHORIZED, ape.getMessage());
+    } catch (PermissionDeniedException pde) {
+      // catch any permission denied exceptions, and send a 403
+      response.reset();
+      response.sendError(HttpServletResponse.SC_FORBIDDEN, pde.getMessage());
     } catch (SDataException e) {
       sendError(request, response, e);
       log.error("Failed  To service Request " + e.getMessage());
@@ -503,6 +514,15 @@ public class JCRHandler extends AbstractHandler {
             sendMap(request, response, outputMap);
           }
         }
+      } catch (UnauthorizedException ape) {
+        // catch any Unauthorized exceptions and send a 401
+        response.reset();
+        response
+            .sendError(HttpServletResponse.SC_UNAUTHORIZED, ape.getMessage());
+      } catch (PermissionDeniedException pde) {
+        // catch any permission denied exceptions, and send a 403
+        response.reset();
+        response.sendError(HttpServletResponse.SC_FORBIDDEN, pde.getMessage());
 
       } catch (SDataException e) {
         log.error("Failed  To service Request " + e.getMessage());
@@ -694,6 +714,15 @@ public class JCRHandler extends AbstractHandler {
           }
 
         }
+      } catch (UnauthorizedException ape) {
+        // catch any Unauthorized exceptions and send a 401
+        response.reset();
+        response
+            .sendError(HttpServletResponse.SC_UNAUTHORIZED, ape.getMessage());
+      } catch (PermissionDeniedException pde) {
+        // catch any permission denied exceptions, and send a 403
+        response.reset();
+        response.sendError(HttpServletResponse.SC_FORBIDDEN, pde.getMessage());
       } catch (SDataException sde) {
         sendError(request, response, sde);
 
