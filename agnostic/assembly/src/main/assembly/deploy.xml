@@ -16,6 +16,13 @@
   </fileSets>
   <dependencySets>
     <dependencySet>
+      <outputDirectory>components/sakai-kernel1-component</outputDirectory>
+      <includes>
+        <include>org.sakaiproject.kernel:sakai-kernel-component</include>
+      </includes>
+      <unpack>true</unpack>
+    </dependencySet>
+    <dependencySet>
       <outputDirectory>server/lib/</outputDirectory>
       <includes>
         <include>org.sakaiproject.kernel2.agnostic:server</include>
