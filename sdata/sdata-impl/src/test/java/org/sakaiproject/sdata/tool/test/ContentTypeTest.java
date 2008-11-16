@@ -15,33 +15,28 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.sdata.tool;
+package org.sakaiproject.sdata.tool.test;
 
-import com.google.inject.Inject;
+import static org.junit.Assert.assertEquals;
 
-import org.sakaiproject.sdata.tool.api.Handler;
-
-import java.util.Map;
+import org.junit.Test;
+import org.sakaiproject.sdata.tool.ContentTypes;
 
 /**
  * 
  */
-public class SDataConfiguration {
+public class ContentTypeTest {
+  private static final String APP_OCTET = "application/octet-stream";
+  private static final String TEXT = "text/plain";
 
-  private Map<String, Handler> handlers;
-  /**
-   * @param handlers 
-   * 
-   */
-  @Inject
-  public SDataConfiguration(Map<String, Handler> handlers) {
-    this.handlers = handlers;
-  }
-  /**
-   * @return
-   */
-  public Map<String, Handler> getHandlerRegister() {
-    return handlers;
+  @Test
+  public void testContentType() {
+    assertEquals(APP_OCTET, ContentTypes.getContentType(null, null));
+    assertEquals(APP_OCTET, ContentTypes.getContentType(null, APP_OCTET));
+    assertEquals(APP_OCTET, ContentTypes.getContentType("/sdfsdfl", APP_OCTET));
+    assertEquals(APP_OCTET, ContentTypes.getContentType("/sdfsdfl.bin", APP_OCTET));
+    assertEquals(TEXT, ContentTypes.getContentType("/sdfsdfl.txt", TEXT));
+    assertEquals(TEXT, ContentTypes.getContentType("/sdfsdfl.txt", APP_OCTET));
   }
 
 }

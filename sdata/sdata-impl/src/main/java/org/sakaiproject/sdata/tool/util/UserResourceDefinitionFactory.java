@@ -62,7 +62,7 @@ public class UserResourceDefinitionFactory implements ResourceDefinitionFactory 
    * @param basePath
    */
   @Inject
-  public UserResourceDefinitionFactory(@Named(JCRUserStorageHandler.BASE_PATH) String basePath) {
+  public UserResourceDefinitionFactory(@Named(JCRUserStorageHandler.BASE_REPOSITORY_PATH) String basePath) {
     this.basePath = basePath;
   }
 

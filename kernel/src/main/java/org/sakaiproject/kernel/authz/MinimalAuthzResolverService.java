@@ -15,33 +15,23 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.sdata.tool;
+package org.sakaiproject.kernel.authz;
 
-import com.google.inject.Inject;
-
-import org.sakaiproject.sdata.tool.api.Handler;
-
-import java.util.Map;
+import org.sakaiproject.kernel.api.authz.AuthzResolverService;
+import org.sakaiproject.kernel.api.authz.PermissionDeniedException;
+import org.sakaiproject.kernel.api.authz.PermissionQuery;
 
 /**
- * 
+ * A mimimal authz resolution service that says yes to eveything.
  */
-public class SDataConfiguration {
+public class MinimalAuthzResolverService implements AuthzResolverService {
 
-  private Map<String, Handler> handlers;
   /**
-   * @param handlers 
-   * 
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.authz.AuthzResolverService#check(java.lang.String, org.sakaiproject.kernel.api.authz.PermissionQuery)
    */
-  @Inject
-  public SDataConfiguration(Map<String, Handler> handlers) {
-    this.handlers = handlers;
-  }
-  /**
-   * @return
-   */
-  public Map<String, Handler> getHandlerRegister() {
-    return handlers;
+  public void check(String resourceReference, PermissionQuery permissionQuery)
+      throws PermissionDeniedException {
   }
 
 }

@@ -109,6 +109,7 @@ public class ResourceDefinitionImpl implements ResourceDefinition {
    * @return
    */
   protected String cleanPath(String p) {
+    System.err.print("Cleaning path "+p);
     p = p.replaceAll("//", "/");
     if (p.length() > 1 && p.endsWith("/")) {
       p = p.substring(0, p.length() - 1);
@@ -116,6 +117,7 @@ public class ResourceDefinitionImpl implements ResourceDefinition {
     if (!p.startsWith("/")) {
       p = "/" + p;
     }
+    System.err.println("   Cleaned path "+p);
     return p;
 
   }

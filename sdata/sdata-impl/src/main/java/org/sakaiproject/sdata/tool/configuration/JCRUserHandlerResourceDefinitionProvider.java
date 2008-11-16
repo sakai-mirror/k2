@@ -38,10 +38,10 @@ public class JCRUserHandlerResourceDefinitionProvider extends JCRHandlerResource
   @Inject
   public JCRUserHandlerResourceDefinitionProvider(
       ResourceDefinitionFactoryImpl resourceDefinitionFactoryImpl,
-      @Named(JCRUserStorageHandler.BASE_PATH) String basePath,
+      @Named(JCRUserStorageHandler.BASE_REPOSITORY_PATH) String baseRepositoryPath,
       @Named(JCRUserStorageHandler.BASE_URL) String baseUrl,
       @Named(JCRUserStorageHandler.SECURITY_ASSERTION) SecurityAssertion securityAssertion) {
-    super(resourceDefinitionFactoryImpl, basePath, baseUrl, securityAssertion);
+    super(resourceDefinitionFactoryImpl, baseRepositoryPath, baseUrl, securityAssertion);
   }
 
 

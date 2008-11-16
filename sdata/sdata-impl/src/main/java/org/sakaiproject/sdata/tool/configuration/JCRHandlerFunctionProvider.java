@@ -21,6 +21,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.name.Named;
 
+import org.sakaiproject.sdata.tool.JCRHandler;
 import org.sakaiproject.sdata.tool.api.SDataFunction;
 import org.sakaiproject.sdata.tool.functions.JCRCreateFolder;
 import org.sakaiproject.sdata.tool.functions.JCRHideReleaseFunction;
@@ -49,13 +50,13 @@ public class JCRHandlerFunctionProvider implements
       JCRHideReleaseFunction hideRelease, JCRMoveFunction move,
       JCRNodeMetadata node, JCRPermissionsFunction permission,
       JCRPropertiesFunction properties, JCRTaggingFunction tagging,
-      @Named("jcrhandler.function.createfolder") String createFolderKey,
-      @Named("jcrhandler.function.hide") String hideReleaseKey,
-      @Named("jcrhandler.function.move") String moveKey,
-      @Named("jcrhandler.function.node") String nodeKey,
-      @Named("jcrhandler.function.permission") String permssionKey,
-      @Named("jcrhandler.function.properties") String propertiesKey,
-      @Named("jcrhandler.function.tag") String taggingKey) {
+      @Named(JCRHandler.FUNCTION_CREATEFOLDER) String createFolderKey,
+      @Named(JCRHandler.FUNCTION_HIDE_RELEASE) String hideReleaseKey,
+      @Named(JCRHandler.FUNCTION_MOVE) String moveKey,
+      @Named(JCRHandler.FUNCTION_NODE) String nodeKey,
+      @Named(JCRHandler.FUNCTION_PERMISSION) String permssionKey,
+      @Named(JCRHandler.FUNCTION_PROPERTIES) String propertiesKey,
+      @Named(JCRHandler.FUNCTION_TAG) String taggingKey) {
 
     functionMap.put(createFolderKey, createFolder);
     functionMap.put(hideReleaseKey, hideRelease);

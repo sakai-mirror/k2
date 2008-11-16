@@ -41,7 +41,7 @@ public class JCRHandlerResourceDefinitionProvider implements
   @Inject
   public JCRHandlerResourceDefinitionProvider(
       ResourceDefinitionFactoryImpl resourceDefinitionFactoryImpl,
-      @Named(JCRHandler.BASE_PATH) String basePath,
+      @Named(JCRHandler.BASE_REPOSITORY_PATH) String basePath,
       @Named(JCRHandler.BASE_URL) String baseUrl,
       @Named(JCRHandler.SECURITY_ASSERTION) SecurityAssertion securityAssertion) {
     this.resourceDefinitionFactoryImpl = resourceDefinitionFactoryImpl;

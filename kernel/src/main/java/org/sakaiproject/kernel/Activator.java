@@ -29,6 +29,8 @@ import org.sakaiproject.kernel.api.RequiresStop;
 import org.sakaiproject.kernel.api.ServiceManager;
 import org.sakaiproject.kernel.api.ServiceManagerException;
 import org.sakaiproject.kernel.api.ServiceSpec;
+import org.sakaiproject.kernel.api.authz.AuthzResolverService;
+import org.sakaiproject.kernel.api.authz.PermissionQueryService;
 import org.sakaiproject.kernel.api.jcr.JCRRegistrationService;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
@@ -47,7 +49,8 @@ public class Activator implements ComponentActivator {
   public static final Class<?>[] SERVICE_CLASSES = { JCRService.class,
       JCRRegistrationService.class, JCRNodeFactoryService.class,
       UserDirectoryService.class, AuthenticationManager.class,
-      CacheManagerService.class, SessionManagerService.class };
+      CacheManagerService.class, SessionManagerService.class,
+      AuthzResolverService.class, PermissionQueryService.class };
   private static final Log LOG = LogFactory.getLog(Activator.class);
   @SuppressWarnings("unused")
   private Kernel kernel;
@@ -84,10 +87,10 @@ public class Activator implements ComponentActivator {
       throw new ComponentActivatorException(
           "Failed to initialize the Kernel into a Ready State ", e1);
     }
-    
+
     LOG.info("Services:\n");
-    for ( ServiceSpec s : serviceManager.getServices()) {
-      LOG.info("\t"+s);
+    for (ServiceSpec s : serviceManager.getServices()) {
+      LOG.info("\t" + s);
     }
 
   }

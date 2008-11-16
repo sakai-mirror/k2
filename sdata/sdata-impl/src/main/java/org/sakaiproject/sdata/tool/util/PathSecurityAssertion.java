@@ -35,10 +35,18 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * <p>
  * An implementation of the Security Assertion that uses the http method, the
  * path and the sakai security service for perform the assertion. On check it
  * will throw SDataExceptions indicating forbidden if the path is outside its
  * configured range, or it is denied by the the Sakai security service.
+ * </p>
+ * <p>
+ * 
+ * It accepts paths starting with basePath, and then replaces basePath with
+ * baseResource before checking for the method with the resulting path and the
+ * PermissionQuery associated with the method.
+ * </p>
  * 
  * @author ieb
  */
@@ -53,7 +61,7 @@ public class PathSecurityAssertion implements SecurityAssertion {
    * and baseResource is prepended to the patch to generate a full resource
    * location suitable for using with the security service.
    */
-  private String baseUrl;
+  private String basePath;
 
   /**
    * A map mapping http methods to locks
@@ -81,12 +89,12 @@ public class PathSecurityAssertion implements SecurityAssertion {
   }
 
   /**
-   * @param baseUrl
+   * @param basePath
    *          the baseUrl to set, this it the stub of the url coming into the
    *          assertion that will be handled by this assertion
    */
-  public void setBaseURL(String baseUrl) {
-    this.baseUrl = baseUrl;
+  public void setBasePath(String basePath) {
+    this.basePath = basePath;
   }
 
   /**
@@ -125,20 +133,20 @@ public class PathSecurityAssertion implements SecurityAssertion {
    * @see org.sakaiproject.sdata.tool.api.SecurityAssertion#check(java.lang.String,java.lang.String,
    *      java.lang.String)
    */
-  public void check(String method, String urlPath) throws SDataException {
+  public void check(String method, String resourcePath) throws SDataException {
 
-    if (!(baseUrl.length() == 0)
-        && (urlPath == null || !urlPath.startsWith(baseUrl))) {
-      log.info("Denied " + method + " on [" + urlPath + "] base mismatch ["
-          + baseUrl + "]");
+    if (!(basePath.length() == 0)
+        && (resourcePath == null || !resourcePath.startsWith(basePath))) {
+      log.info("Denied " + method + " on [" + resourcePath
+          + "] base mismatch [" + basePath + "]");
       throw new SDataException(HttpServletResponse.SC_FORBIDDEN,
           "Access Forbidden");
     }
     String resourceReference = baseResource
-        + urlPath.substring(baseUrl.length());
-    PermissionQuery resourceLock = getResourceLock(method);
+        + resourcePath.substring(basePath.length());
+    PermissionQuery permissionQuery = getResourceLock(method);
 
-    authzResolverService.check(resourceReference, resourceLock);
+    authzResolverService.check(resourceReference, permissionQuery);
 
   }
 

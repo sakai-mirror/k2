@@ -18,15 +18,13 @@
 package org.sakaiproject.sdata.tool.configuration;
 
 import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.google.inject.Key;
 import com.google.inject.Provider;
 import com.google.inject.name.Named;
-import com.google.inject.name.Names;
 
 import org.sakaiproject.kernel.api.authz.PermissionQuery;
 import org.sakaiproject.kernel.api.authz.PermissionQueryService;
 import org.sakaiproject.kernel.util.StringUtils;
+import org.sakaiproject.sdata.tool.JCRHandler;
 import org.sakaiproject.sdata.tool.api.SecurityAssertion;
 import org.sakaiproject.sdata.tool.util.PathSecurityAssertion;
 
@@ -49,13 +47,13 @@ public class JCRHandlerSecurityAssertion implements Provider<SecurityAssertion> 
   @Inject
   public JCRHandlerSecurityAssertion(
       PathSecurityAssertion pathSecurityAssertion,
-      @Named("jcrhandler.basePath") String baseLocation,
-      @Named("jcrhandler.baseURL") String baseReference,
-      @Named("jcrhandler.lockDefinition") String lockDefinition,
+      @Named(JCRHandler.BASE_REPOSITORY_PATH) String baseResource,
+      @Named(JCRHandler.BASE_SECURED_PATH) String baseSecuredPath,
+      @Named(JCRHandler.LOCK_DEFINITION) String lockDefinition,
       PermissionQueryService permissionService) {
     this.securityAssertion = pathSecurityAssertion;
-    pathSecurityAssertion.setBaseURL(baseReference);
-    pathSecurityAssertion.setBaseResource(baseLocation);
+    pathSecurityAssertion.setBasePath(baseSecuredPath);
+    pathSecurityAssertion.setBaseResource(baseResource);
     Map<String, PermissionQuery> locks = new HashMap<String, PermissionQuery>();
     for (String lockDef : StringUtils.split(lockDefinition, ';')) {
       String[] l = StringUtils.split(lockDef, ':');

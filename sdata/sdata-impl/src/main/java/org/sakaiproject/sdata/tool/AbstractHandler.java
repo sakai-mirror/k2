@@ -24,6 +24,7 @@ public abstract class AbstractHandler implements Handler {
 
   public void sendError(HttpServletRequest request,
 			HttpServletResponse response, Throwable ex) throws IOException {
+    ex.printStackTrace();
     serializer.sendError(this, request, response, ex);
 	}
 

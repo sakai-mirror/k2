@@ -40,14 +40,16 @@ import java.util.Map;
  * 
  * @author ieb
  */
-public class JCRUserStorageHandler extends JCRHandler
-{
+public class JCRUserStorageHandler extends JCRHandler {
 
   private static final String BASE_NAME = "jcruserhandler";
 
-  public static final String BASE_PATH = BASE_NAME + ".basePath";
+  public static final String BASE_REPOSITORY_PATH = BASE_NAME
+      + ".baseRepositoryPath";
 
   public static final String BASE_URL = BASE_NAME + ".baseURL";
+
+  public static final String HANDLER_KEY = BASE_NAME + ".handlerKey";
 
   public static final String RESOURCE_DEFINITION_FACTORY = BASE_NAME
       + ".resourceDefinitionFactory";
@@ -55,24 +57,42 @@ public class JCRUserStorageHandler extends JCRHandler
   public static final String RESOURCE_FUNCTION_FACTORY = BASE_NAME
       + ".resourceFuntionFactory";
 
-  public static final String RESOURCE_SERIALIZER = BASE_NAME + "resourceSerialzer";
+  public static final String RESOURCE_SERIALIZER = BASE_NAME
+      + ".resourceSerialzer";
 
+  public static final String SECURITY_ASSERTION = BASE_NAME
+      + ".securityAssertion";
 
-	/**
-   * @param basePath
-   * @param baseUrl
+  public static final String FUNCTION_CREATEFOLDER = BASE_NAME
+      + ".function.createfolder";
+  public static final String FUNCTION_MOVE = BASE_NAME + ".function.move";
+  public static final String FUNCTION_NODE = BASE_NAME + ".function.node";
+  public static final String FUNCTION_PERMISSION = BASE_NAME
+      + ".function.permission";
+  public static final String FUNCTION_PROPERTIES = BASE_NAME
+      + ".function.properties";
+  public static final String FUNCTION_TAG = BASE_NAME + ".function.tag";
+  public static final String FUNCTION_HIDE_RELEASE = BASE_NAME
+      + ".function.hiderelease";
+
+  public static final String LOCK_DEFINITION = BASE_NAME + ".lockDefinition";
+
+  /**
+   * Construct a JCRUserStorageHandler, and use a Resource Definition factory to
+   * translate the request URL into the repository location.
+   * 
    * @param jcrNodeFactory
    * @param resourceDefinitionFactory
    * @param resourceFunctionFactory
    */
   @Inject
-  public JCRUserStorageHandler(@Named(BASE_PATH) String basePath,
-      @Named(BASE_URL) String baseUrl, JCRNodeFactoryService jcrNodeFactory,
+  public JCRUserStorageHandler(
+      JCRNodeFactoryService jcrNodeFactory,
       @Named(RESOURCE_DEFINITION_FACTORY) ResourceDefinitionFactory resourceDefinitionFactory,
       @Named(RESOURCE_FUNCTION_FACTORY) Map<String, SDataFunction> resourceFunctionFactory,
       @Named(RESOURCE_SERIALIZER) HandlerSerialzer serializer) {
-    super(basePath, baseUrl, jcrNodeFactory, resourceDefinitionFactory,
-        resourceFunctionFactory,serializer);
+    super(jcrNodeFactory, resourceDefinitionFactory, resourceFunctionFactory,
+        serializer);
   }
 
 }

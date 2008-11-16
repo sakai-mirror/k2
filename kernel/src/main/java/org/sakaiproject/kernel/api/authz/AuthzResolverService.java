@@ -17,9 +17,14 @@
  */
 package org.sakaiproject.kernel.api.authz;
 
+import com.google.inject.ImplementedBy;
+
+import org.sakaiproject.kernel.authz.MinimalAuthzResolverService;
+
 /**
  * This service resolves ACL questions by testing security assertions.
  */
+@ImplementedBy(MinimalAuthzResolverService.class)
 public interface AuthzResolverService {
 
   /**

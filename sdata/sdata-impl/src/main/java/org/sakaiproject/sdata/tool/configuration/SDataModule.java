@@ -28,11 +28,9 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.ServiceManager;
-import org.sakaiproject.kernel.api.ServiceSpec;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
 import org.sakaiproject.kernel.api.authz.PermissionQueryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
-import org.sakaiproject.kernel.component.core.SharedClassLoaderContainer;
 import org.sakaiproject.kernel.component.core.guice.ServiceProvider;
 import org.sakaiproject.kernel.util.ResourceLoader;
 import org.sakaiproject.sdata.tool.JCRHandler;
@@ -43,10 +41,10 @@ import org.sakaiproject.sdata.tool.api.ResourceDefinitionFactory;
 import org.sakaiproject.sdata.tool.api.SDataFunction;
 import org.sakaiproject.sdata.tool.api.SecurityAssertion;
 import org.sakaiproject.sdata.tool.json.JsonHandlerSerializer;
+import org.sakaiproject.sdata.tool.util.NullSecurityAssertion;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.rmi.activation.Activator;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Properties;
@@ -130,7 +128,9 @@ public class SDataModule extends AbstractModule {
     bind(SecurityAssertion.class).annotatedWith(
         Names.named(JCRHandler.SECURITY_ASSERTION)).toProvider(
         JCRHandlerSecurityAssertion.class);
-
+    bind(SecurityAssertion.class).annotatedWith(
+        Names.named(JCRUserStorageHandler.SECURITY_ASSERTION)).to(NullSecurityAssertion.class);
+    
     // bind in the kernel services that we need.
     KernelManager km = new KernelManager();
     Kernel k = km.getKernel();

@@ -45,8 +45,7 @@ public class JsonHandlerSerializer implements HandlerSerialzer {
 			throws IOException {
 		JSONObject jsonObject = JSONObject.fromObject(contetMap);
 		byte[] b = jsonObject.toString().getBytes("UTF-8");
-		response.setContentType("text/plain");
-		response.setCharacterEncoding("UTF-8");
+		response.setContentType("text/plain;charset=UTF-8");
 		response.setContentLength(b.length);
 		response.getOutputStream().write(b);
 		

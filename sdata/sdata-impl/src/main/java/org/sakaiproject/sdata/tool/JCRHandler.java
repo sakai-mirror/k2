@@ -104,9 +104,12 @@ public class JCRHandler extends AbstractHandler {
 
   private static final String BASE_NAME = "jcrhandler";
 
-  public static final String BASE_PATH = BASE_NAME + ".basePath";
+  public static final String BASE_REPOSITORY_PATH = BASE_NAME
+      + ".baseRepositoryPath";
 
   public static final String BASE_URL = BASE_NAME + ".baseURL";
+
+  public static final String HANDLER_KEY = BASE_NAME + ".handlerKey";
 
   public static final String RESOURCE_DEFINITION_FACTORY = BASE_NAME
       + ".resourceDefinitionFactory";
@@ -115,36 +118,47 @@ public class JCRHandler extends AbstractHandler {
       + ".resourceFuntionFactory";
 
   public static final String RESOURCE_SERIALIZER = BASE_NAME
-      + "resourceSerialzer";
+      + ".resourceSerialzer";
 
   public static final String SECURITY_ASSERTION = BASE_NAME
-      + "securityAssertion";
+      + ".securityAssertion";
 
-  private String basePath;
+  public static final String FUNCTION_CREATEFOLDER = BASE_NAME
+      + ".function.createfolder";
+  public static final String FUNCTION_MOVE = BASE_NAME + ".function.move";
+  public static final String FUNCTION_NODE = BASE_NAME + ".function.node";
+  public static final String FUNCTION_PERMISSION = BASE_NAME
+      + ".function.permission";
+  public static final String FUNCTION_PROPERTIES = BASE_NAME
+      + ".function.properties";
+  public static final String FUNCTION_TAG = BASE_NAME + ".function.tag";
+  public static final String FUNCTION_HIDE_RELEASE = BASE_NAME
+      + ".function.hiderelease";
+
+  public static final String LOCK_DEFINITION = BASE_NAME + ".lockDefinition";
+
+  public static final String BASE_SECURED_PATH = BASE_NAME + ".securedPath";
 
   private JCRNodeFactoryService jcrNodeFactory;
 
   private ResourceDefinitionFactory resourceDefinitionFactory;
 
-  private String baseUrl;
-
   private Map<String, SDataFunction> resourceFunctionFactory;
 
   /**
+   * Create a JCRHandler and give it a resource definition factory that will
+   * convert a URL into a location in the repository.
+   * 
    * @param serializer
    * @param securityAssertion
    * 
    */
   @Inject
   public JCRHandler(
-      @Named(BASE_PATH) String basePath,
-      @Named(BASE_URL) String baseUrl,
       JCRNodeFactoryService jcrNodeFactory,
       @Named(RESOURCE_DEFINITION_FACTORY) ResourceDefinitionFactory resourceDefinitionFactory,
       @Named(RESOURCE_FUNCTION_FACTORY) Map<String, SDataFunction> resourceFunctionFactory,
       @Named(RESOURCE_SERIALIZER) HandlerSerialzer serializer) {
-    this.basePath = basePath;
-    this.baseUrl = baseUrl;
     this.jcrNodeFactory = jcrNodeFactory;
     this.resourceDefinitionFactory = resourceDefinitionFactory;
     this.resourceFunctionFactory = resourceFunctionFactory;
@@ -336,8 +350,7 @@ public class JCRHandler extends AbstractHandler {
     } catch (UnauthorizedException ape) {
       // catch any Unauthorized exceptions and send a 401
       response.reset();
-      response
-          .sendError(HttpServletResponse.SC_UNAUTHORIZED, ape.getMessage());
+      response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ape.getMessage());
     } catch (PermissionDeniedException pde) {
       // catch any permission denied exceptions, and send a 403
       response.reset();
@@ -517,8 +530,8 @@ public class JCRHandler extends AbstractHandler {
       } catch (UnauthorizedException ape) {
         // catch any Unauthorized exceptions and send a 401
         response.reset();
-        response
-            .sendError(HttpServletResponse.SC_UNAUTHORIZED, ape.getMessage());
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ape
+            .getMessage());
       } catch (PermissionDeniedException pde) {
         // catch any permission denied exceptions, and send a 403
         response.reset();
@@ -526,6 +539,7 @@ public class JCRHandler extends AbstractHandler {
 
       } catch (SDataException e) {
         log.error("Failed  To service Request " + e.getMessage());
+        e.printStackTrace();
         sendError(request, response, e);
       } catch (Exception e) {
         log.error("Failed  TO service Request ", e);
@@ -717,8 +731,8 @@ public class JCRHandler extends AbstractHandler {
       } catch (UnauthorizedException ape) {
         // catch any Unauthorized exceptions and send a 401
         response.reset();
-        response
-            .sendError(HttpServletResponse.SC_UNAUTHORIZED, ape.getMessage());
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ape
+            .getMessage());
       } catch (PermissionDeniedException pde) {
         // catch any permission denied exceptions, and send a 403
         response.reset();
@@ -866,25 +880,6 @@ public class JCRHandler extends AbstractHandler {
       sendError(request, response, ex);
       return;
     }
-  }
-
-  /**
-   * The base path of the handler
-   * 
-   * @return the basePath
-   */
-  public String getBasePath() {
-    return basePath;
-  }
-
-  /**
-   * The base path of the handler
-   * 
-   * @param basePath
-   *          the basePath to set
-   */
-  public void setBasePath(String basePath) {
-    this.basePath = basePath;
   }
 
   /*
