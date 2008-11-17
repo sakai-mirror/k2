@@ -58,7 +58,7 @@ public class JCRNodeMap extends HashMap<String, Object> {
     put("properties", getProperties(n));
     put("name", n.getName());
     if (rp != null) {
-      put("path", rp.getExternalPath(n.getPath()));
+      put("path", rp.convertToExternalPath(n.getPath()));
     }
 
     NodeType nt = n.getPrimaryNodeType();

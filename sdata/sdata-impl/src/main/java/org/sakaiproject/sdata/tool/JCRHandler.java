@@ -819,7 +819,7 @@ public class JCRHandler extends AbstractHandler {
               String mimeType = ContentTypes.getContentType(finalName, item
                   .getContentType());
               Node target = jcrNodeFactory.createFile(rp
-                  .getRepositoryPath(finalName));
+                  .convertToAbsoluteRepositoryPath(finalName));
               GregorianCalendar lastModified = new GregorianCalendar();
               lastModified.setTime(new Date());
               long size = saveStream(target, stream, mimeType, "UTF-8",
@@ -831,8 +831,8 @@ public class JCRHandler extends AbstractHandler {
                 uploadMap.put("contentLength", (int) size);
               }
               uploadMap.put("name", finalName);
-              uploadMap.put("url", rp.getExternalPath(rp
-                  .getRepositoryPath(finalName)));
+              uploadMap.put("url", rp.convertToExternalPath(rp
+                  .convertToAbsoluteRepositoryPath(finalName)));
               uploadMap.put("mimeType", mimeType);
               uploadMap.put("lastModified", lastModified.getTime());
               uploadMap.put("status", "ok");

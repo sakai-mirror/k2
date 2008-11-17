@@ -28,7 +28,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses( { IntegrationTest.class, PathPrefixTest.class,
     PathSecurityAssertionTest.class, RFC1123DateTest.class,
     SnoopHandlerTest.class, ContentTypeTest.class,
-    ResourceDefinitionFactoryTest.class
+    ResourceDefinitionFactoryTest.class,
+    UserResourceDefinitionFactoryTest.class, JsonHandlerSerializerTest.class
 
 })
 public class TestAll {

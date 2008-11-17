@@ -17,12 +17,17 @@
  */
 package org.sakaiproject.sdata.tool.test;
 
-import static org.easymock.EasyMock.*;
-import static org.junit.Assert.*;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.reset;
+import static org.easymock.EasyMock.verify;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.sakaiproject.sdata.tool.api.ResourceDefinition;
-import org.sakaiproject.sdata.tool.api.ResourceDefinitionFactory;
 import org.sakaiproject.sdata.tool.api.SDataException;
 import org.sakaiproject.sdata.tool.util.UserResourceDefinitionFactory;
 
@@ -89,7 +94,7 @@ public class UserResourceDefinitionFactoryTest {
                   "Last Element of a repository paths cant start with a number ",
                   !Character.isDigit(c));
             }
-            rp = rd.getExternalPath(testPath);
+            rp = rd.convertToExternalPath(testPath);
             System.err.println("External Path "+rp);
             
             assertTrue("External Paths must not be null ", rp != null); //
@@ -101,7 +106,7 @@ public class UserResourceDefinitionFactoryTest {
                 "External Paths must not have white space at either end ", rp
                     .length() == rp.trim().length());
             assertTrue("External Patsh must no have // ", rp.indexOf("//") < 0);
-            rp = rd.getRepositoryPath("extra");
+            rp = rd.convertToAbsoluteRepositoryPath("extra");
             assertTrue("Extra Repository Paths must not be null ", rp != null);
             assertTrue("Extra Repository Paths must be absolute ", rp
                 .startsWith("/"));

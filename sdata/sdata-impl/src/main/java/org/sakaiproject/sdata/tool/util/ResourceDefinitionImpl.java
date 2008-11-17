@@ -30,15 +30,15 @@ import org.sakaiproject.sdata.tool.api.SecurityAssertion;
 /**
  * A default ResoruceDefition bean for file system services and functions.
  * 
- * @author ieb
  */
 public class ResourceDefinitionImpl implements ResourceDefinition {
 
   private static final Log log = LogFactory
       .getLog(ResourceDefinitionImpl.class);
 
-  protected String path;
-
+  /**
+   * The version
+   */
   protected int version;
 
   protected String basePath;
@@ -49,46 +49,56 @@ public class ResourceDefinitionImpl implements ResourceDefinition {
 
   protected int depth;
 
-  protected SecurityAssertion assertion;
+  private String pathspecification;
 
-  protected String method;
+  private String method;
+
+  private SecurityAssertion securityAssertion;
 
   /**
    * Create a filesystem or content resource definition bean
    * 
-   * @param request
    * @param inbasePath
    *          the base path of the resource in the repository
    * @param inpath
-   *          the path reference in the request
+   *          the path reference in the request in repository terms. This means
+   *          after processing the path info from the http request, this is the
+   *          path into the repository, but is not relative to the repository
+   *          root. For that, the base path must be prefixed to this.
    * @param method
-   *          the method bein applied
+   *          the method being applied
    * @param depth
+   *          the depth of of the query (normally used for metadata) made in the
+   *          request. This is the number of levels below this resource for
+   *          which data will be returned.
    * @param version
    *          the version being requested.
    * @throws SDataException
    */
   public ResourceDefinitionImpl(String method, String f, int depth,
       String inbasePath, String inpath, int inversion,
-      SecurityAssertion assertion) throws SDataException {
+      SecurityAssertion securityAssertion) throws SDataException {
     if (log.isDebugEnabled()) {
       log.debug("ResourceDef: Base:" + inbasePath + ": path:" + inpath
           + ": version:" + inversion);
     }
-    this.path = inpath;
+    System.err.println("\nResourceDef: Base:" + inbasePath + ": path:" + inpath
+        + ": version:" + inversion);
+
+    this.pathspecification = cleanPath(inpath, false);
+    this.method = method;
+    this.securityAssertion = securityAssertion;
     this.version = inversion;
     this.basePath = String.valueOf(inbasePath);
 
     this.function = f;
     this.depth = depth;
-    this.method = method;
-    this.assertion = assertion;
     if (basePath.endsWith("/")) {
-      repoPath = basePath + path;
+      repoPath = basePath + inpath;
     } else {
-      repoPath = basePath + "/" + path;
+      repoPath = basePath + "/" + inpath;
     }
-    repoPath = cleanPath(repoPath);
+    repoPath = cleanPath(repoPath, true);
     repoPath = repoPath.replaceAll("//", "/");
     if (repoPath.length() > 1 && repoPath.endsWith("/")) {
       repoPath = repoPath.substring(0, repoPath.length() - 1);
@@ -97,7 +107,23 @@ public class ResourceDefinitionImpl implements ResourceDefinition {
       repoPath = "/" + repoPath;
     }
 
-    assertion.check(method, repoPath);
+    securityAssertion.check(method, repoPath);
+  }
+
+  /**
+   * {@inheritDoc}
+   * @throws SDataException 
+   * 
+   * @see org.sakaiproject.sdata.tool.api.ResourceDefinition#getParentResourceDefinition()
+   */
+  public ResourceDefinition getParentResourceDefinition() throws SDataException {
+    int i = pathspecification.lastIndexOf('/');
+    if (i <= 0) {
+      return null;
+    } else {
+      return new ResourceDefinitionImpl(method, function, depth, basePath,
+          pathspecification.substring(0, i), version, securityAssertion);
+    }
   }
 
   /**
@@ -108,16 +134,18 @@ public class ResourceDefinitionImpl implements ResourceDefinition {
    * @param repoPath2
    * @return
    */
-  protected String cleanPath(String p) {
-    System.err.print("Cleaning path "+p);
+  protected String cleanPath(String p, boolean absolute) {
+    System.err.print("Cleaning path " + p);
     p = p.replaceAll("//", "/");
+    // remove trailing /
     if (p.length() > 1 && p.endsWith("/")) {
       p = p.substring(0, p.length() - 1);
     }
-    if (!p.startsWith("/")) {
+    // prepend / if absolute.
+    if (absolute && !p.startsWith("/")) {
       p = "/" + p;
     }
-    System.err.println("   Cleaned path "+p);
+    System.err.println("   Cleaned path " + p);
     return p;
 
   }
@@ -132,33 +160,38 @@ public class ResourceDefinitionImpl implements ResourceDefinition {
   }
 
   /**
-   * Convert the path to an external path removing any repository prefix.
+   * {@inheritDoc}
    * 
-   * @param path2
-   * @return
+   * @param path
+   *          a path either absolute or relative.
+   * @return a path relative to the base of this type of Resource Definition, or
+   *         absolute where that is not possible.
    */
-  public String getExternalPath(String path) {
+  public String convertToExternalPath(String path) {
+
     if (path == null) {
       return null;
     }
     if (path.startsWith(basePath)) {
-      return cleanPath(path.substring(basePath.length()));
+      return cleanPath(path.substring(basePath.length()), false);
     }
-    return path;
+    return cleanPath(path, false);
   }
 
   /**
-   * Get the repository path for a given local resource
+   * {@inheritDoc}
    * 
-   * @param name
-   * @return
+   * @param relativePath
+   *          the path relative to this resource
+   * @return an absolute path. (note this is not a canonical and may include ../
+   *         if the relative path includes )
    */
-  public String getRepositoryPath(String name) {
-    return cleanPath(repoPath + "/" + name);
+  public String convertToAbsoluteRepositoryPath(String relativePath) {
+    return cleanPath(repoPath + "/" + relativePath, true);
   }
 
-  /*
-   * (non-Javadoc)
+  /**
+   * {@inheritDoc}
    * 
    * @see org.sakaiproject.sdata.tool.api.ResourceDefinition#isPrivate()
    */
@@ -166,11 +199,10 @@ public class ResourceDefinitionImpl implements ResourceDefinition {
     return false;
   }
 
-  /*
-   * (non-Javadoc)
+  /**
+   * {@inheritDoc}
    * 
-   * @see
-   * org.sakaiproject.sdata.tool.api.ResourceDefinition#getFunctionDefinition()
+   * @see org.sakaiproject.sdata.tool.api.ResourceDefinition#getFunctionDefinition()
    */
   public String getFunctionDefinition() {
     return function;
