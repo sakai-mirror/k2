@@ -82,8 +82,6 @@ public class ResourceDefinitionImpl implements ResourceDefinition {
       log.debug("ResourceDef: Base:" + inbasePath + ": path:" + inpath
           + ": version:" + inversion);
     }
-    System.err.println("\nResourceDef: Base:" + inbasePath + ": path:" + inpath
-        + ": version:" + inversion);
 
     this.pathspecification = cleanPath(inpath, false);
     this.method = method;
@@ -135,7 +133,6 @@ public class ResourceDefinitionImpl implements ResourceDefinition {
    * @return
    */
   protected String cleanPath(String p, boolean absolute) {
-    System.err.print("Cleaning path " + p);
     p = p.replaceAll("//", "/");
     // remove trailing /
     if (p.length() > 1 && p.endsWith("/")) {
@@ -145,7 +142,6 @@ public class ResourceDefinitionImpl implements ResourceDefinition {
     if (absolute && !p.startsWith("/")) {
       p = "/" + p;
     }
-    System.err.println("   Cleaned path " + p);
     return p;
 
   }

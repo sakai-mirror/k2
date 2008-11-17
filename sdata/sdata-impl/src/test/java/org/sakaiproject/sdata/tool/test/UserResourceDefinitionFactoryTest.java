@@ -67,17 +67,8 @@ public class UserResourceDefinitionFactoryTest {
           replay(request);
           try {
             ResourceDefinition rd = rdf.getSpec(request);
-            /*
-             * System.err.println(basePath + ":" + testPath +
-             * ":getExternalPath():" + rd.getExternalPath(testPath));
-             * System.err.println(basePath + ":" + testPath +
-             * ":getRepositoryPath():" + rd.getRepositoryPath());
-             * System.err.println(basePath + ":" + testPath +
-             * ":getRepositoryPath(extra):" + rd.getRepositoryPath("extra"));
-             */
             String rp = rd.getRepositoryPath();
 
-            System.err.println("Repository Path "+rp);
             assertTrue("Repository Paths must not be null ", rp != null);
             assertTrue("Repository Paths must be absolute ", rp.startsWith("/"));
             assertTrue("Repository Paths must not end in /, except when root ",
@@ -95,7 +86,6 @@ public class UserResourceDefinitionFactoryTest {
                   !Character.isDigit(c));
             }
             rp = rd.convertToExternalPath(testPath);
-            System.err.println("External Path "+rp);
             
             assertTrue("External Paths must not be null ", rp != null); //
             assertTrue(
