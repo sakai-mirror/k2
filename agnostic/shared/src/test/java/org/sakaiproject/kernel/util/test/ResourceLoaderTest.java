@@ -32,7 +32,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * 
@@ -59,8 +58,11 @@ public class ResourceLoaderTest {
   private void touchFile(File f) throws IOException {
     f.getParentFile().mkdirs();
     FileWriter fw = new FileWriter(f);
-    fw.write(String.valueOf(System.currentTimeMillis()));
-    fw.close();
+    try {
+      fw.write(String.valueOf(System.currentTimeMillis()));
+    } finally {
+      fw.close();
+    }
   }
 
   /**
