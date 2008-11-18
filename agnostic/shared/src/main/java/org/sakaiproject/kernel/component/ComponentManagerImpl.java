@@ -325,7 +325,7 @@ public class ComponentManagerImpl implements ComponentManager {
     // the components that are already started
     List<ComponentSpecification> notStarted = new ArrayList<ComponentSpecification>();
     for (ComponentSpecification spec : toStart) {
-      if (!startedComponents.containsKey(spec)) {
+      if (!startedComponents.containsValue(spec)) {
         notStarted.add(spec);
       }
     }

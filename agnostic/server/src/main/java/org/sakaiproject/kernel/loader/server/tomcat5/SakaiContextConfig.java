@@ -45,7 +45,7 @@ import org.sakaiproject.kernel.loader.common.stats.OldMemoryStats;
  */
 public class SakaiContextConfig extends ContextConfig {
 
-  private static final Log LOG = LogFactory.getLog(SakaiContextConfig.class);
+  private static final Log log = LogFactory.getLog(SakaiContextConfig.class);
   /**
    * old style memory statistics recorder.
    */

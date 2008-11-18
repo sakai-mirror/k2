@@ -264,7 +264,7 @@ public class Component implements Artifact {
    * @see org.sakaiproject.kernel.api.Artifact#isManaged()
    */
   public boolean isManaged() {
-    return !isManaged();
+    return !isUnmanaged();
   }
 
 }

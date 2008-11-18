@@ -15,33 +15,29 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.sdata.tool;
+package org.sakaiproject.kernel.authz;
 
-import com.google.inject.Inject;
-
-import org.sakaiproject.sdata.tool.api.Handler;
-
-import java.util.Map;
+import org.sakaiproject.kernel.api.authz.PermissionQuery;
 
 /**
+ * This is a mimimal permission query that just stores the name of the
+ * permission query being used.
  * 
  */
-public class SDataConfiguration {
+public class MinimalPermissionQueryImpl implements PermissionQuery {
 
-  private Map<String, Handler> handlers;
   /**
-   * @param handlers 
+   * The name of the query, from creation.
+   */
+  private String name;
+
+  /**
+   * Create the permission query with a name.
    * 
+   * @param name
    */
-  @Inject
-  public SDataConfiguration(Map<String, Handler> handlers) {
-    this.handlers = handlers;
-  }
-  /**
-   * @return
-   */
-  public Map<String, Handler> getHandlerRegister() {
-    return handlers;
+  public MinimalPermissionQueryImpl(String name) {
+    this.name = name;
   }
 
 }

@@ -92,7 +92,6 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
     }
     ClassLoader cl = null;
     if (!classloaderIsolation || (spec.isKernelBootstrap() && urls.size() == 0)) {
-      System.err.println("No Classloader Isolation");
       cl = this.getClass().getClassLoader();
     } else {
       cl = new ComponentClassLoader(packageRegistryService, urls

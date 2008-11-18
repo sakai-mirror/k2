@@ -21,11 +21,13 @@
 
 package org.sakaiproject.sdata.tool.test;
 
-import static org.easymock.EasyMock.*;
-import static org.junit.Assert.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.reset;
+import static org.easymock.EasyMock.verify;
+import static org.junit.Assert.assertTrue;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
 import org.sakaiproject.kernel.api.authz.PermissionDeniedException;
@@ -41,29 +43,28 @@ import javax.servlet.ServletException;
 /**
  */
 public class PathSecurityAssertionTest {
-  private static final Log log = LogFactory
-      .getLog(PathSecurityAssertionTest.class);
 
-
-  private static final String BASE_URL = "/somelocation";
 
 
   private static final String BASE_RESOURCE = "/Aresource";
 
 
+  private static final String BASE_SECURED_PATH = "/somelocation";
+
+
   private String[] tests = { 
       "GET,/sfsfdffsd,/sfsfdffsd,m",
-      getSpec("GET","/resourceA/sdfsfd","g"),
+      getSpec("GET","/resourceA/1sdfsfd","g"),
       getSpec("GET","/resourceA/","d"),
-      getSpec("PUT","/resourceA/sdfsfd","g"),
+      getSpec("PUT","/resourceA/3sdfsfd","g"),
       getSpec("PUT","/resourceA/","d"),
-      getSpec("POST","/resourceA/sdfsfd","g"),
+      getSpec("POST","/resourceA/4sdfsfd","g"),
       getSpec("POST","/resourceA/","d"),
-      getSpec("DELETE","/resourceA/sdfsfd","g"),
+      getSpec("DELETE","/resourceA/5sdfsfd","g"),
       getSpec("DELETE","/resourceA/","d"),
-      getSpec("OPTIONS","/resourceA/sdfsfd","d"),
+      getSpec("OPTIONS","/resourceA/6sdfsfd","d"),
       getSpec("OPTIONS","/resourceA/","d"),
-      getSpec("BADMETHOD","/resourceA/sdfsfd","d")
+      getSpec("BADMETHOD","/resourceA/7sdfsfd","d")
  
   };
 
@@ -86,7 +87,7 @@ public class PathSecurityAssertionTest {
     locks.put("OPTIONS", optionsPermission);
 
     PathSecurityAssertion psa = new PathSecurityAssertion(authzResolverService);
-    psa.setBaseURL(BASE_URL);
+    psa.setBasePath(BASE_SECURED_PATH);
     psa.setBaseResource(BASE_RESOURCE);
     psa.setLocks(locks);
 
@@ -125,7 +126,7 @@ public class PathSecurityAssertionTest {
    * @return
    */
   private String getSpec(String method, String path, String response) {
-    return method+","+BASE_URL+path+","+BASE_RESOURCE+path+","+response;
+    return method+","+BASE_SECURED_PATH+path+","+BASE_RESOURCE+path+","+response;
   }
 
 }

@@ -129,13 +129,9 @@ public class ServiceManagerImpl implements ServiceManager {
   @SuppressWarnings("unchecked")
   public <T> Collection<T> getServices(ServiceSpec serviceSpec) {
     Collection<T> matchedServices = new ArrayList<T>();
-    System.err.println("Looking for things that implement "+serviceSpec);
     for (Entry<ServiceSpec, Object> e : services.entrySet()) {
       if (serviceSpec.matches(new ServiceSpec(e.getValue().getClass()))) {
-        System.err.println("Service "+e.getValue().getClass()+" implements "+serviceSpec);
         matchedServices.add((T) e.getValue());
-      } else {
-        System.err.println("Service "+e.getValue().getClass()+" does not implement "+serviceSpec);
       }
     }
     return matchedServices;

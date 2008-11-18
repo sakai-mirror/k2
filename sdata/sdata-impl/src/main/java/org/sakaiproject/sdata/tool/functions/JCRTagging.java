@@ -1,14 +1,9 @@
 package org.sakaiproject.sdata.tool.functions;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.util.List;
 import java.util.Map;
 
 public class JCRTagging {
-
-  private static final Log log = LogFactory.getLog(JCRTagging.class);
 
   /**
    * @param context

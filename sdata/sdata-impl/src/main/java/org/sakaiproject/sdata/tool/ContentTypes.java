@@ -61,9 +61,17 @@ public class ContentTypes {
   }
 
   /**
+   * Get the content type for a resource based on the suspected content type. If
+   * the content type is specified, its is used, if its null, or
+   * application/octect-stream then the extension is used to generate a more
+   * specific content type. If that is not possible, application/octet-stream is
+   * used.
+   * 
    * @param name
+   *          the name of the resource
    * @param contentType
-   * @return
+   *          the suspected content type
+   * @return the verified content type of the resource.
    */
   public static String getContentType(String name, String contentType) {
     if (contentType == null || "application/octet-stream".equals(contentType)) {

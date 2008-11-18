@@ -41,11 +41,11 @@ public class SDataHandlerProvider implements Provider<Map<String, Handler>> {
   @Inject
   public SDataHandlerProvider(JCRHandler jcrHandler,
       JCRUserStorageHandler jcrUserStorageHandler,
-      @Named("jcrhandler.basePath") String jcrPath,
-      @Named("jcruserhandler.basePath") String jcrUserPath) {
+      @Named(JCRHandler.HANDLER_KEY) String jcrKey,
+      @Named(JCRUserStorageHandler.HANDLER_KEY) String jcrUserKey) {
     handlerMap = new HashMap<String, Handler>();
-    handlerMap.put(jcrPath, jcrHandler);
-    handlerMap.put(jcrUserPath, jcrUserStorageHandler);
+    handlerMap.put(jcrKey, jcrHandler);
+    handlerMap.put(jcrUserKey, jcrUserStorageHandler);
   }
 
   /**

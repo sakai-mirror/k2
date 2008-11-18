@@ -295,7 +295,6 @@ public class ControllerServlet extends HttpServlet {
    */
   public Handler getHandler(HttpServletRequest request) {
     String pathInfo = request.getPathInfo();
-    System.err.println("Path Info is "+pathInfo);
     if (log.isDebugEnabled()) {
       log.debug("Path is " + pathInfo);
     }
@@ -316,7 +315,6 @@ public class ControllerServlet extends HttpServlet {
     for (; end < path.length && path[end] != '/'; end++)
       ;
     String key = new String(path, start, end - start);
-    System.err.println("Getting handler ["+key+"]");
     return configuration.getHandlerRegister().get(key);
   }
 

@@ -36,6 +36,7 @@
         <module>webapp-sample</module>
         <module>webdav</module>
         <module>webapps-assembly</module>
+        <module>sdata</module>
       </modules>
     </profile>
     <profile>

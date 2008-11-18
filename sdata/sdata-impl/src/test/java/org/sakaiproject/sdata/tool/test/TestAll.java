@@ -15,33 +15,23 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.sdata.tool;
+package org.sakaiproject.sdata.tool.test;
 
-import com.google.inject.Inject;
-
-import org.sakaiproject.sdata.tool.api.Handler;
-
-import java.util.Map;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 /**
- * 
+ *
  */
-public class SDataConfiguration {
+@RunWith(Suite.class)
+@SuiteClasses( { IntegrationTest.class, PathPrefixTest.class,
+    PathSecurityAssertionTest.class, RFC1123DateTest.class,
+    SnoopHandlerTest.class, ContentTypeTest.class,
+    ResourceDefinitionFactoryTest.class,
+    UserResourceDefinitionFactoryTest.class, JsonHandlerSerializerTest.class
 
-  private Map<String, Handler> handlers;
-  /**
-   * @param handlers 
-   * 
-   */
-  @Inject
-  public SDataConfiguration(Map<String, Handler> handlers) {
-    this.handlers = handlers;
-  }
-  /**
-   * @return
-   */
-  public Map<String, Handler> getHandlerRegister() {
-    return handlers;
-  }
+})
+public class TestAll {
 
 }
