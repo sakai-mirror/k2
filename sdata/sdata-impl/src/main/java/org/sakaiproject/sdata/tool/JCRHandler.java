@@ -417,144 +417,137 @@ public class JCRHandler extends AbstractHandler {
   public void doGet(final HttpServletRequest request,
       HttpServletResponse response) throws ServletException, IOException {
 
-    if (request.getRemoteUser() == null) {
-      response.sendError(401);
-    } else {
+    OutputStream out = null;
+    InputStream in = null;
+    try {
+      snoopRequest(request);
 
-      OutputStream out = null;
-      InputStream in = null;
-      try {
-        snoopRequest(request);
+      ResourceDefinition rp = resourceDefinitionFactory.getSpec(request);
 
-        ResourceDefinition rp = resourceDefinitionFactory.getSpec(request);
+      Node n = jcrNodeFactory.getNode(rp.getRepositoryPath());
+      if (n == null) {
+        response.reset();
+        response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        return;
+      }
 
-        Node n = jcrNodeFactory.getNode(rp.getRepositoryPath());
-        if (n == null) {
-          response.reset();
-          response.sendError(HttpServletResponse.SC_NOT_FOUND);
-          return;
-        }
+      NodeType nt = n.getPrimaryNodeType();
 
-        NodeType nt = n.getPrimaryNodeType();
+      SDataFunction m = resourceFunctionFactory.get(rp.getFunctionDefinition());
+      if (m != null) {
+        m.call(this, request, response, n, rp);
+      } else {
 
-        SDataFunction m = resourceFunctionFactory.get(rp
-            .getFunctionDefinition());
-        if (m != null) {
-          m.call(this, request, response, n, rp);
-        } else {
+        if (JCRConstants.NT_FILE.equals(nt.getName())) {
 
-          if (JCRConstants.NT_FILE.equals(nt.getName())) {
+          Node resource = n.getNode(JCRConstants.JCR_CONTENT);
+          Property lastModified = resource
+              .getProperty(JCRConstants.JCR_LASTMODIFIED);
+          Property mimeType = resource.getProperty(JCRConstants.JCR_MIMETYPE);
+          Property content = resource.getProperty(JCRConstants.JCR_DATA);
 
-            Node resource = n.getNode(JCRConstants.JCR_CONTENT);
-            Property lastModified = resource
-                .getProperty(JCRConstants.JCR_LASTMODIFIED);
-            Property mimeType = resource.getProperty(JCRConstants.JCR_MIMETYPE);
-            Property content = resource.getProperty(JCRConstants.JCR_DATA);
-
-            response.setContentType(mimeType.getString());
-            if (mimeType.getString().startsWith("text")) {
-              if (resource.hasProperty(JCRConstants.JCR_ENCODING)) {
-                Property encoding = resource
-                    .getProperty(JCRConstants.JCR_ENCODING);
-                response.setCharacterEncoding(encoding.getString());
-              }
+          response.setContentType(mimeType.getString());
+          if (mimeType.getString().startsWith("text")) {
+            if (resource.hasProperty(JCRConstants.JCR_ENCODING)) {
+              Property encoding = resource
+                  .getProperty(JCRConstants.JCR_ENCODING);
+              response.setCharacterEncoding(encoding.getString());
             }
-            response.setDateHeader(LAST_MODIFIED, lastModified.getDate()
-                .getTimeInMillis());
-            setGetCacheControl(response, rp.isPrivate());
-
-            String currentEtag = String.valueOf(lastModified.getDate()
-                .getTimeInMillis());
-            response.setHeader("ETag", currentEtag);
-
-            long lastModifiedTime = lastModified.getDate().getTimeInMillis();
-
-            if (!checkPreconditions(request, response, lastModifiedTime,
-                currentEtag)) {
-              return;
-            }
-            long totallength = content.getLength();
-            long[] ranges = new long[2];
-            ranges[0] = 0;
-            ranges[1] = totallength;
-            if (!checkRanges(request, response, lastModifiedTime, currentEtag,
-                ranges)) {
-              return;
-            }
-
-            long length = ranges[1] - ranges[0];
-
-            if (totallength != length) {
-              response.setHeader("Accept-Ranges", "bytes");
-              response.setDateHeader("Last-Modified", lastModifiedTime);
-              response.setHeader("Content-Range", "bytes " + ranges[0] + "-"
-                  + (ranges[1] - 1) + "/" + totallength);
-              response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
-
-              log.info("Partial Content Sent "
-                  + HttpServletResponse.SC_PARTIAL_CONTENT);
-            } else {
-              response.setStatus(HttpServletResponse.SC_OK);
-            }
-
-            response.setContentLength((int) length);
-
-            out = response.getOutputStream();
-
-            in = content.getStream();
-            in.skip(ranges[0]);
-            byte[] b = new byte[10240];
-            int nbytes = 0;
-            while ((nbytes = in.read(b)) > 0 && length > 0) {
-              if (nbytes < length) {
-                out.write(b, 0, nbytes);
-                length = length - nbytes;
-              } else {
-                out.write(b, 0, (int) length);
-                length = 0;
-              }
-            }
-          } else {
-            setGetCacheControl(response, rp.isPrivate());
-
-            // Property lastModified =
-            // n.getProperty(JCRConstants.JCR_LASTMODIFIED);
-            // response.setHeader("ETag",
-            // String.valueOf(lastModified.getDate()
-            // .getTimeInMillis()));
-
-            JCRNodeMap outputMap = new JCRNodeMap(n, rp.getDepth(), rp);
-            sendMap(request, response, outputMap);
           }
-        }
-      } catch (UnauthorizedException ape) {
-        // catch any Unauthorized exceptions and send a 401
-        response.reset();
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ape
-            .getMessage());
-      } catch (PermissionDeniedException pde) {
-        // catch any permission denied exceptions, and send a 403
-        response.reset();
-        response.sendError(HttpServletResponse.SC_FORBIDDEN, pde.getMessage());
+          response.setDateHeader(LAST_MODIFIED, lastModified.getDate()
+              .getTimeInMillis());
+          setGetCacheControl(response, rp.isPrivate());
 
-      } catch (SDataException e) {
-        log.error("Failed  To service Request " + e.getMessage());
-        e.printStackTrace();
-        sendError(request, response, e);
-      } catch (Exception e) {
-        log.error("Failed  TO service Request ", e);
-        sendError(request, response, e);
-        snoopRequest(request);
-      } finally {
+          String currentEtag = String.valueOf(lastModified.getDate()
+              .getTimeInMillis());
+          response.setHeader("ETag", currentEtag);
 
-        try {
-          out.close();
-        } catch (Exception ex) {
+          long lastModifiedTime = lastModified.getDate().getTimeInMillis();
+
+          if (!checkPreconditions(request, response, lastModifiedTime,
+              currentEtag)) {
+            return;
+          }
+          long totallength = content.getLength();
+          long[] ranges = new long[2];
+          ranges[0] = 0;
+          ranges[1] = totallength;
+          if (!checkRanges(request, response, lastModifiedTime, currentEtag,
+              ranges)) {
+            return;
+          }
+
+          long length = ranges[1] - ranges[0];
+
+          if (totallength != length) {
+            response.setHeader("Accept-Ranges", "bytes");
+            response.setDateHeader("Last-Modified", lastModifiedTime);
+            response.setHeader("Content-Range", "bytes " + ranges[0] + "-"
+                + (ranges[1] - 1) + "/" + totallength);
+            response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
+
+            log.info("Partial Content Sent "
+                + HttpServletResponse.SC_PARTIAL_CONTENT);
+          } else {
+            response.setStatus(HttpServletResponse.SC_OK);
+          }
+
+          response.setContentLength((int) length);
+
+          out = response.getOutputStream();
+
+          in = content.getStream();
+          in.skip(ranges[0]);
+          byte[] b = new byte[10240];
+          int nbytes = 0;
+          while ((nbytes = in.read(b)) > 0 && length > 0) {
+            if (nbytes < length) {
+              out.write(b, 0, nbytes);
+              length = length - nbytes;
+            } else {
+              out.write(b, 0, (int) length);
+              length = 0;
+            }
+          }
+        } else {
+          setGetCacheControl(response, rp.isPrivate());
+
+          // Property lastModified =
+          // n.getProperty(JCRConstants.JCR_LASTMODIFIED);
+          // response.setHeader("ETag",
+          // String.valueOf(lastModified.getDate()
+          // .getTimeInMillis()));
+
+          JCRNodeMap outputMap = new JCRNodeMap(n, rp.getDepth(), rp);
+          sendMap(request, response, outputMap);
         }
-        try {
-          in.close();
-        } catch (Exception ex) {
-        }
+      }
+    } catch (UnauthorizedException ape) {
+      // catch any Unauthorized exceptions and send a 401
+      response.reset();
+      response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ape.getMessage());
+    } catch (PermissionDeniedException pde) {
+      // catch any permission denied exceptions, and send a 403
+      response.reset();
+      response.sendError(HttpServletResponse.SC_FORBIDDEN, pde.getMessage());
+
+    } catch (SDataException e) {
+      log.error("Failed  To service Request " + e.getMessage());
+      e.printStackTrace();
+      sendError(request, response, e);
+    } catch (Exception e) {
+      log.error("Failed  TO service Request ", e);
+      sendError(request, response, e);
+      snoopRequest(request);
+    } finally {
+
+      try {
+        out.close();
+      } catch (Exception ex) {
+      }
+      try {
+        in.close();
+      } catch (Exception ex) {
       }
     }
   }

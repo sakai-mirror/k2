@@ -12,7 +12,7 @@
 			<name>org.sakaiproject.kernel.api</name>
 		</export>
 		<export>
-			<name>org.sakaiproject.kernel.webapp.public</name>
+			<name>org.sakaiproject.kernel.webapp</name>
 		</export>
 	</exports>
 	<dependencies>

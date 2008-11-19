@@ -3,12 +3,12 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.sakaiproject.kernel2</groupId>
+    <groupId>org.sakaiproject.kernel2.agnostic</groupId>
     <artifactId>sdata-base</artifactId>
     <version>0.1-SNAPSHOT</version>
   </parent>
   <name>sdata-impl</name>
-  <groupId>org.sakaiproject.kernel2</groupId>
+  <groupId>org.sakaiproject.kernel2.agnostic</groupId>
   <artifactId>sdata-impl</artifactId>
   <version>0.1-SNAPSHOT</version>
   <organization>
@@ -60,7 +60,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.sakaiproject.kernel2</groupId>
+      <groupId>org.sakaiproject.kernel2.agnostic</groupId>
       <artifactId>commons-fileupload-sdata</artifactId>
       <version>${project.version}</version>
     </dependency>

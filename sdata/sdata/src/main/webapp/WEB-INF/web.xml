@@ -9,7 +9,7 @@
 	<filter>
 		<filter-name>sakai.request</filter-name>
 		<filter-class>
-			org.sakaiproject.sdata.tool.StreamRequestFilter
+			org.sakaiproject.kernel.webapp.filter.SakaiRequestFilter
 		</filter-class>
 	</filter>
 
@@ -24,12 +24,6 @@
 	</filter-mapping>
 
 
-	<!--  
-		Configuration is now in META-INF/sdata.config in each jar in the classpath.
-		if you have additional handlers then create a jar, and add that jar to this build. In the jar
-		make certain that you include META-INF/sdata.config, containing the sets to properties to 
-		configure each handler. Properties are of the form 1.classname=full.qualified.class.name 1.baseurl=/c
-		on seperate lines. -->
 	<servlet>
 		<servlet-name>ControllerServlet</servlet-name>
 		<servlet-class>

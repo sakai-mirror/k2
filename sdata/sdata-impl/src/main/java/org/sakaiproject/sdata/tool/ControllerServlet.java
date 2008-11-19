@@ -315,6 +315,7 @@ public class ControllerServlet extends HttpServlet {
     for (; end < path.length && path[end] != '/'; end++)
       ;
     String key = new String(path, start, end - start);
+    
     return configuration.getHandlerRegister().get(key);
   }
 
