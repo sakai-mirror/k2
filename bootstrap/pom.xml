@@ -21,6 +21,11 @@
       <type>zip</type>
     </dependency>
     <dependency>
+      <groupId>org.sakaiproject.kernel2.agnostic</groupId>
+      <artifactId>k1-component</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>tomcat.tomcat</groupId>
       <artifactId>tomcat</artifactId>
       <version>5.5.26</version>
