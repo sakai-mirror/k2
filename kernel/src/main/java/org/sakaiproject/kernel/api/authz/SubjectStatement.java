@@ -17,16 +17,9 @@
  */
 package org.sakaiproject.kernel.api.authz;
 
-
 /**
- * A permission query is a container for permissions that is connected with an
- * object and a user to resolve a permission question
+ * 
  */
-public interface PermissionQuery {
-
-  /**
-   * @return
-   */
-  Iterable<QueryStatement> statements();
+public interface SubjectStatement {
 
 }

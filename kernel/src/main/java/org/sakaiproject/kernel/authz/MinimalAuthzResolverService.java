@@ -32,6 +32,7 @@ public class MinimalAuthzResolverService implements AuthzResolverService {
    */
   public void check(String resourceReference, PermissionQuery permissionQuery)
       throws PermissionDeniedException {
+    
   }
 
 }

@@ -15,41 +15,39 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.authz;
+package org.sakaiproject.kernel.api.authz;
 
-import org.sakaiproject.kernel.api.authz.PermissionQuery;
-import org.sakaiproject.kernel.api.authz.QueryStatement;
 
-import java.util.ArrayList;
+import java.util.Collection;
 
 /**
- * This is a mimimal permission query that just stores the name of the
- * permission query being used.
  * 
  */
-public class MinimalPermissionQueryImpl implements PermissionQuery {
+public interface ReferencedObject {
 
   /**
-   * The name of the query, from creation.
+   * @return
    */
-  @SuppressWarnings("unused")
-  private String name;
+  Collection<? extends AccessControl> getAccessControlList();
 
   /**
-   * Create the permission query with a name.
-   * 
-   * @param name
+   * @return
    */
-  public MinimalPermissionQueryImpl(String name) {
-    this.name = name;
-  }
+  ReferencedObject getParent();
 
   /**
-   * {@inheritDoc}
-   * @see org.sakaiproject.kernel.api.authz.PermissionQuery#statements()
+   * @return
    */
-  public Iterable<QueryStatement> statements() {
-    return new ArrayList<QueryStatement>();
-  }
+  boolean isRoot();
+
+  /**
+   * @return
+   */
+  Collection<? extends AccessControl> getInheritableAccessControlList();
+
+  /**
+   * @return a unique key for referencing object in caches and maps.
+   */
+  String getKey();
 
 }
