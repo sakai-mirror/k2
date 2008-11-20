@@ -25,7 +25,7 @@ import java.util.Collection;
 public interface ReferencedObject {
 
   /**
-   * @return the full acccess control list for the object.
+   * @return the full access control list for the object.
    */
   Collection<? extends AccessControlStatement> getAccessControlList();
 

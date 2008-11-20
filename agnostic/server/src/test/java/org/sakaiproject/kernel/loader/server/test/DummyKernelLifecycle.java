@@ -32,8 +32,6 @@ public class DummyKernelLifecycle<T> implements CommonLifecycle<T> {
    * @see org.sakaiproject.kernel.loader.common.CommonLifecycle#destroy()
    */
   public void destroy() {
-    // TODO Auto-generated method stub
-
   }
 
   /**

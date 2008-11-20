@@ -15,25 +15,24 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.api.authz;
+package org.sakaiproject.kernel.authz.simple;
 
-import com.google.inject.ImplementedBy;
+import org.sakaiproject.kernel.api.authz.GroupService;
 
-import org.sakaiproject.kernel.authz.minimal.MinimalPermissionQueryServiceImpl;
+import java.util.Map;
 
 /**
- * This service gives the caller access to permission queries by name.
+ * 
  */
-@ImplementedBy(MinimalPermissionQueryServiceImpl.class)
-public interface PermissionQueryService {
+public class GroupServiceImpl implements GroupService{
 
   /**
-   * Get a permission by name.
-   * 
-   * @param name
-   *          the name of the query.
-   * @return the query.
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.authz.GroupService#fetchGroups(java.lang.String)
    */
-  PermissionQuery getPermission(String name);
+  public Map<String, Map<String, String>> fetchGroups(String userid) {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
 }

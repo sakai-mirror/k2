@@ -37,7 +37,6 @@ public class AnonUser implements User {
    * @see org.sakaiproject.kernel.api.user.User#getId()
    */
   public String getId() {
-    // TODO Auto-generated method stub
     return "anon";
   }
 

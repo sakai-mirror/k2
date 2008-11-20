@@ -23,12 +23,11 @@ package org.sakaiproject.kernel.api.jcr.support;
 
 /**
  * @author ieb
- *
+ * 
  */
-public class JCRNodeFactoryServiceException extends Exception
-{
+public class JCRNodeFactoryServiceException extends Exception {
 
-	/**
+  /**
    * 
    */
   private static final long serialVersionUID = 1L;
@@ -36,37 +35,29 @@ public class JCRNodeFactoryServiceException extends Exception
   /**
 	 * 
 	 */
-	public JCRNodeFactoryServiceException()
-	{
-		// TODO Auto-generated constructor stub
-	}
+  public JCRNodeFactoryServiceException() {
+  }
 
-	/**
-	 * @param arg0
-	 */
-	public JCRNodeFactoryServiceException(String arg0)
-	{
-		super(arg0);
-		// TODO Auto-generated constructor stub
-	}
+  /**
+   * @param arg0
+   */
+  public JCRNodeFactoryServiceException(String arg0) {
+    super(arg0);
+  }
 
-	/**
-	 * @param arg0
-	 */
-	public JCRNodeFactoryServiceException(Throwable arg0)
-	{
-		super(arg0);
-		// TODO Auto-generated constructor stub
-	}
+  /**
+   * @param arg0
+   */
+  public JCRNodeFactoryServiceException(Throwable arg0) {
+    super(arg0);
+  }
 
-	/**
-	 * @param arg0
-	 * @param arg1
-	 */
-	public JCRNodeFactoryServiceException(String arg0, Throwable arg1)
-	{
-		super(arg0, arg1);
-		// TODO Auto-generated constructor stub
-	}
+  /**
+   * @param arg0
+   * @param arg1
+   */
+  public JCRNodeFactoryServiceException(String arg0, Throwable arg1) {
+    super(arg0, arg1);
+  }
 
 }

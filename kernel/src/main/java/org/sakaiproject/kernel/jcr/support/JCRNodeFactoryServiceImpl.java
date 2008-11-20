@@ -81,7 +81,6 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
 
   private void populateFolder(Node node) throws RepositoryException {
     // JCR Types
-    // TODO: perhpase
     log.debug("Doing populate Folder");
     if (jcrService.needsMixin(node, JCRConstants.MIX_LOCKABLE)) {
       node.addMixin(JCRConstants.MIX_LOCKABLE);

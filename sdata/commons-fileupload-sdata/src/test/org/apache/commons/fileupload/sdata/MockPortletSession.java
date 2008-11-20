@@ -23,150 +23,163 @@ import javax.portlet.PortletContext;
 import javax.portlet.PortletSession;
 
 /**
- * A mock portlet session, useful for unit testing and offline utilities
- * Note: currently doesn't support scoping
+ * A mock portlet session, useful for unit testing and offline utilities Note:
+ * currently doesn't support scoping
  * 
  * @author <a href="mailto:taylor@apache.org">David Sean Taylor</a>
  * @version $Id$
  */
-public class MockPortletSession implements PortletSession
-{
-    // Hashtable (not HashMap) makes enumerations easier to work with
-    Hashtable attributes = new Hashtable();
+public class MockPortletSession implements PortletSession {
+  // Hashtable (not HashMap) makes enumerations easier to work with
+  Hashtable attributes = new Hashtable();
 
-    public MockPortletSession()
-    {     
-    }
-    
-    
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletSession#getAttribute(java.lang.String)
-     */
-    public Object getAttribute(String name)
-    {
-        return attributes.get(name);
-    }
-    
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletSession#getAttribute(java.lang.String, int)
-     */
-    public Object getAttribute(String name, int scope)
-    {
-        return attributes.get(name);
-    }
-    
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletSession#getAttributeNames(int)
-     */
-    public Enumeration getAttributeNames(int scope)
-    {
-        return attributes.keys();
-    }
-    
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletSession#getCreationTime()
-     */
-    public long getCreationTime()
-    {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-    
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletSession#getId()
-     */
-    public String getId()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletSession#getLastAccessedTime()
-     */
-    public long getLastAccessedTime()
-    {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-    
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletSession#getMaxInactiveInterval()
-     */
-    public int getMaxInactiveInterval()
-    {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-    
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletSession#invalidate()
-     */
-    public void invalidate()
-    {
-        // TODO Auto-generated method stub
-    }
-    
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletSession#isNew()
-     */
-    public boolean isNew()
-    {
-        // TODO Auto-generated method stub
-        return false;
-    }
-    
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletSession#removeAttribute(java.lang.String)
-     */
-    public void removeAttribute(String name)
-    {
-        attributes.remove(name);
-    }
-    
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletSession#removeAttribute(java.lang.String, int)
-     */
-    public void removeAttribute(String name, int scope)
-    {
-        attributes.remove(name);
-    }
-    
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletSession#setAttribute(java.lang.String, java.lang.Object)
-     */
-    public void setAttribute(String name, Object value)
-    {
-        attributes.put(name, value);
-    }
+  public MockPortletSession() {
+  }
 
-    public Enumeration getAttributeNames()
-    {
-        return this.getAttributeNames(PortletSession.PORTLET_SCOPE);
-    }    
-    
-    
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletSession#setAttribute(java.lang.String, java.lang.Object, int)
-     */
-    public void setAttribute(String name, Object value, int scope)
-    {
-        attributes.put(name, value);
-    }
-    
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletSession#setMaxInactiveInterval(int)
-     */
-    public void setMaxInactiveInterval(int interval)
-    {
-        // TODO Auto-generated method stub
-    }
-    /* (non-Javadoc)
-     * @see javax.portlet.PortletSession#getPortletContext()
-     */
-    public PortletContext getPortletContext()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
+  /*
+   * (non-Javadoc)
+   * 
+   * @see javax.portlet.PortletSession#getAttribute(java.lang.String)
+   */
+  public Object getAttribute(String name) {
+    return attributes.get(name);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see javax.portlet.PortletSession#getAttribute(java.lang.String, int)
+   */
+  public Object getAttribute(String name, int scope) {
+    return attributes.get(name);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see javax.portlet.PortletSession#getAttributeNames(int)
+   */
+  public Enumeration getAttributeNames(int scope) {
+    return attributes.keys();
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see javax.portlet.PortletSession#getCreationTime()
+   */
+  public long getCreationTime() {
+
+    return 0;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see javax.portlet.PortletSession#getId()
+   */
+  public String getId() {
+
+    return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see javax.portlet.PortletSession#getLastAccessedTime()
+   */
+  public long getLastAccessedTime() {
+
+    return 0;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see javax.portlet.PortletSession#getMaxInactiveInterval()
+   */
+  public int getMaxInactiveInterval() {
+
+    return 0;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see javax.portlet.PortletSession#invalidate()
+   */
+  public void invalidate() {
+
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see javax.portlet.PortletSession#isNew()
+   */
+  public boolean isNew() {
+
+    return false;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see javax.portlet.PortletSession#removeAttribute(java.lang.String)
+   */
+  public void removeAttribute(String name) {
+    attributes.remove(name);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see javax.portlet.PortletSession#removeAttribute(java.lang.String, int)
+   */
+  public void removeAttribute(String name, int scope) {
+    attributes.remove(name);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see javax.portlet.PortletSession#setAttribute(java.lang.String,
+   * java.lang.Object)
+   */
+  public void setAttribute(String name, Object value) {
+    attributes.put(name, value);
+  }
+
+  public Enumeration getAttributeNames() {
+    return this.getAttributeNames(PortletSession.PORTLET_SCOPE);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see javax.portlet.PortletSession#setAttribute(java.lang.String,
+   * java.lang.Object, int)
+   */
+  public void setAttribute(String name, Object value, int scope) {
+    attributes.put(name, value);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see javax.portlet.PortletSession#setMaxInactiveInterval(int)
+   */
+  public void setMaxInactiveInterval(int interval) {
+
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see javax.portlet.PortletSession#getPortletContext()
+   */
+  public PortletContext getPortletContext() {
+
+    return null;
+  }
 }

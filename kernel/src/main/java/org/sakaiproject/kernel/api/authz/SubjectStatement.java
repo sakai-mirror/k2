@@ -26,18 +26,38 @@ package org.sakaiproject.kernel.api.authz;
 public interface SubjectStatement {
 
   public enum SubjectType {
-    USERID(), GROUPMEMBER(), ANON(), AUTHENTICATED()
+    /**
+     * The subject represents a user, the permission token will be ignored and
+     * the subject token will be used for matching.
+     */
+    USERID(),
+    /**
+     * The subject represents a group, the subject token and the permission
+     * token will be consulted during resolution.
+     */
+    GROUP(),
+    /**
+     * Indicates the statement represents all users in all contexts.
+     */
+    ANON(),
+    /**
+     * Indicates the statement represents all authenticated users.
+     */
+    AUTHENTICATED()
   }
+
   /**
-   * @return
+   * @return the type of subject.
    */
   SubjectType getSubjectType();
+
   /**
-   * @return
+   * @return a token that represents the subject.
    */
   String getSubjectToken();
+
   /**
-   * @return
+   * @return a token that represents the permission.
    */
   String getPermissionToken();
 

@@ -88,15 +88,11 @@ public class CommonObjectManager {
    * @param listener
    */
   public void addListener(CommonLifecycleListener listener) {
-    // TODO Auto-generated method stub
-
   }
 
   /**
    * @param listener
    */
   public void removeListener(CommonLifecycleListener listener) {
-    // TODO Auto-generated method stub
-
   }
 }

@@ -519,7 +519,6 @@ class MockHttpServletRequest implements HttpServletRequest
    * @see javax.servlet.ServletRequest#getLocalAddr()
    */
   public String getLocalAddr() {
-    // TODO Auto-generated method stub
     return null;
   }
 
@@ -528,7 +527,6 @@ class MockHttpServletRequest implements HttpServletRequest
    * @see javax.servlet.ServletRequest#getLocalName()
    */
   public String getLocalName() {
-    // TODO Auto-generated method stub
     return null;
   }
 
@@ -537,7 +535,6 @@ class MockHttpServletRequest implements HttpServletRequest
    * @see javax.servlet.ServletRequest#getLocalPort()
    */
   public int getLocalPort() {
-    // TODO Auto-generated method stub
     return 0;
   }
 
@@ -546,7 +543,6 @@ class MockHttpServletRequest implements HttpServletRequest
    * @see javax.servlet.ServletRequest#getRemotePort()
    */
   public int getRemotePort() {
-    // TODO Auto-generated method stub
     return 0;
   }
 }

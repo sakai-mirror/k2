@@ -74,8 +74,7 @@ public class SakaiSharedClassLoader extends WebappClassLoader {
           "sharedclassloader");
       parentClassLoader = commonObjectManager.getManagedObject();
     } catch (CommonObjectConfigurationException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error(e);
     }
     LOG.debug("Using Custom Shared Classloader Ok Using parent as  "
         + parentClassLoader);

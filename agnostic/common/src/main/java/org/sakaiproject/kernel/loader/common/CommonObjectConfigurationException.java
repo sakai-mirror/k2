@@ -31,7 +31,6 @@ public class CommonObjectConfigurationException extends Exception {
    * 
    */
   public CommonObjectConfigurationException() {
-    // TODO Auto-generated constructor stub
   }
 
   /**
@@ -39,7 +38,6 @@ public class CommonObjectConfigurationException extends Exception {
    */
   public CommonObjectConfigurationException(String arg0) {
     super(arg0);
-    // TODO Auto-generated constructor stub
   }
 
   /**
@@ -47,7 +45,6 @@ public class CommonObjectConfigurationException extends Exception {
    */
   public CommonObjectConfigurationException(Throwable arg0) {
     super(arg0);
-    // TODO Auto-generated constructor stub
   }
 
   /**
@@ -56,7 +53,6 @@ public class CommonObjectConfigurationException extends Exception {
    */
   public CommonObjectConfigurationException(String arg0, Throwable arg1) {
     super(arg0, arg1);
-    // TODO Auto-generated constructor stub
   }
 
 }

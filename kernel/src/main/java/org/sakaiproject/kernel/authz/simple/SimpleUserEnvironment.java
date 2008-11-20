@@ -63,7 +63,7 @@ public class SimpleUserEnvironment implements UserEnvironment {
    */
   public boolean matches(SubjectStatement subject) {
     switch (subject.getSubjectType()) {
-    case GROUPMEMBER:
+    case GROUP:
       String groupToken = subject.getSubjectToken();
       if ( groups.containsKey(groupToken)) {
         Map<String, String> userPermissions = groups.get(groupToken);

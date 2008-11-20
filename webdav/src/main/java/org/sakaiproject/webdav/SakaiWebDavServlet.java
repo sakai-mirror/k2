@@ -111,7 +111,6 @@ public class SakaiWebDavServlet extends SimpleWebdavServlet {
           workspace = tmp.getWorkspace().getName();
         } catch (Throwable t) {
           LOG.info("Using Fallback workspace ");
-          // TODO: log !!
           workspace = "default"; // fall back name
         } finally {
           if (tmp != null) {
