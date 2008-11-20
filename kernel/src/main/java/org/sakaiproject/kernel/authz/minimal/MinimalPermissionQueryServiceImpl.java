@@ -15,7 +15,7 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.authz;
+package org.sakaiproject.kernel.authz.minimal;
 
 import org.sakaiproject.kernel.api.authz.PermissionQuery;
 import org.sakaiproject.kernel.api.authz.PermissionQueryService;

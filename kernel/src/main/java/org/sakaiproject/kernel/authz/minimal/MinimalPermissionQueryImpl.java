@@ -15,7 +15,7 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.authz;
+package org.sakaiproject.kernel.authz.minimal;
 
 import org.sakaiproject.kernel.api.authz.PermissionQuery;
 import org.sakaiproject.kernel.api.authz.QueryStatement;
@@ -23,7 +23,7 @@ import org.sakaiproject.kernel.api.authz.QueryStatement;
 import java.util.ArrayList;
 
 /**
- * This is a mimimal permission query that just stores the name of the
+ * This is a minimal permission query that just stores the name of the
  * permission query being used.
  * 
  */
@@ -32,7 +32,6 @@ public class MinimalPermissionQueryImpl implements PermissionQuery {
   /**
    * The name of the query, from creation.
    */
-  @SuppressWarnings("unused")
   private String name;
 
   /**
@@ -50,6 +49,14 @@ public class MinimalPermissionQueryImpl implements PermissionQuery {
    */
   public Iterable<QueryStatement> statements() {
     return new ArrayList<QueryStatement>();
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.authz.PermissionQuery#getKey(java.lang.String)
+   */
+  public String getKey(String resourceReference) {
+    return resourceReference+"::"+name;
   }
 
 }

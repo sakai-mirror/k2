@@ -25,4 +25,20 @@ package org.sakaiproject.kernel.api.authz;
  */
 public interface SubjectStatement {
 
+  public enum SubjectType {
+    USERID(), GROUPMEMBER(), ANON(), AUTHENTICATED()
+  }
+  /**
+   * @return
+   */
+  SubjectType getSubjectType();
+  /**
+   * @return
+   */
+  String getSubjectToken();
+  /**
+   * @return
+   */
+  String getPermissionToken();
+
 }

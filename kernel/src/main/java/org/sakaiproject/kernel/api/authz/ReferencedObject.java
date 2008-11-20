@@ -27,7 +27,7 @@ public interface ReferencedObject {
   /**
    * @return the full acccess control list for the object.
    */
-  Collection<? extends AccessControl> getAccessControlList();
+  Collection<? extends AccessControlStatement> getAccessControlList();
 
   /**
    * @return the parent object, null if there is no reasonable parent.
@@ -43,7 +43,7 @@ public interface ReferencedObject {
   /**
    * @return a collection of Access controls that may be inherited.
    */
-  Collection<? extends AccessControl> getInheritableAccessControlList();
+  Collection<? extends AccessControlStatement> getInheritableAccessControlList();
 
   /**
    * @return a unique key for referencing object in caches and maps.

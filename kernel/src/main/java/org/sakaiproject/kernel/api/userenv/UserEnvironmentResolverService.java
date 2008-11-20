@@ -17,17 +17,27 @@
  */
 package org.sakaiproject.kernel.api.userenv;
 
+import com.google.inject.ImplementedBy;
+
 import org.sakaiproject.kernel.api.session.Session;
+import org.sakaiproject.kernel.authz.simple.SimpleUserEnvironmentResolverService;
 
 /**
  * The UserEnvironmentResolverService resolves {@link UserEnvironment} based on
  * {@link Session} objects.
  */
+@ImplementedBy(SimpleUserEnvironmentResolverService.class)
 public interface UserEnvironmentResolverService {
 
   /**
+   * Setting: The time to live of User Env objects the local cache, this should
+   * be set in the kernel properties file.
+   */
+  public static final String TTL = "userenv.ttl";
+
+  /**
    * Get a {@link UserEnvironment} objects based on the supplied session.
-   *
+   * 
    * @param currentSession
    *          the supplied session.
    * @return the UserEnvironment object.

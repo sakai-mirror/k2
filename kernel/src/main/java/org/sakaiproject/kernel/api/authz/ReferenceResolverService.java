@@ -17,9 +17,14 @@
  */
 package org.sakaiproject.kernel.api.authz;
 
+import com.google.inject.ImplementedBy;
+
+import org.sakaiproject.kernel.authz.simple.SimpleReferenceResolverService;
+
 /**
- * The Reference resolver server recolves reference URI's into ReferenceObjects.
+ * The Reference resolver server resolves reference URI's into ReferenceObjects.
  */
+@ImplementedBy(SimpleReferenceResolverService.class)
 public interface ReferenceResolverService {
 
   /**

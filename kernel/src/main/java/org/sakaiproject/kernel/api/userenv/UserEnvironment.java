@@ -33,11 +33,22 @@ import org.sakaiproject.kernel.api.authz.SubjectStatement;
 public interface UserEnvironment {
 
   /**
+   * Attribute used in the session to store a list of group memberships.
+   */
+  public static final String GROUPMEMBERSHIP = "userenv.grouplist";
+
+  /**
    * Does the UserEnvironment have a match for the subject statement.
-   *
-   * @param subject the subject statement
+   * 
+   * @param subject
+   *          the subject statement
    * @return true is there is a match
    */
   boolean matches(SubjectStatement subject);
+
+  /**
+   * @return true if the UserEnvironment has expired and should not be used.
+   */
+  boolean hasExpired();
 
 }

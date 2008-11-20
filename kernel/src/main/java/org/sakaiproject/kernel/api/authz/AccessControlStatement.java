@@ -15,24 +15,31 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.authz;
-
-import org.sakaiproject.kernel.api.authz.AuthzResolverService;
-import org.sakaiproject.kernel.api.authz.PermissionDeniedException;
-import org.sakaiproject.kernel.api.authz.PermissionQuery;
+package org.sakaiproject.kernel.api.authz;
 
 /**
- * A mimimal authz resolution service that says yes to eveything.
+ * Represents and access control statement.
  */
-public class MinimalAuthzResolverService implements AuthzResolverService {
+public interface AccessControlStatement {
 
   /**
-   * {@inheritDoc}
-   * @see org.sakaiproject.kernel.api.authz.AuthzResolverService#check(java.lang.String, org.sakaiproject.kernel.api.authz.PermissionQuery)
+   * @return the key for the statement, that binds to a QeueryStatement
    */
-  public void check(String resourceReference, PermissionQuery permissionQuery)
-      throws PermissionDeniedException {
-    
-  }
+  String getKey();
+
+  /**
+   * @return true if the AccessControl propagates to children.
+   */
+  boolean isPropagating();
+
+  /**
+   * @return true if a grant, false if a deny.
+   */
+  boolean isGranted();
+
+  /**
+   * @return the subject statement that this AccessControl refers to.
+   */
+  SubjectStatement getSubject();
 
 }

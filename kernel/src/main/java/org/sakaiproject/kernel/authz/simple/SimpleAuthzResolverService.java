@@ -15,11 +15,11 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.authz;
+package org.sakaiproject.kernel.authz.simple;
 
 import com.google.inject.Inject;
 
-import org.sakaiproject.kernel.api.authz.AccessControl;
+import org.sakaiproject.kernel.api.authz.AccessControlStatement;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
 import org.sakaiproject.kernel.api.authz.PermissionDeniedException;
 import org.sakaiproject.kernel.api.authz.PermissionQuery;
@@ -47,7 +47,8 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
   private SessionManagerService sessionManager;
   private ReferenceResolverService referenceResolverService;
   private UserEnvironmentResolverService userEnvironmentResolverService;
-  private Cache<Map<String, List<AccessControl>>> cachedAcl;
+  private Cache<Map<String, List<AccessControlStatement>>> cachedAcl;
+  private CacheManagerService cacheManagerService;
 
   /**
    * 
@@ -62,6 +63,7 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
     this.userEnvironmentResolverService = userEnvironmentResolverService;
     this.cachedAcl = cacheManagerService.getCache("acl_cache",
         CacheScope.CLUSTERINVALIDATED);
+    this.cacheManagerService = cacheManagerService;
   }
 
   /**
@@ -73,11 +75,25 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
   public void check(String resourceReference, PermissionQuery permissionQuery)
       throws PermissionDeniedException {
 
+    Cache<Boolean> grants = cacheManagerService.getCache("authz",
+        CacheScope.REQUEST);
+
+    String localPermissoinKey = permissionQuery.getKey(resourceReference);
+
+    if (grants.containsKey(localPermissoinKey)) {
+      if (grants.get(localPermissoinKey)) {
+        return;
+      } else {
+        throw new PermissionDeniedException("No grant found on "
+            + resourceReference + " by " + permissionQuery + " (request cached) ");
+
+      }
+    }
+
     UserEnvironment userEnvironment = userEnvironmentResolverService
         .resolve(sessionManager.getCurrentSession());
     ReferencedObject referencedObject = referenceResolverService
         .resolve(resourceReference);
-
     /*
      * build a hash of permission lists keyed by access control key, the access
      * control is populates in the permission list so that the access control
@@ -96,13 +112,13 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
     /*
      * Check that the ACL isn't in the cache
      */
-    Map<String, List<AccessControl>> acl = cachedAcl.get(referencedObject
-        .getKey());
+    Map<String, List<AccessControlStatement>> acl = cachedAcl
+        .get(referencedObject.getKey());
     if (acl == null) {
       // not in the cache create, and populate
-      acl = new HashMap<String, List<AccessControl>>();
+      acl = new HashMap<String, List<AccessControlStatement>>();
 
-      for (AccessControl ac : referencedObject.getAccessControlList()) {
+      for (AccessControlStatement ac : referencedObject.getAccessControlList()) {
         // if there was an acl this marks the position back up the hierarchy
         // that is the first node with acl statements.
         if (controllingObject == null) {
@@ -112,9 +128,9 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
         // each key represents an access control item, the list contains
         // varieties of acl to be consulted
         String key = ac.getKey();
-        List<AccessControl> plist = acl.get(key);
+        List<AccessControlStatement> plist = acl.get(key);
         if (plist == null) {
-          plist = new ArrayList<AccessControl>();
+          plist = new ArrayList<AccessControlStatement>();
           acl.put(key, plist);
         }
         plist.add(ac);
@@ -123,16 +139,17 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
       ReferencedObject parent = referencedObject.getParent();
 
       while (parent != null && !parent.isRoot()) {
-        Map<String, List<AccessControl>> parentAcl = cachedAcl.get(parent
-            .getKey());
+        Map<String, List<AccessControlStatement>> parentAcl = cachedAcl
+            .get(parent.getKey());
         if (parentAcl != null) {
           // copy the acl, appending found statements to the end of the current
           // node
           if (acl.size() > 0) {
-            for (Entry<String, List<AccessControl>> e : parentAcl.entrySet()) {
-              List<AccessControl> plist = acl.get(e.getKey());
+            for (Entry<String, List<AccessControlStatement>> e : parentAcl
+                .entrySet()) {
+              List<AccessControlStatement> plist = acl.get(e.getKey());
               if (plist == null) {
-                plist = new ArrayList<AccessControl>();
+                plist = new ArrayList<AccessControlStatement>();
                 acl.put(e.getKey(), plist);
               }
               plist.addAll(e.getValue());
@@ -144,16 +161,16 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
           break;
         } else {
           // nothing in the cache, sop
-          for (AccessControl ac : parent.getAccessControlList()) {
+          for (AccessControlStatement ac : parent.getAccessControlList()) {
             if (ac.isPropagating()) {
               // the ac is propagaing meaning it will propagate to child nodes.
               if (controllingObject == null) {
                 controllingObject = parent;
               }
               String key = ac.getKey();
-              List<AccessControl> plist = acl.get(key);
+              List<AccessControlStatement> plist = acl.get(key);
               if (plist == null) {
-                plist = new ArrayList<AccessControl>();
+                plist = new ArrayList<AccessControlStatement>();
                 acl.put(key, plist);
               }
               plist.add(ac);
@@ -170,12 +187,16 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
     // see if any are satisfied or denied in order.
 
     for (QueryStatement qs : permissionQuery.statements()) {
-      List<AccessControl> kacl = acl.get(qs.getKey());
-      for (AccessControl ac : kacl) {
+      List<AccessControlStatement> kacl = acl.get(qs.getKey());
+      for (AccessControlStatement ac : kacl) {
         if (userEnvironment.matches(ac.getSubject())) {
           if (ac.isGranted()) {
+            // cache the response in the request scope cache.
+            grants.put(localPermissoinKey, true);
             return;
           } else {
+            // cache the response in the request scope cache.
+            grants.put(localPermissoinKey, false);
             throw new PermissionDeniedException(
                 "Permission Explicitly deinied on " + resourceReference
                     + " by " + ac + " for " + qs + " user environment "
@@ -185,6 +206,8 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
       }
     }
 
+    // cache the response in the request scope cache.
+    grants.put(localPermissoinKey, false);
     throw new PermissionDeniedException("No grant found on "
         + resourceReference + " by " + permissionQuery + " for "
         + userEnvironment);

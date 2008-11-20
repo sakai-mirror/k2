@@ -15,24 +15,23 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.api.authz;
+package org.sakaiproject.kernel.authz.simple;
 
+import org.sakaiproject.kernel.api.authz.ReferenceResolverService;
+import org.sakaiproject.kernel.api.authz.ReferencedObject;
 
 /**
- * A permission query is a container for permissions that is connected with an
- * object and a user to resolve a permission question
+ * 
  */
-public interface PermissionQuery {
+public class SimpleReferenceResolverService implements ReferenceResolverService{
 
   /**
-   * @return
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.authz.ReferenceResolverService#resolve(java.lang.String)
    */
-  Iterable<QueryStatement> statements();
-
-  /**
-   * @param resourceReference
-   * @return
-   */
-  String getKey(String resourceReference);
+  public ReferencedObject resolve(String resourceReference) {
+    
+    return null;
+  }
 
 }
