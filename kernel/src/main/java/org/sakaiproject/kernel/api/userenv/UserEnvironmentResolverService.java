@@ -20,13 +20,17 @@ package org.sakaiproject.kernel.api.userenv;
 import org.sakaiproject.kernel.api.session.Session;
 
 /**
- * 
+ * The UserEnvironmentResolverService resolves {@link UserEnvironment} based on
+ * {@link Session} objects.
  */
-public interface UserEnvironmentReolverService {
+public interface UserEnvironmentResolverService {
 
   /**
+   * Get a {@link UserEnvironment} objects based on the supplied session.
+   *
    * @param currentSession
-   * @return
+   *          the supplied session.
+   * @return the UserEnvironment object.
    */
   UserEnvironment resolve(Session currentSession);
 

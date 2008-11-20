@@ -18,7 +18,10 @@
 package org.sakaiproject.kernel.api.authz;
 
 /**
- * 
+ * A Subject statement defines a subject of a {@link PermissionQuery} this may
+ * be membership of a group, a specific user or some other form of environment
+ * associated with the user. It is best to think of this as a Token defining,
+ * rather than an instance.
  */
 public interface SubjectStatement {
 

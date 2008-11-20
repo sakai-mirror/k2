@@ -31,7 +31,7 @@ import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
-import org.sakaiproject.kernel.api.userenv.UserEnvironmentReolverService;
+import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +46,7 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
 
   private SessionManagerService sessionManager;
   private ReferenceResolverService referenceResolverService;
-  private UserEnvironmentReolverService userEnvironmentResolverService;
+  private UserEnvironmentResolverService userEnvironmentResolverService;
   private Cache<Map<String, List<AccessControl>>> cachedAcl;
 
   /**
@@ -55,7 +55,7 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
   @Inject
   public SimpleAuthzResolverService(SessionManagerService sessionManager,
       ReferenceResolverService referenceResolverService,
-      UserEnvironmentReolverService userEnvironmentResolverService,
+      UserEnvironmentResolverService userEnvironmentResolverService,
       CacheManagerService cacheManagerService) {
     this.sessionManager = sessionManager;
     this.referenceResolverService = referenceResolverService;

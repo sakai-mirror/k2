@@ -17,16 +17,18 @@
  */
 package org.sakaiproject.kernel.api.authz;
 
-
-
 /**
- * 
+ * The Reference resolver server recolves reference URI's into ReferenceObjects.
  */
 public interface ReferenceResolverService {
 
   /**
+   * Resolve the ReferenceObject.
+   * 
    * @param resourceReference
-   * @return
+   *          the reference URI. If this is native, it will contain no domain.
+   * @return the ReferenceObject after resolution, null if no reference object
+   *         is present.
    */
   ReferencedObject resolve(String resourceReference);
 

@@ -20,13 +20,23 @@ package org.sakaiproject.kernel.api.userenv;
 import org.sakaiproject.kernel.api.authz.SubjectStatement;
 
 /**
- * 
+ * The UserEnvironment is a container for the users environment, this will
+ * either contain a pre-loaded set of properties related to the user, or cache
+ * lookups for the user. It is mainly used by the authZ service but also acts as
+ * a cachable container of user related properties that are not normally placed
+ * in session. The object implementations my be cached in an instance cache, but
+ * care should be taken to ensure that where something might change it is
+ * expired or invalidated from the cache, and where the item is not present it
+ * will be re-created. The aim here is not to put these objects into session
+ * that will need to be replicated.
  */
 public interface UserEnvironment {
 
   /**
-   * @param subject
-   * @return
+   * Does the UserEnvironment have a match for the subject statement.
+   *
+   * @param subject the subject statement
+   * @return true is there is a match
    */
   boolean matches(SubjectStatement subject);
 

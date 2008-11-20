@@ -17,31 +17,31 @@
  */
 package org.sakaiproject.kernel.api.authz;
 
-
 import java.util.Collection;
 
 /**
- * 
+ * A reference object contains the metadata associated with authz for an object.
  */
 public interface ReferencedObject {
 
   /**
-   * @return
+   * @return the full acccess control list for the object.
    */
   Collection<? extends AccessControl> getAccessControlList();
 
   /**
-   * @return
+   * @return the parent object, null if there is no reasonable parent.
    */
   ReferencedObject getParent();
 
   /**
-   * @return
+   * @return does this object have no possible parent objects from and authz
+   *         perspective. True if there are no parents.
    */
   boolean isRoot();
 
   /**
-   * @return
+   * @return a collection of Access controls that may be inherited.
    */
   Collection<? extends AccessControl> getInheritableAccessControlList();
 

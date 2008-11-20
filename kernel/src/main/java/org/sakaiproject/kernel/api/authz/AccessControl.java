@@ -18,27 +18,27 @@
 package org.sakaiproject.kernel.api.authz;
 
 /**
- * 
+ * Represents and access control statement.
  */
 public interface AccessControl {
 
   /**
-   * @return
+   * @return the key for the statement, that binds to a QeueryStatement
    */
   String getKey();
 
   /**
-   * @return
+   * @return true if the AccessControl propagates to children.
    */
   boolean isPropagating();
 
   /**
-   * @return
+   * @return true if a grant, false if a deny.
    */
   boolean isGranted();
 
   /**
-   * @return
+   * @return the subject statement that this AccessControl refers to.
    */
   SubjectStatement getSubject();
 
