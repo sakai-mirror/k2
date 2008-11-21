@@ -17,20 +17,72 @@
  */
 package org.sakaiproject.kernel.authz.simple;
 
-import org.sakaiproject.kernel.api.authz.GroupService;
+import org.apache.shindig.social.opensocial.jpa.PersonDb;
+import org.apache.shindig.social.opensocial.model.Person;
 
+import org.sakaiproject.kernel.api.authz.GroupService;
+import org.sakaiproject.kernel.api.memory.Cache;
+import org.sakaiproject.kernel.api.memory.CacheManagerService;
+import org.sakaiproject.kernel.api.memory.CacheScope;
+import org.sakaiproject.kernel.model.GroupPermissionRole;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 /**
  * 
  */
 public class GroupServiceImpl implements GroupService{
 
+  private Cache<Map<String, Map<String,String>>> userGroupCache;
+  private EntityManager entityManager;
+  /**
+   * 
+   */
+  public GroupServiceImpl(CacheManagerService cacheManagerService, EntityManager entityManager ) {
+    userGroupCache = cacheManagerService.getCache("groupUserCache", CacheScope.CLUSTERINVALIDATED);
+    this.entityManager = entityManager;
+  }
   /**
    * {@inheritDoc}
    * @see org.sakaiproject.kernel.api.authz.GroupService#fetchGroups(java.lang.String)
    */
   public Map<String, Map<String, String>> fetchGroups(String userid) {
+    Map<String, Map<String,String>>  userGroups = userGroupCache.get(userid);
+    if ( userGroups == null ) {
+      userGroups = new HashMap<String, Map<String,String>>();
+      
+      Query q = entityManager.createNamedQuery(GroupPermissionRole.FINDBY_USERID);
+      q.setParameter(GroupPermissionRole.PARAM_USERID, userid);
+      List<GroupPermissionRole> plist = q.getResultList();
+      Person person = null;
+      if (plist != null && plist.size() > 0) {
+        person = (Person) plist.get(0);
+      }
+
+      List<GroupPermissionRole> groups = new ArrayList<GroupPermissionRole>();
+      for(GroupPermissionRole g : groups ) {
+        Map<String, String> group = userGroups.get(g.getGroupId());
+        if ( group == null ) {
+          group = new HashMap<String, String>();
+          userGroups.put(g.getGroupId(), group);
+        }
+        String roles = group.get(g.getPermission());
+        if ( roles == null ) {
+          roles = g.getRole();
+        } else {
+          roles = roles+ ";" +g.getRole();    
+        }
+        group.put(g.getPermission(), roles);
+      }
+    }
+    
+    
     // TODO Auto-generated method stub
     return null;
   }
