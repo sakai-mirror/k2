@@ -17,11 +17,23 @@
  */
 package org.sakaiproject.kernel.model;
 
+import javax.persistence.Entity;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+
 /**
  * 
  */
+@Entity
+@Table(name = "group_permission_role")
+@NamedQueries(value = { @NamedQuery(
+    name = GroupPermissionRole.FINDBY_USERID, 
+    query = "select gr from GroupPermissionRole gr wher gr.userId = :userId") })
 public class GroupPermissionRole {
-  
+
+  public static final String PARAM_USERID = ":userId";
+  public static final String FINDBY_USERID = "GroupPermissionRole.FindByUserId";
   private String groupId;
   private String permissionId;
   private String roleId;
@@ -47,7 +59,7 @@ public class GroupPermissionRole {
   public String getRole() {
     return roleId;
   }
-  
+
   /**
    * @return the userId
    */
