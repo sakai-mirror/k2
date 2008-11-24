@@ -21,10 +21,10 @@ import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.sessions.Session;
 
 /**
- * 
+ * EclipseLink session customizer to check the integrity of the database and
+ * establish exception catching strategy.
  */
 public class EnableIntegrityChecker implements SessionCustomizer {
-
   public void customize(Session session) throws Exception {
     session.getIntegrityChecker().checkDatabase();
     session.getIntegrityChecker().setShouldCatchExceptions(false);

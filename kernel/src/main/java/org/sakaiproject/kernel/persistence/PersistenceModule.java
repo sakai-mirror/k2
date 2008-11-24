@@ -26,10 +26,9 @@ import com.google.inject.spi.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.persistence.DataSourceService;
-import org.sakaiproject.kernel.persistence.bitronix.BitronixDataSourceService;
-import org.sakaiproject.kernel.persistence.bitronix.TransactionManagerProvider;
-import org.sakaiproject.kernel.persistence.dbcp.DataSourceServiceDbcpImpl;
-import org.sakaiproject.kernel.persistence.eclipselink.EclipseEntityManagerProvider;
+import org.sakaiproject.kernel.persistence.dbcp.DataSourceServiceImpl;
+import org.sakaiproject.kernel.persistence.eclipselink.EntityManagerProvider;
+import org.sakaiproject.kernel.persistence.geronimo.TransactionManagerProvider;
 import org.sakaiproject.kernel.util.ResourceLoader;
 
 import java.io.IOException;
@@ -42,7 +41,7 @@ import javax.persistence.EntityManager;
 import javax.transaction.TransactionManager;
 
 /**
- * 
+ * Configuration module for persistence bindings.
  */
 public class PersistenceModule extends AbstractModule {
   /**
@@ -143,13 +142,11 @@ public class PersistenceModule extends AbstractModule {
   protected void configure() {
     Names.bindProperties(this.binder(), properties);
     // bind the base classes.
-    bind(EntityManager.class).toProvider(EclipseEntityManagerProvider.class)
-        .in(Scopes.SINGLETON);
-    bind(DataSourceService.class).to(DataSourceServiceDbcpImpl.class).in(
+    bind(EntityManager.class).toProvider(EntityManagerProvider.class).in(
+        Scopes.SINGLETON);
+    bind(DataSourceService.class).to(DataSourceServiceImpl.class).in(
         Scopes.SINGLETON);
     bind(TransactionManager.class).toProvider(TransactionManagerProvider.class)
         .in(Scopes.SINGLETON);
-
   }
-
 }

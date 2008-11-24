@@ -43,9 +43,10 @@ import javax.persistence.Persistence;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 
 /**
- * 
+ * Guice provider for {@link javax.persistence.EntityManager} as implemented by
+ * Eclipselink.
  */
-public class EclipseEntityManagerProvider implements Provider<EntityManager> {
+public class EntityManagerProvider implements Provider<EntityManager> {
   private static final Log LOG = LogFactory.getLog(Boolean.class);
 
   private static final String DB_MIN_WRITE = "eclipselink.write.min";
@@ -53,11 +54,18 @@ public class EclipseEntityManagerProvider implements Provider<EntityManager> {
   private static final String DB_UNITNAME = "jpa.unitname";
   private EntityManager entityManager;
 
+  /**
+   * Construct an EclipseLink entity manager provider.
+   * 
+   * @param minRead
+   * @param minWrite
+   * @param dataSourceService
+   * @param unitName
+   */
   @Inject
-  public EclipseEntityManagerProvider(@Named(DB_MIN_NUM_READ) String minRead,
+  public EntityManagerProvider(@Named(DB_MIN_NUM_READ) String minRead,
       @Named(DB_MIN_WRITE) String minWrite,
-      DataSourceService dataSourceService,
-      @Named(DB_UNITNAME) String unitName) {
+      DataSourceService dataSourceService, @Named(DB_UNITNAME) String unitName) {
 
     Map<String, Object> properties = new HashMap<String, Object>();
 
