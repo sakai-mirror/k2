@@ -17,7 +17,10 @@
  */
 package org.sakaiproject.kernel.api;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.util.Enumeration;
 
 /**
  * This interface defines a class exporter, normally this will be implemented by
@@ -52,5 +55,12 @@ public interface Exporter {
    * @return the artifact that created this exporter.
    */
   Artifact getArtifact();
+
+  /**
+   * @param name
+   * @return
+   * @throws IOException
+   */
+  Enumeration<URL> findExportedResources(String name) throws IOException;
 
 }

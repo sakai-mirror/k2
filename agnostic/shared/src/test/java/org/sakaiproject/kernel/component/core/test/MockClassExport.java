@@ -20,7 +20,10 @@ package org.sakaiproject.kernel.component.core.test;
 import org.sakaiproject.kernel.api.Artifact;
 import org.sakaiproject.kernel.api.Exporter;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.util.Enumeration;
 
 /**
  * 
@@ -60,6 +63,14 @@ public class MockClassExport implements Exporter {
    */
   public Artifact getArtifact() {
     return artifact;
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.Exporter#findExportedResources(java.lang.String)
+   */
+  public Enumeration<URL> findExportedResources(String name) throws IOException {
+    return null;
   }
 
 }

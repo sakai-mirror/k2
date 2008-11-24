@@ -18,6 +18,7 @@
 package org.sakaiproject.kernel.component.core;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

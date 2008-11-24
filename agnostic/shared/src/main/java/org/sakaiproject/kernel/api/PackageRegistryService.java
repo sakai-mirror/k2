@@ -17,6 +17,9 @@
  */
 package org.sakaiproject.kernel.api;
 
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -74,4 +77,13 @@ public interface PackageRegistryService {
    * @return a list of exports
    */
   Map<String, String> getExports();
+
+
+  /**
+   * Get an Enumeration of external resources, looking up in classloaders that have exported resource paths.
+   * @param name
+   * @return
+   */
+  Enumeration<URL> findExportedResources(String name);
+  
 }

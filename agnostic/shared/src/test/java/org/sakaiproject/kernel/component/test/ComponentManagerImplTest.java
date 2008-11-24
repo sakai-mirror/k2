@@ -95,7 +95,9 @@ public class ComponentManagerImplTest {
   public void testStartComponent() throws Exception {
     ComponentManagerImpl cm = new ComponentManagerImpl(kernel);
     cm.start();
-    cm.startComponent(new MockComponentSpecificationImpl());
+    ComponentSpecification spec = new MockComponentSpecificationImpl();
+    cm.prepareStartComponent(spec);
+    cm.startComponent(spec);
     cm.stop();
   }
 
@@ -109,6 +111,7 @@ public class ComponentManagerImplTest {
     ComponentManagerImpl cm = new ComponentManagerImpl(kernel);
     cm.start();
     ComponentSpecification spec = new MockComponentSpecificationImpl();
+    cm.prepareStartComponent(spec);
     cm.startComponent(spec);
     cm.stopComponent(spec);
     cm.stop();

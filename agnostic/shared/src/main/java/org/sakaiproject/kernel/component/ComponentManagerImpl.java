@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -79,6 +80,7 @@ public class ComponentManagerImpl implements ComponentManager {
    * A map of started components indexed by name
    */
   private Map<String, ComponentSpecification> startedComponents = new ConcurrentHashMap<String, ComponentSpecification>();
+  private Map<ComponentSpecification, ClassLoader> classloaders = new ConcurrentHashMap<ComponentSpecification, ClassLoader>();
 
   /**
    * create the component manager with a reference to the kernel.
@@ -111,6 +113,34 @@ public class ComponentManagerImpl implements ComponentManager {
     stopComponents();
     LOG.info("== ComponentManager Shutdown Complete");
   }
+  
+  public boolean prepareStartComponent(ComponentSpecification spec) throws ComponentSpecificationException {
+
+    if (classloaders.containsKey(spec)) {
+      return true;
+    }
+
+    ClassLoader componentClassloader = Thread.currentThread().getContextClassLoader();
+  
+    ClassLoaderService classLoaderService = kernel.getServiceManager()
+        .getService(new ServiceSpec(ClassLoaderService.class));
+    if (classLoaderService != null) {
+      componentClassloader = classLoaderService.getComponentClassLoader(spec);
+    }
+    
+    classloaders.put(spec,componentClassloader);
+    
+    for (Artifact dependant : spec.getComponentDependencies()) {
+      if (!dependant.isManaged()) {
+        prepareStartComponent(componentsByName.get(dependant.toString()));
+      }
+    }
+
+    // scan for persistent classes
+    
+    
+    return true;
+  }
 
   /**
    * Start a component based on the specification. This will create a
@@ -131,18 +161,13 @@ public class ComponentManagerImpl implements ComponentManager {
     if (components.containsKey(spec)) {
       return true;
     }
+    
+    
 
-    ClassLoader currentClassloader = Thread.currentThread()
-        .getContextClassLoader();
-    ClassLoader componentClassloader = currentClassloader;
-
-    ClassLoaderService classLoaderService = kernel.getServiceManager()
-        .getService(new ServiceSpec(ClassLoaderService.class));
-    if (classLoaderService != null) {
-      componentClassloader = classLoaderService.getComponentClassLoader(spec);
-      Thread.currentThread().setContextClassLoader(componentClassloader);
-    }
-
+    ClassLoader componentClassloader = classloaders.get(spec);
+    ClassLoader currentClassloader = Thread.currentThread().getContextClassLoader();
+    Thread.currentThread().setContextClassLoader(componentClassloader);
+    
     try {
 
       for (Artifact dependant : spec.getComponentDependencies()) {
@@ -429,6 +454,9 @@ public class ComponentManagerImpl implements ComponentManager {
   public void startComponents(List<ComponentSpecification> specs)
       throws ComponentSpecificationException, KernelConfigurationException {
     loadComponents(specs);
+    for (ComponentSpecification spec : getStartOrder(specs)) {
+      prepareStartComponent(spec);
+    }
     for (ComponentSpecification spec : getStartOrder(specs)) {
       startComponent(spec);
     }

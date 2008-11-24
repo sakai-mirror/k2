@@ -24,9 +24,11 @@ import org.sakaiproject.kernel.api.Exporter;
 import org.sakaiproject.kernel.api.PackageRegistryService;
 import org.sakaiproject.kernel.component.model.DependencyImpl;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -230,5 +232,45 @@ public class ComponentClassLoader extends URLClassLoader implements
   public Artifact getArtifact() {
     return artifact;
   }
+  
+  
+  /**
+   * {@inheritDoc}
+   * @see java.net.URLClassLoader#findResources(java.lang.String)
+   */
+  @Override
+  public Enumeration<URL> findResources(String name) throws IOException {
+    final Enumeration<URL> resources = packageRegistryService.findExportedResources(name);
+    final Enumeration<URL> parent = super.findResources(name);
+    return new Enumeration<URL>() {
+      boolean exported = true;
+      public boolean hasMoreElements() {
+        boolean hasmore = false;
+        if ( exported ) {
+          hasmore = resources.hasMoreElements(); 
+        }
+        if ( ! hasmore ) {
+          exported = false;
+          hasmore = parent.hasMoreElements();
+        }
+        return hasmore;
+      }
+      public URL nextElement() {
+        if ( exported ) {
+          return resources.nextElement();
+        }
+        return parent.nextElement();
+      }
+    };
+  }
 
+  /**
+   * {@inheritDoc}
+   * @throws IOException 
+   * @see org.sakaiproject.kernel.api.Exporter#getExportedResources(java.lang.String)
+   */
+  public Enumeration<URL> findExportedResources(String name) throws IOException {
+    return super.findResources(name);
+  }
+  
 }

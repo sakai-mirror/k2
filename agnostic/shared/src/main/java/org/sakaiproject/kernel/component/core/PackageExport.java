@@ -19,6 +19,8 @@ package org.sakaiproject.kernel.component.core;
 
 import org.sakaiproject.kernel.api.Exporter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -42,6 +44,7 @@ public class PackageExport extends ConcurrentHashMap<String, PackageExport> {
    * The name of the package at this point.
    */
   private String packageName;
+  private List<Exporter> resourceExporters;
 
   /**
    * Create a package export with a package path element and a classloader.
@@ -53,11 +56,23 @@ public class PackageExport extends ConcurrentHashMap<String, PackageExport> {
    *          the classloader to use with this package and all unspecified child
    *          packages.
    */
-  public PackageExport(String packageName, Exporter exporter) {
+  public PackageExport(String packageName, PackageExport export) {
     this.packageName = packageName;
-    this.exporter = exporter;
+    resourceExporters = new ArrayList<Exporter>();
+    if (export != null) {
+      this.exporter = export.getClassExporter();
+      for (Exporter e : export.getResourceExporters()) {
+        resourceExporters.add(e);
+      }
+    }
   }
 
+  /**
+   * @return the resourceExporters
+   */
+  public List<Exporter> getResourceExporters() {
+    return resourceExporters;
+  }
 
   /**
    * @return the packageName for this PackageExport.
@@ -66,18 +81,25 @@ public class PackageExport extends ConcurrentHashMap<String, PackageExport> {
     return packageName;
   }
 
-
   /**
    * @return the exporter
    */
   public Exporter getClassExporter() {
     return exporter;
   }
-  
+
   /**
-   * @param exporter the exporter to set
+   * @param exporter
+   *          the exporter to set
    */
   public void setClassExporter(Exporter exporter) {
     this.exporter = exporter;
+  }
+
+  /**
+   * @param exporter
+   */
+  public void addResourceExporter(Exporter exporter) {
+    resourceExporters.add(exporter);
   }
 }
