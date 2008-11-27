@@ -36,7 +36,7 @@ public class MockClassExport implements Exporter {
   /**
    * @param classLoader
    */
-  public MockClassExport(ClassLoader classLoader, Artifact artifact) {
+  public MockClassExport(ClassLoader classLoader, Artifact artifact, String resource) {
     this.classLoader = classLoader;
     this.artifact = artifact;
   }
@@ -70,7 +70,7 @@ public class MockClassExport implements Exporter {
    * @see org.sakaiproject.kernel.api.Exporter#findExportedResources(java.lang.String)
    */
   public Enumeration<URL> findExportedResources(String name) throws IOException {
-    return null;
+    return classLoader.getResources(name);
   }
 
 }

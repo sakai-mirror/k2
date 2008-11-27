@@ -17,6 +17,7 @@
  */
 package org.sakaiproject.kernel.component.core.test;
 
+import  static org.junit.Assert.*;
 import org.junit.Test;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
 import org.sakaiproject.kernel.api.Exporter;
@@ -51,7 +52,7 @@ public class ClassLoaderServiceTest {
 
     // add an export that wont be used
     Exporter exportClassloader = new MockClassExport(this.getClass()
-        .getClassLoader(), new MockArtifact("test-exporter"));
+        .getClassLoader(), new MockArtifact("test-exporter"),"META-INF/persistance.xml");
     prs.addExport("org.sakaiproject.kernel.component.test", exportClassloader);
 
     SharedClassLoader sharedClassLoader = new SharedClassLoader(prs,
@@ -65,7 +66,11 @@ public class ClassLoaderServiceTest {
 
     @SuppressWarnings("unused")
     ClassLoader cl = cls.getComponentClassLoader(componentSpec);
-
+    
+    assertNotNull(cl);
   }
+  
+
+  
 
 }

@@ -71,7 +71,7 @@ public class PackageRegistryServiceImpl implements PackageRegistryService {
    *      java.lang.ClassLoader)
    */
   public void addResource(String stub, Exporter exporter) {
-    String[] elements = StringUtils.split(stub, '.');
+    String[] elements = StringUtils.split(stub, '/');
     PackageExport p = root;
     for (String element : elements) {
       PackageExport np = p.get(element);
@@ -238,7 +238,7 @@ public class PackageRegistryServiceImpl implements PackageRegistryService {
           } catch (IOException e) {
             LOG.error("Failed to open Exporter, ignored ", e);
           }
-          if (currentEnumerator.hasMoreElements()) {
+          if (currentEnumerator != null && currentEnumerator.hasMoreElements()) {
             return true;
           }
         }

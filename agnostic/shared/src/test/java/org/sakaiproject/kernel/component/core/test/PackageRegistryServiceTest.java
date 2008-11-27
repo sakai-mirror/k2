@@ -20,18 +20,45 @@ package org.sakaiproject.kernel.component.core.test;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import org.sakaiproject.kernel.api.Exporter;
 import org.sakaiproject.kernel.component.core.PackageRegistryServiceImpl;
 import org.sakaiproject.kernel.component.test.mock.MockArtifact;
 
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Enumeration;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * 
  */
 public class PackageRegistryServiceTest {
+
+  private MockClassExport apiLoader;
+  private PackageRegistryServiceImpl registry;
+  private MockClassExport special;
+  private MockClassExport specialsomewhere;
+
+  @Before
+  public void setUp() {
+
+    apiLoader = new MockClassExport(new URLClassLoader(new URL[0]),
+        new MockArtifact("apiloader"),"META-INF/persistance.xml");
+    special = new MockClassExport(new URLClassLoader(new URL[0]),
+        new MockArtifact("special"),"META-INF/persistance.xml");
+    specialsomewhere = new MockClassExport(new URLClassLoader(new URL[0]),
+        new MockArtifact("specialsomewhere"),"META-INF/persistance.xml");
+    registry = new PackageRegistryServiceImpl();
+
+  }
+
+  @After
+  public void tearDown() {
+
+  }
 
   /**
    * Test method for
@@ -40,14 +67,6 @@ public class PackageRegistryServiceTest {
    */
   @Test
   public void testAddExport() {
-
-    Exporter apiLoader = new MockClassExport(new URLClassLoader(new URL[0]),
-        new MockArtifact("apiloader"));
-    Exporter special = new MockClassExport(new URLClassLoader(new URL[0]),
-        new MockArtifact("special"));
-    Exporter specialsomewhere = new MockClassExport(new URLClassLoader(
-        new URL[0]), new MockArtifact("specialsomewhere"));
-    PackageRegistryServiceImpl registry = new PackageRegistryServiceImpl();
     registry.addExport("org.sakaiproject.kernel.api", apiLoader);
     registry
         .addExport("org.sakaiproject.kernel.api.something.special", special);
@@ -116,6 +135,8 @@ public class PackageRegistryServiceTest {
             .findClassloader("org.sakaiproject.kernel.api.something.special.somewhere.else.Test213"));
 
     registry
+    .removeExport("org.sakaiproject.kernel.api.something.special.somewhere.else.or.something");
+    registry
         .removeExport("org.sakaiproject.kernel.api.something.special.somewhere.else");
     assertSame(apiLoader, registry
         .findClassloader("org.sakaiproject.kernel.api.something.special"));
@@ -139,6 +160,35 @@ public class PackageRegistryServiceTest {
         apiLoader,
         registry
             .findClassloader("org.sakaiproject.kernel.api.something.special.somewhere.else.Test213"));
+  }
+  /**
+   * Test method for
+   * {@link org.sakaiproject.kernel.component.core.PackageRegistryServiceImpl#addExport(java.lang.String, java.lang.ClassLoader)}
+   * .
+   */
+  @Test
+  public void testAddResource() {
+    registry.addResource("org/sakaiproject/kernel", apiLoader);
+    registry
+    .addExport("org/sakaiproject/kernel/api/something/special", special);
+    
+    Enumeration<URL> e = registry.findExportedResources("org/sakaiproject/kernel");
+    while(e.hasMoreElements()) {
+     URL u = e.nextElement();
+    }
+ 
+  }
+  
+  
+  @Test
+  public void testGetExports() {
+    registry.addResource("org/sakaiproject/kernel", apiLoader);
+    registry
+    .addExport("org.sakaiproject.kernel.api.something.special", special);
+    Map<String, String> exports = registry.getExports();
+    for ( Entry<String,String> e : exports.entrySet() ) {
+      System.err.println("Entry "+e.getKey()+":"+e.getValue());
+    }
   }
 
 }

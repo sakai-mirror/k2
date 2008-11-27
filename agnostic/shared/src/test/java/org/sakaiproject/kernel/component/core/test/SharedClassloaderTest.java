@@ -53,7 +53,7 @@ public class SharedClassloaderTest {
 
     // add an export that wont be used
     Exporter exportClassloader = new MockClassExport(this.getClass()
-        .getClassLoader(),new MockArtifact("unused-exporter"));
+        .getClassLoader(),new MockArtifact("unused-exporter"),"META-INF/persistance.xml");
     prs.addExport("org.sakaiproject.kernel.component.test", exportClassloader);
 
     SharedClassLoader cc = new SharedClassLoader(prs, dependencyResolver,
