@@ -17,24 +17,33 @@
  */
 package org.sakaiproject.kernel.api.authz;
 
-import com.google.inject.ImplementedBy;
-
-import org.sakaiproject.kernel.authz.simple.PathReferenceResolverService;
-
 /**
- * The Reference resolver server resolves reference URI's into ReferenceObjects.
+ * Subject Permissions represents the permissions that a subject has.
  */
-@ImplementedBy(PathReferenceResolverService.class)
-public interface ReferenceResolverService {
+public interface SubjectPermissions {
 
   /**
-   * Resolve the ReferenceObject.
+   * Add a subject permission with the role that derived it.
    * 
-   * @param resourceReference
-   *          the reference URI. If this is native, it will contain no domain.
-   * @return the ReferenceObject after resolution, null if no reference object
-   *         is present.
+   * @param role
+   *          the role performing the grant
+   * @param permission
+   *          the permission
    */
-  ReferencedObject resolve(String resourceReference);
+  void add(String role, String permissionToken);
+
+  /**
+   * Does the Subject have this permission token
+   * 
+   * @param permissionToken
+   *          the permission token
+   * @return true if the subject does have the permission.
+   */
+  boolean hasPermission(String permissionToken);
+
+  /**
+   * @return the token for this subject.
+   */
+  String getSubjectToken();
 
 }

@@ -54,4 +54,37 @@ public class StringUtils {
     return e;
   }
 
+  /**
+   * @param resourceReference
+   * @param c
+   * @param i
+   * @return
+   */
+  public static String[] split(String st, char sep, int maxElements) {
+    char[] pn = st.toCharArray();
+    int n = 1;
+    int start = 0;
+    int end = pn.length;
+    while ( sep == pn[start] && start < end ) start++;
+    while( sep == pn[end-1] && start < end ) end--;
+    for (int i = start; i < end; i++) {
+      if (sep == pn[i]) {
+        n++;
+      }
+    }
+    String[] e = new String[Math.min(maxElements, n)];
+    int s = start;
+    int j = 0;
+    for (int i = start; i < end && j < e.length; i++) {
+      if (pn[i] == sep) {
+        e[j++] = new String(pn, s, i - s);
+        s = i+1;
+      }
+    }
+    if ( s < end ) {
+      e[j++] = new String(pn, s, end - s);
+    }
+    return e;
+  }
+
 }

@@ -17,15 +17,15 @@
  */
 package org.sakaiproject.kernel.authz.simple;
 
-import org.sakaiproject.kernel.api.authz.GroupService;
+import org.sakaiproject.kernel.api.authz.SubjectPermissions;
+import org.sakaiproject.kernel.api.authz.SubjectService;
+import org.sakaiproject.kernel.api.authz.UserSubjects;
 import org.sakaiproject.kernel.api.memory.Cache;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
 import org.sakaiproject.kernel.model.GroupPermissionRole;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -33,15 +33,15 @@ import javax.persistence.Query;
 /**
  * 
  */
-public class GroupServiceImpl implements GroupService{
+public class SubjectServiceImpl implements SubjectService{
 
-  private Cache<Map<String, Map<String,String>>> userGroupCache;
+  private Cache<UserSubjects> userSubjectCache;
   private EntityManager entityManager;
   /**
    * 
    */
-  public GroupServiceImpl(CacheManagerService cacheManagerService, EntityManager entityManager ) {
-    userGroupCache = cacheManagerService.getCache("groupUserCache", CacheScope.CLUSTERINVALIDATED);
+  public SubjectServiceImpl(CacheManagerService cacheManagerService, EntityManager entityManager ) {
+    userSubjectCache = cacheManagerService.getCache("groupUserCache", CacheScope.CLUSTERINVALIDATED);
     this.entityManager = entityManager;
   }
   /**
@@ -49,34 +49,25 @@ public class GroupServiceImpl implements GroupService{
    * @see org.sakaiproject.kernel.api.authz.GroupService#fetchGroups(java.lang.String)
    */
   @SuppressWarnings("unchecked")
-  public Map<String, Map<String, String>> fetchGroups(String userid) {
-    Map<String, Map<String,String>>  userGroups = userGroupCache.get(userid);
+  public UserSubjects  fetchSubjects(String userid) {
+    UserSubjects  userGroups = userSubjectCache.get(userid);
     if ( userGroups == null ) {
-      userGroups = new HashMap<String, Map<String,String>>();
+      userGroups = new UserSubjectImpl();
       
       Query q = entityManager.createNamedQuery(GroupPermissionRole.FINDBY_USERID);
       q.setParameter(GroupPermissionRole.PARAM_USERID, userid);
       
       List<GroupPermissionRole> groups =  q.getResultList();
       for(GroupPermissionRole g : groups ) {
-        Map<String, String> group = userGroups.get(g.getGroupId());
-        if ( group == null ) {
-          group = new HashMap<String, String>();
-          userGroups.put(g.getGroupId(), group);
+        SubjectPermissions groupPermissions = userGroups.getSubjectPermissions(g.getGroupId());
+        if ( groupPermissions == null ) {
+          groupPermissions = new SubjectPermissionsImpl(g.getGroupId());
+          userGroups.addSubjectPermissions(groupPermissions);
         }
-        String roles = group.get(g.getPermission());
-        if ( roles == null ) {
-          roles = g.getRole();
-        } else {
-          roles = roles+ ";" +g.getRole();    
-        }
-        group.put(g.getPermission(), roles);
+        groupPermissions.add(g.getRole(),g.getPermission());
       }
-    }
-    
-    
-    // TODO Auto-generated method stub
-    return null;
+    }    
+    return userGroups;
   }
 
 }

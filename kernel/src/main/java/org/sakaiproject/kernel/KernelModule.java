@@ -29,7 +29,10 @@ import org.sakaiproject.kernel.api.ComponentManager;
 import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.ServiceManager;
 import org.sakaiproject.kernel.api.ShutdownService;
+import org.sakaiproject.kernel.api.authz.ReferenceResolverService;
 import org.sakaiproject.kernel.api.jcr.JCRService;
+import org.sakaiproject.kernel.authz.simple.JcrReferenceResolverService;
+import org.sakaiproject.kernel.authz.simple.PathReferenceResolverService;
 import org.sakaiproject.kernel.component.core.guice.ServiceProvider;
 import org.sakaiproject.kernel.initialization.InitializationActionProvider;
 import org.sakaiproject.kernel.internal.api.InitializationAction;
@@ -42,6 +45,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Map.Entry;
 
@@ -199,6 +203,13 @@ public class KernelModule extends AbstractModule {
     bind(initializationActionType).toProvider(
         InitializationActionProvider.class);
 
-  }
+    TypeLiteral<Map<String, ReferenceResolverService>> resolverMap = new TypeLiteral<Map<String, ReferenceResolverService>>() {
+    };
+    bind(resolverMap).toProvider(ReferenceResolverServiceProvider.class);
 
+    bind(ReferenceResolverService.class).annotatedWith(
+        Names.named(PathReferenceResolverService.DEFAULT_RESOLVER)).to(
+        JcrReferenceResolverService.class);
+
+  }
 }

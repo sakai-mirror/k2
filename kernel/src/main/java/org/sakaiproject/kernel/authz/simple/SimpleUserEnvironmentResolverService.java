@@ -20,7 +20,7 @@ package org.sakaiproject.kernel.authz.simple;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-import org.sakaiproject.kernel.api.authz.GroupService;
+import org.sakaiproject.kernel.api.authz.SubjectService;
 import org.sakaiproject.kernel.api.memory.Cache;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
@@ -35,7 +35,7 @@ public class SimpleUserEnvironmentResolverService implements
     UserEnvironmentResolverService {
 
   private CacheManagerService cacheManagerService;
-  private GroupService groupService;
+  private SubjectService subjectService;
   private long ttl;
 
   /**
@@ -44,10 +44,10 @@ public class SimpleUserEnvironmentResolverService implements
    */
   @Inject
   public SimpleUserEnvironmentResolverService(
-      CacheManagerService cacheManagerService, GroupService groupService,
+      CacheManagerService cacheManagerService, SubjectService subjectService,
       @Named(UserEnvironmentResolverService.TTL) long ttl) {
     this.cacheManagerService = cacheManagerService;
-    this.groupService = groupService;
+    this.subjectService = subjectService;
     this.ttl = ttl;
   }
 
@@ -67,7 +67,7 @@ public class SimpleUserEnvironmentResolverService implements
 
     }
     SimpleUserEnvironment sue = new SimpleUserEnvironment(currentSession,
-        groupService, ttl);
+        subjectService, ttl);
     cache.put(currentSession.getId(), sue);
     return sue;
   }

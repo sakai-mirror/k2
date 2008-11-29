@@ -15,23 +15,35 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.authz.simple;
+package org.sakaiproject.kernel;
+
+import com.google.inject.Provider;
 
 import org.sakaiproject.kernel.api.authz.ReferenceResolverService;
-import org.sakaiproject.kernel.api.authz.ReferencedObject;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 
  */
-public class SimpleReferenceResolverService implements ReferenceResolverService{
+public class ReferenceResolverServiceProvider implements Provider<Map<String, ReferenceResolverService>> {
+
+  
+  private Map<String, ReferenceResolverService> providerMap = new ConcurrentHashMap<String, ReferenceResolverService>();
 
   /**
-   * {@inheritDoc}
-   * @see org.sakaiproject.kernel.api.authz.ReferenceResolverService#resolve(java.lang.String)
+   * 
    */
-  public ReferencedObject resolve(String resourceReference) {
-    
-    return null;
+  public ReferenceResolverServiceProvider() {
+  }
+  
+  /**
+   * {@inheritDoc}
+   * @see com.google.inject.Provider#get()
+   */
+  public Map<String, ReferenceResolverService> get() {
+    return providerMap;
   }
 
 }

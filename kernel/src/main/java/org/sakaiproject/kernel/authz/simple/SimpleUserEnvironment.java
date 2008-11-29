@@ -17,12 +17,12 @@
  */
 package org.sakaiproject.kernel.authz.simple;
 
-import org.sakaiproject.kernel.api.authz.GroupService;
+import org.sakaiproject.kernel.api.authz.SubjectPermissions;
+import org.sakaiproject.kernel.api.authz.SubjectService;
 import org.sakaiproject.kernel.api.authz.SubjectStatement;
+import org.sakaiproject.kernel.api.authz.UserSubjects;
 import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
-
-import java.util.Map;
 
 /**
  * 
@@ -35,16 +35,16 @@ public class SimpleUserEnvironment implements UserEnvironment {
    * a map of group permissions keyed by groupid, the value containing the permission granted as the key and a list of roles that
    * resulted in that grant.
    */
-  private Map<String, Map<String,String>> groups;
-  private GroupService groupSerice;
+  private UserSubjects groups;
+  private SubjectService subjectService;
 
   /**
    * @param currentSession
    */
-  public SimpleUserEnvironment(Session currentSession, GroupService groupService, long ttl) {
+  public SimpleUserEnvironment(Session currentSession, SubjectService groupService, long ttl) {
     expireTime = System.currentTimeMillis() + ttl;
     userid = currentSession.getUserId();
-    groups = groupSerice.fetchGroups(userid);    
+    groups = subjectService.fetchSubjects(userid);    
   }
 
   /**
@@ -65,11 +65,11 @@ public class SimpleUserEnvironment implements UserEnvironment {
     switch (subject.getSubjectType()) {
     case GROUP:
       String groupToken = subject.getSubjectToken();
-      if ( groups.containsKey(groupToken)) {
-        Map<String, String> userPermissions = groups.get(groupToken);
-        return userPermissions.containsKey(subject.getPermissionToken());
+      if ( groups.hasSubject(groupToken)) {
+        SubjectPermissions userPermissions = groups.getSubjectPermissions(groupToken);
+        return userPermissions.hasPermission(subject.getPermissionToken());
       }
-      return groups.containsKey(subject.getSubjectToken());
+      return groups.hasSubject(subject.getSubjectToken());
     case USERID:
       return userid.equals(subject.getSubjectToken());
     case AUTHENTICATED:

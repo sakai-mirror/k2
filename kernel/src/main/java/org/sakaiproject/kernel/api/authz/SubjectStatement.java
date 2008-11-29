@@ -43,8 +43,13 @@ public interface SubjectStatement {
     /**
      * Indicates the statement represents all authenticated users.
      */
-    AUTHENTICATED()
+    AUTHENTICATED(), 
+    /**
+     * Indicates and undefined subject statement that should be ignored.
+     */
+    UNDEFINED()
   }
+  
 
   /**
    * @return the type of subject.

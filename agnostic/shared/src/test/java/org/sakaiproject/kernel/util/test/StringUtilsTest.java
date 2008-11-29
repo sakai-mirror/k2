@@ -85,4 +85,47 @@ public class StringUtilsTest {
     assertEquals("is", e[2]);
   }
 
+  public void testSplitLimit() {
+    String[] e = StringUtils
+        .split("a.test.of.something.that.should.be.ok", '.',100);
+    assertEquals(8, e.length);
+    assertEquals("a", e[0]);
+    assertEquals("test", e[1]);
+    assertEquals("of", e[2]);
+    assertEquals("something", e[3]);
+    assertEquals("that", e[4]);
+    assertEquals("should", e[5]);
+    assertEquals("be", e[6]);
+    assertEquals("ok", e[7]);
+    e = StringUtils.split(".a.test.of.something.that.should.be.ok", '.',4);
+    assertEquals(4, e.length);
+    assertEquals("a", e[0]);
+    assertEquals("test", e[1]);
+    assertEquals("of", e[2]);
+    assertEquals("something", e[3]);
+    e = StringUtils.split(".a.test.of.something.that.should.be.ok.", '.',2);
+    assertEquals(2, e.length);
+    assertEquals("a", e[0]);
+    assertEquals("test", e[1]);
+    e = StringUtils.split("a.test.of.something.that.should.be.ok.", '.',8);
+    assertEquals(8, e.length);
+    assertEquals("a", e[0]);
+    assertEquals("test", e[1]);
+    assertEquals("of", e[2]);
+    assertEquals("something", e[3]);
+    assertEquals("that", e[4]);
+    assertEquals("should", e[5]);
+    assertEquals("be", e[6]);
+    assertEquals("ok", e[7]);
+    e = StringUtils.split(".......that.......", '.',5);
+    assertEquals(1, e.length);
+    assertEquals("that", e[0]);
+    e = StringUtils.split(".......that..is.....", '.',2);
+    assertEquals(2, e.length);
+    assertEquals("that", e[0]);
+    assertEquals("", e[1]);
+    e = StringUtils.split("..............", '.',2);
+    assertEquals(0, e.length);
+  }
+
 }
