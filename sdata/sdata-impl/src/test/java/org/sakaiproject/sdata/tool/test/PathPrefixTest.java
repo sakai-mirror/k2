@@ -24,7 +24,7 @@ package org.sakaiproject.sdata.tool.test;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
-import org.sakaiproject.sdata.tool.util.PathPrefix;
+import org.sakaiproject.kernel.util.PathPrefix;
 
 /**
  * @author ieb

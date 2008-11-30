@@ -15,13 +15,13 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.sdata.tool.json;
+package org.sakaiproject.kernel.serialization.json;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+
 import net.sf.ezmorph.MorpherRegistry;
 import net.sf.json.JsonConfig;
-import net.sf.json.util.EnumMorpher;
 import net.sf.json.util.JSONUtils;
 
 import java.util.HashMap;

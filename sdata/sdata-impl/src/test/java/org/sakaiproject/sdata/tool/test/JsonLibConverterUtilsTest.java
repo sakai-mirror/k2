@@ -22,7 +22,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.junit.Test;
-import org.sakaiproject.sdata.tool.json.JsonLibConverterUtils;
+import org.sakaiproject.kernel.serialization.json.JsonLibConverterUtils;
 
 /**
  *
@@ -31,7 +31,7 @@ public class JsonLibConverterUtilsTest {
 
   /**
    * Test method for
-   * {@link org.apache.shindig.social.core.util.JsonLibConverterUtils#dumpJsonObject(net.sf.json.JSONObject, java.lang.String)}.
+   * {@link org.sakaiproject.kernel.serialization.json.shindig.social.core.util.JsonLibConverterUtils#dumpJsonObject(net.sf.json.JSONObject, java.lang.String)}.
    */
   @Test
   public void testDumpJsonObject() {
@@ -46,7 +46,7 @@ public class JsonLibConverterUtilsTest {
 
   /**
    * Test method for
-   * {@link org.apache.shindig.social.core.util.JsonLibConverterUtils#dumpJsonArray(net.sf.json.JSONArray, java.lang.String)}.
+   * {@link org.sakaiproject.kernel.serialization.json.shindig.social.core.util.JsonLibConverterUtils#dumpJsonArray(net.sf.json.JSONArray, java.lang.String)}.
    */
   @Test
   public void testDumpJsonArray() {

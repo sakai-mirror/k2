@@ -15,19 +15,14 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.sdata.tool.json;
+package org.sakaiproject.kernel.api.serialization;
 
-import net.sf.json.processors.DefaultValueProcessor;
+public interface BeanConverter {
+  String REPOSITORY_BEANCONVETER = "beanconverters.repository";
 
-/**
- * Null are serialized as Nulls.
- */
-public class NullDefaultValueProcessor implements DefaultValueProcessor {
-  /**
-   * returns the object to be serialized
-   */
-  @SuppressWarnings("unchecked")
-  public Object getDefaultValue(Class target) {
-    return null;
-  }
+  <T> T convertToObject(String string, Class<T> className);
+
+  String convertToString(Object pojo);
+
+  String getContentType();
 }

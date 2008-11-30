@@ -16,9 +16,11 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package org.sakaiproject.sdata.tool.json;
+package org.sakaiproject.kernel.serialization.json;
 
-import org.sakaiproject.sdata.tool.api.BeanConverter;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.name.Named;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
@@ -26,12 +28,9 @@ import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
 import net.sf.json.util.JSONUtils;
 
-import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.google.inject.name.Named;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.api.serialization.BeanConverter;
 
 import java.lang.reflect.Array;
 import java.util.List;

@@ -19,14 +19,15 @@ package org.sakaiproject.kernel.api.userenv;
 
 import com.google.inject.ImplementedBy;
 
+import org.sakaiproject.kernel.api.authz.SubjectStatement;
 import org.sakaiproject.kernel.api.session.Session;
-import org.sakaiproject.kernel.authz.simple.SimpleUserEnvironmentResolverService;
+import org.sakaiproject.kernel.authz.simple.SimpleJcrUserEnvironmentResolverService;
 
 /**
  * The UserEnvironmentResolverService resolves {@link UserEnvironment} based on
  * {@link Session} objects.
  */
-@ImplementedBy(SimpleUserEnvironmentResolverService.class)
+@ImplementedBy(SimpleJcrUserEnvironmentResolverService.class)
 public interface UserEnvironmentResolverService {
 
   /**
@@ -43,5 +44,6 @@ public interface UserEnvironmentResolverService {
    * @return the UserEnvironment object.
    */
   UserEnvironment resolve(Session currentSession);
+
 
 }

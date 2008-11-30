@@ -15,45 +15,36 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.authz.simple;
+package org.sakaiproject.kernel.model;
 
+import com.google.inject.Inject;
+
+import org.sakaiproject.kernel.api.authz.SubjectPermissionService;
 import org.sakaiproject.kernel.api.authz.SubjectPermissions;
-import org.sakaiproject.kernel.api.authz.SubjectService;
 import org.sakaiproject.kernel.api.authz.SubjectStatement;
-import org.sakaiproject.kernel.api.authz.UserSubjects;
-import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 
 /**
  * 
  */
-public class SimpleUserEnvironment implements UserEnvironment {
+public class UserEnvironmentBean implements UserEnvironment {
 
-  private long expireTime;
+  private transient long expiry;
+  private SubjectsBean subjects;
   private String userid;
-  /**
-   * a map of group permissions keyed by groupid, the value containing the permission granted as the key and a list of roles that
-   * resulted in that grant.
-   */
-  private UserSubjects groups;
-  private SubjectService subjectService;
+  private SubjectPermissionService subjectPermissionService;
 
-  /**
-   * @param currentSession
-   */
-  public SimpleUserEnvironment(Session currentSession, SubjectService groupService, long ttl) {
-    expireTime = System.currentTimeMillis() + ttl;
-    userid = currentSession.getUserId();
-    groups = subjectService.fetchSubjects(userid);    
+  @Inject
+  public UserEnvironmentBean(SubjectPermissionService subjectPermissionService, int ttl) {
+    expiry = System.currentTimeMillis() + ttl;
+    this.subjectPermissionService = subjectPermissionService;
   }
-
   /**
    * {@inheritDoc}
-   * 
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#hasExpired()
    */
   public boolean hasExpired() {
-    return System.currentTimeMillis() > expireTime;
+    return ( System.currentTimeMillis() > expiry);
   }
 
   /**
@@ -64,12 +55,13 @@ public class SimpleUserEnvironment implements UserEnvironment {
   public boolean matches(SubjectStatement subject) {
     switch (subject.getSubjectType()) {
     case GROUP:
-      String groupToken = subject.getSubjectToken();
-      if ( groups.hasSubject(groupToken)) {
-        SubjectPermissions userPermissions = groups.getSubjectPermissions(groupToken);
-        return userPermissions.hasPermission(subject.getPermissionToken());
+      String subjectToken = subject.getSubjectToken();
+      if ( subjects.hasSubject(subjectToken)) {
+        subjects.setSubjectPermissionService(subjectPermissionService);
+        SubjectPermissions subjectPermissions = subjects.getSubjectPermissions(subjectToken);
+        return subjectPermissions.hasPermission(subject.getPermissionToken());
       }
-      return groups.hasSubject(subject.getSubjectToken());
+      return false;
     case USERID:
       return userid.equals(subject.getSubjectToken());
     case AUTHENTICATED:
@@ -79,6 +71,5 @@ public class SimpleUserEnvironment implements UserEnvironment {
     }
     return false;
   }
-
 
 }

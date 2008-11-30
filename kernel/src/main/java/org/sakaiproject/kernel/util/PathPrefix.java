@@ -19,7 +19,7 @@
  *
  **********************************************************************************/
 
-package org.sakaiproject.sdata.tool.util;
+package org.sakaiproject.kernel.util;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;

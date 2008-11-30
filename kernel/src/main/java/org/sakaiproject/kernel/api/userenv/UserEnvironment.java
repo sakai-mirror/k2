@@ -17,7 +17,10 @@
  */
 package org.sakaiproject.kernel.api.userenv;
 
+import com.google.inject.ImplementedBy;
+
 import org.sakaiproject.kernel.api.authz.SubjectStatement;
+import org.sakaiproject.kernel.model.UserEnvironmentBean;
 
 /**
  * The UserEnvironment is a container for the users environment, this will
@@ -30,12 +33,14 @@ import org.sakaiproject.kernel.api.authz.SubjectStatement;
  * will be re-created. The aim here is not to put these objects into session
  * that will need to be replicated.
  */
+@ImplementedBy(UserEnvironmentBean.class)
 public interface UserEnvironment {
 
   /**
    * Attribute used in the session to store a list of group memberships.
    */
   public static final String GROUPMEMBERSHIP = "userenv.grouplist";
+  public static final String NULLUSERENV = "userenv.null";
 
   /**
    * Does the UserEnvironment have a match for the subject statement.

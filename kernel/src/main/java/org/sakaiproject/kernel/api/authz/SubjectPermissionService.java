@@ -19,7 +19,9 @@ package org.sakaiproject.kernel.api.authz;
 
 import com.google.inject.ImplementedBy;
 
-import org.sakaiproject.kernel.authz.simple.SubjectServiceImpl;
+import org.sakaiproject.kernel.authz.simple.SubjectPermissionServiceImpl;
+
+import java.util.Map;
 
 /**
  * Subject service provides information on a users membership and permissions in
@@ -29,20 +31,15 @@ import org.sakaiproject.kernel.authz.simple.SubjectServiceImpl;
  * anon or auth. The group service need to provide intelligent caching of its
  * objects since it will be under heavy demand from the authz service.
  */
-@ImplementedBy(SubjectServiceImpl.class)
-public interface SubjectService {
+@ImplementedBy(SubjectPermissionServiceImpl.class)
+public interface SubjectPermissionService {
 
   /**
-   * <p>
-   * This needs to fetch the Subjects for a user. The
-   * outer map is keyed by the groupID's. The inner map is keyed by the
-   * permission token, and the value contains a list of roles separated by ;
-   * that granted the permission.
-   * </p>
-   * 
-   * @param userid
-   * @return Subjects for the user.
+   * @param subjectPermissionMap
+   * @param subjectToken
+   * @return
    */
-  UserSubjects fetchSubjects(String userid);
+  SubjectPermissions fetchSubjectPermissions(
+      Map<String, SubjectPermissions> subjectPermissionMap, String subjectToken);
 
 }
