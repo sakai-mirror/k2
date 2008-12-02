@@ -18,6 +18,7 @@
 package org.sakaiproject.kernel.model;
 
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
 import org.sakaiproject.kernel.api.authz.SubjectPermissionService;
 import org.sakaiproject.kernel.api.authz.SubjectPermissions;
@@ -29,13 +30,14 @@ import org.sakaiproject.kernel.api.userenv.UserEnvironment;
  */
 public class UserEnvironmentBean implements UserEnvironment {
 
+  private static final String USER_ENV_TTL = "userenvironment.ttl";
   private transient long expiry;
   private SubjectsBean subjects;
   private String userid;
   private SubjectPermissionService subjectPermissionService;
 
   @Inject
-  public UserEnvironmentBean(SubjectPermissionService subjectPermissionService, int ttl) {
+  public UserEnvironmentBean(SubjectPermissionService subjectPermissionService, @Named(USER_ENV_TTL) int ttl) {
     expiry = System.currentTimeMillis() + ttl;
     this.subjectPermissionService = subjectPermissionService;
   }
