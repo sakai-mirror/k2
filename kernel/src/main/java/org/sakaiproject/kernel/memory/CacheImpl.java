@@ -79,6 +79,9 @@ public class CacheImpl<V> implements Cache<V> {
   @SuppressWarnings("unchecked")
   public V get(String key) {
     Element e = cache.get(key);
+    if ( e == null ) {
+      return null;
+    }
     return (V) e.getObjectValue();
   }
 
