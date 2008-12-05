@@ -19,10 +19,8 @@ package org.sakaiproject.kernel.test;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.easymock.EasyMock;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Test;
 import org.sakaiproject.kernel.Activator;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.api.Kernel;
@@ -30,18 +28,16 @@ import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.RequiresStop;
 import org.sakaiproject.kernel.api.ServiceSpec;
 import org.sakaiproject.kernel.api.ShutdownService;
+import org.sakaiproject.kernel.api.memory.CacheManagerService;
+import org.sakaiproject.kernel.api.memory.CacheScope;
+import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.component.KernelLifecycle;
 import org.sakaiproject.kernel.util.FileUtil;
-import org.sakaiproject.kernel.webapp.filter.SakaiRequestFilter;
+import org.sakaiproject.kernel.webapp.SakaiServletRequest;
+import org.sakaiproject.kernel.webapp.SakaiServletResponse;
 
 import java.io.File;
-import java.io.IOException;
 
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -51,6 +47,7 @@ import javax.servlet.http.HttpServletResponse;
 public class KernelIntegrationTest {
   private static final Log LOG = LogFactory.getLog(KernelIntegrationTest.class);
   private static KernelLifecycle kernelLifecycle;
+  private static KernelManager kernelManager;
 
   @BeforeClass
   public static void beforeClass() throws ComponentActivatorException {
@@ -61,7 +58,7 @@ public class KernelIntegrationTest {
     kernelLifecycle = new KernelLifecycle();
     kernelLifecycle.start();
 
-    KernelManager kernelManager = new KernelManager();
+    kernelManager = new KernelManager();
     Kernel kernel = kernelManager.getKernel();
     Activator activator = new Activator();
     activator.activate(kernel);
@@ -84,57 +81,32 @@ public class KernelIntegrationTest {
       LOG.info("Failed to stop kernel ", ex);
     }
   }
-  
-  
-  
+
   /**
-   * Test the request Filter
-   * @throws ServletException
-   * @throws IOException
+   * 
    */
-  @Test
-  public void testSakaiRequestFilter() throws ServletException, IOException {
-    FilterConfig filterConfig = EasyMock.createMock(FilterConfig.class);
-    HttpServletRequest request = EasyMock.createMock(HttpServletRequest.class);
-    HttpServletResponse response = EasyMock.createMock(HttpServletResponse.class);
-    FilterChain chain = EasyMock.createMock(FilterChain.class);
-  
-    EasyMock.expect(filterConfig.getInitParameter("cookie-name")).andReturn("JSESSIONID");
-    EasyMock.expect(filterConfig.getInitParameter("time-requests")).andReturn("true");
-    EasyMock.expect(request.getMethod()).andReturn("GET");
-    EasyMock.expect(request.getPathInfo()).andReturn("/sdata/f");
-    chain.doFilter((ServletRequest)EasyMock.anyObject(), (ServletResponse)EasyMock.anyObject());
-    EasyMock.replay(filterConfig,request,response,chain);
-    
-    SakaiRequestFilter requestFilter = new SakaiRequestFilter();
-    requestFilter.init(filterConfig);
-    requestFilter.doFilter(request, response, chain);
-    
-    EasyMock.verify(filterConfig,request,response,chain);
+  protected void endRequest() {
+    CacheManagerService cacheManagerService = kernelManager
+        .getService(CacheManagerService.class);
+    cacheManagerService.unbind(CacheScope.REQUEST);
   }
+
   /**
-   * Test the request fileter with no settings
-   * @throws ServletException
-   * @throws IOException
+   * @param request
+   * @param response
+   * @param cookieName
+   * @return
    */
-  @Test
-  public void testSakaiRequestFilterSettings() throws ServletException, IOException {
-    FilterConfig filterConfig = EasyMock.createMock(FilterConfig.class);
-    HttpServletRequest request = EasyMock.createMock(HttpServletRequest.class);
-    HttpServletResponse response = EasyMock.createMock(HttpServletResponse.class);
-    FilterChain chain = EasyMock.createMock(FilterChain.class);
-  
-    EasyMock.expect(filterConfig.getInitParameter("cookie-name")).andReturn(null);
-    EasyMock.expect(filterConfig.getInitParameter("time-requests")).andReturn(null);
-    chain.doFilter((ServletRequest)EasyMock.anyObject(), (ServletResponse)EasyMock.anyObject());
-    EasyMock.replay(filterConfig,request,response,chain);
-    
-    SakaiRequestFilter requestFilter = new SakaiRequestFilter();
-    requestFilter.init(filterConfig);
-    requestFilter.doFilter(request, response, chain);
-    
-    EasyMock.verify(filterConfig,request,response,chain);
+  protected HttpServletResponse startRequest(HttpServletRequest request,
+      HttpServletResponse response, String cookieName) {
+    SakaiServletRequest wrequest = new SakaiServletRequest(request);
+    SakaiServletResponse wresponse = new SakaiServletResponse(response,
+        cookieName);
+    SessionManagerService sessionManagerService = kernelManager
+        .getService(SessionManagerService.class);
+    sessionManagerService.bindRequest(wrequest);
+    return wresponse;
+
   }
-  
-  
+
 }
