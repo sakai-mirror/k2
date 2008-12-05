@@ -33,9 +33,9 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @author ieb
  */
-public class PathPrefix {
+public class PathUtils {
 
-  private static final Log log = LogFactory.getLog(PathPrefix.class);
+  private static final Log log = LogFactory.getLog(PathUtils.class);
 
   /**
    * Generate a path using a SHA-1 hash split into path parts to generate a
@@ -45,7 +45,7 @@ public class PathPrefix {
    * @param user
    * @return
    */
-  public static String getPrefix(String user) {
+  public static String getUserPrefix(String user) {
     MessageDigest md;
     if (user != null) {
       try {
@@ -101,5 +101,21 @@ public class PathPrefix {
       return new String(chars);
     }
     return null;
+  }
+
+  /**
+   * @param resourceReference
+   * @return
+   */
+  public static String getParentReference(String resourceReference) {
+    char[] ref = resourceReference.toCharArray();
+    int i = ref.length-1;
+    while ( i >= 0 && ref[i] == '/'  ) i--;
+    while ( i >= 0 && ref[i] != '/' ) i--;
+    while ( i >= 0 && ref[i] == '/'  ) i--;
+    if ( i == -1 ) {
+      return "/";
+    }
+    return new String(ref,0,i+1);
   }
 }

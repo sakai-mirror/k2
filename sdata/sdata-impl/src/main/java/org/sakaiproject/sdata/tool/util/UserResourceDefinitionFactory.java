@@ -24,15 +24,15 @@ package org.sakaiproject.sdata.tool.util;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.sakaiproject.kernel.util.PathPrefix;
+import org.sakaiproject.kernel.util.PathUtils;
 import org.sakaiproject.sdata.tool.JCRUserStorageHandler;
 import org.sakaiproject.sdata.tool.api.ResourceDefinition;
 import org.sakaiproject.sdata.tool.api.ResourceDefinitionFactory;
 import org.sakaiproject.sdata.tool.api.SDataException;
 import org.sakaiproject.sdata.tool.api.SecurityAssertion;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * <p>
@@ -104,7 +104,7 @@ public class UserResourceDefinitionFactory implements ResourceDefinitionFactory 
           "User must be logged in to use preference service ");
     }
 
-    String pathPrefix = PathPrefix.getPrefix(user);
+    String pathPrefix = PathUtils.getUserPrefix(user);
 
     path = pathPrefix + path;
 
