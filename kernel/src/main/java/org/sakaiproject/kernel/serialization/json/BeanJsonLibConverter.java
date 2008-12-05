@@ -64,7 +64,7 @@ public class BeanJsonLibConverter implements BeanConverter {
    */
   @Inject
   public BeanJsonLibConverter(Injector injector,
-      @Named("ShindigJsonConfig") JsonConfig jsonConfig) {
+      @Named("SakaiKernelJsonConfig") JsonConfig jsonConfig) {
     this.injector = injector;
     this.jsonConfig = jsonConfig;
   }
