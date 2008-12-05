@@ -17,13 +17,13 @@
  */
 package org.sakaiproject.kernel.serialization.json;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import net.sf.ezmorph.Morpher;
 import net.sf.ezmorph.ObjectMorpher;
 import net.sf.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * A morpher that converts objects into maps
@@ -46,7 +46,7 @@ public class JsonObjectToMapMorpher implements Morpher, ObjectMorpher {
     return (JSONObject.class.equals(clazz));
   }
 
-  /**
+  /** 
    * @param the bean to be morphed
    * @return the morphed bean (a map)
    */
@@ -54,7 +54,7 @@ public class JsonObjectToMapMorpher implements Morpher, ObjectMorpher {
     Map<Object, Object> result = new HashMap<Object, Object>();
     JSONObject jsonObject = (JSONObject) bean;
     for (Object entry : jsonObject.entrySet()) {
-      result.put(((Entry)entry).getKey(), ((Entry)entry).getValue());
+      result.put(((Entry<?,?>)entry).getKey(), ((Entry<?,?>)entry).getValue());
     }
     return result;
   }
