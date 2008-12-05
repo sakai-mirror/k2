@@ -81,7 +81,7 @@ public class StringUtils {
         s = i+1;
       }
     }
-    if ( s < end ) {
+    if ( s < end && j < e.length) {
       e[j++] = new String(pn, s, end - s);
     }
     return e;
