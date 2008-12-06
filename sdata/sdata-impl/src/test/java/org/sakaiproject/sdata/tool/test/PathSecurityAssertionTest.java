@@ -64,16 +64,13 @@ public class PathSecurityAssertionTest {
       getSpec("DELETE","/resourceA/","d"),
       getSpec("OPTIONS","/resourceA/6sdfsfd","d"),
       getSpec("OPTIONS","/resourceA/","d"),
-      getSpec("BADMETHOD","/resourceA/7sdfsfd","d")
+      getSpec("BADMETHOD","/resourceA/7sdfsfd","m")
  
   };
 
   @Test 
   public void testAssertions() throws ServletException {
 
-    if ( true ) {
-      return; // TODO fix this test
-    }
     AuthzResolverService authzResolverService = createMock(AuthzResolverService.class);
     Map<String,PermissionQuery> locks = new HashMap<String, PermissionQuery>();
     PermissionQuery getPermission = createMock(PermissionQuery.class);
@@ -112,7 +109,7 @@ public class PathSecurityAssertionTest {
 
       try {
         psa.check(t[0], t[1]);
-        assertTrue(granted);
+        assertTrue("Checking "+t[0]+":"+t[1]+" to be granted "+granted,granted);
       } catch (PermissionDeniedException pde ) {
         assertTrue(denied);
       } catch (SDataException sde) {

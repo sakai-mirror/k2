@@ -147,7 +147,7 @@ public class PathSecurityAssertion implements SecurityAssertion {
     PermissionQuery permissionQuery = getResourceLock(method);
 
     if ( permissionQuery == null ) {
-      log.warn("++++++++++++++++++++++++ No Permission query for "+method+" Path Security Disabled +++++++++++++++++++++++++");
+      throw new SDataException(HttpServletResponse.SC_METHOD_NOT_ALLOWED,"Method "+method+" is not allowed");
     } else {
       authzResolverService.check(resourceReference, permissionQuery);
     }
