@@ -30,9 +30,14 @@ public interface PermissionQuery {
   Iterable<QueryStatement> statements();
 
   /**
+   * Get a token for this permission query on the supplied resource. The method
+   * must return the same QueryToken for the same permission on the same
+   * resource, as this is used to identify the results of this permission query
+   * against the supplied resource in a cache.
+   * 
    * @param resourceReference
-   * @return
+   * @return the token representing the query on the resource.
    */
-  String getKey(String resourceReference);
+  String getQueryToken(String resourceReference);
 
 }

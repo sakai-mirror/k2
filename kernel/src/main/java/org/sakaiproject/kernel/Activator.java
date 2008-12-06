@@ -31,6 +31,7 @@ import org.sakaiproject.kernel.api.ServiceManagerException;
 import org.sakaiproject.kernel.api.ServiceSpec;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
 import org.sakaiproject.kernel.api.authz.PermissionQueryService;
+import org.sakaiproject.kernel.api.authz.ReferenceResolverService;
 import org.sakaiproject.kernel.api.jcr.JCRRegistrationService;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
@@ -50,7 +51,8 @@ public class Activator implements ComponentActivator {
       JCRRegistrationService.class, JCRNodeFactoryService.class,
       UserDirectoryService.class, AuthenticationManager.class,
       CacheManagerService.class, SessionManagerService.class,
-      AuthzResolverService.class, PermissionQueryService.class };
+      AuthzResolverService.class, PermissionQueryService.class,
+      ReferenceResolverService.class};
   private static final Log LOG = LogFactory.getLog(Activator.class);
   @SuppressWarnings("unused")
   private Kernel kernel;

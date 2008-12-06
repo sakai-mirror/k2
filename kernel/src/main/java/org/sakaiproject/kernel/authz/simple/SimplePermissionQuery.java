@@ -15,38 +15,45 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.authz.minimal;
+package org.sakaiproject.kernel.authz.simple;
 
-import org.sakaiproject.kernel.api.authz.AuthzResolverService;
-import org.sakaiproject.kernel.api.authz.PermissionDeniedException;
 import org.sakaiproject.kernel.api.authz.PermissionQuery;
+import org.sakaiproject.kernel.api.authz.QueryStatement;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * A mimimal authz resolution service that says yes to eveything.
+ * 
  */
-public class MinimalAuthzResolverService implements AuthzResolverService {
+public class SimplePermissionQuery implements PermissionQuery {
+
+  private String name;
+  private List<QueryStatement> queryStatements = new ArrayList<QueryStatement>();
 
   /**
-   * {@inheritDoc}
-   * @see org.sakaiproject.kernel.api.authz.AuthzResolverService#check(java.lang.String, org.sakaiproject.kernel.api.authz.PermissionQuery)
+   * 
    */
-  public void check(String resourceReference, PermissionQuery permissionQuery)
-      throws PermissionDeniedException {
-    
+  public SimplePermissionQuery(String name) {
+    this.name = name;
+  }
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.authz.PermissionQuery#getQueryToken(java.lang.String)
+   */
+  public String getQueryToken(String resourceReference) {
+    return resourceReference+"?q="+name;
   }
 
   /**
    * {@inheritDoc}
-   * @see org.sakaiproject.kernel.api.authz.AuthzResolverService#clearRequestGrant()
+   * @see org.sakaiproject.kernel.api.authz.PermissionQuery#statements()
    */
-  public void clearRequestGrant() {
+  public Iterable<QueryStatement> statements() {
+    return queryStatements;
   }
 
-  /**
-   * {@inheritDoc}
-   * @see org.sakaiproject.kernel.api.authz.AuthzResolverService#setRequestGrant()
-   */
-  public void setRequestGrant() {
+  public void addQueryStatement(QueryStatement queryStatement) {
+    queryStatements.add(queryStatement);
   }
-
 }

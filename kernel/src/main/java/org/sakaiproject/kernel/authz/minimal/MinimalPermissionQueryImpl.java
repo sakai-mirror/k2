@@ -53,9 +53,9 @@ public class MinimalPermissionQueryImpl implements PermissionQuery {
 
   /**
    * {@inheritDoc}
-   * @see org.sakaiproject.kernel.api.authz.PermissionQuery#getKey(java.lang.String)
+   * @see org.sakaiproject.kernel.api.authz.PermissionQuery#getQueryToken(java.lang.String)
    */
-  public String getKey(String resourceReference) {
+  public String getQueryToken(String resourceReference) {
     return resourceReference+"::"+name;
   }
 

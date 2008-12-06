@@ -15,34 +15,48 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.api.authz;
-
-import javax.jcr.Value;
+package org.sakaiproject.kernel.api;
 
 /**
- * Represents and access control statement.
+ * 
  */
-public interface AccessControlStatement {
+public class UpdateFailedException extends Exception {
 
   /**
-   * @return the key for the statement, that binds to a QeueryStatement
+   * 
    */
-  String getStatementKey();
+  private static final long serialVersionUID = 2347811755024042066L;
 
   /**
-   * @return true if the AccessControl propagates to children.
+   * 
    */
-  boolean isPropagating();
+  public UpdateFailedException() {
+    // TODO Auto-generated constructor stub
+  }
 
   /**
-   * @return true if a grant, false if a deny.
+   * @param message
    */
-  boolean isGranted();
+  public UpdateFailedException(String message) {
+    super(message);
+    // TODO Auto-generated constructor stub
+  }
 
   /**
-   * @return the subject statement that this AccessControl refers to.
+   * @param cause
    */
-  SubjectStatement getSubject();
+  public UpdateFailedException(Throwable cause) {
+    super(cause);
+    // TODO Auto-generated constructor stub
+  }
 
+  /**
+   * @param message
+   * @param cause
+   */
+  public UpdateFailedException(String message, Throwable cause) {
+    super(message, cause);
+    // TODO Auto-generated constructor stub
+  }
 
 }

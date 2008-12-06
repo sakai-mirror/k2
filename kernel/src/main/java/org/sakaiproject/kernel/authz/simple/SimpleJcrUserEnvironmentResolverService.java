@@ -32,7 +32,7 @@ import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.util.IOUtils;
-import org.sakaiproject.kernel.util.PathPrefix;
+import org.sakaiproject.kernel.util.PathUtils;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -86,7 +86,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
     }
 
     try {
-      String prefix = PathPrefix.getPrefix(currentSession.getUserId());
+      String prefix = PathUtils.getUserPrefix(currentSession.getUserId());
       String userEnv = userEnvironmentBase + prefix + USERENV;
       String userEnvBody = IOUtils.readFully(jcrNodeFactoryService
           .getOutputStream(userEnv), "UTF-8");

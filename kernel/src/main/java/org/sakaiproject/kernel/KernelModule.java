@@ -19,9 +19,12 @@ package org.sakaiproject.kernel;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.CreationException;
+import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
 import com.google.inject.spi.Message;
+
+import net.sf.json.JsonConfig;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,7 +34,10 @@ import org.sakaiproject.kernel.api.ServiceManager;
 import org.sakaiproject.kernel.api.ShutdownService;
 import org.sakaiproject.kernel.api.authz.ReferenceResolverService;
 import org.sakaiproject.kernel.api.jcr.JCRService;
+import org.sakaiproject.kernel.api.serialization.BeanConverter;
+import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.authz.simple.JcrReferenceResolverService;
+import org.sakaiproject.kernel.authz.simple.NullUserEnvironment;
 import org.sakaiproject.kernel.authz.simple.PathReferenceResolverService;
 import org.sakaiproject.kernel.component.core.guice.ServiceProvider;
 import org.sakaiproject.kernel.initialization.InitializationActionProvider;
@@ -39,11 +45,15 @@ import org.sakaiproject.kernel.internal.api.InitializationAction;
 import org.sakaiproject.kernel.jcr.api.internal.StartupAction;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.StartupActionProvider;
+import org.sakaiproject.kernel.serialization.json.BeanJsonLibConfig;
+import org.sakaiproject.kernel.serialization.json.BeanJsonLibConverter;
 import org.sakaiproject.kernel.util.ResourceLoader;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -210,6 +220,21 @@ public class KernelModule extends AbstractModule {
     bind(ReferenceResolverService.class).annotatedWith(
         Names.named(PathReferenceResolverService.DEFAULT_RESOLVER)).to(
         JcrReferenceResolverService.class);
+
+    bind(BeanConverter.class).annotatedWith(
+        Names.named(BeanConverter.REPOSITORY_BEANCONVETER)).to(
+        BeanJsonLibConverter.class).in(Scopes.SINGLETON);
+
+    // config for the bean converter
+    bind(Map.class).to(HashMap.class);
+    bind(List.class).to(ArrayList.class);
+    bind(Map[].class).to(HashMap[].class);
+    bind(JsonConfig.class).annotatedWith(Names.named("SakaiKernelJsonConfig"))
+        .to(BeanJsonLibConfig.class);
+    
+    bind(UserEnvironment.class).annotatedWith(
+        Names.named(UserEnvironment.NULLUSERENV)).to(NullUserEnvironment.class)
+        .in(Scopes.SINGLETON);
 
   }
 }

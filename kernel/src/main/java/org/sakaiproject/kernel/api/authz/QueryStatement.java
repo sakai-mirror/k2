@@ -27,6 +27,6 @@ public interface QueryStatement {
   /**
    * @return the key for the statement, binding it to the {@link AccessControlStatement}
    */
-  String getKey();
+  String getStatementKey();
 
 }

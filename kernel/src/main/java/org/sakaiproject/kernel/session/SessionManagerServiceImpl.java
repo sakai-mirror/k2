@@ -57,6 +57,13 @@ public class SessionManagerServiceImpl implements SessionManagerService {
         CacheScope.REQUEST);
     SakaiServletRequest request = (SakaiServletRequest) requestScope
         .get(CURRENT_REQUEST);
+    if (request == null) {
+      throw new RuntimeException(
+          "No Request Object has been bound to the request thread\n" +
+          "   Please ensure that the Sakai Request Filter is active in web.xml\n" +
+          "   or if in a test, perform a SessionManager.bindRequest as part of\n" +
+          "   the invocation of the test.");
+    }
     return request.getSakaiSession();
   }
 
@@ -66,13 +73,13 @@ public class SessionManagerServiceImpl implements SessionManagerService {
    * @see org.sakaiproject.kernel.api.session.SessionManagerService#bindRequest(javax.servlet.ServletRequest)
    */
   public void bindRequest(ServletRequest request) {
-    if ( !(request instanceof SakaiServletRequest) ) {
-      throw new RuntimeException("Requests can only be bound by the SakaiRequestFilter ");
+    if (!(request instanceof SakaiServletRequest)) {
+      throw new RuntimeException(
+          "Requests can only be bound by the SakaiRequestFilter ");
     }
     Cache<Object> requestScope = cacheManagerService.getCache(REQUEST_CACHE,
         CacheScope.REQUEST);
     requestScope.put(CURRENT_REQUEST, request);
   }
-
 
 }

@@ -19,6 +19,8 @@ package org.sakaiproject.kernel.authz.simple;
 
 import com.google.inject.Inject;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.authz.AccessControlStatement;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
 import org.sakaiproject.kernel.api.authz.PermissionDeniedException;
@@ -44,11 +46,14 @@ import java.util.Map.Entry;
  */
 public class SimpleAuthzResolverService implements AuthzResolverService {
 
+  private static final Log LOG = LogFactory.getLog(SimpleAuthzResolverService.class);
   private SessionManagerService sessionManager;
   private ReferenceResolverService referenceResolverService;
   private UserEnvironmentResolverService userEnvironmentResolverService;
   private Cache<Map<String, List<AccessControlStatement>>> cachedAcl;
   private CacheManagerService cacheManagerService;
+  
+  private long secureKey = System.currentTimeMillis();
 
   /**
    * 
@@ -77,15 +82,21 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
 
     Cache<Boolean> grants = cacheManagerService.getCache("authz",
         CacheScope.REQUEST);
+    if ( grants.containsKey("request-granted"+secureKey) ) {
+      return;
+    }
+    
 
-    String localPermissoinKey = permissionQuery.getKey(resourceReference);
+    String permissionQueryToken = permissionQuery
+        .getQueryToken(resourceReference);
 
-    if (grants.containsKey(localPermissoinKey)) {
-      if (grants.get(localPermissoinKey)) {
+    if (grants.containsKey(permissionQueryToken)) {
+      if (grants.get(permissionQueryToken)) {
         return;
       } else {
         throw new PermissionDeniedException("No grant found on "
-            + resourceReference + " by " + permissionQuery + " (request cached) ");
+            + resourceReference + " by " + permissionQuery
+            + " (request cached) ");
 
       }
     }
@@ -127,7 +138,7 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
         // populate the permissions into the map, appending to lists,
         // each key represents an access control item, the list contains
         // varieties of acl to be consulted
-        String key = ac.getKey();
+        String key = ac.getStatementKey();
         List<AccessControlStatement> plist = acl.get(key);
         if (plist == null) {
           plist = new ArrayList<AccessControlStatement>();
@@ -167,7 +178,7 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
               if (controllingObject == null) {
                 controllingObject = parent;
               }
-              String key = ac.getKey();
+              String key = ac.getStatementKey();
               List<AccessControlStatement> plist = acl.get(key);
               if (plist == null) {
                 plist = new ArrayList<AccessControlStatement>();
@@ -179,7 +190,9 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
           parent = parent.getParent();
         }
       }
-      cachedAcl.put(controllingObject.getKey(), acl);
+      if (controllingObject != null) {
+        cachedAcl.put(controllingObject.getKey(), acl);
+      }
     }
 
     // now we have the acl derived, we can now go through the permissionQuery,
@@ -187,16 +200,16 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
     // see if any are satisfied or denied in order.
 
     for (QueryStatement qs : permissionQuery.statements()) {
-      List<AccessControlStatement> kacl = acl.get(qs.getKey());
+      List<AccessControlStatement> kacl = acl.get(qs.getStatementKey());
       for (AccessControlStatement ac : kacl) {
         if (userEnvironment.matches(ac.getSubject())) {
           if (ac.isGranted()) {
             // cache the response in the request scope cache.
-            grants.put(localPermissoinKey, true);
+            grants.put(permissionQueryToken, true);
             return;
           } else {
             // cache the response in the request scope cache.
-            grants.put(localPermissoinKey, false);
+            grants.put(permissionQueryToken, false);
             throw new PermissionDeniedException(
                 "Permission Explicitly deinied on " + resourceReference
                     + " by " + ac + " for " + qs + " user environment "
@@ -207,9 +220,23 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
     }
 
     // cache the response in the request scope cache.
-    grants.put(localPermissoinKey, false);
+    grants.put(permissionQueryToken, false);
     throw new PermissionDeniedException("No grant found on "
         + resourceReference + " by " + permissionQuery + " for "
         + userEnvironment);
+  }
+  
+  public void setRequestGrant() {
+    Cache<Boolean> grants = cacheManagerService.getCache("authz",
+        CacheScope.REQUEST);
+    grants.put("request-granted"+secureKey,true);
+    LOG.warn("Request Fully Granted ");
+  }
+  
+  public void clearRequestGrant() {
+    Cache<Boolean> grants = cacheManagerService.getCache("authz",
+        CacheScope.REQUEST);
+    grants.remove("request-granted"+secureKey);
+    LOG.warn("Request Granted Removed ");
   }
 }

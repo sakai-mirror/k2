@@ -18,7 +18,10 @@
 package org.sakaiproject.kernel.test;
 
 import org.easymock.EasyMock;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.webapp.filter.SakaiRequestFilter;
 
 import java.io.IOException;
@@ -34,8 +37,18 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * 
  */
-public class RequestFilterTest extends KernelIntegrationTest {
+public class RequestFilterTest extends KernelIntegrationBase {
   
+  @BeforeClass
+  public static void beforeClass() throws ComponentActivatorException {
+    KernelIntegrationBase.beforeClass();
+  }
+  
+  @AfterClass
+  public static void afterClass() {
+    KernelIntegrationBase.afterClass();
+  }
+
   /**
    * Test the request Filter
    * @throws ServletException

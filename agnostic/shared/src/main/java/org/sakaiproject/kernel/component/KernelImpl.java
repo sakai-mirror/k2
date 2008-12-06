@@ -19,7 +19,9 @@ package org.sakaiproject.kernel.component;
 
 import org.sakaiproject.kernel.api.ComponentManager;
 import org.sakaiproject.kernel.api.Kernel;
+import org.sakaiproject.kernel.api.KernelConfigurationException;
 import org.sakaiproject.kernel.api.ServiceManager;
+import org.sakaiproject.kernel.api.ServiceSpec;
 
 /**
  * The kernel implementation.
@@ -88,5 +90,28 @@ public class KernelImpl implements Kernel {
   public void setServiceManager(ServiceManager serviceManager) {
     this.serviceManager = serviceManager;
   }
+  
+  
+  /**
+   * Get a service, bound to an API, of the same type as the API
+   * 
+   * @param <T>
+   *          the type of the service
+   * @param serviceApi
+   *          the class representing the service that is also used for
+   *          registration.
+   * @return the service or null if none is found.
+   */
+  @SuppressWarnings("unchecked")
+  public <T> T getService(Class<T> serviceApi) {
+    ServiceSpec ss = new ServiceSpec(serviceApi);
+    try {
+      return (T) serviceManager.getService(ss);
+    } catch (KernelConfigurationException e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
 
 }

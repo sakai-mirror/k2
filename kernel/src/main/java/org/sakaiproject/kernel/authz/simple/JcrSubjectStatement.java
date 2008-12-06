@@ -40,6 +40,13 @@ public class JcrSubjectStatement implements SubjectStatement {
     permissionToken = parts[2];
   }
 
+  public JcrSubjectStatement(SubjectType subjectType, String subjectToken,
+      String permissionToken) {
+    this.subjectType = subjectType;
+    this.subjectToken = subjectToken;
+    this.permissionToken = permissionToken;
+  }
+
   /**
    * 
    */
@@ -51,6 +58,7 @@ public class JcrSubjectStatement implements SubjectStatement {
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.authz.SubjectStatement#getPermissionToken()
    */
   public String getPermissionToken() {
@@ -59,6 +67,7 @@ public class JcrSubjectStatement implements SubjectStatement {
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.authz.SubjectStatement#getSubjectToken()
    */
   public String getSubjectToken() {
@@ -67,10 +76,38 @@ public class JcrSubjectStatement implements SubjectStatement {
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.authz.SubjectStatement#getSubjectType()
    */
   public SubjectType getSubjectType() {
     return subjectType;
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see java.lang.Object#hashCode()
+   */
+  @Override
+  public int hashCode() {
+    return subjectType.hashCode() + subjectToken.hashCode()
+        + permissionToken.hashCode();
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
+  @Override
+  public boolean equals(Object obj) {
+    if (obj instanceof JcrSubjectStatement) {
+      JcrSubjectStatement jcrss = (JcrSubjectStatement) obj;
+      return subjectType.equals(jcrss.subjectType)
+          && subjectToken.equals(jcrss.subjectToken)
+          && permissionToken.equals(jcrss.permissionToken);
+    }
+    return false;
   }
 
 }

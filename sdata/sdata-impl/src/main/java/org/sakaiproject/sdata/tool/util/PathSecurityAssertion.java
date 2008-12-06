@@ -146,8 +146,11 @@ public class PathSecurityAssertion implements SecurityAssertion {
         + resourcePath.substring(basePath.length());
     PermissionQuery permissionQuery = getResourceLock(method);
 
-    authzResolverService.check(resourceReference, permissionQuery);
-
+    if ( permissionQuery == null ) {
+      log.warn("++++++++++++++++++++++++ No Permission query for "+method+" Path Security Disabled +++++++++++++++++++++++++");
+    } else {
+      authzResolverService.check(resourceReference, permissionQuery);
+    }
   }
 
   /**

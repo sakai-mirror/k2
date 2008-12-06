@@ -45,5 +45,17 @@ public interface Kernel {
    * @return
    */
   ClassLoader getParentComponentClassLoader();
+  
+  /**
+   * Get a service, bound to an API, of the same type as the API
+   * 
+   * @param <T>
+   *          the type of the service
+   * @param serviceApi
+   *          the class representing the service that is also used for
+   *          registration.
+   * @return the service or null if none is found.
+   */
+  <T> T getService(Class<T> serviceApi);
 
 }

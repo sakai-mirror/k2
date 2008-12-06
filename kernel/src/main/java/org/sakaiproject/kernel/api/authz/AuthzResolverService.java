@@ -19,12 +19,12 @@ package org.sakaiproject.kernel.api.authz;
 
 import com.google.inject.ImplementedBy;
 
-import org.sakaiproject.kernel.authz.minimal.MinimalAuthzResolverService;
+import org.sakaiproject.kernel.authz.simple.SimpleAuthzResolverService;
 
 /**
  * This service resolves ACL questions by testing security assertions.
  */
-@ImplementedBy(MinimalAuthzResolverService.class)
+@ImplementedBy(SimpleAuthzResolverService.class)
 public interface AuthzResolverService {
 
   /**
@@ -42,5 +42,16 @@ public interface AuthzResolverService {
    */
   void check(String resourceReference, PermissionQuery permissionQuery)
       throws PermissionDeniedException;
+
+  /**
+   * Clear the request grant
+   */
+  void clearRequestGrant();
+
+  /**
+   * Set a request grant that allows all operations on this thread, calling this
+   * method by passes all security, and will be logged.
+   */
+  void setRequestGrant();
 
 }

@@ -17,6 +17,8 @@
  */
 package org.sakaiproject.kernel.api.authz;
 
+import org.sakaiproject.kernel.api.UpdateFailedException;
+
 import java.util.Collection;
 
 /**
@@ -49,5 +51,19 @@ public interface ReferencedObject {
    * @return a unique key for referencing object in caches and maps.
    */
   String getKey();
+
+  /**
+   * @param removeAcs
+   * @throws UpdateFailedException
+   */
+  void removeAccessControlStatement(AccessControlStatement removeAcs)
+      throws UpdateFailedException;
+
+  /**
+   * @param newAcs
+   * @throws UpdateFailedException
+   */
+  void addAccessControlStatement(AccessControlStatement newAcs)
+      throws UpdateFailedException;
 
 }

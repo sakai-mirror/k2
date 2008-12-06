@@ -19,8 +19,6 @@ package org.sakaiproject.kernel.test;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.sakaiproject.kernel.Activator;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.api.Kernel;
@@ -42,19 +40,27 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * 
+ * A base class for integration tests the extender must invoke beforeClass and
+ * afterClass as part of its lifecycle. It cannot be performed here as it will
+ * not get invoked correctly.
  */
-public class KernelIntegrationTest {
-  private static final Log LOG = LogFactory.getLog(KernelIntegrationTest.class);
+public class KernelIntegrationBase {
+  private static final Log LOG = LogFactory.getLog(KernelIntegrationBase.class);
   private static KernelLifecycle kernelLifecycle;
   private static KernelManager kernelManager;
 
-  @BeforeClass
   public static void beforeClass() throws ComponentActivatorException {
     // If there are problems with startup and shutdown, these will prevent the
     // problem
-    FileUtil.deleteAll(new File("target/jcr"));
-    FileUtil.deleteAll(new File("target/testdb"));
+    File jcrBase = new File("target/jcr");
+    File dbBase = new File("target/testdb");
+    System.err.println("==========================================================================");
+    System.err.println("Removing all previous JCR and DB traces from "+jcrBase.getAbsolutePath()+" "+dbBase.getAbsolutePath());
+    
+    FileUtil.deleteAll(jcrBase);
+    FileUtil.deleteAll(dbBase);
+    System.err.println("==========================================================================");
+
     kernelLifecycle = new KernelLifecycle();
     kernelLifecycle.start();
 
@@ -73,7 +79,6 @@ public class KernelIntegrationTest {
     }
   }
 
-  @AfterClass
   public static void afterClass() {
     try {
       kernelLifecycle.stop();

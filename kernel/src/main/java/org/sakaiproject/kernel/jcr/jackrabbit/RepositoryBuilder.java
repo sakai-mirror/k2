@@ -273,7 +273,6 @@ public class RepositoryBuilder {
   public void stop() {
     if (repository != null) {
       try {
-
         repository.shutdown();
         log
             .debug("An A No current connection exception from the version manager is normal, if the version manager hasnt been used");

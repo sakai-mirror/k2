@@ -25,7 +25,7 @@ import org.junit.runners.Suite.SuiteClasses;
  *
  */
 @RunWith(Suite.class)
-@SuiteClasses( { IntegrationTest.class, PathPrefixTest.class,
+@SuiteClasses( { IntegrationTest.class, 
     PathSecurityAssertionTest.class, RFC1123DateTest.class,
     SnoopHandlerTest.class, ContentTypeTest.class,
     ResourceDefinitionFactoryTest.class,

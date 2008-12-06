@@ -49,11 +49,14 @@ public class JcrReferenceResolverService implements ReferenceResolverService{
   public ReferencedObject resolve(String resourceReference) {
     try {
       Node n = jcrNodeFactoryService.getNode(resourceReference);
+      if ( n == null ) {
+        return new EmptyReferenceObject(resourceReference,null,this);
+      }
       return new JcrReferenceObject(n);
     } catch (RepositoryException e) {
-      return new EmptyReferenceObject(resourceReference,e);
+      return new EmptyReferenceObject(resourceReference,e,this);
     } catch (JCRNodeFactoryServiceException e) {
-      return new EmptyReferenceObject(resourceReference,e);
+      return new EmptyReferenceObject(resourceReference,e,this);
     }
   }
 

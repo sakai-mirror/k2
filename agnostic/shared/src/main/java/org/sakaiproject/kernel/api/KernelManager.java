@@ -84,9 +84,8 @@ public class KernelManager {
    */
   @SuppressWarnings("unchecked")
   public <T> T getService(Class<T> serviceApi) {
-    ServiceSpec ss = new ServiceSpec(serviceApi);
     try {
-      return (T) getKernel().getServiceManager().getService(ss);
+      return (T) getKernel().getService(serviceApi);
     } catch (KernelConfigurationException e) {
       e.printStackTrace();
       return null;

@@ -19,6 +19,7 @@ package org.sakaiproject.kernel.authz.simple;
 
 import org.sakaiproject.kernel.api.authz.AccessControlStatement;
 import org.sakaiproject.kernel.api.authz.SubjectStatement;
+import org.sakaiproject.kernel.util.StringUtils;
 
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
@@ -36,24 +37,23 @@ public class JcrAccessControlStatementImpl implements AccessControlStatement {
   private static final String PROPAGATING_PREFIX = "p:";
   private static final String GRANTED = "g:1";
   private static final String PROPAGATING = "p:1";
-  private SubjectStatement subject;
-  private boolean granted;
-  private boolean propagating;
-  private String key;
+  protected SubjectStatement subject;
+  protected boolean granted;
+  protected boolean propagating;
+  protected String key;
 
   /**
    * @param p
    * @throws RepositoryException
    * @throws ValueFormatException
    */
-  public JcrAccessControlStatementImpl(Property p) throws ValueFormatException,
+  public JcrAccessControlStatementImpl(String spec) throws ValueFormatException,
       RepositoryException {
-    Value[] values = p.getValues();
+    String[] values = StringUtils.split(spec, ',');
     subject = JcrSubjectStatement.UNKNOWN;
     granted = false;
     propagating = false;
-    for (Value v : values) {
-      String val = v.toString();
+    for (String val : values) {
       if (val.startsWith(SUBJECT_PREFIX)) {
         subject = new JcrSubjectStatement(val.substring(2));
       } else if (val.startsWith(KEY_PREFIX)) {
@@ -66,12 +66,20 @@ public class JcrAccessControlStatementImpl implements AccessControlStatement {
     }
   }
 
+  public JcrAccessControlStatementImpl(SubjectStatement subject, String key,
+      boolean granted, boolean propagating) {
+    this.subject = subject;
+    this.key = key;
+    this.granted = granted;
+    this.propagating = propagating;
+  }
+
   /**
    * {@inheritDoc}
    * 
-   * @see org.sakaiproject.kernel.api.authz.AccessControlStatement#getKey()
+   * @see org.sakaiproject.kernel.api.authz.AccessControlStatement#getStatementKey()
    */
-  public String getKey() {
+  public String getStatementKey() {
     return key;
   }
 
@@ -100,6 +108,46 @@ public class JcrAccessControlStatementImpl implements AccessControlStatement {
    */
   public boolean isPropagating() {
     return propagating;
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see java.lang.Object#hashCode()
+   */
+  @Override
+  public int hashCode() {
+    return subject.hashCode() + key.hashCode() + (granted ? 10000 : 20000)
+        + (propagating ? 1000 : 2000);
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
+  @Override
+  public boolean equals(Object obj) {
+    if (obj instanceof JcrAccessControlStatementImpl) {
+      JcrAccessControlStatementImpl jacs = (JcrAccessControlStatementImpl) obj;
+      if (hashCode() == jacs.hashCode()) {
+        return (subject.equals(jacs.subject) && key.equals(jacs.key)
+            && granted == jacs.granted && propagating == jacs.propagating);
+      }
+    }
+    return false;
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return KEY_PREFIX+key+","+
+    SUBJECT_PREFIX+subject+","+
+    GRANTED_PREFIX+(granted?1:0)+","+
+    PROPAGATING_PREFIX+(propagating?1:0);
   }
 
 }
