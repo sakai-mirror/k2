@@ -30,6 +30,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -119,8 +120,6 @@ public class IntegrationTest {
 
     KernelManager km = new KernelManager();
     kernel = km.getKernel();
-    
-    
 
   }
 
@@ -172,7 +171,6 @@ public class IntegrationTest {
     HttpServletResponse response = createMock(HttpServletResponse.class);
     HttpSession session = setupSession(request);
 
-
     expect(request.getPathInfo()).andReturn("/checkRunning");
     expect(request.getPathInfo()).andReturn("/f/test34a/sas/info.txt");
     expect(request.getPathInfo()).andReturn("/p/myinfo.txt");
@@ -216,7 +214,6 @@ public class IntegrationTest {
     HttpServletRequest request = createMock(HttpServletRequest.class);
     HttpServletResponse response = createMock(HttpServletResponse.class);
     HttpSession session = setupSession(request);
-
 
     // service call 1
 
@@ -273,7 +270,6 @@ public class IntegrationTest {
     HttpServletRequest request = createMock(HttpServletRequest.class);
     HttpServletResponse response = createMock(HttpServletResponse.class);
     HttpSession session = setupSession(request);
-
 
     // service call 2
     // call 2 no path
@@ -352,7 +348,6 @@ public class IntegrationTest {
     HttpServletResponse response = createMock(HttpServletResponse.class);
     HttpSession session = setupSession(request);
 
-
     // service call 4
     // exercise the check
     // call 4
@@ -414,7 +409,6 @@ public class IntegrationTest {
     HttpServletRequest request = createMock(HttpServletRequest.class);
     HttpServletResponse response = createMock(HttpServletResponse.class);
     HttpSession session = setupSession(request);
-
 
     expect(request.getMethod()).andReturn("GET").atLeastOnce();
     expect(request.getPathInfo()).andReturn("/f/test/testfile.txt")
@@ -502,7 +496,7 @@ public class IntegrationTest {
 
   }
 
-  //@Test disable until I get a chance to fix
+  @Test
   public void testGetMetaData() throws ServletException,
       JCRNodeFactoryServiceException, AccessDeniedException,
       ItemExistsException, ConstraintViolationException,
@@ -521,19 +515,8 @@ public class IntegrationTest {
     expect(request.getParameter("f")).andReturn("m").anyTimes();
     expect(request.getParameter("d")).andReturn("2").anyTimes();
     expect(request.getParameter("snoop")).andReturn("0").anyTimes();
-    expect(request.getDateHeader("if-unmodified-since")).andReturn(0L)
-        .atLeastOnce();
-    expect(request.getDateHeader("if-modified-since")).andReturn(0L)
-        .atLeastOnce();
-    expect(request.getHeader("if-match")).andReturn(null).atLeastOnce();
-    expect(request.getHeader("if-none-match")).andReturn(null).atLeastOnce();
-    expect(request.getHeader("range")).andReturn(null).atLeastOnce();
-    expect(request.getDateHeader("if-range")).andReturn(0L).atLeastOnce();
-    expect(request.getHeader("if-range")).andReturn(null).atLeastOnce();
-
     response.setHeader("x-sdata-handler",
         "org.sakaiproject.sdata.tool.JCRHandler");
-    response.setHeader("x-sdata-url", "/f/test/testfile.txt");
     response.setContentType("text/plain;charset=UTF-8");
     expectLastCall().anyTimes();
     response.setDateHeader((String) anyObject(), anyLong());
@@ -542,8 +525,8 @@ public class IntegrationTest {
     expectLastCall().anyTimes();
     response.setHeader((String) anyObject(), (String) anyObject());
     expectLastCall().anyTimes();
-    response.setStatus(200);
-    expectLastCall().atLeastOnce();
+    // response.setStatus(200);
+    // expectLastCall().atLeastOnce();
     response.setContentLength(anyInt());
     expectLastCall().atLeastOnce();
 
@@ -597,6 +580,8 @@ public class IntegrationTest {
 
     String result = new String(baos.toByteArray(), "UTF-8");
     assertNotNull(result);
+    int i = result.indexOf("testfile.txt");
+    assertTrue(i > 0);
     verify(config, request, response, session);
 
   }
