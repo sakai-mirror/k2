@@ -2,7 +2,7 @@
 <map>
 	<entry>
 		<string>sakaijcr</string>
-		<string> http://www.sakaiproject.org/CHS/jcr/jackrabbit/1.0</string>
+		<string>http://www.sakaiproject.org/CHS/jcr/jackrabbit/1.0</string>
 	</entry>
 	<entry>
 		<string>sakai</string>

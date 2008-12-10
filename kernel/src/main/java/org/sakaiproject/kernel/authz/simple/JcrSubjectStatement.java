@@ -17,6 +17,7 @@
  */
 package org.sakaiproject.kernel.authz.simple;
 
+import org.eclipse.persistence.platform.database.SybasePlatform;
 import org.sakaiproject.kernel.api.authz.SubjectStatement;
 import org.sakaiproject.kernel.util.StringUtils;
 
@@ -35,7 +36,12 @@ public class JcrSubjectStatement implements SubjectStatement {
    */
   public JcrSubjectStatement(String subjectStatement) {
     String[] parts = StringUtils.split(subjectStatement, ':');
-    subjectType = SubjectType.valueOf(parts[0]);
+    try {
+      subjectType = SubjectType.valueOf(parts[0]);
+    } catch ( IllegalArgumentException e ) {
+      System.err.println("Subject type undef "+parts[0]+" subject statement "+subjectStatement);
+      subjectType = SubjectType.UNDEFINED;
+    }
     subjectToken = parts[1];
     permissionToken = parts[2];
   }
@@ -108,6 +114,16 @@ public class JcrSubjectStatement implements SubjectStatement {
           && permissionToken.equals(jcrss.permissionToken);
     }
     return false;
+  }
+  
+  
+  /**
+   * {@inheritDoc}
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return subjectType+":"+subjectToken+":"+permissionToken;
   }
 
 }

@@ -28,6 +28,7 @@ import java.util.List;
 import javax.jcr.AccessDeniedException;
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
@@ -37,7 +38,7 @@ import javax.jcr.Value;
  */
 public class JcrReferenceObject implements ReferencedObject {
 
-  private static final String ACL_PROPERTY = "jcr:acl";
+  private static final String ACL_PROPERTY = "acl:acl";
   private List<AccessControlStatement> acl;
   private List<AccessControlStatement> inheritableAcl;
   private String path;
@@ -50,33 +51,52 @@ public class JcrReferenceObject implements ReferencedObject {
    * @throws RepositoryException
    */
   public JcrReferenceObject(Node node) throws RepositoryException {
+    System.err.println(" Loading "+node.getPath());
     this.node = node;
     path = node.getPath();
     acl = new ArrayList<AccessControlStatement>();
     inheritableAcl = new ArrayList<AccessControlStatement>();
-    Property property = node.getProperty(ACL_PROPERTY);
-    for (Value aclSpec : property.getValues()) {
-      AccessControlStatement acs = new JcrAccessControlStatementImpl(aclSpec.getString());
-      if (acs.isPropagating()) {
-        inheritableAcl.add(acs);
+    System.err.println(" Doing ACL "+node.getPath());
+    try {
+      Property property = node.getProperty(ACL_PROPERTY);
+      System.err.println(" Doing ACL "+node.getPath());
+      for (Value aclSpec : property.getValues()) {
+        AccessControlStatement acs = new JcrAccessControlStatementImpl(aclSpec
+            .getString());
+        System.err.println(" Doing ACL "+node.getPath());
+        if (acs.isPropagating()) {
+          inheritableAcl.add(acs);
+        }
+        acl.add(acs);
       }
-      acl.add(acs);
+    } catch (PathNotFoundException pnfe) {
+      
+      // no acl on this node
+    } catch ( Exception ex ) {
+      ex.printStackTrace();
     }
+    System.err.println("Done ACL ");
     Node parent = null;
     try {
       parent = node.getParent();
     } catch (ItemNotFoundException e) {
+      parent = null;
     } catch (AccessDeniedException e) {
+      e.printStackTrace();
     } catch (RepositoryException e) {
+      e.printStackTrace();
     }
+    System.err.println("Got Parent node "+parent);
     if (parent != null) {
       parentReference = new JcrReferenceObject(parent);
       if (parentReference.getInheritableAccessControlList().size() == 0) {
         rootReference = true;
       }
     } else {
+      System.err.println("Root Reference");
       rootReference = true;
     }
+    
 
   }
 
@@ -127,6 +147,7 @@ public class JcrReferenceObject implements ReferencedObject {
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.authz.ReferencedObject#addAccessControlStatement(org.sakaiproject.kernel.api.authz.AccessControlStatement)
    */
   public void addAccessControlStatement(AccessControlStatement newAcs)
@@ -137,20 +158,22 @@ public class JcrReferenceObject implements ReferencedObject {
           return;
         }
       }
-      String[] values = new String[acl.size()+1];
+      String[] values = new String[acl.size() + 1];
       int i = 0;
-      for ( AccessControlStatement acs : acl ) {
+      for (AccessControlStatement acs : acl) {
+        System.err.println("Setting ACS to "+acs.toString());
         values[i++] = acs.toString();
       }
       values[i] = newAcs.toString();
+      System.err.println("Adding ACS to "+newAcs.toString());
       node.setProperty(ACL_PROPERTY, values);
       node.save();
-      
+
       acl.add(newAcs);
       if (newAcs.isPropagating()) {
         inheritableAcl.add(newAcs);
       }
-      
+
     } catch (NumberFormatException e) {
       throw new UpdateFailedException("Unable to update ACL in node " + path
           + " :" + e.getMessage());
@@ -162,6 +185,7 @@ public class JcrReferenceObject implements ReferencedObject {
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.authz.ReferencedObject#removeAccessControlStatement(org.sakaiproject.kernel.api.authz.AccessControlStatement)
    */
   public void removeAccessControlStatement(AccessControlStatement removeAcs)
@@ -179,7 +203,7 @@ public class JcrReferenceObject implements ReferencedObject {
       String[] values = newValues.toArray(new String[0]);
       node.setProperty(ACL_PROPERTY, values);
       node.save();
-      
+
       acl.removeAll(toRemove);
       inheritableAcl.removeAll(toRemove);
     } catch (RepositoryException e) {

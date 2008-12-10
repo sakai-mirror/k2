@@ -111,7 +111,7 @@ public class EmptyReferenceObject implements ReferencedObject {
   public void addAccessControlStatement(AccessControlStatement newAcs)
       throws UpdateFailedException {
     throw new UpdateFailedException(
-        "Reference Object is an empty object and as such has no acl");
+        "Reference Object is an empty object and as such has no acl :"+resourceReference);
   }
 
   /**
@@ -122,7 +122,7 @@ public class EmptyReferenceObject implements ReferencedObject {
   public void removeAccessControlStatement(AccessControlStatement removeAcs)
       throws UpdateFailedException {
     throw new UpdateFailedException(
-        "Reference Object is an empty object and as such has no acl");
+        "Reference Object is an empty object and as such has no acl :"+resourceReference);
   }
 
   /**

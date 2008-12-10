@@ -87,7 +87,7 @@ public interface JCRNodeFactoryService
 	 * @throws RepositoryException
 	 * @throws NodeFactoryServiceException
 	 */
-	InputStream getOutputStream(String id) throws RepositoryException,
+	InputStream getInputStream(String id) throws RepositoryException,
 			JCRNodeFactoryServiceException;
 
 	/**

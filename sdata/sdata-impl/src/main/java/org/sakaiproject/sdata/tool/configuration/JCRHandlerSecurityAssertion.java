@@ -58,7 +58,7 @@ public class JCRHandlerSecurityAssertion implements Provider<SecurityAssertion> 
     for (String lockDef : StringUtils.split(lockDefinition, ';')) {
       String[] l = StringUtils.split(lockDef, ':');
       // permission query implementations are named.
-      
+      System.err.println("Adding Lock "+l[0]+":"+l[1]+"="+permissionService.getPermission(l[1]));
       locks.put(l[0], permissionService.getPermission(l[1]));
     }
     pathSecurityAssertion.setLocks(locks);

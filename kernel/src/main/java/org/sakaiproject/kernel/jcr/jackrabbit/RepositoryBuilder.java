@@ -325,6 +325,7 @@ public class RepositoryBuilder {
         }
       }
       try {
+        String nodeTypes = ResourceLoader.readResource(nodeTypeConfiguration, this.getClass().getClassLoader());
         in = ResourceLoader.openResource(nodeTypeConfiguration, this.getClass()
             .getClassLoader());
         NodeTypeManagerImpl ntm = (NodeTypeManagerImpl) w.getNodeTypeManager();

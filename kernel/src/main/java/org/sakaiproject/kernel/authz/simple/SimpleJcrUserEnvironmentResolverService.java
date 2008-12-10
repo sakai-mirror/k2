@@ -46,7 +46,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
     UserEnvironmentResolverService {
 
   private static final String JCR_USERENV_BASE = "jcruserenv.base";
-  private static final String USERENV = "/userenv";
+  private static final String USERENV = "userenv";
   private static final Log LOG = LogFactory.getLog(SimpleJcrUserEnvironmentResolverService.class);
   private JCRNodeFactoryService jcrNodeFactoryService;
   private String userEnvironmentBase;
@@ -89,7 +89,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
       String prefix = PathUtils.getUserPrefix(currentSession.getUserId());
       String userEnv = userEnvironmentBase + prefix + USERENV;
       String userEnvBody = IOUtils.readFully(jcrNodeFactoryService
-          .getOutputStream(userEnv), "UTF-8");
+          .getInputStream(userEnv), "UTF-8");
       // convert to a bean, the 
       UserEnvironment ue = beanConverter.convertToObject(userEnvBody, UserEnvironment.class);
       cache.put(currentSession.getId(), ue);

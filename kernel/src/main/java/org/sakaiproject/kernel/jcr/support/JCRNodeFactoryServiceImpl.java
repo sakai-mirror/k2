@@ -24,6 +24,7 @@ package org.sakaiproject.kernel.jcr.support;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.GregorianCalendar;
 
@@ -69,6 +70,12 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
     if (jcrService.needsMixin(node, JCRConstants.MIX_LOCKABLE)) {
       node.addMixin(JCRConstants.MIX_LOCKABLE);
     }
+    if (jcrService.needsMixin(node, JCRConstants.MIX_SAKAIPROPERTIES)) {
+      node.addMixin(JCRConstants.MIX_SAKAIPROPERTIES);
+    }
+    if (jcrService.needsMixin(node, JCRConstants.MIX_ACL)) {
+      node.addMixin(JCRConstants.MIX_ACL);
+    }
     Node resource = node.addNode(JCRConstants.JCR_CONTENT,
         JCRConstants.NT_RESOURCE);
     resource
@@ -87,6 +94,12 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
     }
     if (jcrService.needsMixin(node, JCRConstants.MIX_REFERENCEABLE)) {
       node.addMixin(JCRConstants.MIX_REFERENCEABLE);
+    }
+    if (jcrService.needsMixin(node, JCRConstants.MIX_SAKAIPROPERTIES)) {
+      node.addMixin(JCRConstants.MIX_SAKAIPROPERTIES);
+    }
+    if (jcrService.needsMixin(node, JCRConstants.MIX_ACL)) {
+      node.addMixin(JCRConstants.MIX_ACL);
     }
 
     // node.setProperty(JCRConstants.JCR_LASTMODIFIED, new GregorianCalendar());
@@ -284,13 +297,17 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
     return newNode;
   }
 
-  public InputStream getOutputStream(String id) throws RepositoryException,
+  public InputStream getInputStream(String id) throws RepositoryException,
       JCRNodeFactoryServiceException {
     Session session = jcrService.getSession();
     Node n = getNodeFromSession(session, id);
-    Node contentNode = n.getNode(JCRConstants.JCR_CONTENT);
-    Property property = contentNode.getProperty(JCRConstants.JCR_DATA);
-    return property.getStream();
+    if (n != null) {
+      Node contentNode = n.getNode(JCRConstants.JCR_CONTENT);
+      Property property = contentNode.getProperty(JCRConstants.JCR_DATA);
+      return property.getStream();
+    }
+    throw new JCRNodeFactoryServiceException(
+        "Failed to open input stream for node, " + id + " as it does not exist");
   }
 
   public Node getNode(String id) throws RepositoryException,
