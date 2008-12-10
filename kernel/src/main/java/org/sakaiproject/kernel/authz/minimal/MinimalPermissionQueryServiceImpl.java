@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MinimalPermissionQueryServiceImpl  implements PermissionQueryService {
 
   
-  private Map<String, WeakReference<PermissionQuery>> queryMap = new ConcurrentHashMap<String, WeakReference<PermissionQuery>>();
+  private Map<String, PermissionQuery> queryMap = new ConcurrentHashMap<String, PermissionQuery>();
 
   /**
    * {@inheritDoc}
@@ -40,10 +40,10 @@ public class MinimalPermissionQueryServiceImpl  implements PermissionQueryServic
   public PermissionQuery getPermission(String name) {
     
     if ( queryMap.containsKey(name) ) {
-      return queryMap.get(name).get();
+      return queryMap.get(name);
     }
     PermissionQuery pq = new MinimalPermissionQueryImpl(name);
-    queryMap.put(name,new WeakReference<PermissionQuery>(pq));
+    queryMap.put(name,pq);
     return pq;
   }
 
