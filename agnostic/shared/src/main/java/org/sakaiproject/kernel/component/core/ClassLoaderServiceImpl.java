@@ -56,7 +56,7 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
   public ClassLoaderServiceImpl(SharedClassLoader sharedClassLoader,
       PackageRegistryService packageRegistryService,
       ArtifactResolverService artifactResolverService,
-      @Named("kernel.classloadeIsolation") boolean classloaderIsolation ) {
+      @Named("kernel.classloaderIsolation") boolean classloaderIsolation ) {
     this.sharedClassLoader = sharedClassLoader;
     this.packageRegistryService = packageRegistryService;
     this.artifactResolverService = artifactResolverService;
