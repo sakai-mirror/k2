@@ -2,13 +2,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.sakaiproject</groupId>
-		<artifactId>jpa</artifactId>
+		<groupId>org.sakaiproject.kernel2</groupId>
+		<artifactId>jpa-test</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<groupId>org.sakaiproject</groupId>
-	<artifactId>jpa-spring</artifactId>
-	<name>jpa-poc-spring</name>
+	<groupId>org.sakaiproject.kernel2.jpa-test</groupId>
+	<artifactId>spring</artifactId>
+	<name>jpa-test-spring</name>
 	<build>
 		<plugins>
 			<plugin>
@@ -38,8 +38,8 @@
 			<artifactId>junit</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.sakaiproject</groupId>
-			<artifactId>jpa-model</artifactId>
+			<groupId>org.sakaiproject.kernel2.jpa-test</groupId>
+			<artifactId>model</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
