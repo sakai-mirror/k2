@@ -38,6 +38,7 @@ import java.util.Properties;
 import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
+import javax.sql.DataSource;
 import javax.transaction.TransactionManager;
 
 /**
@@ -145,6 +146,8 @@ public class PersistenceModule extends AbstractModule {
     bind(EntityManager.class).toProvider(EntityManagerProvider.class).in(
         Scopes.SINGLETON);
     bind(DataSourceService.class).to(DataSourceServiceImpl.class).in(
+        Scopes.SINGLETON);
+    bind(DataSource.class).toProvider(DataSourceServiceImpl.class).in(
         Scopes.SINGLETON);
     bind(TransactionManager.class).toProvider(TransactionManagerProvider.class)
         .in(Scopes.SINGLETON);
