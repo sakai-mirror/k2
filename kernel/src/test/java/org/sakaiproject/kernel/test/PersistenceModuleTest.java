@@ -25,6 +25,7 @@ import org.sakaiproject.kernel.api.persistence.DataSourceService;
 import org.sakaiproject.kernel.persistence.PersistenceModule;
 
 import javax.persistence.EntityManager;
+import javax.sql.DataSource;
 import javax.transaction.TransactionManager;
 
 /**
@@ -33,9 +34,11 @@ import javax.transaction.TransactionManager;
 public class PersistenceModuleTest {
 
   @Test
+  @SuppressWarnings("unused")
   public void testPersistenceModule() {
     Injector injector = Guice.createInjector(new PersistenceModule());
     DataSourceService dataSourceService = injector.getInstance(DataSourceService.class);
+    DataSource ds = injector.getInstance(DataSource.class);
     EntityManager em = injector.getInstance(EntityManager.class);
     TransactionManager tm = injector.getInstance(TransactionManager.class);
     em.close();
