@@ -32,6 +32,7 @@ import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.memory.Cache;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
+import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
 
 import javax.jcr.Credentials;
 import javax.jcr.LoginException;
@@ -39,6 +40,7 @@ import javax.jcr.Node;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.observation.ObservationManager;
 
 @Singleton
 public class JCRServiceImpl implements JCRService, RequiresStop {
@@ -49,7 +51,6 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
   private static final String JCR_REQUEST_CACHE = "jcr.rc";
 
   private static final String JCR_SESSION_HOLDER = "sh";
-
 
   /**
    * The injected 170 repository
@@ -91,7 +92,6 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
     return login();
   }
 
-  
   public Session login() throws LoginException, RepositoryException {
     Session session = null;
     SessionHolder sh = getSessionHolder();
@@ -200,10 +200,35 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.jcr.JCRService#getDefaultWorkspace()
    */
   public String getDefaultWorkspace() {
     return "";
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.jcr.JCRService#getObservationManager()
+   */
+  public ObservationManager getObservationManager() {
+    SakaiJCRCredentials ssp = new SakaiJCRCredentials();
+    Session s = null;
+    ObservationManager observationManager = null;
+    try {
+      s = getRepository().login(ssp);
+      observationManager = s.getWorkspace().getObservationManager();
+    } catch (RepositoryException e) {
+      LOG.error("Failed to get ObservationManager from workspace");
+      e.printStackTrace();
+    } finally {
+      try {
+        s.logout();
+      } catch (Exception ex) {
+      }
+      ;
+    }
+    return observationManager;
   }
 
 }

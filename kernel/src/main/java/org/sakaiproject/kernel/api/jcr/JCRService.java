@@ -31,6 +31,7 @@ import javax.jcr.Node;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.observation.ObservationManager;
 
 /**
  * @author ieb
@@ -126,5 +127,11 @@ public interface JCRService {
    * @return
    */
   String getDefaultWorkspace();
+
+  /**
+   * Get the ObservationManager from the JCR, this can be used to register events.
+   * @return
+   */
+  ObservationManager getObservationManager();
 
 }

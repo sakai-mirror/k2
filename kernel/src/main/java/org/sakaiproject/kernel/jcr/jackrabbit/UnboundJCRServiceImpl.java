@@ -27,6 +27,7 @@ import com.google.inject.name.Named;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.jcr.JCRService;
+import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
 
 import javax.jcr.Credentials;
 import javax.jcr.LoginException;
@@ -34,6 +35,7 @@ import javax.jcr.Node;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.observation.ObservationManager;
 
 /* This is mostly the same as the JCRServiceImpl, except you are never bound to a 
  * particular thread.  You will need to keep track of your session, and use the logout
@@ -128,5 +130,30 @@ public class UnboundJCRServiceImpl implements JCRService {
   public String getDefaultWorkspace() {
     return DEFAULT_WORKSPACE;
   }
+  
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.jcr.JCRService#getObservationManager()
+   */
+  public ObservationManager getObservationManager() {
+    SakaiJCRCredentials ssp = new SakaiJCRCredentials();
+    Session s = null;
+    ObservationManager observationManager = null;
+    try {
+      s = getRepository().login(ssp);
+      observationManager = s.getWorkspace().getObservationManager();
+    } catch (RepositoryException e) {
+      log.error("Failed to get ObservationManager from workspace");
+      e.printStackTrace();
+    } finally {
+      try {
+        s.logout();
+      } catch (Exception ex) {
+      }
+      ;
+    }
+    return observationManager;
+  }
+
 
 }

@@ -45,7 +45,7 @@ import javax.jcr.RepositoryException;
 public class SimpleJcrUserEnvironmentResolverService implements
     UserEnvironmentResolverService {
 
-  private static final String JCR_USERENV_BASE = "jcruserenv.base";
+  public static final String JCR_USERENV_BASE = "jcruserenv.base";
   private static final String USERENV = "userenv";
   private static final Log LOG = LogFactory.getLog(SimpleJcrUserEnvironmentResolverService.class);
   private JCRNodeFactoryService jcrNodeFactoryService;
