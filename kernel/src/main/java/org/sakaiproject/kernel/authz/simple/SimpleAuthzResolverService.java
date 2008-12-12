@@ -109,7 +109,7 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
     UserEnvironment userEnvironment = userEnvironmentResolverService
         .resolve(sessionManager.getCurrentSession());
     System.err.println(" User Env " + userEnvironment);
-    System.err.println(" Loacating Referenced object " + resourceReference);
+    System.err.println(" Locating Referenced object " + resourceReference);
     ReferencedObject referencedObject = referenceResolverService
         .resolve(resourceReference);
     System.err.println(" Got Referenced Object " + referencedObject);
@@ -230,7 +230,7 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
     }
 
     if (acl.size() == 0) {
-      System.err.println("WARANING ------------------Empty ACL" );
+      System.err.println("WARNING ------------------Empty ACL" );
     } else {
       for (String k : acl.keySet()) {
         System.err.println("Loaded ACL for " + k);
