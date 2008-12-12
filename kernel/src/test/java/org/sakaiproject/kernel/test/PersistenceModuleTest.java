@@ -26,14 +26,9 @@ import java.util.Map.Entry;
 import com.google.inject.CreationException;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.name.Named;
-import com.google.inject.name.Names;
 import com.google.inject.spi.Message;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
-import org.sakaiproject.kernel.KernelModule;
 import org.sakaiproject.kernel.api.persistence.DataSourceService;
 import org.sakaiproject.kernel.persistence.PersistenceModule;
 import org.sakaiproject.kernel.util.ResourceLoader;
@@ -51,7 +46,6 @@ public class PersistenceModuleTest {
   private static final String SYS_LOCAL_PROPERTIES = "sakai.kernel.component.properties";
   
   @Test
-  @SuppressWarnings("unused")
   public void testPersistenceModule() {
     // this test needs to be adjusted to set the properties correctly since the
     // persistence module now relies on the activator to handle the property
