@@ -4,19 +4,12 @@
   <artifactId>kernel</artifactId>
   <version>0.1-SNAPSHOT</version>
   <documentation>Kernel 2 Component</documentation>
-  <activator>org.sakaiproject.kernel.Activator</activator>
+  <activator>org.sakaiproject.kernel2.mp2.Activator</activator>
   <exports>
     <export>
       <name>org.sakaiproject.kernel2.mp2</name>
     </export>
   </exports>
   <dependencies>
-    <!--
-    <dependency>
-      <groupId>backport-util-concurrent</groupId>
-      <artifactId>backport-util-concurrent</artifactId>
-      <version>3.1</version>
-    </dependency>
-    -->
   </dependencies>
 </component>
