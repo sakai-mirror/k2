@@ -130,11 +130,11 @@ public class AuthZServiceTest extends KernelIntegrationBase {
     ReferencedObject parent = ro.getParent();
     parent = parent.getParent();
     
-    // create an ACL at the parent that will allow those read permission in group1:maintain to perform httpget, make it apply ot all subnodes
+    // create an ACL at the parent that will allow those read permission in group1:maintain to perform httpget, make it apply to all subnodes
     SubjectStatement subjectStatement = new JcrSubjectStatement(SubjectType.GROUP,"group1:maintain","read");
     AccessControlStatement grantReadToHttpGetInheritable = new JcrAccessControlStatementImpl(subjectStatement,"httpget",true,true); 
     parent.addAccessControlStatement(grantReadToHttpGetInheritable);
-        
+
     SimplePermissionQuery permissionQuery = new SimplePermissionQuery("checkhttpget");
     permissionQuery.addQueryStatement(new SimpleQueryStatement("httpget"));    
     authzResolver.check("/test/a/b/c/d.txt", permissionQuery);
@@ -144,6 +144,43 @@ public class AuthZServiceTest extends KernelIntegrationBase {
     
     LOG
         .info("Completed Test ====================================================");
+  }
+
+  @Test
+  public void testRequestGrant() {
+    LOG
+      .info("Starting Test ====================================================");
+    KernelManager km = new KernelManager();
+    AuthzResolverService authzResolver = km
+      .getService(AuthzResolverService.class);
+    PermissionQueryService pqs = km.getService(PermissionQueryService.class);
+    PermissionQuery pq = pqs.getPermission("GET");
+
+    HttpServletRequest request = EasyMock.createMock(HttpServletRequest.class);
+    HttpServletResponse response = EasyMock
+      .createMock(HttpServletResponse.class);
+    HttpSession session = EasyMock.createMock(HttpSession.class);
+
+    setupRequest(request,response,session,"ib236");
+    replay(request, response, session);
+    startRequest(request, response, "JSESSION");
+
+    authzResolver.setRequestGrant();
+    // Though the AuthZ doesn't exist it should be granted
+    authzResolver.check("/x/y/z", pq);
+
+    authzResolver.clearRequestGrant();
+    // Now it should fail since the AuthZ doesn't exist
+    try {
+      authzResolver.check("/x/y/z", pq);
+      fail();
+    } catch (PermissionDeniedException e) {
+    }
+
+    endRequest();
+    verify(request, response, session);
+
+    reset(request, response, session);
   }
 
   /**
