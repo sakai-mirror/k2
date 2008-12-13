@@ -54,11 +54,14 @@ public class PathReferenceResolverService implements ReferenceResolverService {
    * @see org.sakaiproject.kernel.api.authz.ReferenceResolverService#resolve(java.lang.String)
    */
   public ReferencedObject resolve(String resourceReference) {
-    // Make sure we're getting a String from the resolver, Java won't check that the type matches the definition
-    String locator = StringUtils.split(resourceReference, '/', 1)[0];
-    ReferenceResolverService resolver = resolvers.get(locator);
-    if (resolver != null) {
-      return resolver.resolve(resourceReference);
+    // Make sure we're getting a String from the resolver, Java won't check that
+    // the type matches the definition
+    String[] locator = StringUtils.split(resourceReference, '/', 1);
+    if (locator != null && locator.length > 0) {
+      ReferenceResolverService resolver = resolvers.get(locator[0]);
+      if (resolver != null) {
+        return resolver.resolve(resourceReference);
+      }
     }
     return defaultResolver.resolve(resourceReference);
   }
