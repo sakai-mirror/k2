@@ -21,9 +21,7 @@ import org.sakaiproject.kernel.api.authz.AccessControlStatement;
 import org.sakaiproject.kernel.api.authz.SubjectStatement;
 import org.sakaiproject.kernel.util.StringUtils;
 
-import javax.jcr.Property;
 import javax.jcr.RepositoryException;
-import javax.jcr.Value;
 import javax.jcr.ValueFormatException;
 
 /**

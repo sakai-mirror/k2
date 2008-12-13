@@ -33,6 +33,7 @@ import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.ServiceManager;
 import org.sakaiproject.kernel.api.ShutdownService;
 import org.sakaiproject.kernel.api.authz.ReferenceResolverService;
+import org.sakaiproject.kernel.api.jcr.EventRegistration;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
@@ -235,6 +236,10 @@ public class KernelModule extends AbstractModule {
     bind(UserEnvironment.class).annotatedWith(
         Names.named(UserEnvironment.NULLUSERENV)).to(NullUserEnvironment.class)
         .in(Scopes.SINGLETON);
+
+    TypeLiteral<List<EventRegistration>> eventList = new TypeLiteral<List<EventRegistration>>() {
+    };
+    bind(eventList).toProvider(EventRegistrationProvider.class);
 
   }
 }

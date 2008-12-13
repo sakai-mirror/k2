@@ -20,7 +20,6 @@ package org.sakaiproject.kernel.authz.minimal;
 import org.sakaiproject.kernel.api.authz.PermissionQuery;
 import org.sakaiproject.kernel.api.authz.PermissionQueryService;
 
-import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 

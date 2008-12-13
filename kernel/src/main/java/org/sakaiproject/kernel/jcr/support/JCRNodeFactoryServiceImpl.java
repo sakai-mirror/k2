@@ -24,7 +24,13 @@ package org.sakaiproject.kernel.jcr.support;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import java.io.IOException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.api.jcr.JCRConstants;
+import org.sakaiproject.kernel.api.jcr.JCRService;
+import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
+import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
+
 import java.io.InputStream;
 import java.util.GregorianCalendar;
 
@@ -36,13 +42,6 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
 import javax.jcr.ValueFactory;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.sakaiproject.kernel.api.jcr.JCRConstants;
-import org.sakaiproject.kernel.api.jcr.JCRService;
-import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
-import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 
 /**
  * @author ieb This is a support service to make it easier to treat a JCR

@@ -21,6 +21,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 import org.sakaiproject.kernel.jcr.api.internal.StartupAction;
+import org.sakaiproject.kernel.jcr.jackrabbit.RegisterEventListeners;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,10 +41,13 @@ public class StartupActionProvider implements Provider<List<StartupAction>> {
    */
   @Inject
   public StartupActionProvider(SakaiRepositoryStartup repositoryStartup,
+      RegisterEventListeners registerEventListeners,
       PopulateBaseRepository populateBaseRepository) {
     startupActions = new ArrayList<StartupAction>();
     startupActions.add(repositoryStartup);
     startupActions.add(populateBaseRepository);
+    startupActions.add(registerEventListeners);
+    
   }
 
   /**

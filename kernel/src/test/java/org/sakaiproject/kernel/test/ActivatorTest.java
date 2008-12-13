@@ -17,7 +17,7 @@
  */
 package org.sakaiproject.kernel.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,10 +34,7 @@ import org.sakaiproject.kernel.api.RequiresStop;
 import org.sakaiproject.kernel.api.ServiceManager;
 import org.sakaiproject.kernel.api.ServiceSpec;
 import org.sakaiproject.kernel.api.ShutdownService;
-import org.sakaiproject.kernel.component.ComponentManagerImpl;
-import org.sakaiproject.kernel.component.KernelImpl;
 import org.sakaiproject.kernel.component.KernelLifecycle;
-import org.sakaiproject.kernel.component.ServiceManagerImpl;
 import org.sakaiproject.kernel.util.FileUtil;
 
 import java.io.File;
@@ -49,7 +46,9 @@ public class ActivatorTest {
 
   private static final Log LOG = LogFactory.getLog(ActivatorTest.class);
   private Kernel kernel;
+  @SuppressWarnings("unused")
   private ComponentManager componentManager;
+  @SuppressWarnings("unused")
   private ServiceManager serviceManager;
   private KernelLifecycle lifecycle;
 

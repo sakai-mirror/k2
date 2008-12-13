@@ -15,33 +15,36 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.api.authz;
+package org.sakaiproject.kernel;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+
+import org.sakaiproject.kernel.api.jcr.EventRegistration;
+import org.sakaiproject.kernel.authz.simple.UserEnvironmentListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Represents and access control statement.
+ * Provides a list of EventRegistrations
  */
-public interface AccessControlStatement {
+public class EventRegistrationProvider implements Provider<List<EventRegistration>>{
 
+  private List<EventRegistration> eventRegistrations = new ArrayList<EventRegistration>();
   /**
-   * @return the key for the statement, that binds to a QeueryStatement
+   * 
    */
-  String getStatementKey();
-
+  @Inject
+  public EventRegistrationProvider(UserEnvironmentListener userEnvironmentListener) {
+    eventRegistrations.add(userEnvironmentListener);
+  }
   /**
-   * @return true if the AccessControl propagates to children.
+   * {@inheritDoc}
+   * @see com.google.inject.Provider#get()
    */
-  boolean isPropagating();
-
-  /**
-   * @return true if a grant, false if a deny.
-   */
-  boolean isGranted();
-
-  /**
-   * @return the subject statement that this AccessControl refers to.
-   */
-  SubjectStatement getSubject();
-
+  public List<EventRegistration> get() {
+    return eventRegistrations;
+  }
 
 }

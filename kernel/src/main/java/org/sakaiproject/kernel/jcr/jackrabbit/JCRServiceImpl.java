@@ -28,11 +28,14 @@ import com.google.inject.name.Named;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.RequiresStop;
+import org.sakaiproject.kernel.api.jcr.EventRegistration;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.memory.Cache;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
+
+import java.util.List;
 
 import javax.jcr.Credentials;
 import javax.jcr.LoginException;
@@ -64,17 +67,20 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
   private CacheManagerService cacheManager;
 
   /**
+   * @throws RepositoryException 
    * 
    */
   @Inject
   public JCRServiceImpl(RepositoryBuilder repositoryBuilder,
       @Named(JCRService.NAME_CREDENTIALS) Credentials repositoryCredentials,
       CacheManagerService cacheManager,
-      @Named(JCRService.NAME_REQUEST_SCOPE) boolean requestScope) {
+      @Named(JCRService.NAME_REQUEST_SCOPE) boolean requestScope,
+      List<EventRegistration> registrations) throws RepositoryException {
     this.repositoryBuilder = repositoryBuilder;
     this.repositoryCredentials = repositoryCredentials;
     this.cacheManager = cacheManager;
     this.requestScope = requestScope;
+    
 
   }
 

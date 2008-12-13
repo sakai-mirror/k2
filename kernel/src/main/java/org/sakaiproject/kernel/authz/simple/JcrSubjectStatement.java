@@ -17,7 +17,6 @@
  */
 package org.sakaiproject.kernel.authz.simple;
 
-import org.eclipse.persistence.platform.database.SybasePlatform;
 import org.sakaiproject.kernel.api.authz.SubjectStatement;
 import org.sakaiproject.kernel.util.StringUtils;
 

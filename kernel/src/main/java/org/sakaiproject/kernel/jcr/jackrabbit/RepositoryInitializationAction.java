@@ -68,21 +68,29 @@ public class RepositoryInitializationAction implements InitializationAction {
     SakaiJCRCredentials ssp = new SakaiJCRCredentials();
     Session s = null;
     try {
-      s = repository.login(ssp);
       LOG.info("Starting " + startupActions);
       if (startupActions != null) {
         for (Iterator<StartupAction> i = startupActions.iterator(); i.hasNext();) {
-          i.next().startup(s);
+          s = repository.login(ssp);
+          StartupAction startUpAction = i.next();
+          startUpAction.startup(s);
+          s.save();
+          s.logout();
+          s = null;
         }
       }
-      s.save();
     } catch (RepositoryException e) {
       throw new RepositoryStartupException(
           "Failed to initialization on respository ", e);
     } finally {
-      s.logout();
+      try {
+        if (s != null) {
+          s.logout();
+        }
+      } catch (Exception e) {
+        LOG.warn("Failed to logout of repository", e);
+      }
     }
 
   }
-
 }

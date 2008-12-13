@@ -15,33 +15,20 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.api.authz;
+package org.sakaiproject.kernel.api.jcr;
 
+import javax.jcr.RepositoryException;
+import javax.jcr.observation.ObservationManager;
 
 /**
- * Represents and access control statement.
+ * 
  */
-public interface AccessControlStatement {
+public interface EventRegistration {
 
   /**
-   * @return the key for the statement, that binds to a QeueryStatement
+   * @param observationManager
+   * @throws RepositoryException 
    */
-  String getStatementKey();
-
-  /**
-   * @return true if the AccessControl propagates to children.
-   */
-  boolean isPropagating();
-
-  /**
-   * @return true if a grant, false if a deny.
-   */
-  boolean isGranted();
-
-  /**
-   * @return the subject statement that this AccessControl refers to.
-   */
-  SubjectStatement getSubject();
-
+  void register(ObservationManager observationManager) throws RepositoryException;
 
 }

@@ -59,6 +59,7 @@ public class BeanJsonLibConfig extends JsonConfig {
     setJavaPropertyFilter(new NullPropertyFilter());
     // the classMap deals with the basic json string to bean conversion
 
+    @SuppressWarnings("unused")
     Map<String, Class<?>> classMap = new HashMap<String, Class<?>>();
 
     /*

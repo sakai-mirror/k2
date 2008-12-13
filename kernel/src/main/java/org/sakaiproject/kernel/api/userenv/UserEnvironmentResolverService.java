@@ -19,7 +19,6 @@ package org.sakaiproject.kernel.api.userenv;
 
 import com.google.inject.ImplementedBy;
 
-import org.sakaiproject.kernel.api.authz.SubjectStatement;
 import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.authz.simple.SimpleJcrUserEnvironmentResolverService;
 
