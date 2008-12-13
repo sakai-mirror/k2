@@ -46,7 +46,7 @@ public class IOUtils {
       StringBuilder sb = new StringBuilder();
       try {
         byte[] b = new byte[4096];
-        for (int i = inputStream.read(b); i != -1;) {
+        for (int i = inputStream.read(b); i > 0; i = inputStream.read(b)) {
           sb.append(new String(b, 0, i, encoding));
         }
       } finally {
