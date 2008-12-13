@@ -58,7 +58,7 @@ public class UserEnvironmentBean implements UserEnvironment {
     switch (subject.getSubjectType()) {
     case GROUP:
       String subjectToken = subject.getSubjectToken();
-      if ( subjects.hasSubject(subjectToken)) {
+      if ( subjects != null && subjects.hasSubject(subjectToken)) {
         subjects.setSubjectPermissionService(subjectPermissionService);
         SubjectPermissions subjectPermissions = subjects.getSubjectPermissions(subjectToken);
         return subjectPermissions.hasPermission(subject.getPermissionToken());

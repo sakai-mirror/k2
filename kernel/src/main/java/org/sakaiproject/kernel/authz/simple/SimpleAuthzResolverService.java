@@ -167,7 +167,7 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
 
       ReferencedObject parent = referencedObject.getParent();
 
-      while (parent != null && !parent.isRoot()) {
+      while (parent != null ) {
         Map<String, List<AccessControlStatement>> parentAcl = cachedAcl
             .get(parent.getKey());
         if (parentAcl != null) {
@@ -218,9 +218,16 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
               }
             }
           }
+          // if this was the root element, stop resolution
+          if ( parent.isRoot() ) {
+            break;
+          }
           parent = parent.getParent();
         }
-        System.err.println("Next parent is "+parent);
+        System.err.println("Next parent is " + parent);
+        if (parent != null) {
+          System.err.println(" Parent Key " + parent.getKey());
+        }
       }
       if (controllingObject != null) {
         cachedAcl.put(controllingObject.getKey(), acl);
@@ -240,6 +247,7 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
     // extract the query statements to
     // see if any are satisfied or denied in order.
 
+    System.err.println(" Checking against "+userEnvironment);
     for (QueryStatement qs : permissionQuery.statements()) {
       System.err.println("Evaluating " + qs.getStatementKey());
       List<AccessControlStatement> kacl = acl.get(qs.getStatementKey());
@@ -247,7 +255,6 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
         System.err.println("Found ACL set " + kacl + " for key set "
             + qs.getStatementKey());
         for (AccessControlStatement ac : kacl) {
-          System.err.println("    Evaluating Statement " + ac);
           if (userEnvironment.matches(ac.getSubject())) {
             if (ac.isGranted()) {
               System.err.println("Granted Permission " + ac);
@@ -263,6 +270,8 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
                       + " by " + ac + " for " + qs + " user environment "
                       + userEnvironment);
             }
+          } else {
+            System.err.println("User does not have subject matching "+ac.getSubject());
           }
         }
       } else {

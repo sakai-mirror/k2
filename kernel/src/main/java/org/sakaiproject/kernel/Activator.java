@@ -40,6 +40,7 @@ import org.sakaiproject.kernel.api.persistence.PersistenceService;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.user.AuthenticationManager;
 import org.sakaiproject.kernel.api.user.UserDirectoryService;
+import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.internal.api.KernelInitialization;
 import org.sakaiproject.kernel.internal.api.KernelInitializtionException;
 import org.sakaiproject.kernel.persistence.PersistenceModule;

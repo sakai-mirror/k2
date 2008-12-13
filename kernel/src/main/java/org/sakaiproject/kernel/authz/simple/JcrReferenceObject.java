@@ -78,7 +78,9 @@ public class JcrReferenceObject implements ReferencedObject {
     System.err.println("Done ACL ");
     Node parent = null;
     try {
+      System.err.println("Getting Parent node for "+node.getPath());
       parent = node.getParent();
+      System.err.println("Got Parent node as "+parent);
     } catch (ItemNotFoundException e) {
       parent = null;
     } catch (AccessDeniedException e) {
@@ -90,7 +92,10 @@ public class JcrReferenceObject implements ReferencedObject {
     if (parent != null) {
       parentReference = new JcrReferenceObject(parent);
       if (parentReference.getInheritableAccessControlList().size() == 0) {
+        System.err.println("Inheritable ACL size == 0, must be root "+getKey());
         rootReference = true;
+      } else {
+        System.err.println("Has Inheritable ACL "+getKey());
       }
     } else {
       System.err.println("Root Reference");
@@ -142,7 +147,10 @@ public class JcrReferenceObject implements ReferencedObject {
    * @see org.sakaiproject.kernel.api.authz.ReferencedObject#isRoot()
    */
   public boolean isRoot() {
-    return rootReference;
+    // see of this is a root, which means that all parent objects are also root, this will recurse up the tree.
+    boolean rootRef =  rootReference && (parentReference == null || parentReference.isRoot());
+    System.err.println("Root reference "+getKey()+" "+rootRef);
+    return rootRef;
   }
 
   /**

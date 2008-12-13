@@ -30,6 +30,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
+import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.UpdateFailedException;
 import org.sakaiproject.kernel.api.authz.AccessControlStatement;
@@ -41,18 +42,30 @@ import org.sakaiproject.kernel.api.authz.ReferenceResolverService;
 import org.sakaiproject.kernel.api.authz.ReferencedObject;
 import org.sakaiproject.kernel.api.authz.SubjectStatement;
 import org.sakaiproject.kernel.api.authz.SubjectStatement.SubjectType;
+import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
+import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.authz.simple.JcrAccessControlStatementImpl;
 import org.sakaiproject.kernel.authz.simple.JcrSubjectStatement;
+import org.sakaiproject.kernel.authz.simple.SimpleJcrUserEnvironmentResolverService;
 import org.sakaiproject.kernel.authz.simple.SimplePermissionQuery;
+import org.sakaiproject.kernel.jcr.jackrabbit.JCRSystemPrincipal;
+import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
+import org.sakaiproject.kernel.util.PathUtils;
+import org.sakaiproject.kernel.util.ResourceLoader;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 import javax.jcr.AccessDeniedException;
 import javax.jcr.InvalidItemStateException;
 import javax.jcr.ItemExistsException;
+import javax.jcr.LoginException;
 import javax.jcr.Node;
 import javax.jcr.ReferentialIntegrityException;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.jcr.lock.LockException;
 import javax.jcr.nodetype.ConstraintViolationException;
 import javax.jcr.nodetype.NoSuchNodeTypeException;
@@ -67,20 +80,63 @@ import javax.servlet.http.HttpSession;
 public class AuthZServiceTest extends KernelIntegrationBase {
 
   private static final Log LOG = LogFactory.getLog(AuthZServiceTest.class);
+  private static final String[] USERS = { "admin", "ib236" };
+  private static final String TEST_USERENV = "res://org/sakaiproject/kernel/test/sampleuserenv/";
 
   @BeforeClass
-  public static void beforeClass() throws ComponentActivatorException {
+  public static void beforeThisClass() throws ComponentActivatorException,
+      RepositoryException, JCRNodeFactoryServiceException, IOException {
     KernelIntegrationBase.beforeClass();
+    
+    // get some services
+    
+    KernelManager km = new KernelManager();
+    Kernel kernel = km.getKernel();
+    AuthzResolverService authzResolverService = kernel
+        .getService(AuthzResolverService.class);
+    JCRNodeFactoryService jcrNodeFactoryService = kernel
+        .getService(JCRNodeFactoryService.class);
+    JCRService jcrService = kernel.getService(JCRService.class);
+    
+    // bypass security
+    authzResolverService.setRequestGrant();
+    
+    // login to the repo with super admin
+    SakaiJCRCredentials credentials = new SakaiJCRCredentials();
+    Session session = jcrService.getRepository().login(credentials);
+    jcrService.setSession(session);
+
+    // setup the user environment for the admin user.
+    for (String userName : USERS) {
+      String prefix = PathUtils.getUserPrefix(userName);
+      String userEnvironmentPath = "/userenv" + prefix + "userenv";
+
+      jcrNodeFactoryService.createFile(userEnvironmentPath);
+      InputStream in = ResourceLoader.openResource(TEST_USERENV + userName
+          + ".json", AuthZServiceTest.class.getClassLoader());
+      jcrNodeFactoryService.setInputStream(userEnvironmentPath, in);
+      session.save();
+      in.close();
+    }
+
+    jcrService.logout();
+    
+    // clear the security bypass
+    authzResolverService.clearRequestGrant();
   }
-  
+
   @AfterClass
   public static void afterClass() {
     KernelIntegrationBase.afterClass();
   }
-  
+
   @Test
-  public void testCheck() throws JCRNodeFactoryServiceException, UpdateFailedException, AccessDeniedException, ItemExistsException, ConstraintViolationException, InvalidItemStateException, ReferentialIntegrityException, VersionException, LockException, NoSuchNodeTypeException, RepositoryException {
-    if ( true ) {
+  public void testCheck() throws JCRNodeFactoryServiceException,
+      UpdateFailedException, AccessDeniedException, ItemExistsException,
+      ConstraintViolationException, InvalidItemStateException,
+      ReferentialIntegrityException, VersionException, LockException,
+      NoSuchNodeTypeException, RepositoryException {
+    if (true) {
       return; // fixing test WIP
     }
     LOG
@@ -88,7 +144,8 @@ public class AuthZServiceTest extends KernelIntegrationBase {
     KernelManager km = new KernelManager();
     AuthzResolverService authzResolver = km
         .getService(AuthzResolverService.class);
-    ReferenceResolverService referenceResolverService = km.getService(ReferenceResolverService.class);
+    ReferenceResolverService referenceResolverService = km
+        .getService(ReferenceResolverService.class);
     PermissionQueryService pqs = km.getService(PermissionQueryService.class);
     PermissionQuery pq = pqs.getPermission("GET");
 
@@ -96,8 +153,8 @@ public class AuthZServiceTest extends KernelIntegrationBase {
     HttpServletResponse response = EasyMock
         .createMock(HttpServletResponse.class);
     HttpSession session = EasyMock.createMock(HttpSession.class);
-    
-    setupRequest(request,response,session,"ib236");
+
+    setupRequest(request, response, session, "ib236");
     replay(request, response, session);
     startRequest(request, response, "JSESSION");
 
@@ -114,34 +171,36 @@ public class AuthZServiceTest extends KernelIntegrationBase {
 
     reset(request, response, session);
 
-    
-    
-    
-    setupRequest(request,response,session,"admin");
+    setupRequest(request, response, session, "admin");
     replay(request, response, session);
     startRequest(request, response, "JSESSION");
-    
-    JCRNodeFactoryService jcrNodeFactory = km.getService(JCRNodeFactoryService.class);
+
+    JCRNodeFactoryService jcrNodeFactory = km
+        .getService(JCRNodeFactoryService.class);
     Node n = jcrNodeFactory.createFile("/test/a/b/c/d.txt");
     n.save();
     n.getSession().save();
-    
+
     ReferencedObject ro = referenceResolverService.resolve("/test/a/b/c/d.txt");
     ReferencedObject parent = ro.getParent();
     parent = parent.getParent();
-    
-    // create an ACL at the parent that will allow those read permission in group1:maintain to perform httpget, make it apply to all subnodes
-    SubjectStatement subjectStatement = new JcrSubjectStatement(SubjectType.GROUP,"group1:maintain","read");
-    AccessControlStatement grantReadToHttpGetInheritable = new JcrAccessControlStatementImpl(subjectStatement,"httpget",true,true); 
+
+    // create an ACL at the parent that will allow those read permission in
+    // group1:maintain to perform httpget, make it apply ot all subnodes
+    SubjectStatement subjectStatement = new JcrSubjectStatement(
+        SubjectType.GROUP, "group1:maintain", "read");
+    AccessControlStatement grantReadToHttpGetInheritable = new JcrAccessControlStatementImpl(
+        subjectStatement, "httpget", true, true);
     parent.addAccessControlStatement(grantReadToHttpGetInheritable);
 
-    SimplePermissionQuery permissionQuery = new SimplePermissionQuery("checkhttpget");
-    permissionQuery.addQueryStatement(new SimpleQueryStatement("httpget"));    
+    SimplePermissionQuery permissionQuery = new SimplePermissionQuery(
+        "checkhttpget");
+    permissionQuery.addQueryStatement(new SimpleQueryStatement("httpget"));
     authzResolver.check("/test/a/b/c/d.txt", permissionQuery);
-    
+
     endRequest();
     verify(request, response, session);
-    
+
     LOG
         .info("Completed Test ====================================================");
   }

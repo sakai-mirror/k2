@@ -35,6 +35,7 @@ import org.sakaiproject.kernel.api.ShutdownService;
 import org.sakaiproject.kernel.api.authz.ReferenceResolverService;
 import org.sakaiproject.kernel.api.jcr.EventRegistration;
 import org.sakaiproject.kernel.api.jcr.JCRService;
+import org.sakaiproject.kernel.api.persistence.DataSourceService;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.authz.simple.JcrReferenceResolverService;
@@ -46,6 +47,9 @@ import org.sakaiproject.kernel.internal.api.InitializationAction;
 import org.sakaiproject.kernel.jcr.api.internal.StartupAction;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.StartupActionProvider;
+import org.sakaiproject.kernel.persistence.dbcp.DataSourceServiceImpl;
+import org.sakaiproject.kernel.persistence.eclipselink.EntityManagerProvider;
+import org.sakaiproject.kernel.persistence.geronimo.TransactionManagerProvider;
 import org.sakaiproject.kernel.serialization.json.BeanJsonLibConfig;
 import org.sakaiproject.kernel.serialization.json.BeanJsonLibConverter;
 import org.sakaiproject.kernel.util.ResourceLoader;
@@ -61,6 +65,9 @@ import java.util.Properties;
 import java.util.Map.Entry;
 
 import javax.jcr.Credentials;
+import javax.persistence.EntityManager;
+import javax.sql.DataSource;
+import javax.transaction.TransactionManager;
 
 /**
  * A Guice module used to create the kernel component.
@@ -240,6 +247,17 @@ public class KernelModule extends AbstractModule {
     TypeLiteral<List<EventRegistration>> eventList = new TypeLiteral<List<EventRegistration>>() {
     };
     bind(eventList).toProvider(EventRegistrationProvider.class);
+
+    
+    // bind in JPA
+    bind(EntityManager.class).toProvider(EntityManagerProvider.class).in(
+        Scopes.SINGLETON);
+    bind(DataSourceService.class).to(DataSourceServiceImpl.class).in(
+        Scopes.SINGLETON);
+    bind(DataSource.class).toProvider(DataSourceServiceImpl.class).in(
+        Scopes.SINGLETON);
+    bind(TransactionManager.class).toProvider(TransactionManagerProvider.class)
+        .in(Scopes.SINGLETON);
 
   }
 }

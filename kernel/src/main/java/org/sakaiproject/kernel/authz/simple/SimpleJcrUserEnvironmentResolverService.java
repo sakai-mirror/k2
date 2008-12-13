@@ -68,6 +68,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
     this.userEnvironmentBase = userEnvironmentBase;
     this.cacheManagerService = cacheManagerService;
     this.nullUserEnv = nullUserEnv;
+    this.beanConverter = beanConverter;
   }
 
   /**
@@ -86,8 +87,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
     }
 
     try {
-      String prefix = PathUtils.getUserPrefix(currentSession.getUserId());
-      String userEnv = userEnvironmentBase + prefix + USERENV;
+      String userEnv = getUserEnvPath(currentSession.getUserId());
       String userEnvBody = IOUtils.readFully(jcrNodeFactoryService
           .getInputStream(userEnv), "UTF-8");
       // convert to a bean, the 
@@ -107,5 +107,13 @@ public class SimpleJcrUserEnvironmentResolverService implements
       LOG.debug(e);
     }
     return nullUserEnv;
+  }
+
+  /**
+   * @return
+   */
+  public String getUserEnvPath(String userId) {
+    String prefix = PathUtils.getUserPrefix(userId);
+    return userEnvironmentBase + prefix + USERENV;
   }
 }
