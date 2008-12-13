@@ -249,15 +249,6 @@ public class KernelModule extends AbstractModule {
     bind(eventList).toProvider(EventRegistrationProvider.class);
 
     
-    // bind in JPA
-    bind(EntityManager.class).toProvider(EntityManagerProvider.class).in(
-        Scopes.SINGLETON);
-    bind(DataSourceService.class).to(DataSourceServiceImpl.class).in(
-        Scopes.SINGLETON);
-    bind(DataSource.class).toProvider(DataSourceServiceImpl.class).in(
-        Scopes.SINGLETON);
-    bind(TransactionManager.class).toProvider(TransactionManagerProvider.class)
-        .in(Scopes.SINGLETON);
 
   }
 }
