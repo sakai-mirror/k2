@@ -23,57 +23,49 @@ package org.sakaiproject.kernel.jcr.jackrabbit;
 import java.io.Serializable;
 import java.security.Principal;
 
-public class JCRAnonymousPrincipal implements Principal, Serializable
-{
+public class JCRAnonymousPrincipal implements Principal, Serializable {
 
-	/**
+  /**
 	 * 
 	 */
-	private static final long serialVersionUID = -2356103533935203766L;
+  private static final long serialVersionUID = -2356103533935203766L;
 
-	private String name;
+  private String name;
 
-	/**
-	 * Creates a <code>SystemPrincipal</code>.
-	 */
-	public JCRAnonymousPrincipal(String name)
-	{
-		this.name = name;
-	}
+  /**
+   * Creates a <code>SystemPrincipal</code>.
+   */
+  public JCRAnonymousPrincipal(String name) {
+    this.name = name;
+  }
 
-	@Override
-	public String toString()
-	{
-		return ("AnonomousePrincipal");
-	}
+  @Override
+  public String toString() {
+    return ("AnonymousPrincipal");
+  }
 
-	@Override
-	public boolean equals(Object obj)
-	{
-		if (this == obj)
-		{
-			return true;
-		}
-		if (obj instanceof JCRAnonymousPrincipal)
-		{
-			return true;
-		}
-		return false;
-	}
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj instanceof JCRAnonymousPrincipal) {
+      return true;
+    }
+    return false;
+  }
 
-	@Override
-	public int hashCode()
-	{
-		return name.hashCode();
-	}
+  @Override
+  public int hashCode() {
+    return name.hashCode();
+  }
 
-	// ------------------------------------------------------------< Principal >
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getName()
-	{
-		return name;
-	}
+  // ------------------------------------------------------------< Principal >
+  /**
+   * {@inheritDoc}
+   */
+  public String getName() {
+    return name;
+  }
 
 }

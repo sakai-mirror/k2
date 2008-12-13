@@ -24,57 +24,49 @@ package org.sakaiproject.kernel.jcr.jackrabbit.sakai;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.jcr.api.internal.SakaiUserPrincipal;
 
-public class SakaiUserPrincipalImpl implements SakaiUserPrincipal
-{
-	/**
+public class SakaiUserPrincipalImpl implements SakaiUserPrincipal {
+  /**
 	 * 
 	 */
-	private static final long serialVersionUID = -8344465158464876283L;
+  private static final long serialVersionUID = -8344465158464876283L;
 
-	private String userId = null;
+  private String userId = null;
 
-	/**
-	 * Creates a <code>SystemPrincipal</code>.
-	 */
-	public SakaiUserPrincipalImpl(User user)
-	{
-		userId = user.getId();
-	}
+  /**
+   * Creates a <code>SystemPrincipal</code>.
+   */
+  public SakaiUserPrincipalImpl(User user) {
+    userId = user.getId();
+  }
 
-	@Override
-	public String toString()
-	{
-		return ("SakaiUserPrincipal");
-	}
+  @Override
+  public String toString() {
+    return ("SakaiUserPrincipal");
+  }
 
-	@Override
-	public boolean equals(Object obj)
-	{
-		if (this == obj)
-		{
-			return true;
-		}
-		if (obj instanceof SakaiUserPrincipal)
-		{
-			SakaiUserPrincipal sup = (SakaiUserPrincipal) obj;
-			return sup.getName().equals(getName());
-		}
-		return false;
-	}
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj instanceof SakaiUserPrincipal) {
+      SakaiUserPrincipal sup = (SakaiUserPrincipal) obj;
+      return sup.getName().equals(getName());
+    }
+    return false;
+  }
 
-	@Override
-	public int hashCode()
-	{
-		return getName().hashCode();
-	}
+  @Override
+  public int hashCode() {
+    return getName().hashCode();
+  }
 
-	// ------------------------------------------------------------< Principal >
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getName()
-	{
-		return userId;
-	}
+  // ------------------------------------------------------------< Principal >
+  /**
+   * {@inheritDoc}
+   */
+  public String getName() {
+    return userId;
+  }
 
 }

@@ -15,44 +15,27 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.api;
+package org.sakaiproject.kernel.jcr.jackrabbit.test;
+
+import static org.junit.Assert.*;
+import org.junit.Test;
+import org.sakaiproject.kernel.jcr.jackrabbit.JCRAnonymousPrincipal;
+
 
 /**
  * 
  */
-public class UpdateFailedException extends Exception {
+public class JCRAnonymousPrincipalTest {
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 2347811755024042066L;
-
-  /**
-   * 
-   */
-  public UpdateFailedException() {
+  @Test
+  public void testJCRAnonymousPrincipal() {
+    JCRAnonymousPrincipal jcrAnonymousPrincipal = new JCRAnonymousPrincipal("Test");
+    JCRAnonymousPrincipal jcrAnonymousPrincipal2 = new JCRAnonymousPrincipal("Test");
+    assertTrue(jcrAnonymousPrincipal.equals(jcrAnonymousPrincipal2));
+    assertFalse(jcrAnonymousPrincipal.equals("Test2"));
+    assertEquals("AnonymousPrincipal", jcrAnonymousPrincipal.toString());
+    jcrAnonymousPrincipal.hashCode();
+    assertEquals("Test", jcrAnonymousPrincipal.getName());
+    
   }
-
-  /**
-   * @param message
-   */
-  public UpdateFailedException(String message) {
-    super(message);
-  }
-
-  /**
-   * @param cause
-   */
-  public UpdateFailedException(Throwable cause) {
-    super(cause);
-  }
-
-  /**
-   * @param message
-   * @param cause
-   */
-  public UpdateFailedException(String message, Throwable cause) {
-    super(message, cause);
-  }
-
 }

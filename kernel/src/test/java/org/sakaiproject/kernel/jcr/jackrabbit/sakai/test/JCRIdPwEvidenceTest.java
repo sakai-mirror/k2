@@ -15,44 +15,22 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.api;
+package org.sakaiproject.kernel.jcr.jackrabbit.sakai.test;
+
+import static org.junit.Assert.*;
+import org.junit.Test;
+import org.sakaiproject.kernel.jcr.jackrabbit.sakai.JCRIdPwEvidence;
+
 
 /**
  * 
  */
-public class UpdateFailedException extends Exception {
+public class JCRIdPwEvidenceTest {
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 2347811755024042066L;
-
-  /**
-   * 
-   */
-  public UpdateFailedException() {
+  @Test
+  public void testJcrIdPwEvidence() {
+    JCRIdPwEvidence jcIdPwEvidence = new JCRIdPwEvidence("userid","password");
+    assertEquals("userid", jcIdPwEvidence.getIdentifier());
+    assertEquals("password", jcIdPwEvidence.getPassword());
   }
-
-  /**
-   * @param message
-   */
-  public UpdateFailedException(String message) {
-    super(message);
-  }
-
-  /**
-   * @param cause
-   */
-  public UpdateFailedException(Throwable cause) {
-    super(cause);
-  }
-
-  /**
-   * @param message
-   * @param cause
-   */
-  public UpdateFailedException(String message, Throwable cause) {
-    super(message, cause);
-  }
-
 }
