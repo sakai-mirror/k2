@@ -92,6 +92,8 @@ public class SimpleJcrUserEnvironmentResolverService implements
           .getInputStream(userEnv), "UTF-8");
       // convert to a bean, the 
       UserEnvironment ue = beanConverter.convertToObject(userEnvBody, UserEnvironment.class);
+      // seal the bean to prevent modification.
+      ue.seal();
       cache.put(currentSession.getId(), ue);
       return ue;
     } catch (UnsupportedEncodingException e) {

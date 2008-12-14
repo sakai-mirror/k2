@@ -42,4 +42,18 @@ public class NullUserEnvironment implements UserEnvironment {
     return false;
   }
 
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#isSuperUser()
+   */
+  public boolean isSuperUser() {
+    return false;
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.Sealable#seal()
+   */
+  public void seal() {    
+  }
 }

@@ -25,6 +25,8 @@ import org.sakaiproject.kernel.api.authz.SubjectPermissions;
 import org.sakaiproject.kernel.api.authz.SubjectStatement;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 
+import java.util.List;
+
 /**
  * 
  */
@@ -32,15 +34,20 @@ public class UserEnvironmentBean implements UserEnvironment {
 
   private static final String USER_ENV_TTL = "userenvironment.ttl";
   private transient long expiry;
-  private SubjectsBean subjects;
+  private transient SubjectsBean subjectsBean;
+  private boolean superUser;
+  private List<String> subjects;
   private String userid;
   private SubjectPermissionService subjectPermissionService;
+  private boolean sealed;
 
   @Inject
   public UserEnvironmentBean(SubjectPermissionService subjectPermissionService, @Named(USER_ENV_TTL) int ttl) {
     expiry = System.currentTimeMillis() + ttl;
     this.subjectPermissionService = subjectPermissionService;
   }
+    
+  
   /**
    * {@inheritDoc}
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#hasExpired()
@@ -58,9 +65,10 @@ public class UserEnvironmentBean implements UserEnvironment {
     switch (subject.getSubjectType()) {
     case GROUP:
       String subjectToken = subject.getSubjectToken();
-      if ( subjects != null && subjects.hasSubject(subjectToken)) {
-        subjects.setSubjectPermissionService(subjectPermissionService);
-        SubjectPermissions subjectPermissions = subjects.getSubjectPermissions(subjectToken);
+      loadSubjects();
+      if ( subjects != null && subjectsBean.hasSubject(subjectToken)) {
+        subjectsBean.setSubjectPermissionService(subjectPermissionService);
+        SubjectPermissions subjectPermissions = subjectsBean.getSubjectPermissions(subjectToken);
         return subjectPermissions.hasPermission(subject.getPermissionToken());
       }
       return false;
@@ -72,6 +80,77 @@ public class UserEnvironmentBean implements UserEnvironment {
       return true;
     }
     return false;
+  }
+  
+  /**
+   * 
+   */
+  private void loadSubjects() {
+    if ( subjectsBean  == null ) {
+      subjectsBean = new SubjectsBean();
+      for ( String subject : subjects ) {
+        subjectsBean.put(subject,subject);
+      }
+    }
+  }
+
+
+  /**
+   * @return the superUser
+   */
+  public boolean isSuperUser() {
+    return superUser;
+  }
+  
+  /**
+   * @return the subjects
+   */
+  public List<String> getSubjects() {
+    return subjects;
+  }
+  
+  /**
+   * @return the userid
+   */
+  public String getUserid() {
+    return userid;
+  }
+  
+  /**
+   * @param superUser the superUser to set
+   */
+  public void setSuperUser(boolean superUser) {
+    if ( sealed ) {
+      throw new RuntimeException("Attempt to unseal a sealed UserEnvironmentBean ");
+    }
+    this.superUser = superUser;
+  }
+   /**
+   * @param userid the userid to set
+   */
+  public void setUserid(String userid) {
+    if ( sealed ) {
+      throw new RuntimeException("Attempt to unseal a sealed UserEnvironmentBean ");
+    }
+    this.userid = userid;
+  }
+  
+  /**
+   * @param subjects the subjects to set
+   */
+  public void setSubjects(List<String> subjects) {
+    if ( sealed ) {
+      throw new RuntimeException("Attempt to unseal a sealed UserEnvironmentBean ");
+    }
+    subjectsBean = null;
+    this.subjects = subjects;
+  }
+
+  /**
+   * @param sealed the sealed to set
+   */
+  public void seal() {
+     this.sealed = true;
   }
 
 }

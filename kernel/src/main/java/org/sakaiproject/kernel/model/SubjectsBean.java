@@ -21,14 +21,16 @@ import org.sakaiproject.kernel.api.authz.SubjectPermissionService;
 import org.sakaiproject.kernel.api.authz.SubjectPermissions;
 import org.sakaiproject.kernel.api.authz.UserSubjects;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 
  */
-public class SubjectsBean extends HashMap<String, String> implements UserSubjects {
+public class SubjectsBean extends HashMap<String,String> implements UserSubjects {
 
   private transient Map<String, SubjectPermissions> subjectPermissionMap = new ConcurrentHashMap<String, SubjectPermissions>();
   private SubjectPermissionService subjectPermissionService;
@@ -52,7 +54,7 @@ public class SubjectsBean extends HashMap<String, String> implements UserSubject
   public void addSubjectPermissions(SubjectPermissions subjectPermissions) {
     String subjectToken = subjectPermissions.getSubjectToken();
     subjectPermissionMap.put(subjectToken, subjectPermissions);
-    put(subjectToken,subjectToken);
+    containsKey(subjectToken);
   }
 
   /**

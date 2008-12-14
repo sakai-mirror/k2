@@ -110,6 +110,10 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
         .resolve(sessionManager.getCurrentSession());
     System.err.println(" User Env " + userEnvironment);
     System.err.println(" Locating Referenced object " + resourceReference);
+    if ( userEnvironment.isSuperUser() ) {
+      LOG.warn("SECURITY: SuperUser permission granted on:"+permissionQueryToken);
+      return;
+    }
     ReferencedObject referencedObject = referenceResolverService
         .resolve(resourceReference);
     System.err.println(" Got Referenced Object " + referencedObject);

@@ -19,6 +19,7 @@ package org.sakaiproject.kernel.api.userenv;
 
 import com.google.inject.ImplementedBy;
 
+import org.sakaiproject.kernel.api.Sealable;
 import org.sakaiproject.kernel.api.authz.SubjectStatement;
 import org.sakaiproject.kernel.model.UserEnvironmentBean;
 
@@ -34,7 +35,7 @@ import org.sakaiproject.kernel.model.UserEnvironmentBean;
  * that will need to be replicated.
  */
 @ImplementedBy(UserEnvironmentBean.class)
-public interface UserEnvironment {
+public interface UserEnvironment extends Sealable {
 
   /**
    * Attribute used in the session to store a list of group memberships.
@@ -55,5 +56,11 @@ public interface UserEnvironment {
    * @return true if the UserEnvironment has expired and should not be used.
    */
   boolean hasExpired();
+
+  /**
+   * Indicates that the user is a super user and does not have permissions applied, everything is granted.
+   * @return
+   */
+  boolean isSuperUser();
 
 }
