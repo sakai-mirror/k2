@@ -52,6 +52,6 @@ public interface AuthzResolverService {
    * Set a request grant that allows all operations on this thread, calling this
    * method by passes all security, and will be logged.
    */
-  void setRequestGrant();
+  void setRequestGrant(String reason);
 
 }

@@ -99,7 +99,7 @@ public class AuthZServiceTest extends KernelIntegrationBase {
     JCRService jcrService = kernel.getService(JCRService.class);
     
     // bypass security
-    authzResolverService.setRequestGrant();
+    authzResolverService.setRequestGrant("Populating Test JSON");
     
     // login to the repo with super admin
     SakaiJCRCredentials credentials = new SakaiJCRCredentials();
@@ -136,11 +136,11 @@ public class AuthZServiceTest extends KernelIntegrationBase {
       ConstraintViolationException, InvalidItemStateException,
       ReferentialIntegrityException, VersionException, LockException,
       NoSuchNodeTypeException, RepositoryException {
-    if (true) {
+    if (false) {
       return; // fixing test WIP
     }
     LOG
-        .info("Starting Test ====================================================");
+        .info("Starting Test ==================================================== testCheck");
     KernelManager km = new KernelManager();
     AuthzResolverService authzResolver = km
         .getService(AuthzResolverService.class);
@@ -202,13 +202,13 @@ public class AuthZServiceTest extends KernelIntegrationBase {
     verify(request, response, session);
 
     LOG
-        .info("Completed Test ====================================================");
+        .info("Completed Test ==================================================== testCheck ");
   }
 
   @Test
   public void testRequestGrant() {
     LOG
-      .info("Starting Test ====================================================");
+      .info("Starting Test ==================================================== testRequestGrant ");
     KernelManager km = new KernelManager();
     AuthzResolverService authzResolver = km
       .getService(AuthzResolverService.class);
@@ -220,11 +220,11 @@ public class AuthZServiceTest extends KernelIntegrationBase {
       .createMock(HttpServletResponse.class);
     HttpSession session = EasyMock.createMock(HttpSession.class);
 
-    setupRequest(request,response,session,"ib236");
+    setupRequest(request,response,session,"ib236-testRequestGrant");
     replay(request, response, session);
     startRequest(request, response, "JSESSION");
 
-    authzResolver.setRequestGrant();
+    authzResolver.setRequestGrant("Testing Request Grant");
     // Though the AuthZ doesn't exist it should be granted
     authzResolver.check("/x/y/z", pq);
 
@@ -253,7 +253,7 @@ public class AuthZServiceTest extends KernelIntegrationBase {
     expect(request.getSession()).andReturn(session).anyTimes();
     expect(request.getSession(true)).andReturn(session).anyTimes();
     expect(request.getSession(false)).andReturn(session).anyTimes();
-    expect(session.getId()).andReturn("123").anyTimes();
+    expect(session.getId()).andReturn(userName+"SESSIONID-123").anyTimes();
     expect(session.getAttribute("_u")).andReturn(userName).anyTimes();
   }
 

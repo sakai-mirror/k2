@@ -181,7 +181,7 @@ public class IntegrationTest {
     SakaiServletResponse sresponse = new SakaiServletResponse(response,
         "JSESSIONID");
     sessionManagerService.bindRequest(srequest);
-    authzResolverService.setRequestGrant();
+    authzResolverService.setRequestGrant("testServletRequest");
     ControllerServlet controllerServlet = new ControllerServlet();
     controllerServlet.init(config);
 
@@ -251,7 +251,7 @@ public class IntegrationTest {
     SakaiServletResponse sresponse = new SakaiServletResponse(response,
         "JSESSIONID");
     sessionManagerService.bindRequest(srequest);
-    authzResolverService.setRequestGrant();
+    authzResolverService.setRequestGrant("testServletRequest1");
 
     ControllerServlet controllerServlet = new ControllerServlet();
     controllerServlet.init(config);
@@ -292,7 +292,7 @@ public class IntegrationTest {
     SakaiServletResponse sresponse = new SakaiServletResponse(response,
         "JSESSIONID");
     sessionManagerService.bindRequest(srequest);
-    authzResolverService.setRequestGrant();
+    authzResolverService.setRequestGrant("testServletRequest2");
     ControllerServlet controllerServlet = new ControllerServlet();
     controllerServlet.init(config);
     controllerServlet.service(srequest, sresponse);
@@ -331,7 +331,7 @@ public class IntegrationTest {
     SakaiServletResponse sresponse = new SakaiServletResponse(response,
         "JSESSIONID");
     sessionManagerService.bindRequest(srequest);
-    authzResolverService.setRequestGrant();
+    authzResolverService.setRequestGrant("testServletRequest3");
     ControllerServlet controllerServlet = new ControllerServlet();
     controllerServlet.init(config);
     controllerServlet.service(srequest, sresponse);
@@ -389,7 +389,7 @@ public class IntegrationTest {
     SakaiServletResponse sresponse = new SakaiServletResponse(response,
         "JSESSIONID");
     sessionManagerService.bindRequest(srequest);
-    authzResolverService.setRequestGrant();
+    authzResolverService.setRequestGrant("testServletRequest4");
     ControllerServlet controllerServlet = new ControllerServlet();
     controllerServlet.init(config);
     controllerServlet.service(srequest, sresponse);
@@ -474,7 +474,7 @@ public class IntegrationTest {
     SakaiServletResponse sresponse = new SakaiServletResponse(response,
         "JSESSIONID");
     sessionManagerService.bindRequest(srequest);
-    authzResolverService.setRequestGrant();
+    authzResolverService.setRequestGrant("testGet");
 
     ControllerServlet controllerServlet = new ControllerServlet();
     controllerServlet.init(config);
@@ -561,7 +561,7 @@ public class IntegrationTest {
     SakaiServletResponse sresponse = new SakaiServletResponse(response,
         "JSESSIONID");
     sessionManagerService.bindRequest(srequest);
-    authzResolverService.setRequestGrant();
+    authzResolverService.setRequestGrant("testGetMetatData");
 
     ControllerServlet controllerServlet = new ControllerServlet();
     controllerServlet.init(config);
@@ -616,7 +616,7 @@ public class IntegrationTest {
     SakaiServletResponse sresponse = new SakaiServletResponse(response,
         "JSESSIONID");
     sessionManagerService.bindRequest(srequest);
-    authzResolverService.setRequestGrant();
+    authzResolverService.setRequestGrant("testDumper");
     dumper.doDelete(srequest, sresponse);
     cacheManagerService.unbind(CacheScope.REQUEST);
     verify(request, response, session);
@@ -626,7 +626,7 @@ public class IntegrationTest {
     srequest = new SakaiServletRequest(request);
     sresponse = new SakaiServletResponse(response, "JSESSIONID");
     sessionManagerService.bindRequest(srequest);
-    authzResolverService.setRequestGrant();
+    authzResolverService.setRequestGrant("testDumper");
     generateDumperCallSequence("GET", request, response);
     dumper.doGet(srequest, sresponse);
     cacheManagerService.unbind(CacheScope.REQUEST);
@@ -637,7 +637,7 @@ public class IntegrationTest {
     srequest = new SakaiServletRequest(request);
     sresponse = new SakaiServletResponse(response, "JSESSIONID");
     sessionManagerService.bindRequest(srequest);
-    authzResolverService.setRequestGrant();
+    authzResolverService.setRequestGrant("testDumper");
     dumper.doHead(srequest, sresponse);
     cacheManagerService.unbind(CacheScope.REQUEST);
     verify(request, response, session);
@@ -647,7 +647,7 @@ public class IntegrationTest {
     srequest = new SakaiServletRequest(request);
     sresponse = new SakaiServletResponse(response, "JSESSIONID");
     sessionManagerService.bindRequest(srequest);
-    authzResolverService.setRequestGrant();
+    authzResolverService.setRequestGrant("testDumper");
     dumper.doPost(srequest, sresponse);
     cacheManagerService.unbind(CacheScope.REQUEST);
     verify(request, response, session);
@@ -657,7 +657,7 @@ public class IntegrationTest {
     srequest = new SakaiServletRequest(request);
     sresponse = new SakaiServletResponse(response, "JSESSIONID");
     sessionManagerService.bindRequest(srequest);
-    authzResolverService.setRequestGrant();
+    authzResolverService.setRequestGrant("testDumper");
     dumper.doPut(srequest, sresponse);
     cacheManagerService.unbind(CacheScope.REQUEST);
     verify(request, response, session);

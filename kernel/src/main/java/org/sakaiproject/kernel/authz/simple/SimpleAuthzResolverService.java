@@ -292,11 +292,11 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
         + userEnvironment);
   }
 
-  public void setRequestGrant() {
+  public void setRequestGrant(String reason) {
     Cache<Boolean> grants = cacheManagerService.getCache("authz",
         CacheScope.REQUEST);
     grants.put("request-granted" + secureKey, true);
-    LOG.warn("Request Fully Granted ");
+    LOG.warn("Request Fully Granted :"+reason);
   }
 
   public void clearRequestGrant() {
