@@ -81,7 +81,7 @@ public class BeanJsonLibConverter implements BeanConverter {
    * @return A pojo of the same type as the rootBeanClass
    */
   @SuppressWarnings("unchecked")
-  public <T> T convertToObject(String string, final Class<T> rootBeanClass) {
+  public <T> T convertToObject(String string, final Class<?> rootBeanClass) {
 
     if ("".equals(string)) {
       string = "{}";
@@ -103,8 +103,10 @@ public class BeanJsonLibConverter implements BeanConverter {
         return (T) result;
 
       } else {
-        T rootObject = injector.getInstance(rootBeanClass);
-        Object o = JSONArray.toArray(jsonArray, rootObject, jsonConfig);
+        Object rootObject = injector.getInstance(rootBeanClass);
+        Object o = JSONArray.toList(jsonArray, rootObject, jsonConfig);
+        System.err.println("Converted "+jsonArray+" to "+o);
+        
         return (T) o;
       }
     } else {
@@ -114,7 +116,7 @@ public class BeanJsonLibConverter implements BeanConverter {
         JsonLibConverterUtils.dumpJsonObject(jsonObject, " ");
       }
 
-      T rootObject = injector.getInstance(rootBeanClass);
+      Object rootObject = injector.getInstance(rootBeanClass);
       Object o = JSONObject.toBean(jsonObject, rootObject, jsonConfig);
       return (T) o;
 
@@ -156,4 +158,10 @@ public class BeanJsonLibConverter implements BeanConverter {
     jsonConfig.getClassMap().put(key, class1);
   }
 
+  /**
+   * @param debugMode the debugMode to set
+   */
+  public void setDebugMode(boolean debugMode) {
+    this.debugMode = debugMode;
+  }
 }
