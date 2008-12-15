@@ -1,21 +1,21 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations under the License.
- */
+/*******************************************************************************
+ * Copyright 2008 Sakai Foundation
+ * 
+ * Licensed under the Educational Community License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.osedu.org/licenses/ECL-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
 package org.sakaiproject.kernel.test;
+
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,7 +29,10 @@ import com.google.inject.Injector;
 import com.google.inject.spi.Message;
 
 import org.junit.Test;
-import org.sakaiproject.kernel.api.persistence.DataSourceService;
+import org.sakaiproject.kernel.KernelModule;
+import org.sakaiproject.kernel.api.Kernel;
+import org.sakaiproject.kernel.api.KernelManager;
+import org.sakaiproject.kernel.component.KernelLifecycle;
 import org.sakaiproject.kernel.persistence.PersistenceModule;
 import org.sakaiproject.kernel.util.ResourceLoader;
 
@@ -44,19 +47,32 @@ public class PersistenceModuleTest {
   private static final String DEFAULT_PROPERTIES = "res://kernel-component.properties";
   private static final String LOCAL_PROPERTIES = "SAKAI_KERNEL_COMPONENT_PROPERTIES";
   private static final String SYS_LOCAL_PROPERTIES = "sakai.kernel.component.properties";
-  
+
   @Test
-  public void testPersistenceModule() {
-    // this test needs to be adjusted to set the properties correctly since the
-    // persistence module now relies on the activator to handle the property
-    // loading.
-    if (true) {
-      return;
-    }
+  public void loadModule() throws Exception {
+    Properties props = readSysProps();
+    KernelLifecycle kernelLifecycle = new KernelLifecycle();
+    kernelLifecycle.start();
+
+    KernelManager kernelManager = new KernelManager();
+    Kernel kernel = kernelManager.getKernel();
+
+    Injector injector = Guice.createInjector(new KernelModule(kernel, props),
+        new PersistenceModule());
+    DataSource ds = injector.getInstance(DataSource.class);
+    EntityManager em = injector.getInstance(EntityManager.class);
+    TransactionManager tm = injector.getInstance(TransactionManager.class);
+    assertNotNull(ds);
+    assertNotNull(em);
+    assertNotNull(tm);
+    em.close();
+  }
+
+  private Properties readSysProps() {
     /**
      * The properties for the kernel
      */
-    Properties properties;
+    Properties properties = null;
     InputStream is = null;
     try {
       is = ResourceLoader.openResource(DEFAULT_PROPERTIES, this.getClass()
@@ -115,14 +131,6 @@ public class PersistenceModuleTest {
         // dont care about this.
       }
     }
-
-//    Names.bindProperties(this.binder(), properties);
-    Injector injector = Guice.createInjector(new PersistenceModule());
-    DataSourceService dataSourceService = injector.getInstance(DataSourceService.class);
-    DataSource ds = injector.getInstance(DataSource.class);
-    EntityManager em = injector.getInstance(EntityManager.class);
-    TransactionManager tm = injector.getInstance(TransactionManager.class);
-    em.close();
-    
+    return properties;
   }
 }
