@@ -1,8 +1,30 @@
+/**********************************************************************************
+ * Copyright 2008 Sakai Foundation
+ *
+ * Licensed under the Educational Community License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.osedu.org/licenses/ECL-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ **********************************************************************************/
 package org.sakaiproject.kernel2.test;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 import java.io.File;
 import java.net.URL;
 import java.util.Enumeration;
+
+import javax.persistence.EntityManager;
+import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -10,6 +32,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sakaiproject.kernel.Activator;
+import org.sakaiproject.kernel.KernelModule;
 import org.sakaiproject.kernel.api.ComponentActivator;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.api.Kernel;
@@ -19,8 +42,8 @@ import org.sakaiproject.kernel.api.ServiceSpec;
 import org.sakaiproject.kernel.api.ShutdownService;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
-import org.sakaiproject.kernel.api.persistence.PersistenceService;
 import org.sakaiproject.kernel.component.KernelLifecycle;
+import org.sakaiproject.kernel.persistence.PersistenceModule;
 import org.sakaiproject.kernel.util.FileUtil;
 
 public class OrmProjectLoaderTest {
@@ -28,7 +51,9 @@ public class OrmProjectLoaderTest {
 
   private static KernelLifecycle kernelLifecycle;
   private static KernelManager kernelManager;
-  private static PersistenceService persistence;
+  private static Injector injector;
+  private static DataSource dataSource;
+  private static EntityManager entityManager;
 
   @BeforeClass
   public static void beforeClass() throws ComponentActivatorException {
@@ -52,6 +77,9 @@ public class OrmProjectLoaderTest {
     kernelManager = new KernelManager();
     Kernel kernel = kernelManager.getKernel();
 
+    injector = Guice.createInjector(new KernelModule(kernel),
+        new PersistenceModule());
+
     // activate kernel core stuff
     ComponentActivator activator = new Activator();
     activator.activate(kernel);
@@ -72,9 +100,10 @@ public class OrmProjectLoaderTest {
     activator = new org.sakaiproject.kernel2.mp2.Activator();
     activator.activate(kernel);
 
-    persistence = kernel.getService(PersistenceService.class);
-    System.out.println("DataSource: " + persistence.dataSource());
-    System.out.println("EntityManager: " + persistence.entityManager());
+    dataSource = injector.getInstance(DataSource.class);
+    entityManager = injector.getInstance(EntityManager.class);
+    System.out.println("DataSource: " + dataSource);
+    System.out.println("EntityManager: " + entityManager);
   }
 
   @AfterClass
@@ -90,12 +119,13 @@ public class OrmProjectLoaderTest {
   public void doSomething() throws Exception {
     int count = 0;
     for (Enumeration<URL> orms = this.getClass().getClassLoader().getResources(
-    "META-INF/orm.xml"); orms.hasMoreElements();) {
+        "META-INF/orm.xml"); orms.hasMoreElements();) {
       URL orm = orms.nextElement();
       System.out.println("** orm:" + count + ": " + orm);
       count++;
     }
-    System.out.println("*** Found " + count + " orm.xml files on the classpath.");
+    System.out.println("*** Found " + count
+        + " orm.xml files on the classpath.");
   }
 
   /**

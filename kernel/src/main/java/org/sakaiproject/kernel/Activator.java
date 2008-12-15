@@ -36,11 +36,9 @@ import org.sakaiproject.kernel.api.jcr.JCRRegistrationService;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
-import org.sakaiproject.kernel.api.persistence.PersistenceService;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.user.AuthenticationManager;
 import org.sakaiproject.kernel.api.user.UserDirectoryService;
-import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.internal.api.KernelInitialization;
 import org.sakaiproject.kernel.internal.api.KernelInitializtionException;
 import org.sakaiproject.kernel.persistence.PersistenceModule;
@@ -55,7 +53,7 @@ public class Activator implements ComponentActivator {
       UserDirectoryService.class, AuthenticationManager.class,
       CacheManagerService.class, SessionManagerService.class,
       AuthzResolverService.class, PermissionQueryService.class,
-      ReferenceResolverService.class, PersistenceService.class };
+      ReferenceResolverService.class };
   private static final Log LOG = LogFactory.getLog(Activator.class);
   @SuppressWarnings("unused")
   private Kernel kernel;
