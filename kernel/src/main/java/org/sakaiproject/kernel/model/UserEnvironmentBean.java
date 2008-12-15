@@ -25,8 +25,6 @@ import org.sakaiproject.kernel.api.authz.SubjectPermissions;
 import org.sakaiproject.kernel.api.authz.SubjectStatement;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 
-import java.util.List;
-
 /**
  * 
  */
@@ -35,11 +33,11 @@ public class UserEnvironmentBean implements UserEnvironment {
   private static final String USER_ENV_TTL = "userenvironment.ttl";
   private transient long expiry;
   private transient SubjectsBean subjectsBean;
-  private boolean superUser;
-  private List<String> subjects;
+  private boolean superUser = false;
+  private String[] subjects = new String[0];
   private String userid;
   private SubjectPermissionService subjectPermissionService;
-  private boolean sealed;
+  private boolean sealed = false;
 
   @Inject
   public UserEnvironmentBean(SubjectPermissionService subjectPermissionService, @Named(USER_ENV_TTL) int ttl) {
@@ -105,7 +103,7 @@ public class UserEnvironmentBean implements UserEnvironment {
   /**
    * @return the subjects
    */
-  public List<String> getSubjects() {
+  public String[] getSubjects() {
     return subjects;
   }
   
@@ -138,11 +136,12 @@ public class UserEnvironmentBean implements UserEnvironment {
   /**
    * @param subjects the subjects to set
    */
-  public void setSubjects(List<String> subjects) {
+  public void setSubjects(String[] subjects) {
     if ( sealed ) {
       throw new RuntimeException("Attempt to unseal a sealed UserEnvironmentBean ");
     }
     subjectsBean = null;
+    System.err.println("Setting subjects to "+subjects);
     this.subjects = subjects;
   }
 
