@@ -15,6 +15,8 @@
  ******************************************************************************/
 package org.sakaiproject.kernel2.test;
 
+import static org.junit.Assert.assertNotNull;
+
 import static org.junit.Assert.assertEquals;
 
 import com.google.inject.Guice;
@@ -22,9 +24,12 @@ import com.google.inject.Injector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.sakaiproject.jpa.Employee;
 import org.sakaiproject.kernel.Activator;
 import org.sakaiproject.kernel.KernelModule;
 import org.sakaiproject.kernel.api.ComponentActivator;
@@ -34,17 +39,18 @@ import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.RequiresStop;
 import org.sakaiproject.kernel.api.ServiceSpec;
 import org.sakaiproject.kernel.api.ShutdownService;
-import org.sakaiproject.kernel.api.memory.CacheManagerService;
-import org.sakaiproject.kernel.api.memory.CacheScope;
 import org.sakaiproject.kernel.component.KernelLifecycle;
 import org.sakaiproject.kernel.persistence.PersistenceModule;
 import org.sakaiproject.kernel.util.FileUtil;
+import org.sakaiproject.kernel2.mp2.Campus;
 
 import java.io.File;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 public class OrmProjectLoaderTest {
   private static final Log LOG = LogFactory.getLog(OrmProjectLoaderTest.class);
@@ -52,6 +58,8 @@ public class OrmProjectLoaderTest {
   private static KernelLifecycle kernelLifecycle;
   private static KernelManager kernelManager;
   private static Injector injector;
+
+  private EntityManager em;
 
   @BeforeClass
   public static void beforeClass() throws ComponentActivatorException {
@@ -103,6 +111,16 @@ public class OrmProjectLoaderTest {
     activator.activate(kernel);
   }
 
+  @Before
+  public void before() {
+    em = injector.getInstance(EntityManager.class);
+  }
+
+  @After
+  public void after() {
+//    em.close();
+  }
+
   @AfterClass
   public static void afterClass() {
     try {
@@ -137,35 +155,45 @@ public class OrmProjectLoaderTest {
     System.out.println("*** Found " + count
         + " orm.xml files on the classpath.");
     assertEquals(3, count);
-
-    // get an instance to cause the EntityManager to load ORM files
-    injector.getInstance(EntityManager.class);
   }
 
-  /**
-   * 
-   */
-  protected void endRequest() {
-    CacheManagerService cacheManagerService = kernelManager
-        .getService(CacheManagerService.class);
-    cacheManagerService.unbind(CacheScope.REQUEST);
+  @Test
+  public void accessLocalModel() throws Exception {
+    em.getTransaction().begin();
+
+    Campus c = new Campus();
+    c.id = 1;
+    c.name = "Main";
+    em.persist(c);
+    em.flush();
+
+    Query q = em.createQuery("select c from Campus c where c.id = ?1");
+    q.setParameter(1, 1);
+    Campus campus = (Campus) q.getSingleResult();
+    assertNotNull(campus);
+
+    em.getTransaction().rollback();
   }
 
-  /**
-   * @param request
-   * @param response
-   * @param cookieName
-   * @return
-   */
-  // protected HttpServletResponse startRequest(HttpServletRequest request,
-  // HttpServletResponse response, String cookieName) {
-  // SakaiServletRequest wrequest = new SakaiServletRequest(request);
-  // SakaiServletResponse wresponse = new SakaiServletResponse(response,
-  // cookieName);
-  // SessionManagerService sessionManagerService = kernelManager
-  // .getService(SessionManagerService.class);
-  // sessionManagerService.bindRequest(wrequest);
-  // return wresponse;
-  //
-  // }
+  public void accessRemoteModel() throws Exception {
+    em.getTransaction().begin();
+
+    // add something
+    Employee e1 = new Employee();
+    e1.setFirstName("Carl");
+    e1.setLastName("Hall");
+    em.persist(e1);
+    em.flush();
+
+    // single first name entry
+    Query selectByFirstName = em
+        .createQuery("select e from Employee e where e.firstName = ?1");
+    selectByFirstName.setParameter(1, "Carl");
+    List<Employee> employees = (List<Employee>) selectByFirstName
+        .getResultList();
+    assertNotNull(employees);
+    assertEquals(1, employees.size());
+
+    em.getTransaction().rollback();
+  }
 }
