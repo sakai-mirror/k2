@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.sakaiproject.kernel.model.test.ModelModule;
 import org.sakaiproject.kernel.serialization.json.BeanJsonLibConverter;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -94,6 +95,33 @@ public class BeanJsonLibConverterTest {
   @Test
   public void testContentType() {
     assertEquals("application/json",converter.getContentType());
+  }
+  
+  @Test
+  public void testConvertToString() {
+    Map<String, Object> m = new HashMap<String, Object>();
+    m.put("key1", "value1");
+    Map<String, Object> m2 = new HashMap<String, Object>();
+    m2.put("key11", "value11");
+    m2.put("key12", "value12");
+    m.put("map2", m2);
+    
+    String json = converter.convertToString(m);
+    
+    System.err.println("Json is "+json);
+    Map<String, Object> m3 = converter.convertToObject(json, Map.class);
+    
+    assertNotNull(m3);
+    assertEquals(m.size(), m3.size());
+    assertTrue(m3.containsKey("key1"));
+    assertEquals("value1", m3.get("key1"));
+    assertTrue(m3.containsKey("map2"));
+  }
+  @Test
+  public void testConvertArrayToString() {
+    String json = converter.convertToString(new String[] { "element1", "element2" });
+    
+    System.err.println("Json is "+json);
   }
 
   
