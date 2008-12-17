@@ -29,6 +29,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sakaiproject.jpa.Employee;
+import org.sakaiproject.jpa.Project;
 import org.sakaiproject.kernel.Activator;
 import org.sakaiproject.kernel.KernelModule;
 import org.sakaiproject.kernel.api.ComponentActivator;
@@ -58,7 +59,7 @@ public class OrmProjectLoaderTest {
   private static KernelManager kernelManager;
   private static Injector injector;
 
-  private EntityManager em;
+  private static EntityManager em;
 
   @BeforeClass
   public static void beforeClass() throws ComponentActivatorException {
@@ -108,20 +109,21 @@ public class OrmProjectLoaderTest {
     // activate model project 2
     activator = new org.sakaiproject.kernel2.mp2.Activator();
     activator.activate(kernel);
+
+    em = injector.getInstance(EntityManager.class);
   }
 
   @Before
   public void before() {
-    em = injector.getInstance(EntityManager.class);
   }
 
   @After
   public void after() {
-    // em.close();
   }
 
   @AfterClass
   public static void afterClass() {
+    em.close();
     try {
       kernelLifecycle.stop();
     } catch (Exception ex) {
@@ -156,7 +158,6 @@ public class OrmProjectLoaderTest {
     assertEquals(3, count);
   }
 
-  @Test
   public void accessLocalModel() throws Exception {
     em.getTransaction().begin();
 
@@ -164,6 +165,7 @@ public class OrmProjectLoaderTest {
     c.id = 1;
     c.name = "Main";
     em.persist(c);
+    em.getTransaction().commit();
     em.flush();
 
     Query q = em.createQuery("select c from Campus c where c.id = ?1");
@@ -174,14 +176,26 @@ public class OrmProjectLoaderTest {
     em.getTransaction().rollback();
   }
 
+  @Test
   public void accessRemoteModel() throws Exception {
     em.getTransaction().begin();
+
+    Query selectSubject = em.createQuery("select s from SubjectPermissionBean s");
+    assertEquals(0, selectSubject.getResultList().size());
+
+    Query selectProject = em.createQuery("select p from Project p");
+    assertEquals(0, selectProject.getResultList().size());
+
+    Project p = new Project();
+    p.setName("Project 1");
+    em.persist(p);
 
     // add something
     Employee e1 = new Employee();
     e1.setFirstName("Carl");
     e1.setLastName("Hall");
     em.persist(e1);
+
     em.flush();
 
     // single first name entry
