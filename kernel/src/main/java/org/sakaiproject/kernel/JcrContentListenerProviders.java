@@ -20,36 +20,31 @@ package org.sakaiproject.kernel;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
-import org.sakaiproject.kernel.api.jcr.EventRegistration;
-import org.sakaiproject.kernel.jcr.jackrabbit.JcrContentListenerAdapter;
+import org.sakaiproject.kernel.jcr.api.JcrContentListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Provides a list of EventRegistrations
+ * 
  */
-public class EventRegistrationProvider implements
-    Provider<List<EventRegistration>> {
+public class JcrContentListenerProviders implements Provider<List<JcrContentListener>> {
 
-  private List<EventRegistration> eventRegistrations = new ArrayList<EventRegistration>();
+  private List<JcrContentListener> list = new ArrayList<JcrContentListener>();
 
   /**
    * 
    */
   @Inject
-  public EventRegistrationProvider(
-      JcrContentListenerAdapter jcrContentListenerAdapter) {
-    eventRegistrations.add(jcrContentListenerAdapter);
+  public JcrContentListenerProviders() {
+    
   }
-
   /**
    * {@inheritDoc}
-   * 
    * @see com.google.inject.Provider#get()
    */
-  public List<EventRegistration> get() {
-    return eventRegistrations;
+  public List<JcrContentListener> get() {
+    return list;
   }
 
 }

@@ -43,6 +43,7 @@ import org.sakaiproject.kernel.authz.simple.PathReferenceResolverService;
 import org.sakaiproject.kernel.component.core.guice.ServiceProvider;
 import org.sakaiproject.kernel.initialization.InitializationActionProvider;
 import org.sakaiproject.kernel.internal.api.InitializationAction;
+import org.sakaiproject.kernel.jcr.api.JcrContentListener;
 import org.sakaiproject.kernel.jcr.api.internal.StartupAction;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.StartupActionProvider;
@@ -232,7 +233,7 @@ public class KernelModule extends AbstractModule {
     bind(Map[].class).to(HashMap[].class);
     bind(JsonConfig.class).annotatedWith(Names.named("SakaiKernelJsonConfig"))
         .to(BeanJsonLibConfig.class);
-    
+
     bind(UserEnvironment.class).annotatedWith(
         Names.named(UserEnvironment.NULLUSERENV)).to(NullUserEnvironment.class)
         .in(Scopes.SINGLETON);
@@ -241,7 +242,9 @@ public class KernelModule extends AbstractModule {
     };
     bind(eventList).toProvider(EventRegistrationProvider.class);
 
-    
+    TypeLiteral<List<JcrContentListener>> contentListeners = new TypeLiteral<List<JcrContentListener>>() {
+    };
+    bind(contentListeners).toProvider(JcrContentListenerProviders.class);
 
   }
 }
