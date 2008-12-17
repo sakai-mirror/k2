@@ -51,19 +51,15 @@ public class JcrReferenceObject implements ReferencedObject {
    * @throws RepositoryException
    */
   public JcrReferenceObject(Node node) throws RepositoryException {
-    System.err.println(" Loading "+node.getPath());
     this.node = node;
     path = node.getPath();
     acl = new ArrayList<AccessControlStatement>();
     inheritableAcl = new ArrayList<AccessControlStatement>();
-    System.err.println(" Doing ACL "+node.getPath());
     try {
       Property property = node.getProperty(ACL_PROPERTY);
-      System.err.println(" Doing ACL "+node.getPath());
       for (Value aclSpec : property.getValues()) {
         AccessControlStatement acs = new JcrAccessControlStatementImpl(aclSpec
             .getString());
-        System.err.println(" Doing ACL "+node.getPath());
         if (acs.isPropagating()) {
           inheritableAcl.add(acs);
         }
@@ -75,12 +71,9 @@ public class JcrReferenceObject implements ReferencedObject {
     } catch ( Exception ex ) {
       ex.printStackTrace();
     }
-    System.err.println("Done ACL ");
     Node parent = null;
     try {
-      System.err.println("Getting Parent node for "+node.getPath());
       parent = node.getParent();
-      System.err.println("Got Parent node as "+parent);
     } catch (ItemNotFoundException e) {
       parent = null;
     } catch (AccessDeniedException e) {
@@ -88,17 +81,12 @@ public class JcrReferenceObject implements ReferencedObject {
     } catch (RepositoryException e) {
       e.printStackTrace();
     }
-    System.err.println("Got Parent node "+parent);
     if (parent != null) {
       parentReference = new JcrReferenceObject(parent);
       if (parentReference.getInheritableAccessControlList().size() == 0) {
-        System.err.println("Inheritable ACL size == 0, must be root "+getKey());
         rootReference = true;
-      } else {
-        System.err.println("Has Inheritable ACL "+getKey());
       }
     } else {
-      System.err.println("Root Reference");
       rootReference = true;
     }
     
@@ -149,7 +137,6 @@ public class JcrReferenceObject implements ReferencedObject {
   public boolean isRoot() {
     // see of this is a root, which means that all parent objects are also root, this will recurse up the tree.
     boolean rootRef =  rootReference && (parentReference == null || parentReference.isRoot());
-    System.err.println("Root reference "+getKey()+" "+rootRef);
     return rootRef;
   }
 
@@ -169,11 +156,9 @@ public class JcrReferenceObject implements ReferencedObject {
       String[] values = new String[acl.size() + 1];
       int i = 0;
       for (AccessControlStatement acs : acl) {
-        System.err.println("Setting ACS to "+acs.toString());
         values[i++] = acs.toString();
       }
       values[i] = newAcs.toString();
-      System.err.println("Adding ACS to "+newAcs.toString());
       node.setProperty(ACL_PROPERTY, values);
       node.save();
 

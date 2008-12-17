@@ -1,0 +1,22 @@
+{
+   name : "Group1",
+   description  : "An Example Group definition. This is just the required fields that we might see inside a object that defines a group ",      
+   roles : {
+      access : {
+         name : "Access Role",
+         permissions : [
+            "read",
+            "write",
+            "delete"
+         ]
+      },
+      maintain : {
+         name : "Maintain Role",
+         permissions : [
+            "read",
+            "write",
+            "delete"
+         ]
+      }
+   }
+}

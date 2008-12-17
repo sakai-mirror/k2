@@ -21,6 +21,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 import org.sakaiproject.kernel.api.jcr.EventRegistration;
+import org.sakaiproject.kernel.authz.simple.SubjectPermissionListener;
 import org.sakaiproject.kernel.authz.simple.UserEnvironmentListener;
 
 import java.util.ArrayList;
@@ -29,18 +30,25 @@ import java.util.List;
 /**
  * Provides a list of EventRegistrations
  */
-public class EventRegistrationProvider implements Provider<List<EventRegistration>>{
+public class EventRegistrationProvider implements
+    Provider<List<EventRegistration>> {
 
   private List<EventRegistration> eventRegistrations = new ArrayList<EventRegistration>();
+
   /**
    * 
    */
   @Inject
-  public EventRegistrationProvider(UserEnvironmentListener userEnvironmentListener) {
+  public EventRegistrationProvider(
+      UserEnvironmentListener userEnvironmentListener,
+      SubjectPermissionListener subjectPermissionListener) {
     eventRegistrations.add(userEnvironmentListener);
+    eventRegistrations.add(subjectPermissionListener);
   }
+
   /**
    * {@inheritDoc}
+   * 
    * @see com.google.inject.Provider#get()
    */
   public List<EventRegistration> get() {

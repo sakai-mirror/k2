@@ -45,12 +45,9 @@ import org.sakaiproject.kernel.api.authz.SubjectStatement.SubjectType;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
-import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.authz.simple.JcrAccessControlStatementImpl;
 import org.sakaiproject.kernel.authz.simple.JcrSubjectStatement;
-import org.sakaiproject.kernel.authz.simple.SimpleJcrUserEnvironmentResolverService;
 import org.sakaiproject.kernel.authz.simple.SimplePermissionQuery;
-import org.sakaiproject.kernel.jcr.jackrabbit.JCRSystemPrincipal;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
 import org.sakaiproject.kernel.util.PathUtils;
 import org.sakaiproject.kernel.util.ResourceLoader;
@@ -61,7 +58,6 @@ import java.io.InputStream;
 import javax.jcr.AccessDeniedException;
 import javax.jcr.InvalidItemStateException;
 import javax.jcr.ItemExistsException;
-import javax.jcr.LoginException;
 import javax.jcr.Node;
 import javax.jcr.ReferentialIntegrityException;
 import javax.jcr.RepositoryException;
@@ -82,6 +78,8 @@ public class AuthZServiceTest extends KernelIntegrationBase {
   private static final Log LOG = LogFactory.getLog(AuthZServiceTest.class);
   private static final String[] USERS = { "admin", "ib236" };
   private static final String TEST_USERENV = "res://org/sakaiproject/kernel/test/sampleuserenv/";
+  private static final String TEST_GROUPENV = "res://org/sakaiproject/kernel/test/samplegroup/";
+  private static final String[] GROUPS = {"group1"};
 
   @BeforeClass
   public static void beforeThisClass() throws ComponentActivatorException,
@@ -111,10 +109,26 @@ public class AuthZServiceTest extends KernelIntegrationBase {
       String prefix = PathUtils.getUserPrefix(userName);
       String userEnvironmentPath = "/userenv" + prefix + "userenv";
 
+      LOG.info("Saving "+userEnvironmentPath);
       jcrNodeFactoryService.createFile(userEnvironmentPath);
       InputStream in = ResourceLoader.openResource(TEST_USERENV + userName
           + ".json", AuthZServiceTest.class.getClassLoader());
       jcrNodeFactoryService.setInputStream(userEnvironmentPath, in);
+      session.save();
+      in.close();
+    }
+
+    // add some group definitions in a random place, indexing should happen as a result of events.
+    for (String group : GROUPS) {
+      String prefix = PathUtils.getUserPrefix(group);
+      // imagine this is anywhere on the content system, probably with other items related to the group
+      String groupPath = "/somepath" + prefix + "groupdef.json";
+
+      jcrNodeFactoryService.createFile(groupPath);
+      LOG.info("Saving "+groupPath);
+      InputStream in = ResourceLoader.openResource(TEST_GROUPENV + group
+          + ".json", AuthZServiceTest.class.getClassLoader());
+      jcrNodeFactoryService.setInputStream(groupPath, in);
       session.save();
       in.close();
     }
@@ -136,9 +150,6 @@ public class AuthZServiceTest extends KernelIntegrationBase {
       ConstraintViolationException, InvalidItemStateException,
       ReferentialIntegrityException, VersionException, LockException,
       NoSuchNodeTypeException, RepositoryException {
-    if (false) {
-      return; // fixing test WIP
-    }
     LOG
         .info("Starting Test ==================================================== testCheck");
     KernelManager km = new KernelManager();

@@ -105,7 +105,6 @@ public class BeanJsonLibConverter implements BeanConverter {
       } else {
         Object rootObject = injector.getInstance(rootBeanClass);
         Object o = JSONArray.toList(jsonArray, rootObject, jsonConfig);
-        System.err.println("Converted "+jsonArray+" to "+o);
         
         return (T) o;
       }

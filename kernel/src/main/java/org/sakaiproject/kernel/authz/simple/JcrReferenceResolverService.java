@@ -50,10 +50,8 @@ public class JcrReferenceResolverService implements ReferenceResolverService{
     try {
       Node n = jcrNodeFactoryService.getNode(resourceReference);
       if ( n == null ) {
-        System.err.println("Failed to locate "+resourceReference);
         return new EmptyReferenceObject(resourceReference,null,this);
       }
-      System.err.println("Found "+resourceReference);
       return new JcrReferenceObject(n);
     } catch (RepositoryException e) {
       return new EmptyReferenceObject(resourceReference,e,this);

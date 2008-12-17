@@ -82,21 +82,18 @@ public class SimpleJcrUserEnvironmentResolverService implements
     if (cache.containsKey(currentSession.getId())) {
       UserEnvironment ue = cache.get(currentSession.getId());
       if (ue != null && !ue.hasExpired()) {
-        System.err.println("Using Cached User Environment "+ue+" for "+currentSession.getUserId());
         return ue;
       }
     }
 
     try {
       String userEnv = getUserEnvPath(currentSession.getUserId());
-      System.err.println("Loading "+userEnv);
       String userEnvBody = IOUtils.readFully(jcrNodeFactoryService
           .getInputStream(userEnv), "UTF-8");
       // convert to a bean, the 
       UserEnvironment ue = beanConverter.convertToObject(userEnvBody, UserEnvironment.class);
       // seal the bean to prevent modification.
       ue.seal();
-      System.err.println("Loaded User Environment: "+beanConverter.convertToString(ue));
       cache.put(currentSession.getId(), ue);
       return ue;
     } catch (UnsupportedEncodingException e) {

@@ -23,44 +23,50 @@ import com.google.inject.name.Named;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.jcr.EventRegistration;
+import org.sakaiproject.kernel.api.jcr.JCRConstants;
 
 import javax.jcr.RepositoryException;
 import javax.jcr.observation.Event;
 import javax.jcr.observation.EventIterator;
 import javax.jcr.observation.EventListener;
+import javax.jcr.observation.EventListenerIterator;
 import javax.jcr.observation.ObservationManager;
 
 /**
  * 
  */
-public class UserEnvironmentListener implements EventListener,
+public class SubjectPermissionListener implements EventListener,
     EventRegistration {
 
-  private static final Log LOG = LogFactory.getLog(UserEnvironmentListener.class);
-  private String userEnvironmentBase;
+  private static final Log LOG = LogFactory
+      .getLog(SubjectPermissionListener.class);
 
   /**
    * @throws RepositoryException
    * 
    */
   @Inject
-  public UserEnvironmentListener(
-      @Named(SimpleJcrUserEnvironmentResolverService.JCR_USERENV_BASE) String userEnvironmentBase)
-      throws RepositoryException {
-    this.userEnvironmentBase = userEnvironmentBase;
+  public SubjectPermissionListener() throws RepositoryException {
   }
 
   /**
    * {@inheritDoc}
-   * @throws RepositoryException 
+   * 
+   * @throws RepositoryException
    * 
    * @see org.sakaiproject.kernel.api.jcr.EventRegistration#register(javax.jcr.observation.ObservationManager)
    */
-  public void register(ObservationManager observationManager) throws RepositoryException {
+  public void register(ObservationManager observationManager)
+      throws RepositoryException {
     observationManager.addEventListener(this, Event.PROPERTY_ADDED
-        | Event.PROPERTY_CHANGED | Event.PROPERTY_REMOVED, userEnvironmentBase,
-        true, null, null, false);
-    LOG.info("Registerd UserEnvironmentListener ");
+        | Event.PROPERTY_CHANGED | Event.PROPERTY_REMOVED, "/", true, null,
+        new String[] { JCRConstants.NT_RESOURCE }, false);
+    for (EventListenerIterator iterator = observationManager
+        .getRegisteredEventListeners(); iterator.hasNext();) {
+      LOG.info("Registered Event Listener " + iterator.nextEventListener());
+    }
+
+    LOG.info("Registerd SubjectPermissionListener with "+observationManager);
   }
 
   /**
@@ -69,8 +75,6 @@ public class UserEnvironmentListener implements EventListener,
    * @see javax.jcr.observation.EventListener#onEvent(javax.jcr.observation.EventIterator)
    */
   public void onEvent(EventIterator events) {
-    System.err.println("Got JCR Event "+events);
+    System.err.println("Got JCR Event " + events);
   }
-
-
 }

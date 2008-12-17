@@ -38,7 +38,6 @@ public class JcrSubjectStatement implements SubjectStatement {
     try {
       subjectType = SubjectType.valueOf(parts[0]);
     } catch ( IllegalArgumentException e ) {
-      System.err.println("Subject type undef "+parts[0]+" subject statement "+subjectStatement);
       subjectType = SubjectType.UNDEFINED;
     }
     subjectToken = parts[1];

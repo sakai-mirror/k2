@@ -141,7 +141,6 @@ public class UserEnvironmentBean implements UserEnvironment {
       throw new RuntimeException("Attempt to unseal a sealed UserEnvironmentBean ");
     }
     subjectsBean = null;
-    System.err.println("Setting subjects to "+subjects);
     this.subjects = subjects;
   }
 
