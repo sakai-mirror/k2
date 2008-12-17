@@ -16,7 +16,6 @@
 package org.sakaiproject.kernel2.test;
 
 import static org.junit.Assert.assertNotNull;
-
 import static org.junit.Assert.assertEquals;
 
 import com.google.inject.Guice;
@@ -118,7 +117,7 @@ public class OrmProjectLoaderTest {
 
   @After
   public void after() {
-//    em.close();
+    // em.close();
   }
 
   @AfterClass
