@@ -17,12 +17,16 @@
  */
 package org.sakaiproject.kernel.jcr.jackrabbit.sakai.test;
 
-import static org.junit.Assert.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import static org.easymock.EasyMock.*;
 import org.junit.Test;
 import org.sakaiproject.kernel.api.user.User;
-import org.sakaiproject.kernel.jcr.jackrabbit.JCRAnonymousPrincipal;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiUserPrincipalImpl;
 
 

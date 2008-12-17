@@ -61,9 +61,6 @@ import java.util.Properties;
 import java.util.Map.Entry;
 
 import javax.jcr.Credentials;
-import javax.persistence.EntityManager;
-import javax.sql.DataSource;
-import javax.transaction.TransactionManager;
 
 /**
  * A Guice module used to create the kernel component.

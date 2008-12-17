@@ -18,7 +18,6 @@
 package org.sakaiproject.kernel.authz.simple;
 
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

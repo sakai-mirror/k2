@@ -61,7 +61,7 @@ public class PopulateBaseRepository implements StartupAction {
    * 
    * @see org.sakaiproject.kernel.jcr.api.internal.StartupAction#startup(javax.jcr.Session)
    */
-  public void startup(Session s) throws RepositoryStartupException {
+  public boolean startup(Session s) throws RepositoryStartupException {
     try {
       InputStream in = ResourceLoader.openResource(RESOURCES_TO_LOAD, this
           .getClass().getClassLoader());
@@ -98,5 +98,6 @@ public class PopulateBaseRepository implements StartupAction {
     } catch (JCRNodeFactoryServiceException e) {
       throw new RepositoryStartupException("Failed to populate Repository ", e);
     }
+    return false;
   }
 }

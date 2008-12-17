@@ -53,7 +53,7 @@ public class RegisterEventListeners implements StartupAction {
    * 
    * @see org.sakaiproject.kernel.jcr.api.internal.StartupAction#startup(javax.jcr.Session)
    */
-  public void startup(Session s) throws RepositoryStartupException {
+  public boolean startup(Session s) throws RepositoryStartupException {
     LOG.info("Registering Repository Event Listeners ");
     try {
       ObservationManager observationManager = s.getWorkspace()
@@ -64,7 +64,7 @@ public class RegisterEventListeners implements StartupAction {
     } catch (RepositoryException re) {
       throw new RepositoryStartupException("Failed to register Listeners ", re);
     }
-
+    return true;
   }
 
 }

@@ -17,7 +17,9 @@
  */
 package org.sakaiproject.kernel.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -31,7 +33,6 @@ import org.sakaiproject.kernel.util.IOUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 import javax.jcr.LoginException;
 import javax.jcr.Node;

@@ -21,12 +21,15 @@ import com.google.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.api.RequiresStop;
+import org.sakaiproject.kernel.api.ShutdownService;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.internal.api.InitializationAction;
 import org.sakaiproject.kernel.jcr.api.internal.RepositoryStartupException;
 import org.sakaiproject.kernel.jcr.api.internal.StartupAction;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -39,21 +42,23 @@ import javax.jcr.Session;
  * performs initalization by invoking a list of JCR StartupActions. Those
  * actions are injected into the constructor.
  */
-public class RepositoryInitializationAction implements InitializationAction {
+public class RepositoryInitializationAction implements InitializationAction, RequiresStop {
 
   private static final Log LOG = LogFactory
       .getLog(RepositoryInitializationAction.class);
   private Repository repository;
   private List<StartupAction> startupActions;
+  private List<Session> activeSessions = new ArrayList<Session>();
 
   /**
    * Create the repository initialization action.
    */
   @Inject
   public RepositoryInitializationAction(JCRService jcrService,
-      List<StartupAction> startupActions) {
+      List<StartupAction> startupActions, ShutdownService shutdownService) {
     this.repository = jcrService.getRepository();
     this.startupActions = startupActions;
+    shutdownService.register(this);
 
   }
 
@@ -73,9 +78,13 @@ public class RepositoryInitializationAction implements InitializationAction {
         for (Iterator<StartupAction> i = startupActions.iterator(); i.hasNext();) {
           s = repository.login(ssp);
           StartupAction startUpAction = i.next();
-          startUpAction.startup(s);
-          s.save();
-          s.logout();
+          if (startUpAction.startup(s)) {
+            s.save();
+            activeSessions.add(s);
+          } else {
+            s.save();
+            s.logout();
+          }
           s = null;
         }
       }
@@ -92,5 +101,19 @@ public class RepositoryInitializationAction implements InitializationAction {
       }
     }
 
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.RequiresStop#stop()
+   */
+  public void stop() {
+    for ( Session session : activeSessions) {
+      try {
+        session.logout();
+      } catch ( Exception ex ) {
+        
+      }
+    }
   }
 }

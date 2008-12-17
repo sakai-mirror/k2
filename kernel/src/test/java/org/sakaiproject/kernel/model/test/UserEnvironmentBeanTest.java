@@ -1,21 +1,3 @@
-package org.sakaiproject.kernel.model.test;
-
-import static org.junit.Assert.*;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.Test;
-import org.sakaiproject.kernel.api.serialization.BeanConverter;
-import org.sakaiproject.kernel.model.UserEnvironmentBean;
-import org.sakaiproject.kernel.serialization.json.BeanJsonLibConverter;
-import org.sakaiproject.kernel.util.ResourceLoader;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -33,6 +15,26 @@ import java.util.List;
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
+package org.sakaiproject.kernel.model.test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.junit.Test;
+import org.sakaiproject.kernel.api.serialization.BeanConverter;
+import org.sakaiproject.kernel.model.UserEnvironmentBean;
+import org.sakaiproject.kernel.serialization.json.BeanJsonLibConverter;
+import org.sakaiproject.kernel.util.ResourceLoader;
+
+import java.io.IOException;
+
 
 /**
  * 
