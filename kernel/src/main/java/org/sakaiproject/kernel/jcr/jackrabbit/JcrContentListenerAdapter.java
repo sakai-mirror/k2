@@ -25,7 +25,6 @@ import org.sakaiproject.kernel.api.jcr.EventRegistration;
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.kernel.jcr.api.JcrContentListener;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.jcr.RepositoryException;
@@ -86,14 +85,14 @@ public class JcrContentListenerAdapter implements EventListener,
         if (path.endsWith(DATA_NODE)) {
           String filePath = path.substring(0, path.length()
               - DATA_NODE.length());
-          String fileName = filePath.substring(filePath.lastIndexOf("/"));
+          String fileName = filePath.substring(filePath.lastIndexOf("/")+1);
           for (JcrContentListener listener : listeners) {
             listener.onEvent(event.getType(), event.getUserID(), filePath,
                 fileName);
           }
         }
-      } catch (RepositoryException rex) {
-
+      } catch (Exception rex) {
+        rex.printStackTrace();
       }
 
     }

@@ -23,6 +23,8 @@ package org.sakaiproject.kernel.api.memory;
 
 
 
+
+
 /**
  */
 public interface Cache<V>
@@ -73,6 +75,7 @@ public interface Cache<V>
 	 *        The cache key.
 	 */
 	void remove(String key);
+
 
 
 }

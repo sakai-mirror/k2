@@ -75,6 +75,7 @@ public class MapCacheImpl<V> extends HashMap<String, V>implements Cache<V>  {
     }
     super.clear();
   }
+  
 
  
 

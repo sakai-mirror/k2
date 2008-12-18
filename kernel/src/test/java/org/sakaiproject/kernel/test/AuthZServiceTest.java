@@ -266,6 +266,7 @@ public class AuthZServiceTest extends KernelIntegrationBase {
     expect(request.getSession(false)).andReturn(session).anyTimes();
     expect(session.getId()).andReturn(userName+"SESSIONID-123").anyTimes();
     expect(session.getAttribute("_u")).andReturn(userName).anyTimes();
+    expect(request.getRemoteUser()).andReturn(userName).anyTimes();
   }
 
 }

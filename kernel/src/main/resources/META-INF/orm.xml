@@ -5,4 +5,6 @@
   version="1.0"> 
   <entity class="org.sakaiproject.kernel.model.SubjectPermissionBean">
   </entity>
+  <entity class="org.sakaiproject.kernel.model.GroupMembershipBean">
+  </entity>
 </entity-mappings>

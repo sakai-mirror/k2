@@ -20,6 +20,7 @@ package org.sakaiproject.kernel;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
+import org.sakaiproject.kernel.authz.simple.UserEnvironmentListener;
 import org.sakaiproject.kernel.jcr.api.JcrContentListener;
 
 import java.util.ArrayList;
@@ -36,8 +37,8 @@ public class JcrContentListenerProviders implements Provider<List<JcrContentList
    * 
    */
   @Inject
-  public JcrContentListenerProviders() {
-    
+  public JcrContentListenerProviders(UserEnvironmentListener userEnvironmentListener) {
+    list.add(userEnvironmentListener);
   }
   /**
    * {@inheritDoc}

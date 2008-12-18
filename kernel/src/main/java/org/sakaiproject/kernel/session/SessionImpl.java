@@ -31,7 +31,7 @@ import javax.servlet.http.HttpSessionContext;
 @SuppressWarnings("deprecation")
 public class SessionImpl implements Session {
 
-  private static final String USER_ID = "_u";
+  public static final String USER_ID = "_u";
   private HttpSession baseSession;
 
   /**

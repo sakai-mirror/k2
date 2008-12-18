@@ -44,5 +44,11 @@ public interface UserEnvironmentResolverService {
    */
   UserEnvironment resolve(Session currentSession);
 
+  /**
+   * Remove the userEnvironment bound to the sessionId from any caches.
+   * @param sessionId
+   */
+  void expire(String sessionId);
+
 
 }

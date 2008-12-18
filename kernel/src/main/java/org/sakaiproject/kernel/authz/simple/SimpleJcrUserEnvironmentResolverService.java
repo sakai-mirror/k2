@@ -46,13 +46,14 @@ public class SimpleJcrUserEnvironmentResolverService implements
     UserEnvironmentResolverService {
 
   public static final String JCR_USERENV_BASE = "jcruserenv.base";
-  private static final String USERENV = "userenv";
-  private static final Log LOG = LogFactory.getLog(SimpleJcrUserEnvironmentResolverService.class);
+  public static final String USERENV = "userenv";
+  private static final Log LOG = LogFactory
+      .getLog(SimpleJcrUserEnvironmentResolverService.class);
   private JCRNodeFactoryService jcrNodeFactoryService;
   private String userEnvironmentBase;
-  private CacheManagerService cacheManagerService;
   private BeanConverter beanConverter;
   private UserEnvironment nullUserEnv;
+  private Cache<UserEnvironment> cache;
 
   /**
  * 
@@ -66,9 +67,10 @@ public class SimpleJcrUserEnvironmentResolverService implements
       @Named(UserEnvironment.NULLUSERENV) UserEnvironment nullUserEnv) {
     this.jcrNodeFactoryService = jcrNodeFactoryService;
     this.userEnvironmentBase = userEnvironmentBase;
-    this.cacheManagerService = cacheManagerService;
     this.nullUserEnv = nullUserEnv;
     this.beanConverter = beanConverter;
+    cache = cacheManagerService.getCache("userenv",
+        CacheScope.INSTANCE);
   }
 
   /**
@@ -77,8 +79,6 @@ public class SimpleJcrUserEnvironmentResolverService implements
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService#resolve(org.sakaiproject.kernel.api.session.Session)
    */
   public UserEnvironment resolve(Session currentSession) {
-    Cache<UserEnvironment> cache = cacheManagerService.getCache("userenv",
-        CacheScope.INSTANCE);
     if (cache.containsKey(currentSession.getId())) {
       UserEnvironment ue = cache.get(currentSession.getId());
       if (ue != null && !ue.hasExpired()) {
@@ -86,30 +86,55 @@ public class SimpleJcrUserEnvironmentResolverService implements
       }
     }
 
+    String userEnv = getUserEnvPath(currentSession.getUserId());
+    UserEnvironment ue = loadUserEnvironmentBean(userEnv);
+    if (ue != null) {
+      cache.put(currentSession.getId(), ue);
+      return ue;
+    }
+    return nullUserEnv;
+  }
+  
+  public void expire(String sessionId) {
+    cache.remove(sessionId);
+  }
+  /**
+   * @param userEnv2
+   * @return
+   * @throws JCRNodeFactoryServiceException
+   * @throws RepositoryException
+   * @throws IOException
+   * @throws UnsupportedEncodingException
+   */
+  private UserEnvironment loadUserEnvironmentBean(String userEnvPath) {
     try {
-      String userEnv = getUserEnvPath(currentSession.getUserId());
       String userEnvBody = IOUtils.readFully(jcrNodeFactoryService
-          .getInputStream(userEnv), "UTF-8");
-      // convert to a bean, the 
-      UserEnvironment ue = beanConverter.convertToObject(userEnvBody, UserEnvironment.class);
+          .getInputStream(userEnvPath), "UTF-8");
+      // convert to a bean, the
+      UserEnvironment ue = beanConverter.convertToObject(userEnvBody,
+          UserEnvironment.class);
       // seal the bean to prevent modification.
       ue.seal();
-      cache.put(currentSession.getId(), ue);
       return ue;
     } catch (UnsupportedEncodingException e) {
       LOG.error(e);
     } catch (IOException e) {
-      LOG.warn("Failed to read userenv for "+currentSession.getUserId()+" cause :"+e.getMessage());
+      LOG.warn("Failed to read userenv " + userEnvPath + " cause :"
+          + e.getMessage());
       LOG.debug(e);
     } catch (RepositoryException e) {
-      LOG.warn("Failed to read userenv for "+currentSession.getUserId()+" cause :"+e.getMessage());
+      LOG.warn("Failed to read userenv for " + userEnvPath + " cause :"
+          + e.getMessage());
       LOG.debug(e);
     } catch (JCRNodeFactoryServiceException e) {
-      LOG.warn("Failed to read userenv for "+currentSession.getUserId()+" cause :"+e.getMessage());
+      LOG.warn("Failed to read userenv for " + userEnvPath + " cause :"
+          + e.getMessage());
       LOG.debug(e);
     }
-    return nullUserEnv;
+    return null;
   }
+  
+  
 
   /**
    * @return
@@ -118,4 +143,8 @@ public class SimpleJcrUserEnvironmentResolverService implements
     String prefix = PathUtils.getUserPrefix(userId);
     return userEnvironmentBase + prefix + USERENV;
   }
+  
+  
+  
+
 }

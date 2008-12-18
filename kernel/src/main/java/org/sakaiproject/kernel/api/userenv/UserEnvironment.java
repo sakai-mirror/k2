@@ -63,4 +63,9 @@ public interface UserEnvironment extends Sealable {
    */
   boolean isSuperUser();
 
+  /**
+   * @return
+   */
+  String getUserid();
+
 }

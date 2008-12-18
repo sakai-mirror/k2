@@ -56,4 +56,12 @@ public class NullUserEnvironment implements UserEnvironment {
    */
   public void seal() {    
   }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#getUserid()
+   */
+  public String getUserid() {
+    return "anon";
+  }
 }
