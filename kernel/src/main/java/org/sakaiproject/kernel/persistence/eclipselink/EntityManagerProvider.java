@@ -52,6 +52,11 @@ public class EntityManagerProvider implements Provider<EntityManager> {
   private static final String DB_MIN_WRITE = "eclipselink.write.min";
   private static final String DB_MIN_NUM_READ = "eclipselink.read.min";
   private static final String DB_UNITNAME = "jpa.unitname";
+  public static final String JDBC_DRIVER_NAME = "jdbc.driver";
+  public static final String JDBC_URL = "jdbc.url";
+  public static final String JDBC_USERNAME = "jdbc.username";
+  public static final String JDBC_PASSWORD = "jdbc.password";
+
   private EntityManager entityManager;
 
   /**
@@ -65,7 +70,12 @@ public class EntityManagerProvider implements Provider<EntityManager> {
   @Inject
   public EntityManagerProvider(@Named(DB_MIN_NUM_READ) String minRead,
       @Named(DB_MIN_WRITE) String minWrite,
-      DataSourceService dataSourceService, @Named(DB_UNITNAME) String unitName) {
+      DataSourceService dataSourceService, 
+      @Named(DB_UNITNAME) String unitName,
+      @Named(JDBC_DRIVER_NAME) String driverClassName,
+      @Named(JDBC_URL) String url, 
+      @Named(JDBC_USERNAME) String username,
+      @Named(JDBC_PASSWORD) String password) {
 
     Map<String, Object> properties = new HashMap<String, Object>();
 
@@ -74,18 +84,18 @@ public class EntityManagerProvider implements Provider<EntityManager> {
         PersistenceUnitTransactionType.RESOURCE_LOCAL.name());
 
     // Configure the internal EclipseLink connection pool
-    // properties.put(JDBC_DRIVER, dbDriver);
-    // properties.put(JDBC_URL, dbUrl);
-    // properties.put(JDBC_USER, dbUser);
-    // properties.put(JDBC_PASSWORD, dbPassword);
-    // properties.put(JDBC_READ_CONNECTIONS_MIN, minRead);
-    // properties.put(JDBC_WRITE_CONNECTIONS_MIN, minWrite);
+    properties.put(PersistenceUnitProperties.JDBC_DRIVER, driverClassName);
+    properties.put(PersistenceUnitProperties.JDBC_URL, url);
+    properties.put(PersistenceUnitProperties.JDBC_USER, username);
+    properties.put(PersistenceUnitProperties.JDBC_PASSWORD, password);
+    properties.put(PersistenceUnitProperties.JDBC_READ_CONNECTIONS_MIN, minRead);
+    properties.put(PersistenceUnitProperties.JDBC_WRITE_CONNECTIONS_MIN, minWrite);
 
     // Configure logging. FINE ensures all SQL is shown
     properties.put(LOGGING_LEVEL, "FINE");
     properties.put(LOGGING_TIMESTAMP, "true");
-    properties.put(LOGGING_THREAD, "false");
-    properties.put(LOGGING_SESSION, "false");
+    properties.put(LOGGING_THREAD, "true");
+    properties.put(LOGGING_SESSION, "true");
 
     // Ensure that no server-platform is configured
     properties.put(TARGET_SERVER, TargetServer.None);
@@ -97,8 +107,11 @@ public class EntityManagerProvider implements Provider<EntityManager> {
         .put(PersistenceUnitProperties.CREATE_JDBC_DDL_FILE, "create.sql");
     properties.put(PersistenceUnitProperties.DDL_GENERATION_MODE,
         PersistenceUnitProperties.DDL_BOTH_GENERATION);
-    properties.put(dataSourceService.getType(), dataSourceService
-        .getDataSource());
+    
+    
+    
+//    properties.put(dataSourceService.getType(), dataSourceService
+//        .getDataSource());
 
     // properties.put(PersistenceUnitProperties.SESSION_CUSTOMIZER,
     // EnableIntegrityChecker.class.getName());
