@@ -70,7 +70,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
     this.nullUserEnv = nullUserEnv;
     this.beanConverter = beanConverter;
     cache = cacheManagerService.getCache("userenv",
-        CacheScope.INSTANCE);
+        CacheScope.CLUSTERINVALIDATED);
   }
 
   /**

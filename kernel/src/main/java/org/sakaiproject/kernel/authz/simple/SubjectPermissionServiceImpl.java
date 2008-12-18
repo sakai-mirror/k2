@@ -73,13 +73,20 @@ public class SubjectPermissionServiceImpl implements SubjectPermissionService {
         q.setParameter(SubjectPermissionBean.PARAM_SUBJECT, subjectToken);
         List<SubjectPermissionBean> subjectPermissionList = q.getResultList();
         for (SubjectPermissionBean sp : subjectPermissionList) {
-          subjectPermissions.add(sp.getRole(), sp.PermissionToken());
+          subjectPermissions.add(sp.getRole(), sp.getPermissionToken());
         }
         subjectPermissionCache.put(subjectToken,subjectPermissions);
       }
       subjectPermissionMap.put(subjectToken, subjectPermissions);
     }
     return subjectPermissions;
+  }
+  
+  /**
+   * @param subjectToken
+   */
+  public void expire(String subjectToken) {
+    subjectPermissionCache.remove(subjectToken);
   }
 
 }

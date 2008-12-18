@@ -156,7 +156,14 @@ public class BeanJsonLibConverter implements BeanConverter {
   public void addMapping(String key, Class<?> class1) {
     jsonConfig.getClassMap().put(key, class1);
   }
-
+  
+  /**
+   * reset any mappings. 
+   */
+  public void resetMappings() {
+    jsonConfig.getClassMap().clear();
+  }
+  
   /**
    * @param debugMode the debugMode to set
    */

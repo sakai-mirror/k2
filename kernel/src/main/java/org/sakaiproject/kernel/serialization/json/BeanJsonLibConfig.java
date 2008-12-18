@@ -19,12 +19,14 @@ package org.sakaiproject.kernel.serialization.json;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.name.Named;
 
+import net.sf.ezmorph.Morpher;
 import net.sf.ezmorph.MorpherRegistry;
 import net.sf.json.JsonConfig;
 import net.sf.json.util.JSONUtils;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,17 +35,26 @@ import java.util.Map;
 
 public class BeanJsonLibConfig extends JsonConfig {
 
-  static {
-    MorpherRegistry morpherRegistry = JSONUtils.getMorpherRegistry();
-    morpherRegistry.registerMorpher(new JsonObjectToMapMorpher());
-  }
+  public static final String JSON_CLASSMAP = "jsonconverter.classmap";
+
 
   /**
    * Construct the config with a Guice injector.
-   * @param injector the Guice injector
+   * 
+   * @param injector
+   *          the Guice injector
+   * @param morphers
    */
   @Inject
-  public BeanJsonLibConfig(Injector injector) {
+  public BeanJsonLibConfig(Injector injector,
+      List<ValueProcessor> valueProcessors, List<BeanProcessor> beanProcessors,
+      @Named(JSON_CLASSMAP) Map<String, Object> classMap,
+      List<Morpher> morphers) {
+
+    MorpherRegistry morpherRegistry = JSONUtils.getMorpherRegistry();
+    for (Morpher morpher : morphers) {
+      morpherRegistry.registerMorpher(morpher);
+    }
     /*
      * This hook deals with the creation of new beans in the JSON -> Java Bean
      * conversion
@@ -57,10 +68,10 @@ public class BeanJsonLibConfig extends JsonConfig {
 
     setJsonPropertyFilter(new NullPropertyFilter());
     setJavaPropertyFilter(new NullPropertyFilter());
+
     // the classMap deals with the basic json string to bean conversion
 
-    @SuppressWarnings("unused")
-    Map<String, Class<?>> classMap = new HashMap<String, Class<?>>();
+    setClassMap(classMap);
 
     /*
      * mappings are required where there is a List of objects in the interface
@@ -69,19 +80,25 @@ public class BeanJsonLibConfig extends JsonConfig {
      * there is a map could be selected on the basis of the root object. It
      * would be better to do this with generics, but this is good enough and
      * compact enough for the moment.
-     *
      */
     //
-    //skin needs no mappings
-    //title needs no mappings
-    //type needs no mappings
-    //owner needs no mappings
-    //icon needs no mappings
-    //pubView needs no mappings
-    //status needs no mappings
-
+    // skin needs no mappings
+    // title needs no mappings
+    // type needs no mappings
+    // owner needs no mappings
+    // icon needs no mappings
+    // pubView needs no mappings
+    // status needs no mappings
     // Mappings look like: classMap.put("roles", JsonSiteRole.class);
 
-  }
+    for (ValueProcessor valueProcessor : valueProcessors) {
+      registerJsonValueProcessor(valueProcessor.getParentClass(),
+          valueProcessor.getKey(), valueProcessor.getJsonValueProcessor());
+    }
+    for (BeanProcessor beanProcessor : beanProcessors) {
+      registerJsonBeanProcessor(beanProcessor.getParentClass(), beanProcessor
+          .getJsonBeanProcessor());
+    }
 
+  }
 }

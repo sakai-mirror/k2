@@ -20,19 +20,27 @@ package org.sakaiproject.kernel.model.test;
 import com.google.inject.AbstractModule;
 import com.google.inject.CreationException;
 import com.google.inject.Scopes;
+import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
 import com.google.inject.spi.Message;
 
+import net.sf.ezmorph.Morpher;
 import net.sf.json.JsonConfig;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.easymock.EasyMock;
+import org.sakaiproject.kernel.BeanProcessorProvider;
+import org.sakaiproject.kernel.JsonClassMapProvider;
+import org.sakaiproject.kernel.JsonMorpherListProvider;
+import org.sakaiproject.kernel.ValueProcessorsProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.authz.simple.NullUserEnvironment;
 import org.sakaiproject.kernel.serialization.json.BeanJsonLibConfig;
 import org.sakaiproject.kernel.serialization.json.BeanJsonLibConverter;
+import org.sakaiproject.kernel.serialization.json.BeanProcessor;
+import org.sakaiproject.kernel.serialization.json.ValueProcessor;
 import org.sakaiproject.kernel.util.ResourceLoader;
 
 import java.io.IOException;
@@ -178,6 +186,22 @@ public class ModelModule extends AbstractModule {
     
     // create some mocks to fill out the necessary classes
     bind(EntityManager.class).toInstance(EasyMock.createMock(EntityManager.class));
+
+    TypeLiteral<List<ValueProcessor>> valueProcessors = new TypeLiteral<List<ValueProcessor>>() {
+    };
+    bind(valueProcessors).toProvider(ValueProcessorsProvider.class);
+
+    TypeLiteral<List<BeanProcessor>> beanProcessors = new TypeLiteral<List<BeanProcessor>>() {
+    };
+    bind(beanProcessors).toProvider(BeanProcessorProvider.class);
+
+    TypeLiteral<Map<String, Object>> jsonClassMap = new TypeLiteral<Map<String, Object>>() {
+    };
+    bind(jsonClassMap).annotatedWith(Names.named(BeanJsonLibConfig.JSON_CLASSMAP)).toProvider(JsonClassMapProvider.class);
+
+    TypeLiteral<List<Morpher>> jsonMorpherList = new TypeLiteral<List<Morpher>>() {
+    };
+    bind(jsonMorpherList).toProvider(JsonMorpherListProvider.class);
 
   }
 }

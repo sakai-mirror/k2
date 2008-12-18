@@ -24,6 +24,7 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
 import com.google.inject.spi.Message;
 
+import net.sf.ezmorph.Morpher;
 import net.sf.json.JsonConfig;
 
 import org.apache.commons.logging.Log;
@@ -49,6 +50,8 @@ import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.StartupActionProvider;
 import org.sakaiproject.kernel.serialization.json.BeanJsonLibConfig;
 import org.sakaiproject.kernel.serialization.json.BeanJsonLibConverter;
+import org.sakaiproject.kernel.serialization.json.BeanProcessor;
+import org.sakaiproject.kernel.serialization.json.ValueProcessor;
 import org.sakaiproject.kernel.util.ResourceLoader;
 
 import java.io.IOException;
@@ -245,6 +248,21 @@ public class KernelModule extends AbstractModule {
     TypeLiteral<List<JcrContentListener>> contentListeners = new TypeLiteral<List<JcrContentListener>>() {
     };
     bind(contentListeners).toProvider(JcrContentListenerProviders.class);
+    
+    TypeLiteral<List<ValueProcessor>> valueProcessors = new TypeLiteral<List<ValueProcessor>>() {
+    };
+    bind(valueProcessors).toProvider(ValueProcessorsProvider.class);
 
+    TypeLiteral<List<BeanProcessor>> beanProcessors = new TypeLiteral<List<BeanProcessor>>() {
+    };
+    bind(beanProcessors).toProvider(BeanProcessorProvider.class);
+
+    TypeLiteral<Map<String, Object>> jsonClassMap = new TypeLiteral<Map<String, Object>>() {
+    };
+    bind(jsonClassMap).annotatedWith(Names.named(BeanJsonLibConfig.JSON_CLASSMAP)).toProvider(JsonClassMapProvider.class);
+
+    TypeLiteral<List<Morpher>> jsonMorpherList = new TypeLiteral<List<Morpher>>() {
+    };
+    bind(jsonMorpherList).toProvider(JsonMorpherListProvider.class);
   }
 }

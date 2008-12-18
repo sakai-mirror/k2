@@ -15,7 +15,7 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.serialization.json;
+package org.sakaiproject.kernel.serialization.json.model;
 
 import net.sf.ezmorph.Morpher;
 import net.sf.ezmorph.ObjectMorpher;
@@ -34,6 +34,7 @@ public class JsonObjectToMapMorpher implements Morpher, ObjectMorpher {
    * @return the class that the morper will morph to
    */
   public Class<?> morphsTo() {
+    System.err.println("Morphing to check");
     return Map.class;
   }
 
@@ -43,6 +44,7 @@ public class JsonObjectToMapMorpher implements Morpher, ObjectMorpher {
    */
   @SuppressWarnings("unchecked")
   public boolean supports(Class clazz) {
+    System.err.println("Checking "+clazz);
     return (JSONObject.class.equals(clazz));
   }
 

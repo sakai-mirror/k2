@@ -19,6 +19,8 @@ package org.sakaiproject.kernel.model;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
+import com.google.inject.Inject;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -32,10 +34,14 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "subject_permission")
-@NamedQueries(value = { @NamedQuery(name = SubjectPermissionBean.FINDBY_SUBJECT, query = "select s from SubjectPermissionBean s where s.subjectToken = :subjectToken") })
+@NamedQueries(value = {
+    @NamedQuery(name = SubjectPermissionBean.FINDBY_SUBJECT, query = "select s from SubjectPermissionBean s where s.subjectToken = :subjectToken"),
+    @NamedQuery(name = SubjectPermissionBean.FINDBY_GROUP, query = "select s from SubjectPermissionBean s where s.group = :group") })
 public class SubjectPermissionBean {
-  public static final String PARAM_SUBJECT = ":subjectToken";
+  public static final String PARAM_SUBJECT = "subjectToken";
   public static final String FINDBY_SUBJECT = "SubjectPermission.FindBySubjectToken";
+  public static final String PARAM_GROUP = "group";
+  public static final String FINDBY_GROUP = "SubjectPermission.FindByGroup";
 
   @SuppressWarnings("unused")
   @Id
@@ -46,11 +52,32 @@ public class SubjectPermissionBean {
   @Column(name = "subjectToken")
   private String subjectToken;
 
+  @Column(name = "group")
+  private String group;
+
   @Column(name = "permissionToken")
   private String permissionToken;
 
   @Column(name = "role")
   private String role;
+
+  /**
+   * 
+   */
+  @Inject
+  public SubjectPermissionBean() {
+  }
+  /**
+   * @param name
+   * @param subject
+   * @param permission
+   */
+  public SubjectPermissionBean(String group, String role, String subjectToken, String permission) {
+    this.group = group;
+    this.role = role;
+    this.subjectToken = subjectToken;
+    this.permissionToken = permission;
+  }
 
   /**
    * @return
@@ -62,7 +89,7 @@ public class SubjectPermissionBean {
   /**
    * @return
    */
-  public String PermissionToken() {
+  public String getPermissionToken() {
     return permissionToken;
   }
 
@@ -71,5 +98,12 @@ public class SubjectPermissionBean {
    */
   public String getSubjectToken() {
     return subjectToken;
+  }
+  
+  /**
+   * @return the group
+   */
+  public String getGroup() {
+    return group;
   }
 }

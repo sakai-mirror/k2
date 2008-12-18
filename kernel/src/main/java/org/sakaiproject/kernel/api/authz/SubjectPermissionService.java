@@ -42,4 +42,9 @@ public interface SubjectPermissionService {
   SubjectPermissions fetchSubjectPermissions(
       Map<String, SubjectPermissions> subjectPermissionMap, String subjectToken);
 
+  /**
+   * @param subjectToken
+   */
+  void expire(String subjectToken);
+
 }
