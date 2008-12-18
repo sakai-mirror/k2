@@ -32,7 +32,7 @@ import javax.sql.DataSource;
  * <p>
  * A Spring bean definition would like:<br/>
  * <code>
- * <bean id="dataSource"
+ * <bean id="javax.sql.DataSource"
  *       class="org.sakaiproject.kernel.persistence.DataSourceBean"
  *       init-method="init"
  *       factory-method="getDataSource" />
