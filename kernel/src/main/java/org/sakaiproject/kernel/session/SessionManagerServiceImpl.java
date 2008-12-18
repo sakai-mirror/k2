@@ -27,11 +27,7 @@ import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.webapp.SakaiServletRequest;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpSession;
 
 /**
  * 
@@ -43,16 +39,12 @@ public class SessionManagerServiceImpl implements SessionManagerService {
    * the key used for session, (every byte is sacred)
    */
   private static final String REQUEST_CACHE = "request";
-  private static final String SESSION_CACHE = "session-cache";
   private static final String CURRENT_REQUEST = "_r";
   private CacheManagerService cacheManagerService;
-  private Cache<Map<String, String>> sessionCache;
 
   @Inject
   public SessionManagerServiceImpl(CacheManagerService cacheManagerService) {
     this.cacheManagerService = cacheManagerService;
-    sessionCache = cacheManagerService.getCache(SESSION_CACHE,
-        CacheScope.INSTANCE);
   }
 
   /**
@@ -85,48 +77,11 @@ public class SessionManagerServiceImpl implements SessionManagerService {
       throw new RuntimeException(
           "Requests can only be bound by the SakaiRequestFilter ");
     }
-    SakaiServletRequest srequest = (SakaiServletRequest) request;
     Cache<Object> requestScope = cacheManagerService.getCache(REQUEST_CACHE,
         CacheScope.REQUEST);
     requestScope.put(CURRENT_REQUEST, request);
 
-    String userId = srequest.getRemoteUser();
-    if (userId != null) {
-      String sessionId = srequest.getSession().getId();
-
-      Map<String, String> sessions = sessionCache.get(userId);
-      if (sessions == null) {
-        sessions = new ConcurrentHashMap<String, String>();
-        sessionCache.put(userId, sessions);
-      }
-      sessions.put(sessionId, sessionId);
-    }
   }
 
-  /**
-   * {@inheritDoc}
-   * 
-   * @see org.sakaiproject.kernel.api.session.SessionManagerService#getSessionsForUser(java.lang.String)
-   */
-  public Map<String, String> getSessionsForUser(String userid) {
-    return sessionCache.get(userid);
-  }
-
-  /**
-   * {@inheritDoc}
-   * 
-   * @see org.sakaiproject.kernel.api.session.SessionManagerService#expireSession(javax.servlet.http.HttpSession)
-   */
-  public void expireSession(HttpSession session) {
-    String userId = (String) session.getAttribute(SessionImpl.USER_ID);
-    Map<String, String> sessions = sessionCache.get(userId);
-    if (session != null) {
-      sessions.remove(session.getId());
-      if (sessions.size() == 0) {
-        sessionCache.remove(userId);
-      }
-    }
-
-  }
 
 }

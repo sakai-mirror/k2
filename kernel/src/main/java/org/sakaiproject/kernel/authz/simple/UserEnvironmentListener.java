@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.jcr.RepositoryException;
 import javax.persistence.EntityManager;
@@ -53,7 +52,6 @@ public class UserEnvironmentListener implements JcrContentListener {
   private BeanConverter beanConverter;
   private JCRNodeFactoryService jcrNodeFactoryService;
   private EntityManager entityManager;
-  private SessionManagerService sessionManagerService;
   private UserEnvironmentResolverService userEnvironmentResolverService;
 
   /**
@@ -70,7 +68,6 @@ public class UserEnvironmentListener implements JcrContentListener {
     this.userEnvironmentBase = userEnvironmentBase;
     this.jcrNodeFactoryService = jcrNodeFactoryService;
     this.beanConverter = beanConverter;
-    this.sessionManagerService = sessionManagerService;
     this.userEnvironmentResolverService = userEnvironmentResolverService;
     this.entityManager = entityManager;
   }
@@ -93,14 +90,7 @@ public class UserEnvironmentListener implements JcrContentListener {
         ue.seal();
 
         
-        // expire the userEnvironment Objects from the cache.
-        Map<String, String> sessions = sessionManagerService
-            .getSessionsForUser(ue.getUserid());
-        if (sessions != null) {
-          for (String sessionId : sessions.keySet()) {
-            userEnvironmentResolverService.expire(sessionId);
-          }
-        }
+        userEnvironmentResolverService.expire(ue.getUserid());
 
         // the user environment bean contains a list of subjects, which the
         // users membership of groups

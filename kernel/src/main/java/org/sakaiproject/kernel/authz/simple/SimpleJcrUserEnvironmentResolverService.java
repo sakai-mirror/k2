@@ -79,24 +79,25 @@ public class SimpleJcrUserEnvironmentResolverService implements
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService#resolve(org.sakaiproject.kernel.api.session.Session)
    */
   public UserEnvironment resolve(Session currentSession) {
-    if (cache.containsKey(currentSession.getId())) {
-      UserEnvironment ue = cache.get(currentSession.getId());
+    String userId = currentSession.getUserId();
+    if (cache.containsKey(userId)) {
+      UserEnvironment ue = cache.get(userId);
       if (ue != null && !ue.hasExpired()) {
         return ue;
       }
     }
 
-    String userEnv = getUserEnvPath(currentSession.getUserId());
+    String userEnv = getUserEnvPath(userId);
     UserEnvironment ue = loadUserEnvironmentBean(userEnv);
     if (ue != null) {
-      cache.put(currentSession.getId(), ue);
+      cache.put(userId, ue);
       return ue;
     }
     return nullUserEnv;
   }
   
-  public void expire(String sessionId) {
-    cache.remove(sessionId);
+  public void expire(String userId) {
+    cache.remove(userId);
   }
   /**
    * @param userEnv2

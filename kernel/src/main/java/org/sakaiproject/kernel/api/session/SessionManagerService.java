@@ -22,10 +22,7 @@ import com.google.inject.Singleton;
 
 import org.sakaiproject.kernel.session.SessionManagerServiceImpl;
 
-import java.util.Map;
-
 import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpSession;
 
 /**
  * The session manager service manages sessions
@@ -47,20 +44,6 @@ public interface SessionManagerService {
    */
   void bindRequest(ServletRequest request);
 
-
-  /**
-   * @param userid
-   * @return all sessions for a user
-   */
-  Map<String, String> getSessionsForUser(String userid);
-
-
-  /**
-   * Expire the session, evicting from any caches.
-   * @param session
-   */
-  void expireSession(HttpSession session);
-  
   
   
 
