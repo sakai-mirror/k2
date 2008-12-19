@@ -41,7 +41,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.spi.PersistenceUnitTransactionType;
-import javax.sql.DataSource;
 
 /**
  * Guice provider for {@link javax.persistence.EntityManager} as implemented by
