@@ -52,13 +52,13 @@ public class SubjectPermissionBean {
   @Column(name = "subjectToken")
   private String subjectToken;
 
-  @Column(name = "group")
+  @Column(name = "groupid")
   private String group;
 
   @Column(name = "permissionToken")
   private String permissionToken;
 
-  @Column(name = "role")
+  @Column(name = "roleid")
   private String role;
 
   /**

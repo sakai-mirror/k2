@@ -1,3 +1,4 @@
 {
-   superUser: true
+ userid : "admin",
+ superUser: true
 }

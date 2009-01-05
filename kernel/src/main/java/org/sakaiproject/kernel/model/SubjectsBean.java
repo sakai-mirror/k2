@@ -36,6 +36,14 @@ public class SubjectsBean extends HashMap<String,String> implements UserSubjects
    * 
    */
   private static final long serialVersionUID = 2937100683358538764L;
+  
+
+  /**
+   * @param subjectPermissionService
+   */
+  public SubjectsBean(SubjectPermissionService subjectPermissionService) {
+    this.subjectPermissionService = subjectPermissionService;
+  }
 
   /**
    * @param subjectToken
@@ -62,7 +70,7 @@ public class SubjectsBean extends HashMap<String,String> implements UserSubjects
   public SubjectPermissions getSubjectPermissions(String subjectToken) {
     if ( containsKey(subjectToken) ) {
       SubjectPermissions subjectPermissions = subjectPermissionMap.get(subjectToken);
-      if ( subjectPermissionMap == null ) {
+      if ( subjectPermissions == null ) {
         subjectPermissions = loadSubjectPermissions(subjectToken);
       }
       return subjectPermissions;

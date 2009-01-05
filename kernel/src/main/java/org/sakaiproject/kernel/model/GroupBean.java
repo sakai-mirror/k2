@@ -17,7 +17,6 @@
  */
 package org.sakaiproject.kernel.model;
 
-
 /**
  * A simple bean for serializing group information into an object structure
  * prior to indexing.
@@ -26,7 +25,7 @@ public class GroupBean {
 
   private String name;
   private String description;
-  private RoleBean[] roles;
+  private RoleBean[] roles = new RoleBean[0];
 
   /**
    * @return the name
@@ -59,25 +58,30 @@ public class GroupBean {
   }
 
   /**
-   * @param roles the roles to set
+   * @param roles
+   *          the roles to set
    */
   public void setRoles(RoleBean[] roles) {
     this.roles = roles;
   }
-  
+
   /**
    * @return the roles
    */
   public RoleBean[] getRoles() {
     return roles;
   }
-  
+
   public String[] getSubjectTokens() {
-    String[] s = new String[roles.length];
-    for ( int i = 0; i < roles.length; i++  ) {
-      s[i] = roles[i].getSubjectToken(name);
+    if (roles == null) {
+      return new String[0];
+    } else {
+      String[] s = new String[roles.length];
+      for (int i = 0; i < roles.length; i++) {
+        s[i] = roles[i].getSubjectToken(name);
+      }
+      return s;
     }
-    return s;
   }
 
 }

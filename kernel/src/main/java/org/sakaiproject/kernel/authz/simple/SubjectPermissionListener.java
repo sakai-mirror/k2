@@ -40,6 +40,7 @@ import java.util.List;
 
 import javax.jcr.RepositoryException;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
 /**
@@ -80,7 +81,6 @@ public class SubjectPermissionListener implements JcrContentListener {
    *      java.lang.String, java.lang.String, java.lang.String)
    */
   public void onEvent(int type, String userID, String filePath, String fileName) {
-    System.err.println("On Event for " + filePath + " " + fileName);
     if (fileName.equals(GROUP_FILE_NAME)) {
       try {
         String groupBody = IOUtils.readFully(jcrNodeFactoryService
@@ -146,12 +146,15 @@ public class SubjectPermissionListener implements JcrContentListener {
           }
         }
 
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
         for (SubjectPermissionBean spb : toRemove) {
           entityManager.remove(spb);
         }
         for (SubjectPermissionBean spb : toAdd) {
           entityManager.persist(spb);
         }
+        transaction.commit();
 
       } catch (UnsupportedEncodingException e) {
         LOG.error(e);

@@ -85,7 +85,7 @@ public class UserEnvironmentBean implements UserEnvironment {
    */
   private void loadSubjects() {
     if ( subjectsBean  == null ) {
-      subjectsBean = new SubjectsBean();
+      subjectsBean = new SubjectsBean(subjectPermissionService);
       for ( String subject : subjects ) {
         subjectsBean.put(subject,subject);
       }
@@ -149,6 +149,14 @@ public class UserEnvironmentBean implements UserEnvironment {
    */
   public void seal() {
      this.sealed = true;
+  }
+  
+  /**
+   * @return the subjectsBean
+   */
+  public SubjectsBean getSubjectsBean() {
+    loadSubjects();
+    return subjectsBean;
   }
 
 }

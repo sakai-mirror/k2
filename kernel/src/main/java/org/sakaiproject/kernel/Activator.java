@@ -40,6 +40,7 @@ import org.sakaiproject.kernel.api.persistence.DataSourceService;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.user.AuthenticationManager;
 import org.sakaiproject.kernel.api.user.UserDirectoryService;
+import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.internal.api.KernelInitialization;
 import org.sakaiproject.kernel.internal.api.KernelInitializtionException;
 import org.sakaiproject.kernel.persistence.PersistenceModule;
@@ -54,7 +55,8 @@ public class Activator implements ComponentActivator {
       UserDirectoryService.class, AuthenticationManager.class,
       CacheManagerService.class, SessionManagerService.class,
       AuthzResolverService.class, PermissionQueryService.class,
-      ReferenceResolverService.class, DataSourceService.class };
+      ReferenceResolverService.class, DataSourceService.class,
+      UserEnvironmentResolverService.class };
   private static final Log LOG = LogFactory.getLog(Activator.class);
   @SuppressWarnings("unused")
   private Kernel kernel;

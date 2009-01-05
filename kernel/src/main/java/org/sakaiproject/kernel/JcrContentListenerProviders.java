@@ -18,6 +18,7 @@ package org.sakaiproject.kernel;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
+import org.sakaiproject.kernel.authz.simple.SubjectPermissionListener;
 import org.sakaiproject.kernel.authz.simple.UserEnvironmentListener;
 import org.sakaiproject.kernel.jcr.api.JcrContentListener;
 
@@ -37,8 +38,9 @@ public class JcrContentListenerProviders implements
    */
   @Inject
   public JcrContentListenerProviders(
-      UserEnvironmentListener userEnvironmentListener) {
+      UserEnvironmentListener userEnvironmentListener, SubjectPermissionListener subjectPermissionListener) {
     list.add(userEnvironmentListener);
+    list.add(subjectPermissionListener);
   }
 
   /**

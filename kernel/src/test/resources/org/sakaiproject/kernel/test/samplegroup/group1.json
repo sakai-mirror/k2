@@ -1,5 +1,5 @@
 {
-   name : "Group1",
+   name : "group1",
    description  : "An Example Group definition. This is just the required fields that we might see inside a object that defines a group ",      
    roles : [{
          "name" : "access",

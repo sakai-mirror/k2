@@ -39,6 +39,7 @@ import java.util.List;
 
 import javax.jcr.RepositoryException;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
 /**
@@ -79,7 +80,6 @@ public class UserEnvironmentListener implements JcrContentListener {
    *      java.lang.String, java.lang.String, java.lang.String)
    */
   public void onEvent(int type, String userID, String filePath, String fileName) {
-    System.err.println("On Event for "+filePath+" "+fileName);
     if (fileName.equals(SimpleJcrUserEnvironmentResolverService.USERENV)
         && filePath.startsWith(userEnvironmentBase)) {
       try {
@@ -131,12 +131,16 @@ public class UserEnvironmentListener implements JcrContentListener {
           }
         }
 
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
         for (GroupMembershipBean gm : toRemove) {
           entityManager.remove(gm);
         }
         for (GroupMembershipBean gm : toAdd) {
           entityManager.persist(gm);
         }
+        transaction.commit();
+        
 
       } catch (UnsupportedEncodingException e) {
         LOG.error(e);
