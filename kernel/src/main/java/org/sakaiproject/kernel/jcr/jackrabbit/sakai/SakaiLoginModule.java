@@ -79,6 +79,7 @@ public class SakaiLoginModule implements LoginModule {
 
   /**
    * {@inheritDoc}
+   * @see javax.security.auth.spi.LoginModule#initialize(javax.security.auth.Subject, javax.security.auth.callback.CallbackHandler, java.util.Map, java.util.Map)
    */
   public void initialize(Subject subject, CallbackHandler callbackHandler,
       Map<String, ?> sharedState, Map<String, ?> options) {
@@ -90,6 +91,7 @@ public class SakaiLoginModule implements LoginModule {
 
   /**
    * {@inheritDoc}
+   * @see javax.security.auth.spi.LoginModule#login()
    */
   public boolean login() throws LoginException {
     // prompt for a user name and password
@@ -153,6 +155,7 @@ public class SakaiLoginModule implements LoginModule {
 
   /**
    * {@inheritDoc}
+   * @see javax.security.auth.spi.LoginModule#commit()
    */
   public boolean commit() throws LoginException {
     if (principals.isEmpty()) {
@@ -166,6 +169,7 @@ public class SakaiLoginModule implements LoginModule {
 
   /**
    * {@inheritDoc}
+   * @see javax.security.auth.spi.LoginModule#abort()
    */
   public boolean abort() throws LoginException {
     if (principals.isEmpty()) {
@@ -178,6 +182,7 @@ public class SakaiLoginModule implements LoginModule {
 
   /**
    * {@inheritDoc}
+   * @see javax.security.auth.spi.LoginModule#logout()
    */
   public boolean logout() throws LoginException {
     subject.getPrincipals().removeAll(principals);

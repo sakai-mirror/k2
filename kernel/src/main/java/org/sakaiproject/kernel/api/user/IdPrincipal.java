@@ -20,7 +20,7 @@ package org.sakaiproject.kernel.api.user;
 import java.security.Principal;
 
 /**
- * 
+ * A Principal that has an identifier.
  */
 public interface IdPrincipal extends Principal {
   /**

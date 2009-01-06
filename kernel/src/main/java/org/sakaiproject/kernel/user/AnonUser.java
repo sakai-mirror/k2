@@ -20,7 +20,7 @@ package org.sakaiproject.kernel.user;
 import org.sakaiproject.kernel.api.user.User;
 
 /**
- * 
+ * Represents an anonymous user.
  */
 public class AnonUser implements User {
 

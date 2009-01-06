@@ -34,7 +34,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 /**
- * Perfoms basic repository startup.
+ * Performs basic repository startup.
  * 
  */
 public class SakaiRepositoryStartup implements StartupAction {

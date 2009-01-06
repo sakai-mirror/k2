@@ -18,20 +18,22 @@
 package org.sakaiproject.kernel.api.user;
 
 import com.google.inject.ImplementedBy;
+import com.google.inject.Singleton;
 
 import org.sakaiproject.kernel.user.NullUserResolverServiceImpl;
 
-
 /**
- * 
+ * The UserResolverService resolves users.
  */
 @ImplementedBy(NullUserResolverServiceImpl.class)
+@Singleton
 public interface UserResolverService {
 
   /**
-   * @param identifier
-   * @return
+   * @param eid
+   *          the Extenal user ID
+   * @return a User object
    */
-  User resolve(String identifier);
+  User resolve(String eid);
 
 }

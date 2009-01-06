@@ -18,6 +18,7 @@
 package org.sakaiproject.kernel.api.userenv;
 
 import com.google.inject.ImplementedBy;
+import com.google.inject.Singleton;
 
 import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.authz.simple.SimpleJcrUserEnvironmentResolverService;
@@ -27,6 +28,7 @@ import org.sakaiproject.kernel.authz.simple.SimpleJcrUserEnvironmentResolverServ
  * {@link Session} objects.
  */
 @ImplementedBy(SimpleJcrUserEnvironmentResolverService.class)
+@Singleton
 public interface UserEnvironmentResolverService {
 
   /**

@@ -23,6 +23,10 @@ package org.sakaiproject.kernel.jcr.jackrabbit.sakai;
 
 import org.sakaiproject.kernel.jcr.api.internal.SakaiUserPrincipal;
 
+/**
+ * Represents a User principal for a logged in sakai user, the user id being the
+ * name of the principal.
+ */
 public class SakaiUserPrincipalImpl implements SakaiUserPrincipal {
   /**
 	 * 

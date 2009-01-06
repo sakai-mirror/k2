@@ -20,17 +20,17 @@ package org.sakaiproject.kernel.api.user;
 import java.io.Serializable;
 
 /**
- *
+ * A user object binding EID to UUID
  */
 public interface User extends Serializable {
 
   /**
-   * @return
+   * @return the internal UUID of the user.
    */
   String getUuid();
 
   /**
-   * @return
+   * @return the external EID associated with the user.
    */
   String getEid();
 

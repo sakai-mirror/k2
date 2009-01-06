@@ -41,15 +41,17 @@ public class JCRIdPwEvidence implements IdPwPrincipal {
     this.password = password;
   }
 
-  /* (non-Javadoc)
-   * @see org.sakaiproject.kernel.api.user.IdPwEvidence#getIdentifier()
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.user.IdPrincipal#getIdentifier()
    */
   public String getIdentifier() {
     return id;
   }
 
-  /* (non-Javadoc)
-   * @see org.sakaiproject.kernel.api.user.IdPwEvidence#getPassword()
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.user.IdPwPrincipal#getPassword()
    */
   public String getPassword() {
     return password;

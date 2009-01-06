@@ -43,7 +43,7 @@ public interface AuthenticationResolverService
    * @param principal
    *        The collected evidence to authenticate.
    * @return The authentication information if authenticated.
-   * @throws AuthenticationException
+   * @throws SecurityException
    *         if the evidence is not understood or not valid.
    */
   Authentication authenticate(Principal principal) throws SecurityException;

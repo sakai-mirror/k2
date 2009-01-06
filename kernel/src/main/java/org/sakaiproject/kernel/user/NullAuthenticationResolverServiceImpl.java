@@ -19,6 +19,8 @@ package org.sakaiproject.kernel.user;
 
 import com.google.inject.Inject;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.user.Authentication;
 import org.sakaiproject.kernel.api.user.AuthenticationResolverService;
 import org.sakaiproject.kernel.api.user.IdPrincipal;
@@ -28,30 +30,36 @@ import org.sakaiproject.kernel.api.user.UserResolverService;
 import java.security.Principal;
 
 /**
- * 
+ * A Null implementation of the AuthenticationResolverService, that
+ * authenticates everything. We may remove this in the near future.
  */
-public class NullAuthenticationResolverServiceImpl implements AuthenticationResolverService {
+public class NullAuthenticationResolverServiceImpl implements
+    AuthenticationResolverService {
 
-  
+  private static final Log LOG = LogFactory.getLog(NullAuthenticationResolverServiceImpl.class);
   private UserResolverService userResolverService;
-  
+
   /**
    * 
    */
   @Inject
-  public NullAuthenticationResolverServiceImpl(UserResolverService userResolverService ) {
+  public NullAuthenticationResolverServiceImpl(
+      UserResolverService userResolverService) {
     this.userResolverService = userResolverService;
   }
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.user.AuthenticationResolverService#authenticate(java.security.Principal)
    */
   public Authentication authenticate(Principal principal)
       throws SecurityException {
-    if ( principal instanceof IdPrincipal ) {
-      User u = userResolverService.resolve(((IdPrincipal) principal).getIdentifier());
-      return new AuthenticationImpl(u);      
+    if (principal instanceof IdPrincipal) {
+      User u = userResolverService.resolve(((IdPrincipal) principal)
+          .getIdentifier());
+      LOG.warn("NON PRODUCTION CODE: NULL Authentication of user "+u.getEid());
+      return new AuthenticationImpl(u);
     }
     return null;
   }

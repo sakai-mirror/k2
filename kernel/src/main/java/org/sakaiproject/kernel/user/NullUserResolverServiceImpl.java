@@ -17,19 +17,27 @@
  */
 package org.sakaiproject.kernel.user;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.user.UserResolverService;
 
 /**
- * 
+ * A Null User Resolver Service that just sets eid == uid. Not to be used in
+ * production.
  */
 public class NullUserResolverServiceImpl implements UserResolverService {
 
+  private static final Log LOG = LogFactory
+      .getLog(NullUserResolverServiceImpl.class);
+
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.user.UserResolverService#resolve(java.lang.String)
    */
   public User resolve(final String identifier) {
+    LOG.warn("NON PRODUCTION CORE: Null resolution of user " + identifier);
     return new User() {
 
       /**
@@ -44,7 +52,7 @@ public class NullUserResolverServiceImpl implements UserResolverService {
       public String getUuid() {
         return identifier;
       }
-      
+
     };
   }
 

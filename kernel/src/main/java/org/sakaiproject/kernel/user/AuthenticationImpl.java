@@ -32,10 +32,10 @@ import org.sakaiproject.kernel.api.user.User;
  */
 public class AuthenticationImpl implements Authentication {
   /** The UUID identifier string. */
-  protected String m_uid = null;
+  protected String uid = null;
 
   /** The enterprise identifier string. */
-  protected String m_eid = null;
+  protected String eid = null;
 
   /**
    * Construct, with uid and eid
@@ -46,21 +46,21 @@ public class AuthenticationImpl implements Authentication {
    *          The enterprise end user identifier string.
    */
   public AuthenticationImpl(User u) {
-    m_uid = u.getUuid();
-    m_eid = u.getEid();
+    uid = u.getUuid();
+    eid = u.getEid();
   }
 
   /**
    * @inheritDoc
    */
   public String getUid() {
-    return m_uid;
+    return uid;
   }
 
   /**
    * @inheritDoc
    */
   public String getEid() {
-    return m_eid;
+    return eid;
   }
 }

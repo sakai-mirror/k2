@@ -18,12 +18,12 @@
 package org.sakaiproject.kernel.api.user;
 
 /**
- *
+ * An object to contain an authenticated user and its internal UUID
  */
 public interface Authentication {
 
   /**
-   * @return
+   * @return the internal UUid of the user.
    */
   String getUid();
 

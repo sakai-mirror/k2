@@ -27,7 +27,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
 
 /**
- * 
+ * An implementation of the Session, where the user is recoreded as an attribute.
  */
 @SuppressWarnings("deprecation")
 public class SessionImpl implements Session {
@@ -51,6 +51,8 @@ public class SessionImpl implements Session {
   public User getUser() {
     return (User) getAttribute(USER);
   }
+  
+  
   
   
 

@@ -36,7 +36,8 @@ import java.security.Principal;
 
 /**
  * <p>
- * An Authentication component working with the UserDirectoryService.
+ * A caching authentication resolver service implementation, that uses a cache and chains to a chain of 
+ * AuthenticationResolverServices.
  * </p>
  */
 @Singleton
@@ -58,12 +59,9 @@ public class AuthenticationResolverServiceImpl implements
     this.nextInChain = nextInChain;
   }
 
-  /**********************************************************************************************************************************************************************************************************************************************************
-   * Work interface methods: AuthenticationManager
-   *********************************************************************************************************************************************************************************************************************************************************/
-
   /**
-   * @inheritDoc
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.user.AuthenticationResolverService#authenticate(java.security.Principal)
    */
   public Authentication authenticate(Principal principal)
       throws SecurityException {

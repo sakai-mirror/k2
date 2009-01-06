@@ -24,7 +24,7 @@ package org.sakaiproject.kernel.api.user;
 
 /**
  * <p>
- * ExternalTrustedEvidence is Authetication evidence made up of a user
+ * ExternalTrustedEvidence is Authentication evidence made up of a user
  * identifier that has been authenticated by a trusted external source.
  * </p>
  */

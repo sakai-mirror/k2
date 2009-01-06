@@ -22,7 +22,6 @@ import org.sakaiproject.kernel.api.UpdateFailedException;
 import org.sakaiproject.kernel.api.authz.PermissionDeniedException;
 import org.sakaiproject.kernel.api.authz.UnauthorizedException;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
-import org.sakaiproject.kernel.api.user.AuthenticationException;
 import org.sakaiproject.kernel.internal.api.KernelInitializtionException;
 import org.sakaiproject.kernel.jcr.api.internal.RepositoryStartupException;
 
@@ -51,16 +50,6 @@ public class ExceptionTest {
     KernelInitializtionException e2 = new KernelInitializtionException(e);
     @SuppressWarnings("unused")
     KernelInitializtionException e3 = new KernelInitializtionException("Startup Test",e);
-  }
-  @Test
-  public void testAuthenticationException() {
-    AuthenticationException e = new AuthenticationException();
-    @SuppressWarnings("unused")
-    AuthenticationException e1 = new AuthenticationException("Startup Test");
-    @SuppressWarnings("unused")
-    AuthenticationException e2 = new AuthenticationException(e);
-    @SuppressWarnings("unused")
-    AuthenticationException e3 = new AuthenticationException("Startup Test",e);
   }
   @Test
   public void testJCRNodeFactoryServiceException() {

@@ -22,14 +22,14 @@ import org.sakaiproject.kernel.api.user.User;
 import javax.servlet.http.HttpSession;
 
 /**
- * 
+ * A specialization of session that provides access methods specific to the
+ * kernel.
  */
 public interface Session extends HttpSession {
 
   /**
-   * @return
+   * @return the current user, or null if there is none.
    */
   User getUser();
-  
 
 }
