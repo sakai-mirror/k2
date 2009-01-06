@@ -21,6 +21,7 @@ import com.google.inject.ImplementedBy;
 
 import org.sakaiproject.kernel.api.Sealable;
 import org.sakaiproject.kernel.api.authz.SubjectStatement;
+import org.sakaiproject.kernel.api.authz.UserSubjects;
 import org.sakaiproject.kernel.model.UserEnvironmentBean;
 
 /**
@@ -67,5 +68,10 @@ public interface UserEnvironment extends Sealable {
    * @return
    */
   String getUserid();
+
+  /**
+   * @return
+   */
+  UserSubjects getUserSubjects();
 
 }

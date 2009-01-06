@@ -38,6 +38,7 @@ import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.UpdateFailedException;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
 import org.sakaiproject.kernel.api.authz.SubjectPermissions;
+import org.sakaiproject.kernel.api.authz.UserSubjects;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
@@ -46,7 +47,6 @@ import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
-import org.sakaiproject.kernel.model.SubjectsBean;
 import org.sakaiproject.kernel.model.UserEnvironmentBean;
 import org.sakaiproject.kernel.session.SessionImpl;
 import org.sakaiproject.kernel.util.PathUtils;
@@ -183,7 +183,7 @@ public class ObservationTest extends KernelIntegrationBase {
     assertNotNull(subjects);
     assertEquals(4, subjects.length);
     
-    SubjectsBean subjectsBean = userEnvironmentBean.getSubjectsBean();
+    UserSubjects subjectsBean = userEnvironmentBean.getUserSubjects();
     for ( String subject : subjects ) {
       SubjectPermissions sp = subjectsBean.getSubjectPermissions(subject);
       

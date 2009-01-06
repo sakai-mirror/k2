@@ -47,8 +47,14 @@ public interface SubjectStatement {
     /**
      * Indicates and undefined subject statement that should be ignored.
      */
-    UNDEFINED()
+    UNDEFINED(), 
+    /**
+     * Provided come from external providers.
+     */
+    PROVIDED();
   }
+
+  public static final String PROVIDER_REGISTRY = "subjectstatement.provider";
   
 
   /**

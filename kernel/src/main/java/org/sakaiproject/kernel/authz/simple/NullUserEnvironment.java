@@ -17,7 +17,9 @@
  */
 package org.sakaiproject.kernel.authz.simple;
 
+import org.sakaiproject.kernel.api.authz.SubjectPermissions;
 import org.sakaiproject.kernel.api.authz.SubjectStatement;
+import org.sakaiproject.kernel.api.authz.UserSubjects;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 
 /**
@@ -63,5 +65,34 @@ public class NullUserEnvironment implements UserEnvironment {
    */
   public String getUserid() {
     return "anon";
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#getSubjects()
+   */
+  public String[] getSubjects() {
+    return new String[0];
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#getUserSubjects()
+   */
+  public UserSubjects getUserSubjects() {
+    return new UserSubjects(){
+
+      public void addSubjectPermissions(SubjectPermissions subjectPermissions) {
+      }
+
+      public SubjectPermissions getSubjectPermissions(String subjectToken) {
+        return null;
+      }
+
+      public boolean hasSubject(String groupToken) {
+        return false;
+      }
+      
+    };
   }
 }
