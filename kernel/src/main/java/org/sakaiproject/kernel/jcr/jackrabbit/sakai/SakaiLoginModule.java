@@ -24,12 +24,9 @@ package org.sakaiproject.kernel.jcr.jackrabbit.sakai;
 import org.apache.jackrabbit.core.security.CredentialsCallback;
 import org.sakaiproject.kernel.api.KernelConfigurationException;
 import org.sakaiproject.kernel.api.KernelManager;
+import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.user.Authentication;
-import org.sakaiproject.kernel.api.user.AuthenticationException;
-import org.sakaiproject.kernel.api.user.AuthenticationManager;
-import org.sakaiproject.kernel.api.user.User;
-import org.sakaiproject.kernel.api.user.UserDirectoryService;
-import org.sakaiproject.kernel.api.user.UserNotDefinedException;
+import org.sakaiproject.kernel.api.user.AuthenticationResolverService;
 import org.sakaiproject.kernel.jcr.jackrabbit.JCRAnonymousPrincipal;
 import org.sakaiproject.kernel.jcr.jackrabbit.JCRSystemPrincipal;
 
@@ -59,15 +56,15 @@ public class SakaiLoginModule implements LoginModule {
 
   private final Set<Principal> principals = new HashSet<Principal>();
 
-  private UserDirectoryService userDirectoryService;
-
-  private AuthenticationManager authenticationManager;
+  private AuthenticationResolverService authenticationResolver;
 
   @SuppressWarnings("unused")
   private Map<String, ?> sharedState;
 
   @SuppressWarnings("unused")
   private Map<String, ?> options;
+
+  private SessionManagerService sessionManagerService;
 
   /**
    * Constructor
@@ -76,8 +73,8 @@ public class SakaiLoginModule implements LoginModule {
    */
   public SakaiLoginModule() throws KernelConfigurationException {
     KernelManager km = new KernelManager();
-    this.userDirectoryService = km.getService(UserDirectoryService.class);
-    this.authenticationManager = km.getService(AuthenticationManager.class);
+    this.sessionManagerService = km.getService(SessionManagerService.class);
+    this.authenticationResolver = km.getService(AuthenticationResolverService.class);
   }
 
   /**
@@ -114,29 +111,17 @@ public class SakaiLoginModule implements LoginModule {
           SimpleCredentials sc = (SimpleCredentials) creds;
           // authenticate
 
-          User u = null;
+          Authentication auth = null;
           try {
-            Authentication auth = authenticationManager
-                .authenticate(new JCRIdPwEvidence(sc.getUserID(), new String(sc
-                    .getPassword())));
-            u = userDirectoryService.getUser(auth.getUid());
-          } catch (NullPointerException e) {
-            u = null;
-          } catch (AuthenticationException e) {
-            u = null;
-          } catch (UserNotDefinedException e) {
-            u = null;
+            auth = authenticationResolver.authenticate(new JCRIdPwEvidence(sc.getUserID(), new String(sc.getPassword())));
+          } catch (SecurityException e) {
+            auth = null;
           }
-          // old way used UDS directly, no caching, new way above gets cached
-          // -AZ
-          // User u = userDirectoryService.authenticate(sc.getUserID(),
-          // new String(sc.getPassword()));
-          if (u == null) {
+          if (auth == null) {
             principals.add(new JCRAnonymousPrincipal(SAKAI_ANON_USER));
           } else {
-            principals.add(new SakaiUserPrincipalImpl(u));
+            principals.add(new SakaiUserPrincipalImpl(auth.getUid()));
           }
-
           authenticated = true;
         } else if (creds instanceof SakaiJCRCredentials) {
           principals.add(new JCRSystemPrincipal(SAKAI_SYSTEM_USER));
@@ -144,11 +129,11 @@ public class SakaiLoginModule implements LoginModule {
         }
       } else {
         // authenticated via Session or Sakai Wrapper
-        User u = userDirectoryService.getCurrentUser();
-        if (u == null) {
+        String userId = sessionManagerService.getCurrentSession().getUser().getUuid();
+        if (userId == null) {
           principals.add(new JCRAnonymousPrincipal(SAKAI_ANON_USER));
         } else {
-          principals.add(new SakaiUserPrincipalImpl(u));
+          principals.add(new SakaiUserPrincipalImpl(userId));
         }
         authenticated = true;
       }

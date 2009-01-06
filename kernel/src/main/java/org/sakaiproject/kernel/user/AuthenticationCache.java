@@ -27,7 +27,8 @@ import org.sakaiproject.kernel.api.memory.Cache;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
 import org.sakaiproject.kernel.api.user.Authentication;
-import org.sakaiproject.kernel.api.user.AuthenticationException;
+import org.sakaiproject.kernel.api.user.IdPrincipal;
+import org.sakaiproject.kernel.api.user.IdPwPrincipal;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -35,98 +36,129 @@ import java.security.NoSuchAlgorithmException;
 
 /**
  * Because DAV clients do not understand the concept of secure sessions, a DAV
- * user will end up asking Sakai to re-authenticate them for every action.
- * To ease the overhead, this class checks a size-limited timing-out cache
- * of one-way encrypted successful authentication IDs and passwords.
+ * user will end up asking Sakai to re-authenticate them for every action. To
+ * ease the overhead, this class checks a size-limited timing-out cache of
+ * one-way encrypted successful authentication IDs and passwords.
  * <p>
  * There's nothing DAV-specific about this class, and it's also independent of
  * any Sakai classes other than the "Authentication" user ID and EID holder.
- *
- * @author Aaron Zeckoski (aaron@caret.cam.ac.uk)
+ * 
  */
 public class AuthenticationCache {
-	private static final Log LOG = LogFactory.getLog(AuthenticationCache.class);
+  private static final Log LOG = LogFactory.getLog(AuthenticationCache.class);
 
-	private Cache<AuthenticationRecord> authCache;
+  private Cache<AuthenticationRecord> authCache;
 
-	/**
+  /**
    * 
    */
-	
-	@Inject
+
+  @Inject
   public AuthenticationCache(CacheManagerService cacheManager) {
-    this.authCache = cacheManager.getCache(AuthenticationCache.class.getName(), CacheScope.INSTANCE);
+    this.authCache = cacheManager.getCache(AuthenticationCache.class.getName(),
+        CacheScope.INSTANCE);
   }
 
-	public Authentication getAuthentication(String authenticationId, String password)
-			throws AuthenticationException {
-		Authentication auth = null;
-		try {
-			AuthenticationRecord record = authCache.get(authenticationId);
-			if (MessageDigest.isEqual(record.encodedPassword, getEncrypted(password))) {
-				if (record.authentication == null) {
-					if (LOG.isDebugEnabled()) LOG.debug("getAuthentication: replaying authentication failure for authenticationId=" + authenticationId);
-					throw new AuthenticationException("repeated invalid login");
-				} else {
-					if (LOG.isDebugEnabled()) LOG.debug("getAuthentication: returning record for authenticationId=" + authenticationId);
-					auth = record.authentication;
-				}
-			} else {
-				// Since the passwords didn't match, we're no longer getting repeats,
-				// and so the record should be removed.
-				if (LOG.isDebugEnabled()) LOG.debug("getAuthentication: record for authenticationId=" + authenticationId + " failed password check");
-				authCache.remove(authenticationId);
-			}
-		} catch (NullPointerException e) {
-			// this is ok and generally expected to indicate the value is not in the cache
-			auth = null;
-		}
-		return auth;
-	}
+  public Authentication getAuthentication(IdPrincipal idPrincipal)
+      throws SecurityException {
+    Authentication auth = null;
+    try {
+      AuthenticationRecord record = authCache.get(idPrincipal.getIdentifier());
+      if (record.withpassword) {
+        if (idPrincipal instanceof IdPwPrincipal) {
+          IdPwPrincipal idPwPrincipal = (IdPwPrincipal) idPrincipal;
+          if (MessageDigest.isEqual(record.encodedPassword,
+              getEncrypted(idPwPrincipal.getPassword()))) {
+            if (record.authentication == null) {
+              if (LOG.isDebugEnabled())
+                LOG
+                    .debug("getAuthentication: replaying authentication failure for authenticationId="
+                        + idPrincipal.getIdentifier());
+              throw new SecurityException("repeated invalid login");
+            } else {
+              if (LOG.isDebugEnabled())
+                LOG
+                    .debug("getAuthentication: returning record for authenticationId="
+                        + idPrincipal.getIdentifier());
+              auth = record.authentication;
+            }
+          } else {
+            // Since the passwords didn't match, we're no longer getting
+            // repeats,
+            // and so the record should be removed.
+            if (LOG.isDebugEnabled())
+              LOG.debug("getAuthentication: record for authenticationId="
+                  + idPrincipal.getIdentifier() + " failed password check");
+            authCache.remove(idPrincipal.getIdentifier());
+          }
+        } 
+      }
+    } catch (NullPointerException e) {
+      // this is ok and generally expected to indicate the value is not in the
+      // cache
+      auth = null;
+    }
+    return auth;
+  }
 
-	public void putAuthentication(String authenticationId, String password, Authentication authentication) {
-		putAuthenticationRecord(authenticationId, password, authentication);
-	}
+  public void putAuthentication(IdPrincipal principal,
+      Authentication authentication) {
+    putAuthenticationRecord(principal, authentication);
+  }
 
-	public void putAuthenticationFailure(String authenticationId, String password) {
-		putAuthenticationRecord(authenticationId, password, null);
-	}
+  public void putAuthenticationFailure(IdPrincipal principal) {
+    putAuthenticationRecord(principal, null);
+  }
 
-	protected void putAuthenticationRecord(String authenticationId, String password,
-			Authentication authentication) {
-		if (authCache.containsKey(authenticationId)) {
-			// Don't indefinitely renew the cached record -- we want to force
-			// real authentication after the timeout.
-		} else {
-			authCache.put( authenticationId,
-					new AuthenticationRecord(getEncrypted(password), authentication, System.currentTimeMillis()) );
-		}
-	}
+  protected void putAuthenticationRecord(IdPrincipal principal,
+      Authentication authentication) {
 
-	private byte[] getEncrypted(String plaintext) {
-		try {
-			MessageDigest messageDigest = MessageDigest.getInstance("SHA");
-			messageDigest.update(plaintext.getBytes("UTF-8"));
-			return messageDigest.digest();
-		} catch (NoSuchAlgorithmException e) {
-			// This seems highly unlikely.
-			throw new RuntimeException(e);
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    if (authCache.containsKey(principal.getIdentifier())) {
+      // Don't indefinitely renew the cached record -- we want to force
+      // real authentication after the timeout.
+    } else {
+      if (principal instanceof IdPwPrincipal) {
+        IdPwPrincipal idPassIdPwPrincipal = (IdPwPrincipal) principal;
+        authCache.put(principal.getIdentifier(), new AuthenticationRecord(
+            getEncrypted(idPassIdPwPrincipal.getPassword()), authentication,
+            System.currentTimeMillis()));
+      }
+    }
+  }
 
+  private byte[] getEncrypted(String plaintext) {
+    try {
+      MessageDigest messageDigest = MessageDigest.getInstance("SHA");
+      messageDigest.update(plaintext.getBytes("UTF-8"));
+      return messageDigest.digest();
+    } catch (NoSuchAlgorithmException e) {
+      // This seems highly unlikely.
+      throw new RuntimeException(e);
+    } catch (UnsupportedEncodingException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
-	static class AuthenticationRecord {
-		byte[] encodedPassword;
-		Authentication authentication;	// Null for failed authentication
-		long createTimeInMs;
+  static class AuthenticationRecord {
+    protected byte[] encodedPassword;
+    protected Authentication authentication; // Null for failed authentication
+    protected long createTimeInMs;
+    protected boolean withpassword;
 
-		public AuthenticationRecord(byte[] encodedPassword, Authentication authentication, long createTimeInMs) {
-			this.encodedPassword = encodedPassword;
-			this.authentication = authentication;
-			this.createTimeInMs = createTimeInMs;
-		}
-	}
+    public AuthenticationRecord(Authentication authentication, long createTimeInMs) {
+      this.withpassword = false;
+      this.authentication = authentication;
+      this.createTimeInMs = createTimeInMs;
+    }
+
+    public AuthenticationRecord(byte[] encodedPassword,
+        Authentication authentication, long createTimeInMs) {
+      this.withpassword = true;
+      this.encodedPassword = encodedPassword;
+      this.authentication = authentication;
+      this.createTimeInMs = createTimeInMs;
+    }
+
+  }
 
 }

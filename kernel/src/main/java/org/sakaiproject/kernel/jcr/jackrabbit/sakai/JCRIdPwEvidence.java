@@ -17,12 +17,12 @@
  */
 package org.sakaiproject.kernel.jcr.jackrabbit.sakai;
 
-import org.sakaiproject.kernel.api.user.IdPwEvidence;
+import org.sakaiproject.kernel.api.user.IdPwPrincipal;
 
 /**
  *
  */
-public class JCRIdPwEvidence implements IdPwEvidence {
+public class JCRIdPwEvidence implements IdPwPrincipal {
 
   
   
@@ -34,6 +34,9 @@ public class JCRIdPwEvidence implements IdPwEvidence {
    * @param password
    */
   public JCRIdPwEvidence(String id, String password) {
+    if ( id == null || id.trim().length() == 0 || password == null ||password.trim().length() == 0 ) {
+      throw new SecurityException("Username and/or password cannot be empty");
+    }
     this.id = id;
     this.password = password;
   }
@@ -50,6 +53,14 @@ public class JCRIdPwEvidence implements IdPwEvidence {
    */
   public String getPassword() {
     return password;
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see java.security.Principal#getName()
+   */
+  public String getName() {
+    return JCRIdPwEvidence.class.getName();
   }
 
 }

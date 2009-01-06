@@ -17,13 +17,20 @@
  */
 package org.sakaiproject.kernel.webapp.test;
 
-import static org.junit.Assert.*;
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.reset;
+import static org.easymock.EasyMock.verify;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.sakaiproject.kernel.api.session.Session;
+import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.session.SessionImpl;
 import org.sakaiproject.kernel.webapp.SakaiServletRequest;
 
@@ -91,11 +98,11 @@ public class SakaiServletRequestTest {
   @Test
   public void testGetRemoteUserFromSession() {
     HttpServletRequest request = createMock(HttpServletRequest.class);
-
+    User user = new InternalUser("ieb2");
     HttpSession session = createMock(HttpSession.class);
     expect(request.getRemoteUser()).andReturn("");
     expect(request.getSession(false)).andReturn(session);
-    expect(session.getAttribute("_u")).andReturn("ieb2");
+    expect(session.getAttribute(SessionImpl.USER)).andReturn(user);
     replay(request,session);
 
     SakaiServletRequest srequest = new SakaiServletRequest(request);

@@ -38,8 +38,8 @@ import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.persistence.DataSourceService;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
-import org.sakaiproject.kernel.api.user.AuthenticationManager;
-import org.sakaiproject.kernel.api.user.UserDirectoryService;
+import org.sakaiproject.kernel.api.user.AuthenticationResolverService;
+import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.internal.api.KernelInitialization;
 import org.sakaiproject.kernel.internal.api.KernelInitializtionException;
@@ -52,7 +52,7 @@ public class Activator implements ComponentActivator {
 
   public static final Class<?>[] SERVICE_CLASSES = { JCRService.class,
       JCRRegistrationService.class, JCRNodeFactoryService.class,
-      UserDirectoryService.class, AuthenticationManager.class,
+      UserResolverService.class, AuthenticationResolverService.class,
       CacheManagerService.class, SessionManagerService.class,
       AuthzResolverService.class, PermissionQueryService.class,
       ReferenceResolverService.class, DataSourceService.class,

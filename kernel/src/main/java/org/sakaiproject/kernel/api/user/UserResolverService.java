@@ -17,21 +17,21 @@
  */
 package org.sakaiproject.kernel.api.user;
 
-import java.io.Serializable;
+import com.google.inject.ImplementedBy;
+
+import org.sakaiproject.kernel.user.NullUserResolverServiceImpl;
+
 
 /**
- *
+ * 
  */
-public interface User extends Serializable {
+@ImplementedBy(NullUserResolverServiceImpl.class)
+public interface UserResolverService {
 
   /**
+   * @param identifier
    * @return
    */
-  String getUuid();
-
-  /**
-   * @return
-   */
-  String getEid();
+  User resolve(String identifier);
 
 }

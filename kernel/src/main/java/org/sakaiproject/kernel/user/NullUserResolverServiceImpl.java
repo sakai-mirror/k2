@@ -15,23 +15,37 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.api.user;
+package org.sakaiproject.kernel.user;
 
-import java.io.Serializable;
+import org.sakaiproject.kernel.api.user.User;
+import org.sakaiproject.kernel.api.user.UserResolverService;
 
 /**
- *
+ * 
  */
-public interface User extends Serializable {
+public class NullUserResolverServiceImpl implements UserResolverService {
 
   /**
-   * @return
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.user.UserResolverService#resolve(java.lang.String)
    */
-  String getUuid();
+  public User resolve(final String identifier) {
+    return new User() {
 
-  /**
-   * @return
-   */
-  String getEid();
+      /**
+       * 
+       */
+      private static final long serialVersionUID = 3786435035308647068L;
+
+      public String getEid() {
+        return identifier;
+      }
+
+      public String getUuid() {
+        return identifier;
+      }
+      
+    };
+  }
 
 }

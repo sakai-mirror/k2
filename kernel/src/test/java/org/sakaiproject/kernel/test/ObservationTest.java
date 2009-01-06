@@ -21,7 +21,10 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.reset;
 import static org.easymock.EasyMock.verify;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,31 +36,22 @@ import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.UpdateFailedException;
-import org.sakaiproject.kernel.api.authz.AccessControlStatement;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
-import org.sakaiproject.kernel.api.authz.PermissionDeniedException;
-import org.sakaiproject.kernel.api.authz.PermissionQuery;
-import org.sakaiproject.kernel.api.authz.PermissionQueryService;
-import org.sakaiproject.kernel.api.authz.ReferenceResolverService;
-import org.sakaiproject.kernel.api.authz.ReferencedObject;
 import org.sakaiproject.kernel.api.authz.SubjectPermissions;
-import org.sakaiproject.kernel.api.authz.SubjectStatement;
-import org.sakaiproject.kernel.api.authz.SubjectStatement.SubjectType;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
+import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
-import org.sakaiproject.kernel.authz.simple.JcrAccessControlStatementImpl;
-import org.sakaiproject.kernel.authz.simple.JcrSubjectStatement;
-import org.sakaiproject.kernel.authz.simple.SimplePermissionQuery;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
-import org.sakaiproject.kernel.model.SubjectPermissionBean;
 import org.sakaiproject.kernel.model.SubjectsBean;
 import org.sakaiproject.kernel.model.UserEnvironmentBean;
+import org.sakaiproject.kernel.session.SessionImpl;
 import org.sakaiproject.kernel.util.PathUtils;
 import org.sakaiproject.kernel.util.ResourceLoader;
+import org.sakaiproject.kernel.webapp.test.InternalUser;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -65,7 +59,6 @@ import java.io.InputStream;
 import javax.jcr.AccessDeniedException;
 import javax.jcr.InvalidItemStateException;
 import javax.jcr.ItemExistsException;
-import javax.jcr.Node;
 import javax.jcr.ReferentialIntegrityException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -240,11 +233,12 @@ public class ObservationTest extends KernelIntegrationBase {
   private void setupRequest(HttpServletRequest request,
       HttpServletResponse response, HttpSession session, String userName) {
 
+    User u = new InternalUser(userName);
     expect(request.getSession()).andReturn(session).anyTimes();
     expect(request.getSession(true)).andReturn(session).anyTimes();
     expect(request.getSession(false)).andReturn(session).anyTimes();
     expect(session.getId()).andReturn(userName + "SESSIONID-123").anyTimes();
-    expect(session.getAttribute("_u")).andReturn(userName).anyTimes();
+    expect(session.getAttribute(SessionImpl.USER)).andReturn(u).anyTimes();
   }
 
 }

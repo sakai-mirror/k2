@@ -17,6 +17,8 @@
  */
 package org.sakaiproject.kernel.api.session;
 
+import org.sakaiproject.kernel.api.user.User;
+
 import javax.servlet.http.HttpSession;
 
 /**
@@ -27,6 +29,7 @@ public interface Session extends HttpSession {
   /**
    * @return
    */
-  String getUserId();
+  User getUser();
+  
 
 }

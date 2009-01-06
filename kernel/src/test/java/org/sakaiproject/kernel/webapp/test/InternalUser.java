@@ -15,43 +15,42 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.api.user;
+package org.sakaiproject.kernel.webapp.test;
 
-import com.google.inject.ImplementedBy;
-import com.google.inject.Singleton;
-
-import org.sakaiproject.kernel.user.UserDirectoryServiceImpl;
+import org.sakaiproject.kernel.api.user.User;
 
 /**
- *
+ * 
  */
-@ImplementedBy(UserDirectoryServiceImpl.class)
-@Singleton
-public interface UserDirectoryService {
+public class InternalUser implements User {
 
   /**
-   * @return
+   * 
    */
-  User getCurrentUser();
+  private static final long serialVersionUID = -4752743234664087359L;
+  private String id;
 
   /**
-   * @param uid
-   * @throws UserNotDefinedException
-   * @return
+   * @param string
    */
-  User getUser(String uid) throws UserNotDefinedException;
+  public InternalUser(String id) {
+    this.id = id;
+  }
 
   /**
-   * @param identifier
-   * @param password
-   * @return
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.user.User#getEid()
    */
-  User authenticate(String identifier, String password);
+  public String getEid() {
+    return id;
+  }
 
   /**
-   * @param identifier
-   * @return
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.user.User#getUuid()
    */
-  User getUserByEid(String identifier) throws UserNotDefinedException;
+  public String getUuid() {
+    return id;
+  }
 
 }

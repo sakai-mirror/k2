@@ -79,7 +79,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService#resolve(org.sakaiproject.kernel.api.session.Session)
    */
   public UserEnvironment resolve(Session currentSession) {
-    String userId = currentSession.getUserId();
+    String userId = currentSession.getUser().getUuid();
     if (cache.containsKey(userId)) {
       UserEnvironment ue = cache.get(userId);
       if (ue != null && !ue.hasExpired()) {

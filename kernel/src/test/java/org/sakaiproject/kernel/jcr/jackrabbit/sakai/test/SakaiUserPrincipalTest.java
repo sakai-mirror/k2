@@ -42,16 +42,16 @@ public class SakaiUserPrincipalTest {
     User user3 = createMock(User.class);
     
     expect(user.getEid()).andReturn("ib236").anyTimes();
-    expect(user.getId()).andReturn("uid:ib236").anyTimes();
+    expect(user.getUuid()).andReturn("uid:ib236").anyTimes();
     expect(user2.getEid()).andReturn("ib236").anyTimes();
-    expect(user2.getId()).andReturn("uid:ib236").anyTimes();
+    expect(user2.getUuid()).andReturn("uid:ib236").anyTimes();
     expect(user3.getEid()).andReturn("ib236-3").anyTimes();
-    expect(user3.getId()).andReturn("uid:ib236-3").anyTimes();
+    expect(user3.getUuid()).andReturn("uid:ib236-3").anyTimes();
     
     replay(user,user2,user3);
-    SakaiUserPrincipalImpl sakaiPrincipal = new SakaiUserPrincipalImpl(user);
-    SakaiUserPrincipalImpl sakaiPrincipal2 = new SakaiUserPrincipalImpl(user2);
-    SakaiUserPrincipalImpl sakaiPrincipal3 = new SakaiUserPrincipalImpl(user3);
+    SakaiUserPrincipalImpl sakaiPrincipal = new SakaiUserPrincipalImpl(user.getUuid());
+    SakaiUserPrincipalImpl sakaiPrincipal2 = new SakaiUserPrincipalImpl(user2.getUuid());
+    SakaiUserPrincipalImpl sakaiPrincipal3 = new SakaiUserPrincipalImpl(user3.getUuid());
     assertTrue(sakaiPrincipal.equals(sakaiPrincipal2));
     assertFalse(sakaiPrincipal.equals(sakaiPrincipal3));
     assertEquals("SakaiUserPrincipal", sakaiPrincipal.toString());

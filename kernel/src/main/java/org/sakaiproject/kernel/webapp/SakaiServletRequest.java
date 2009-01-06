@@ -96,7 +96,7 @@ public class SakaiServletRequest extends HttpServletRequestWrapper {
     if (remoteUser == null || remoteUser.trim().length() == 0) {
       getSession(false);
       if ( session != null ) {
-        remoteUser = session.getUserId();
+        remoteUser = session.getUser().getUuid();
       } else {
         remoteUser = null;
       }

@@ -180,8 +180,10 @@ public class CacheManagerServiceImpl implements CacheManagerService,
     switch (scope) {
     case REQUEST:
       unbindRequest();
+      break;
     case THREAD:
       unbindThread();
+      break;
     }
   }
 

@@ -18,6 +18,7 @@
 package org.sakaiproject.kernel.session;
 
 import org.sakaiproject.kernel.api.session.Session;
+import org.sakaiproject.kernel.api.user.User;
 
 import java.util.Enumeration;
 
@@ -31,7 +32,7 @@ import javax.servlet.http.HttpSessionContext;
 @SuppressWarnings("deprecation")
 public class SessionImpl implements Session {
 
-  public static final String USER_ID = "_u";
+  public static final String USER = "_u";
   private HttpSession baseSession;
 
   /**
@@ -47,9 +48,11 @@ public class SessionImpl implements Session {
    * 
    * @see org.sakaiproject.kernel.api.session.Session#getUserId()
    */
-  public String getUserId() {
-    return (String) getAttribute(USER_ID);
+  public User getUser() {
+    return (User) getAttribute(USER);
   }
+  
+  
 
   /**
    * {@inheritDoc}

@@ -21,21 +21,15 @@
 
 package org.sakaiproject.kernel.api.user;
 
-import org.sakaiproject.kernel.api.user.Evidence;
-
 /**
  * <p>
- * IdPwEvidence is Authetication evidence made up of a user identifier and a password. Note the "id" used here is something the user offers for authentication purposes, and is *not* the user's Sakai user object UUID.
+ * IdPwEvidence is Authentication evidence made up of a user identifier and a
+ * password. Note the "id" used here is something the user offers for
+ * authentication purposes, and is *not* the user's Sakai user object UUID.
  * </p>
  */
-public interface IdPwEvidence extends Evidence
+public interface IdPwPrincipal extends IdPrincipal
 {
-	/**
-	 * Access the user identifier.
-	 * 
-	 * @return The user identifier.
-	 */
-	String getIdentifier();
 
 	/**
 	 * Access the password.

@@ -45,12 +45,15 @@ import org.sakaiproject.kernel.api.authz.SubjectStatement.SubjectType;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
+import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.authz.simple.JcrAccessControlStatementImpl;
 import org.sakaiproject.kernel.authz.simple.JcrSubjectStatement;
 import org.sakaiproject.kernel.authz.simple.SimplePermissionQuery;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
+import org.sakaiproject.kernel.session.SessionImpl;
 import org.sakaiproject.kernel.util.PathUtils;
 import org.sakaiproject.kernel.util.ResourceLoader;
+import org.sakaiproject.kernel.webapp.test.InternalUser;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -260,12 +263,12 @@ public class AuthZServiceTest extends KernelIntegrationBase {
    */
   private void setupRequest(HttpServletRequest request,
       HttpServletResponse response, HttpSession session, String userName) {
-
+    User u = new InternalUser(userName);
     expect(request.getSession()).andReturn(session).anyTimes();
     expect(request.getSession(true)).andReturn(session).anyTimes();
     expect(request.getSession(false)).andReturn(session).anyTimes();
     expect(session.getId()).andReturn(userName+"SESSIONID-123").anyTimes();
-    expect(session.getAttribute("_u")).andReturn(userName).anyTimes();
+    expect(session.getAttribute(SessionImpl.USER)).andReturn(u).anyTimes(); 
   }
 
 }

@@ -19,48 +19,14 @@
  *
  **********************************************************************************/
 
-package org.sakaiproject.kernel.user;
+package org.sakaiproject.kernel.api.user;
 
-import org.sakaiproject.kernel.api.user.AuthenticationException;
 
 /**
  * <p>
- * AuthenticationUnknownException models authetication evidence that the
- * AuthenticationManager doesn't understand how to process.
+ * ExternalTrustedEvidence is Authetication evidence made up of a user
+ * identifier that has been authenticated by a trusted external source.
  * </p>
  */
-public class AuthenticationUnknownException extends AuthenticationException {
-
-  /**
-   * 
-   */
-  private static final long serialVersionUID = -8046090795443123389L;
-
-  /**
-   * 
-   */
-  public AuthenticationUnknownException() {
-  }
-
-  /**
-   * @param arg0
-   */
-  public AuthenticationUnknownException(String arg0) {
-    super(arg0);
-  }
-
-  /**
-   * @param arg0
-   */
-  public AuthenticationUnknownException(Throwable arg0) {
-    super(arg0);
-  }
-
-  /**
-   * @param arg0
-   * @param arg1
-   */
-  public AuthenticationUnknownException(String arg0, Throwable arg1) {
-    super(arg0, arg1);
-  }
+public interface ExternalTrustedPrincipal extends IdPrincipal {
 }

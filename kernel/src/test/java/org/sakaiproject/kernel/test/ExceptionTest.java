@@ -23,7 +23,6 @@ import org.sakaiproject.kernel.api.authz.PermissionDeniedException;
 import org.sakaiproject.kernel.api.authz.UnauthorizedException;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.user.AuthenticationException;
-import org.sakaiproject.kernel.api.user.UserNotDefinedException;
 import org.sakaiproject.kernel.internal.api.KernelInitializtionException;
 import org.sakaiproject.kernel.jcr.api.internal.RepositoryStartupException;
 
@@ -62,16 +61,6 @@ public class ExceptionTest {
     AuthenticationException e2 = new AuthenticationException(e);
     @SuppressWarnings("unused")
     AuthenticationException e3 = new AuthenticationException("Startup Test",e);
-  }
-  @Test
-  public void testUserNotDefinedException() {
-    UserNotDefinedException e = new UserNotDefinedException();
-    @SuppressWarnings("unused")
-    UserNotDefinedException e1 = new UserNotDefinedException("Startup Test");
-    @SuppressWarnings("unused")
-    UserNotDefinedException e2 = new UserNotDefinedException(e);
-    @SuppressWarnings("unused")
-    UserNotDefinedException e3 = new UserNotDefinedException("Startup Test",e);
   }
   @Test
   public void testJCRNodeFactoryServiceException() {

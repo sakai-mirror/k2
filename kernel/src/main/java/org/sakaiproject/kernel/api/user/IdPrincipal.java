@@ -17,42 +17,17 @@
  */
 package org.sakaiproject.kernel.api.user;
 
+import java.security.Principal;
+
 /**
- *
+ * 
  */
-public class UserNotDefinedException extends Exception {
-
+public interface IdPrincipal extends Principal {
   /**
+   * Access the user identifier.
    * 
+   * @return The user identifier.
    */
-  private static final long serialVersionUID = -5791291739859496274L;
-
-  /**
-   * 
-   */
-  public UserNotDefinedException() {
-  }
-
-  /**
-   * @param message
-   */
-  public UserNotDefinedException(String message) {
-    super(message);
-  }
-
-  /**
-   * @param cause
-   */
-  public UserNotDefinedException(Throwable cause) {
-    super(cause);
-  }
-
-  /**
-   * @param message
-   * @param cause
-   */
-  public UserNotDefinedException(String message, Throwable cause) {
-    super(message, cause);
-  }
+  String getIdentifier();
 
 }

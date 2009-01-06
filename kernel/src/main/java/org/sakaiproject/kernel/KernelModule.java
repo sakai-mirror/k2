@@ -35,6 +35,7 @@ import org.sakaiproject.kernel.api.authz.ReferenceResolverService;
 import org.sakaiproject.kernel.api.jcr.EventRegistration;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
+import org.sakaiproject.kernel.api.user.AuthenticationResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.authz.simple.JcrReferenceResolverService;
 import org.sakaiproject.kernel.authz.simple.NullUserEnvironment;
@@ -50,6 +51,8 @@ import org.sakaiproject.kernel.serialization.json.BeanJsonLibConfig;
 import org.sakaiproject.kernel.serialization.json.BeanJsonLibConverter;
 import org.sakaiproject.kernel.serialization.json.BeanProcessor;
 import org.sakaiproject.kernel.serialization.json.ValueProcessor;
+import org.sakaiproject.kernel.user.AuthenticationResolverServiceImpl;
+import org.sakaiproject.kernel.user.NullAuthenticationResolverServiceImpl;
 import org.sakaiproject.kernel.util.ResourceLoader;
 
 import java.io.IOException;
@@ -246,7 +249,7 @@ public class KernelModule extends AbstractModule {
     TypeLiteral<List<JcrContentListener>> contentListeners = new TypeLiteral<List<JcrContentListener>>() {
     };
     bind(contentListeners).toProvider(JcrContentListenerProviders.class);
-    
+
     TypeLiteral<List<ValueProcessor>> valueProcessors = new TypeLiteral<List<ValueProcessor>>() {
     };
     bind(valueProcessors).toProvider(ValueProcessorsProvider.class);
@@ -257,10 +260,16 @@ public class KernelModule extends AbstractModule {
 
     TypeLiteral<Map<String, Object>> jsonClassMap = new TypeLiteral<Map<String, Object>>() {
     };
-    bind(jsonClassMap).annotatedWith(Names.named(BeanJsonLibConfig.JSON_CLASSMAP)).toProvider(JsonClassMapProvider.class);
+    bind(jsonClassMap).annotatedWith(
+        Names.named(BeanJsonLibConfig.JSON_CLASSMAP)).toProvider(
+        JsonClassMapProvider.class);
 
     TypeLiteral<List<Morpher>> jsonMorpherList = new TypeLiteral<List<Morpher>>() {
     };
     bind(jsonMorpherList).toProvider(JsonMorpherListProvider.class);
+
+    bind(AuthenticationResolverService.class).annotatedWith(
+        Names.named(AuthenticationResolverServiceImpl.RESOLVER_CHAIN_HEAD)).to(
+        NullAuthenticationResolverServiceImpl.class);
   }
 }

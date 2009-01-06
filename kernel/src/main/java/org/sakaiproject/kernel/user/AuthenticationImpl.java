@@ -22,47 +22,45 @@
 package org.sakaiproject.kernel.user;
 
 import org.sakaiproject.kernel.api.user.Authentication;
+import org.sakaiproject.kernel.api.user.User;
 
 /**
  * <p>
- * Authentication is a utility class that implements the Authentication interface.
+ * Authentication is a utility class that implements the Authentication
+ * interface.
  * </p>
  */
-public class AuthenticationImpl implements Authentication
-{
-	/** The UUID identifier string. */
-	protected String m_uid = null;
+public class AuthenticationImpl implements Authentication {
+  /** The UUID identifier string. */
+  protected String m_uid = null;
 
-	/** The enterprise identifier string. */
-	protected String m_eid = null;
+  /** The enterprise identifier string. */
+  protected String m_eid = null;
 
-	/**
-	 * Construct, with uid and eid
-	 * 
-	 * @param uid
-	 *        The UUID internal end user identifier string.
-	 * @param eid
-	 *        The enterprise end user identifier string.
-	 */
-	public AuthenticationImpl(String uid, String eid)
-	{
-		m_uid = uid;
-		m_eid = eid;
-	}
+  /**
+   * Construct, with uid and eid
+   * 
+   * @param uid
+   *          The UUID internal end user identifier string.
+   * @param eid
+   *          The enterprise end user identifier string.
+   */
+  public AuthenticationImpl(User u) {
+    m_uid = u.getUuid();
+    m_eid = u.getEid();
+  }
 
-	/**
-	 * @inheritDoc
-	 */
-	public String getUid()
-	{
-		return m_uid;
-	}
+  /**
+   * @inheritDoc
+   */
+  public String getUid() {
+    return m_uid;
+  }
 
-	/**
-	 * @inheritDoc
-	 */
-	public String getEid()
-	{
-		return m_eid;
-	}
+  /**
+   * @inheritDoc
+   */
+  public String getEid() {
+    return m_eid;
+  }
 }

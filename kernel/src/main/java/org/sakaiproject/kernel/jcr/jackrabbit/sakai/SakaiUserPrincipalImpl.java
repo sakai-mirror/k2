@@ -21,7 +21,6 @@
 
 package org.sakaiproject.kernel.jcr.jackrabbit.sakai;
 
-import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.jcr.api.internal.SakaiUserPrincipal;
 
 public class SakaiUserPrincipalImpl implements SakaiUserPrincipal {
@@ -35,8 +34,8 @@ public class SakaiUserPrincipalImpl implements SakaiUserPrincipal {
   /**
    * Creates a <code>SystemPrincipal</code>.
    */
-  public SakaiUserPrincipalImpl(User user) {
-    userId = user.getId();
+  public SakaiUserPrincipalImpl(String userId) {
+    this.userId = userId;
   }
 
   @Override
