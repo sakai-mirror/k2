@@ -15,11 +15,11 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.user;
+package org.sakaiproject.kernel.registry;
 
-import org.sakaiproject.kernel.api.user.Provider;
-import org.sakaiproject.kernel.api.user.Registry;
-import org.sakaiproject.kernel.api.user.RegistryService;
+import org.sakaiproject.kernel.api.Provider;
+import org.sakaiproject.kernel.api.Registry;
+import org.sakaiproject.kernel.api.RegistryService;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

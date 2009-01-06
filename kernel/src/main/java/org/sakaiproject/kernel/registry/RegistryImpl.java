@@ -15,10 +15,10 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.user;
+package org.sakaiproject.kernel.registry;
 
-import org.sakaiproject.kernel.api.user.Provider;
-import org.sakaiproject.kernel.api.user.Registry;
+import org.sakaiproject.kernel.api.Provider;
+import org.sakaiproject.kernel.api.Registry;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,7 +42,7 @@ public class RegistryImpl<T extends Provider> implements
 
   /**
    * {@inheritDoc}
-   * @see org.sakaiproject.kernel.api.user.Registry#add(java.lang.Object)
+   * @see org.sakaiproject.kernel.api.Registry#add(java.lang.Object)
    */
   public synchronized void add(T provider) {
     List<T> newList = new ArrayList<T>();
@@ -54,7 +54,7 @@ public class RegistryImpl<T extends Provider> implements
 
   /**
    * {@inheritDoc}
-   * @see org.sakaiproject.kernel.api.user.Registry#remove(java.lang.Object)
+   * @see org.sakaiproject.kernel.api.Registry#remove(java.lang.Object)
    */
   public synchronized void remove(T provider) {
     List<T> newList = new ArrayList<T>();

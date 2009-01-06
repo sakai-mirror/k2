@@ -15,24 +15,30 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.api.user;
+package org.sakaiproject.kernel.api;
 
-import com.google.inject.ImplementedBy;
-import com.google.inject.Singleton;
-
-import org.sakaiproject.kernel.user.RegistryServiceImpl;
+import java.util.List;
 
 /**
- * The registry service manages registries that are used to register providers
+ * A registry for adding providers.
  */
-@ImplementedBy(RegistryServiceImpl.class)
-@Singleton
-public interface RegistryService {
+public interface Registry<T> {
+
   /**
-   * @param type
-   *          the name of the registry to retrieve, normally taken from the
-   *          service in question.
-   * @return the registry of providers used for that service.
+   * @param provider
+   *          the provider to be added.
    */
-  <T extends Provider> Registry<T> getRegistry(String type);
+  void add(T provider);
+
+  /**
+   * @param provider
+   *          the provider to be removed, if it exists.
+   */
+  void remove(T provider);
+
+  /**
+   * @return
+   */
+  List<T> get();
+
 }

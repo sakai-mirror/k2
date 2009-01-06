@@ -21,8 +21,8 @@ import com.google.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.sakaiproject.kernel.api.user.Registry;
-import org.sakaiproject.kernel.api.user.RegistryService;
+import org.sakaiproject.kernel.api.Registry;
+import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.user.UserResolverProvider;
 import org.sakaiproject.kernel.api.user.UserResolverService;

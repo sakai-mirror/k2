@@ -15,30 +15,15 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.api.user;
-
-import java.util.List;
+package org.sakaiproject.kernel.api;
 
 /**
- * A registry for adding providers.
+ * A provider is something that has a priority to provide, what it provides is abstract.
  */
-public interface Registry<T> {
-
+public interface Provider  {
   /**
-   * @param provider
-   *          the provider to be added.
+   * @return the priority of the provider.
    */
-  void add(T provider);
-
-  /**
-   * @param provider
-   *          the provider to be removed, if it exists.
-   */
-  void remove(T provider);
-
-  /**
-   * @return
-   */
-  List<T> get();
+  int getPriority();
 
 }

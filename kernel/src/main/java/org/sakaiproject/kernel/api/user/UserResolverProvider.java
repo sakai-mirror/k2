@@ -17,6 +17,8 @@
  */
 package org.sakaiproject.kernel.api.user;
 
+import org.sakaiproject.kernel.api.Provider;
+
 /**
  * A provider of resolution services.
  */

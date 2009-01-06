@@ -19,11 +19,11 @@ package org.sakaiproject.kernel.user;
 
 import com.google.inject.Inject;
 
+import org.sakaiproject.kernel.api.Registry;
+import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.user.Authentication;
 import org.sakaiproject.kernel.api.user.AuthenticationResolverProvider;
 import org.sakaiproject.kernel.api.user.AuthenticationResolverService;
-import org.sakaiproject.kernel.api.user.Registry;
-import org.sakaiproject.kernel.api.user.RegistryService;
 
 import java.security.Principal;
 import java.util.List;
