@@ -29,6 +29,7 @@ import org.sakaiproject.kernel.api.authz.UnauthorizedException;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
+import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.webapp.SakaiServletRequest;
 import org.sakaiproject.kernel.webapp.SakaiServletResponse;
 
@@ -55,6 +56,8 @@ public class SakaiRequestFilter implements Filter {
 
   private static final String DEFAULT_COOKIE_NAME = "JSESSIONID";
 
+  private static final String NO_SESSION = "no-session";
+
   private boolean timeOn = false;
 
   private SessionManagerService sessionManagerService;
@@ -62,6 +65,10 @@ public class SakaiRequestFilter implements Filter {
   private CacheManagerService cacheManagerService;
 
   private String cookieName;
+
+  private UserResolverService userResolverService;
+
+  private boolean noSession = false;
 
   /**
    * {@inheritDoc}
@@ -78,8 +85,10 @@ public class SakaiRequestFilter implements Filter {
     sessionManagerService = kernelManager
         .getService(SessionManagerService.class);
     cacheManagerService = kernelManager.getService(CacheManagerService.class);
+    userResolverService = kernelManager.getService(UserResolverService.class);
     LOG.info(" SessionManagerService " + sessionManagerService);
     LOG.info(" Cache Manager Service " + cacheManagerService);
+    noSession  = "true".equals(config.getInitParameter(NO_SESSION));
   }
 
   /**
@@ -99,7 +108,10 @@ public class SakaiRequestFilter implements Filter {
    */
   public void doFilter(ServletRequest request, ServletResponse response,
       FilterChain chain) throws IOException, ServletException {
-    SakaiServletRequest wrequest = new SakaiServletRequest(request);
+    if ( noSession ) {
+      request.setAttribute(SakaiServletRequest.NO_SESSION_USE, "true");
+    }
+    SakaiServletRequest wrequest = new SakaiServletRequest(request,userResolverService);
     SakaiServletResponse wresponse = new SakaiServletResponse(response,
         cookieName);
     sessionManagerService.bindRequest(wrequest);

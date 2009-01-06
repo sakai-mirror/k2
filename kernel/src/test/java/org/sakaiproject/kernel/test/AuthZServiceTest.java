@@ -46,6 +46,7 @@ import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.user.User;
+import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.authz.simple.JcrAccessControlStatementImpl;
 import org.sakaiproject.kernel.authz.simple.JcrSubjectStatement;
 import org.sakaiproject.kernel.authz.simple.SimplePermissionQuery;
@@ -153,6 +154,7 @@ public class AuthZServiceTest extends KernelIntegrationBase {
       ConstraintViolationException, InvalidItemStateException,
       ReferentialIntegrityException, VersionException, LockException,
       NoSuchNodeTypeException, RepositoryException {
+    
     LOG
         .info("Starting Test ==================================================== testCheck");
     KernelManager km = new KernelManager();
@@ -162,6 +164,9 @@ public class AuthZServiceTest extends KernelIntegrationBase {
         .getService(ReferenceResolverService.class);
     PermissionQueryService pqs = km.getService(PermissionQueryService.class);
     PermissionQuery pq = pqs.getPermission("GET");
+    
+    UserResolverService userResolverService = km.getService(UserResolverService.class);
+
 
     HttpServletRequest request = EasyMock.createMock(HttpServletRequest.class);
     HttpServletResponse response = EasyMock
@@ -170,7 +175,7 @@ public class AuthZServiceTest extends KernelIntegrationBase {
 
     setupRequest(request, response, session, "ib236");
     replay(request, response, session);
-    startRequest(request, response, "JSESSION");
+    startRequest(request, response, "JSESSION", userResolverService);
 
     try {
       authzResolver.check("/x/y/z", pq);
@@ -187,7 +192,7 @@ public class AuthZServiceTest extends KernelIntegrationBase {
 
     setupRequest(request, response, session, "admin");
     replay(request, response, session);
-    startRequest(request, response, "JSESSION");
+    startRequest(request, response, "JSESSION",userResolverService);
 
     JCRNodeFactoryService jcrNodeFactory = km
         .getService(JCRNodeFactoryService.class);
@@ -229,6 +234,8 @@ public class AuthZServiceTest extends KernelIntegrationBase {
     PermissionQueryService pqs = km.getService(PermissionQueryService.class);
     PermissionQuery pq = pqs.getPermission("GET");
 
+    UserResolverService userResolverService = km.getService(UserResolverService.class);
+
     HttpServletRequest request = EasyMock.createMock(HttpServletRequest.class);
     HttpServletResponse response = EasyMock
       .createMock(HttpServletResponse.class);
@@ -236,7 +243,7 @@ public class AuthZServiceTest extends KernelIntegrationBase {
 
     setupRequest(request,response,session,"ib236-testRequestGrant");
     replay(request, response, session);
-    startRequest(request, response, "JSESSION");
+    startRequest(request, response, "JSESSION", userResolverService);
 
     authzResolver.setRequestGrant("Testing Request Grant");
     // Though the AuthZ doesn't exist it should be granted
@@ -269,6 +276,8 @@ public class AuthZServiceTest extends KernelIntegrationBase {
     expect(request.getSession(false)).andReturn(session).anyTimes();
     expect(session.getId()).andReturn(userName+"SESSIONID-123").anyTimes();
     expect(session.getAttribute(SessionImpl.USER)).andReturn(u).anyTimes(); 
+    expect(request.getAttribute("_uuid")).andReturn(null).anyTimes();
+    expect(request.getAttribute("_no_session")).andReturn(null).anyTimes();
   }
 
 }

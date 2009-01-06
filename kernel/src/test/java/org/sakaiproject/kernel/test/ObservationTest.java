@@ -44,6 +44,7 @@ import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.user.User;
+import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
@@ -161,6 +162,8 @@ public class ObservationTest extends KernelIntegrationBase {
     assertNotNull(userEnvironmentResolverService);
     SessionManagerService sessionManagerService = km
         .getService(SessionManagerService.class);
+    UserResolverService userResolverService = km.getService(UserResolverService.class);
+
     assertNotNull(sessionManagerService);
     
     HttpServletRequest request = EasyMock.createMock(HttpServletRequest.class);
@@ -170,7 +173,7 @@ public class ObservationTest extends KernelIntegrationBase {
 
     setupRequest(request, response, session, "ib236");
     replay(request, response, session);
-    startRequest(request, response, "JSESSION");
+    startRequest(request, response, "JSESSION",userResolverService);
 
     UserEnvironment userEnvironment = userEnvironmentResolverService
         .resolve(sessionManagerService.getCurrentSession());
@@ -206,7 +209,7 @@ public class ObservationTest extends KernelIntegrationBase {
 
     setupRequest(request, response, session, "admin");
     replay(request, response, session);
-    startRequest(request, response, "JSESSION");
+    startRequest(request, response, "JSESSION",userResolverService);
 
     userEnvironment = userEnvironmentResolverService
         .resolve(sessionManagerService.getCurrentSession());
@@ -239,6 +242,8 @@ public class ObservationTest extends KernelIntegrationBase {
     expect(request.getSession(false)).andReturn(session).anyTimes();
     expect(session.getId()).andReturn(userName + "SESSIONID-123").anyTimes();
     expect(session.getAttribute(SessionImpl.USER)).andReturn(u).anyTimes();
+    expect(request.getAttribute("_uuid")).andReturn(null).anyTimes();
+    expect(request.getAttribute("_no_session")).andReturn(null).anyTimes();
   }
 
 }

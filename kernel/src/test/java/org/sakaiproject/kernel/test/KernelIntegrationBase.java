@@ -29,6 +29,7 @@ import org.sakaiproject.kernel.api.ShutdownService;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
+import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.component.KernelLifecycle;
 import org.sakaiproject.kernel.util.FileUtil;
 import org.sakaiproject.kernel.webapp.SakaiServletRequest;
@@ -103,8 +104,8 @@ public class KernelIntegrationBase {
    * @return
    */
   protected HttpServletResponse startRequest(HttpServletRequest request,
-      HttpServletResponse response, String cookieName) {
-    SakaiServletRequest wrequest = new SakaiServletRequest(request);
+      HttpServletResponse response, String cookieName, UserResolverService userResolverService) {
+    SakaiServletRequest wrequest = new SakaiServletRequest(request,userResolverService);
     SakaiServletResponse wresponse = new SakaiServletResponse(response,
         cookieName);
     SessionManagerService sessionManagerService = kernelManager

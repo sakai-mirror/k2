@@ -66,6 +66,7 @@ public class RequestFilterTest extends KernelIntegrationBase {
     EasyMock.expect(request.getMethod()).andReturn("GET");
     EasyMock.expect(request.getPathInfo()).andReturn("/sdata/f");
     EasyMock.expect(request.getRemoteUser()).andReturn("ib236").anyTimes();
+    EasyMock.expect(filterConfig.getInitParameter("no-session")).andReturn(null).anyTimes();
     chain.doFilter((ServletRequest)EasyMock.anyObject(), (ServletResponse)EasyMock.anyObject());
     EasyMock.replay(filterConfig,request,response,chain);
     
@@ -90,6 +91,7 @@ public class RequestFilterTest extends KernelIntegrationBase {
     EasyMock.expect(filterConfig.getInitParameter("cookie-name")).andReturn(null);
     EasyMock.expect(filterConfig.getInitParameter("time-requests")).andReturn(null);
     EasyMock.expect(request.getRemoteUser()).andReturn("ib236").anyTimes();
+    EasyMock.expect(filterConfig.getInitParameter("no-session")).andReturn(null).anyTimes();
     chain.doFilter((ServletRequest)EasyMock.anyObject(), (ServletResponse)EasyMock.anyObject());
     EasyMock.replay(filterConfig,request,response,chain);
     

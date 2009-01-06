@@ -74,4 +74,9 @@ public interface UserEnvironment extends Sealable {
    */
   UserSubjects getUserSubjects();
 
+  /**
+   * @return
+   */
+  String[] getSubjects();
+
 }

@@ -18,6 +18,9 @@
 package org.sakaiproject.kernel.webapp;
 
 import org.sakaiproject.kernel.api.session.Session;
+import org.sakaiproject.kernel.api.user.Authentication;
+import org.sakaiproject.kernel.api.user.User;
+import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.session.SessionImpl;
 
 import javax.servlet.ServletRequest;
@@ -30,14 +33,18 @@ import javax.servlet.http.HttpSession;
  */
 public class SakaiServletRequest extends HttpServletRequestWrapper {
 
+  public static final String NO_SESSION_USE = "_no_session";
   private Session session;
+  private UserResolverService userResolverService;
 
   /**
    * @param request
    * @param sessionManagerService
    */
-  public SakaiServletRequest(ServletRequest request) {
+  public SakaiServletRequest(ServletRequest request,
+      UserResolverService userResolverService) {
     super((HttpServletRequest) request);
+    this.userResolverService = userResolverService;
   }
 
   /**
@@ -47,10 +54,13 @@ public class SakaiServletRequest extends HttpServletRequestWrapper {
    */
   @Override
   public HttpSession getSession() {
-    if (session == null) {
-      HttpSession rsession = super.getSession();
-      if (rsession != null) {
-        session = new SessionImpl(rsession);
+    if (!"true".equals(super.getAttribute(NO_SESSION_USE))) {
+      if (session == null) {
+        HttpSession rsession = super.getSession();
+        if (rsession != null) {
+          session = new SessionImpl(rsession, (Authentication) super
+              .getAttribute(Authentication.REQUESTTOKEN), userResolverService);
+        }
       }
     }
     return session;
@@ -63,10 +73,13 @@ public class SakaiServletRequest extends HttpServletRequestWrapper {
    */
   @Override
   public HttpSession getSession(boolean create) {
-    if (session == null) {
-      HttpSession rsession = super.getSession(create);
-      if (rsession != null) {
-        session = new SessionImpl(rsession);
+    if (!"true".equals(super.getAttribute(NO_SESSION_USE))) {
+      if (session == null) {
+        HttpSession rsession = super.getSession(create);
+        if (rsession != null) {
+          session = new SessionImpl(rsession, (Authentication) super
+              .getAttribute(Authentication.REQUESTTOKEN), userResolverService);
+        }
       }
     }
     return session;
@@ -76,10 +89,13 @@ public class SakaiServletRequest extends HttpServletRequestWrapper {
    * @return
    */
   public Session getSakaiSession() {
-    if (session == null) {
-      HttpSession rsession = super.getSession(true);
-      if (rsession != null) {
-        session = new SessionImpl(rsession);
+    if (!"true".equals(super.getAttribute(NO_SESSION_USE))) {
+      if (session == null) {
+        HttpSession rsession = super.getSession(true);
+        if (rsession != null) {
+          session = new SessionImpl(rsession, (Authentication) super
+              .getAttribute(Authentication.REQUESTTOKEN), userResolverService);
+        }
       }
     }
     return session;
@@ -95,10 +111,18 @@ public class SakaiServletRequest extends HttpServletRequestWrapper {
     String remoteUser = super.getRemoteUser();
     if (remoteUser == null || remoteUser.trim().length() == 0) {
       getSession(false);
-      if ( session != null ) {
-        remoteUser = session.getUser().getUuid();
-      } else {
-        remoteUser = null;
+      if (session != null) {
+        User u = session.getUser();
+        if (u != null) {
+          remoteUser = u.getUuid();
+        }
+      }
+    }
+    if (remoteUser == null || remoteUser.trim().length() == 0) {
+      Authentication a = (Authentication) super
+          .getAttribute(Authentication.REQUESTTOKEN);
+      if (a != null) {
+        remoteUser = a.getUid();
       }
     }
     return remoteUser;

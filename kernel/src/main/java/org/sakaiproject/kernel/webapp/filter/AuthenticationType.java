@@ -15,18 +15,11 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.api.user;
+package org.sakaiproject.kernel.webapp.filter;
 
 /**
- * An object to contain an authenticated user and its internal UUID
+ * 
  */
-public interface Authentication {
-
-  public static final String REQUESTTOKEN = "_uuid";
-
-  /**
-   * @return the internal UUid of the user.
-   */
-  String getUid();
-
+public enum AuthenticationType {
+  FORM(), BASIC(), TRUSTED();
 }

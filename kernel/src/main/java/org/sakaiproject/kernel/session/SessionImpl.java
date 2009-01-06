@@ -18,7 +18,9 @@
 package org.sakaiproject.kernel.session;
 
 import org.sakaiproject.kernel.api.session.Session;
+import org.sakaiproject.kernel.api.user.Authentication;
 import org.sakaiproject.kernel.api.user.User;
+import org.sakaiproject.kernel.api.user.UserResolverService;
 
 import java.util.Enumeration;
 
@@ -27,20 +29,34 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
 
 /**
- * An implementation of the Session, where the user is recoreded as an attribute.
+ * An implementation of the Session, where the user is recoreded as an
+ * attribute.
  */
 @SuppressWarnings("deprecation")
 public class SessionImpl implements Session {
 
+  /**
+   * The attribute name of the resolved user object
+   */
   public static final String USER = "_u";
+  /**
+   * The attribute name of the unresolved internal user id, from the
+   * authentication object.
+   */
+  private static final String UNRESOLVED_UID = "_uu";
   private HttpSession baseSession;
+  private UserResolverService userResolverService;
 
   /**
    * @param httpRequest
    * @param rsession
    */
-  public SessionImpl(HttpSession baseSession) {
+  public SessionImpl(HttpSession baseSession, Authentication authentication, UserResolverService userResolverService) {
+    this.userResolverService = userResolverService;
     this.baseSession = baseSession;
+    if (authentication != null) {
+      baseSession.setAttribute(UNRESOLVED_UID, authentication.getUid());
+    }
   }
 
   /**
@@ -49,12 +65,16 @@ public class SessionImpl implements Session {
    * @see org.sakaiproject.kernel.api.session.Session#getUserId()
    */
   public User getUser() {
-    return (User) getAttribute(USER);
+    User user = (User) getAttribute(USER);
+    if (user == null) {
+      String uid = (String) getAttribute(UNRESOLVED_UID);
+      user = userResolverService.resolve(uid);
+      if (user != null) {
+        baseSession.setAttribute(USER, user);
+      }
+    }
+    return user;
   }
-  
-  
-  
-  
 
   /**
    * {@inheritDoc}
@@ -201,6 +221,10 @@ public class SessionImpl implements Session {
    *      java.lang.Object)
    */
   public void setAttribute(String name, Object value) {
+    if (USER.equals(name) || UNRESOLVED_UID.equals(name)) {
+      throw new Error(
+          "Attempt to set the User illeally, the code that performed this should be investigated and removed immediately from your JVM");
+    }
     baseSession.setAttribute(name, value);
   }
 
