@@ -21,10 +21,7 @@
 
 package org.sakaiproject.kernel.api.user;
 
-import com.google.inject.ImplementedBy;
 import com.google.inject.Singleton;
-
-import org.sakaiproject.kernel.user.AuthenticationResolverServiceImpl;
 
 import java.security.Principal;
 
@@ -33,18 +30,23 @@ import java.security.Principal;
  * AuthenticationManager provides authentication of end-users.
  * </p>
  */
-@ImplementedBy(AuthenticationResolverServiceImpl.class)
 @Singleton
-public interface AuthenticationResolverService
-{
+public interface AuthenticationResolverService {
+
   /**
-   * Attempt to authenticate a user by the given evidence. Success produces the authenticated user id. Failure throws an exception.
+   * The name of the registry used for this type of service.
+   */
+  public static final String PROVIDER_REGISTRY = "authentication.provider.registry";
+
+  /**
+   * Attempt to authenticate a user by the given evidence. Success produces the
+   * authenticated user id. Failure throws an exception.
    * 
    * @param principal
-   *        The collected evidence to authenticate.
+   *          The collected evidence to authenticate.
    * @return The authentication information if authenticated.
    * @throws SecurityException
-   *         if the evidence is not understood or not valid.
+   *           if the evidence is not understood or not valid.
    */
   Authentication authenticate(Principal principal) throws SecurityException;
 }

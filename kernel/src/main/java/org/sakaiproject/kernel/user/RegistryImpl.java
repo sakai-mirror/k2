@@ -18,7 +18,7 @@
 package org.sakaiproject.kernel.user;
 
 import org.sakaiproject.kernel.api.user.Provider;
-import org.sakaiproject.kernel.api.user.ProviderRegistry;
+import org.sakaiproject.kernel.api.user.Registry;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,10 +28,10 @@ import java.util.List;
 /**
  * 
  */
-public abstract class AbstractProviderRegistry<T extends Provider> implements
-    ProviderRegistry<T> {
+public class RegistryImpl<T extends Provider> implements
+    Registry<T> {
   
-  
+  List<T> providers = new ArrayList<T>();
 
   private Comparator<? super T> comparitor = new Comparator<T>() {
     public int compare(T o1, T o2) {
@@ -42,39 +42,34 @@ public abstract class AbstractProviderRegistry<T extends Provider> implements
 
   /**
    * {@inheritDoc}
-   * 
-   * @see org.sakaiproject.kernel.api.user.ProviderRegistry#addProvider(java.lang.Object)
+   * @see org.sakaiproject.kernel.api.user.Registry#add(java.lang.Object)
    */
-  public synchronized void addProvider(T provider) {
+  public synchronized void add(T provider) {
     List<T> newList = new ArrayList<T>();
-    newList.addAll(getProviders());
+    newList.addAll(providers);
     newList.add(provider);
     Collections.sort(newList, comparitor);
-    setProviders(newList);
+    providers = newList;
   }
 
   /**
    * {@inheritDoc}
-   * 
-   * @see org.sakaiproject.kernel.api.user.ProviderRegistry#removeProvider(java.lang.Object)
+   * @see org.sakaiproject.kernel.api.user.Registry#remove(java.lang.Object)
    */
-  public synchronized void removeProvider(T provider) {
+  public synchronized void remove(T provider) {
     List<T> newList = new ArrayList<T>();
-    newList.addAll(getProviders());
+    newList.addAll(providers);
     newList.remove(provider);
     Collections.sort(newList, comparitor);
-    setProviders(newList);
+    providers = newList;
   }
-
+  
   /**
-   * @return the list of providers
+   * @return the providers
    */
-  protected abstract List<T> getProviders();
-
-  /**
-   * @param providers the list of providers
-   */
-  protected abstract void setProviders(List<T> providers);
+  public List<T> get() {
+    return providers;
+  }
 
 
 }

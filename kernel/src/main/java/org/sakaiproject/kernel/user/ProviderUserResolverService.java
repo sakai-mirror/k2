@@ -17,8 +17,12 @@
  */
 package org.sakaiproject.kernel.user;
 
+import com.google.inject.Inject;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.api.user.Registry;
+import org.sakaiproject.kernel.api.user.RegistryService;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.user.UserResolverProvider;
 import org.sakaiproject.kernel.api.user.UserResolverService;
@@ -29,38 +33,36 @@ import java.util.List;
  * This class acts as a container for authentication mechanisms that are
  * registered from elsewhere
  */
-public class ProviderUserResolverService extends
-    AbstractProviderRegistry<UserResolverProvider> implements
+public class ProviderUserResolverService implements
     UserResolverService {
 
   private static final Log LOG = LogFactory.getLog(ProviderUserResolverService.class);
-  private List<UserResolverProvider> userResolverProviders;
-
-
-  /**
-   * {@inheritDoc}
-   * @see org.sakaiproject.kernel.user.AbstractProviderRegistry#getProviders()
-   */
-  @Override
-  protected List<UserResolverProvider> getProviders() {
-    return userResolverProviders;
-  }
+ 
+  private UserResolverService nullService;
+  private Registry<UserResolverProvider> registry;
 
   /**
-   * {@inheritDoc}
-   * @see org.sakaiproject.kernel.user.AbstractProviderRegistry#setProviders(java.util.List)
+   * 
    */
-  @Override
-  protected void setProviders(List<UserResolverProvider> providers) {
-    userResolverProviders = providers;
-    
+  @Inject
+  public ProviderUserResolverService(
+      NullUserResolverServiceImpl nullService,
+      RegistryService providerService) {
+    this.nullService = nullService;
+    this.registry = providerService
+        .getRegistry(PROVIDER_REGISTRY);
   }
+
 
   /**
    * {@inheritDoc}
    * @see org.sakaiproject.kernel.api.user.UserResolverService#resolve(java.lang.String)
    */
   public User resolve(String eid) {
+    List<UserResolverProvider> userResolverProviders = registry.get();
+    if ( userResolverProviders.size() == 0 ) {
+      return nullService.resolve(eid);
+    }
     StringBuilder messages = new StringBuilder();
     for (UserResolverProvider userResolver : userResolverProviders) {
       try {

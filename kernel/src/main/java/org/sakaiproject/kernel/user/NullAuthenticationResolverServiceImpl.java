@@ -18,6 +18,7 @@
 package org.sakaiproject.kernel.user;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,6 +34,7 @@ import java.security.Principal;
  * A Null implementation of the AuthenticationResolverService, that
  * authenticates everything. We may remove this in the near future.
  */
+@Singleton
 public class NullAuthenticationResolverServiceImpl implements
     AuthenticationResolverService {
 

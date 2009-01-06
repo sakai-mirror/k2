@@ -17,9 +17,13 @@
  */
 package org.sakaiproject.kernel.user;
 
+import com.google.inject.Inject;
+
 import org.sakaiproject.kernel.api.user.Authentication;
 import org.sakaiproject.kernel.api.user.AuthenticationResolverProvider;
 import org.sakaiproject.kernel.api.user.AuthenticationResolverService;
+import org.sakaiproject.kernel.api.user.Registry;
+import org.sakaiproject.kernel.api.user.RegistryService;
 
 import java.security.Principal;
 import java.util.List;
@@ -28,11 +32,23 @@ import java.util.List;
  * This class acts as a container for authentication mechanisms that are
  * registered from elsewhere
  */
-public class ProviderAuthenticationResolverService extends
-    AbstractProviderRegistry<AuthenticationResolverProvider> implements
+public class ProviderAuthenticationResolverService implements
     AuthenticationResolverService {
 
-  private List<AuthenticationResolverProvider> authenticationResolverProviders;
+  private NullAuthenticationResolverServiceImpl nullService;
+  private Registry<AuthenticationResolverProvider> registry;
+
+  /**
+   * 
+   */
+  @Inject
+  public ProviderAuthenticationResolverService(
+      NullAuthenticationResolverServiceImpl nullService,
+      RegistryService providerService) {
+    this.nullService = nullService;
+    this.registry = providerService
+        .getRegistry(PROVIDER_REGISTRY);
+  }
 
   /**
    * {@inheritDoc}
@@ -41,8 +57,12 @@ public class ProviderAuthenticationResolverService extends
    */
   public Authentication authenticate(Principal principal)
       throws SecurityException {
+    List<AuthenticationResolverProvider> providers = registry.get();
+    if (providers.size() == 0) {
+      return nullService.authenticate(principal);
+    }
     StringBuilder messages = new StringBuilder();
-    for (AuthenticationResolverProvider authN : authenticationResolverProviders) {
+    for (AuthenticationResolverProvider authN : providers) {
       try {
         return authN.authenticate(principal);
       } catch (SecurityException se) {
@@ -54,25 +74,6 @@ public class ProviderAuthenticationResolverService extends
       }
     }
     throw new SecurityException(messages.toString());
-  }
-
-  /**
-   * {@inheritDoc}
-   * @see org.sakaiproject.kernel.user.AbstractProviderRegistry#getProviders()
-   */
-  @Override
-  protected List<AuthenticationResolverProvider> getProviders() {
-    return authenticationResolverProviders;
-  }
-
-  /**
-   * {@inheritDoc}
-   * @see org.sakaiproject.kernel.user.AbstractProviderRegistry#setProviders(java.util.List)
-   */
-  @Override
-  protected void setProviders(List<AuthenticationResolverProvider> providers) {
-    authenticationResolverProviders = providers;
-    
   }
 
 }

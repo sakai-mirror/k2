@@ -52,7 +52,7 @@ import org.sakaiproject.kernel.serialization.json.BeanJsonLibConverter;
 import org.sakaiproject.kernel.serialization.json.BeanProcessor;
 import org.sakaiproject.kernel.serialization.json.ValueProcessor;
 import org.sakaiproject.kernel.user.AuthenticationResolverServiceImpl;
-import org.sakaiproject.kernel.user.NullAuthenticationResolverServiceImpl;
+import org.sakaiproject.kernel.user.ProviderAuthenticationResolverService;
 import org.sakaiproject.kernel.util.ResourceLoader;
 
 import java.io.IOException;
@@ -268,8 +268,13 @@ public class KernelModule extends AbstractModule {
     };
     bind(jsonMorpherList).toProvider(JsonMorpherListProvider.class);
 
+    // bind in the cached version
+    bind(AuthenticationResolverService.class).to(
+        AuthenticationResolverServiceImpl.class).in(Scopes.SINGLETON);
+
+    // then bind the provider container to the head
     bind(AuthenticationResolverService.class).annotatedWith(
         Names.named(AuthenticationResolverServiceImpl.RESOLVER_CHAIN_HEAD)).to(
-        NullAuthenticationResolverServiceImpl.class);
+        ProviderAuthenticationResolverService.class).in(Scopes.SINGLETON);
   }
 }

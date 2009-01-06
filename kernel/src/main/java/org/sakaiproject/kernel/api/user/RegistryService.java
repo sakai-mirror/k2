@@ -20,24 +20,19 @@ package org.sakaiproject.kernel.api.user;
 import com.google.inject.ImplementedBy;
 import com.google.inject.Singleton;
 
-import org.sakaiproject.kernel.user.ProviderUserResolverService;
+import org.sakaiproject.kernel.user.RegistryServiceImpl;
 
 /**
- * The UserResolverService resolves users.
+ * The registry service manages registries that are used to register providers
  */
-@ImplementedBy(ProviderUserResolverService.class)
+@ImplementedBy(RegistryServiceImpl.class)
 @Singleton
-public interface UserResolverService {
-
+public interface RegistryService {
   /**
-   * The name of the registry used for this type of service.
+   * @param type
+   *          the name of the registry to retrieve, normally taken from the
+   *          service in question.
+   * @return the registry of providers used for that service.
    */
-  public static final String PROVIDER_REGISTRY = "user.provider.registry";
-  /**
-   * @param eid
-   *          the Extenal user ID
-   * @return a User object
-   */
-  User resolve(String eid);
-
+  <T extends Provider> Registry<T> getRegistry(String type);
 }

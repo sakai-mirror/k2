@@ -17,21 +17,28 @@
  */
 package org.sakaiproject.kernel.api.user;
 
+import java.util.List;
+
 /**
  * A registry for adding providers.
  */
-public interface ProviderRegistry<T> {
+public interface Registry<T> {
 
   /**
    * @param provider
    *          the provider to be added.
    */
-  void addProvider(T provider);
+  void add(T provider);
 
   /**
    * @param provider
    *          the provider to be removed, if it exists.
    */
-  void removeProvider(T provider);
+  void remove(T provider);
+
+  /**
+   * @return
+   */
+  List<T> get();
 
 }
