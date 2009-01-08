@@ -67,6 +67,7 @@ public class UserEnvironmentBean implements UserEnvironment {
    * {@inheritDoc}
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#matches(org.sakaiproject.kernel.api.authz.SubjectStatement)
    */
+  // TODO: No test coverage of this
   public boolean matches(SubjectStatement subject) {
     switch (subject.getSubjectType()) {
     case PROVIDED:

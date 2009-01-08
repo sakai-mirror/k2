@@ -28,6 +28,7 @@ import java.util.List;
 /**
  * 
  */
+// TODO: no test coverage
 public class RegistryImpl<T extends Provider> implements
     Registry<T> {
   

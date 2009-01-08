@@ -33,6 +33,7 @@ import javax.servlet.http.HttpSessionContext;
  * attribute.
  */
 @SuppressWarnings("deprecation")
+// TODO: not tested with an authorization
 public class SessionImpl implements Session {
 
   /**
