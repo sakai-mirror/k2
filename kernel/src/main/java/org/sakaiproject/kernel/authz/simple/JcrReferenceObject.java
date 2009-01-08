@@ -181,6 +181,7 @@ public class JcrReferenceObject implements ReferencedObject {
    * 
    * @see org.sakaiproject.kernel.api.authz.ReferencedObject#removeAccessControlStatement(org.sakaiproject.kernel.api.authz.AccessControlStatement)
    */
+  // TODO test coverage required.
   public void removeAccessControlStatement(AccessControlStatement removeAcs)
       throws UpdateFailedException {
     try {

@@ -45,6 +45,7 @@ public class JcrAccessControlStatementImpl implements AccessControlStatement {
    * @throws RepositoryException
    * @throws ValueFormatException
    */
+  // TODO: test coverage required
   public JcrAccessControlStatementImpl(String spec) throws ValueFormatException,
       RepositoryException {
     String[] values = StringUtils.split(spec, ',');
