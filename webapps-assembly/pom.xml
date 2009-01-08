@@ -31,6 +31,12 @@
       <version>${project.version}</version>
       <type>war</type>
     </dependency>
+    <dependency>
+      <groupId>org.sakaiproject.kernel2.agnostic</groupId>
+      <artifactId>rest</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

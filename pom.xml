@@ -37,6 +37,7 @@
         <module>webdav</module>
         <module>webapps-assembly</module>
         <module>sdata</module>
+        <module>rest</module>
       </modules>
     </profile>
     <profile>
