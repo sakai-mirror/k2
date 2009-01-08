@@ -19,7 +19,6 @@ package org.sakaiproject.kernel.api;
 
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.Map;
 
 /**

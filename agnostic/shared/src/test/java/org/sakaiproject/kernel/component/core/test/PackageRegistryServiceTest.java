@@ -174,7 +174,8 @@ public class PackageRegistryServiceTest {
     
     Enumeration<URL> e = registry.findExportedResources("org/sakaiproject/kernel");
     while(e.hasMoreElements()) {
-     URL u = e.nextElement();
+     @SuppressWarnings("unused")
+    URL u = e.nextElement();
     }
  
   }

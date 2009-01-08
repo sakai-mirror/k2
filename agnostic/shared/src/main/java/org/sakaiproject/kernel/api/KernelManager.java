@@ -17,14 +17,14 @@
  */
 package org.sakaiproject.kernel.api;
 
+import java.lang.management.ManagementFactory;
+
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
-
-import java.lang.management.ManagementFactory;
 
 /**
  * A kernel manager manages the kernel.
@@ -82,7 +82,6 @@ public class KernelManager {
    *          registration.
    * @return the service or null if none is found.
    */
-  @SuppressWarnings("unchecked")
   public <T> T getService(Class<T> serviceApi) {
     try {
       return (T) getKernel().getService(serviceApi);
