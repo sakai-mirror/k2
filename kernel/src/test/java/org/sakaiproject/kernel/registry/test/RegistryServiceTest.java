@@ -33,11 +33,11 @@ public class RegistryServiceTest {
   @Test
   public void testRegistryServiceAddForward() {
     RegistryServiceImpl registryServiceImpl = new RegistryServiceImpl();
-    Registry<TestProvider> r = registryServiceImpl.getRegistry("testRegistry");
+    Registry<TProvider> r = registryServiceImpl.getRegistry("testRegistry");
     for ( int i = 0; i < 100; i++ ) {
-      r.add(new TestProvider(i));
+      r.add(new TProvider(i));
     }
-    List<TestProvider> p = r.get();
+    List<TProvider> p = r.get();
     for ( int i = 0; i < 100; i++ ) {
       assertEquals(i, p.get(i).getPriority());
     }
@@ -45,11 +45,11 @@ public class RegistryServiceTest {
   @Test
   public void testRegistryServiceAddReverse() {
     RegistryServiceImpl registryServiceImpl = new RegistryServiceImpl();
-    Registry<TestProvider> r = registryServiceImpl.getRegistry("testRegistry");
+    Registry<TProvider> r = registryServiceImpl.getRegistry("testRegistry");
     for ( int i = 99; i >= 0; i-- ) {
-      r.add(new TestProvider(i));
+      r.add(new TProvider(i));
     }
-    List<TestProvider> p = r.get();
+    List<TProvider> p = r.get();
     for ( int i = 0; i < 100; i++ ) {
       assertEquals(i, p.get(i).getPriority());
     }
@@ -58,14 +58,14 @@ public class RegistryServiceTest {
   @Test
   public void testRegistryServiceRemove() {
     RegistryServiceImpl registryServiceImpl = new RegistryServiceImpl();
-    Registry<TestProvider> r = registryServiceImpl.getRegistry("testRegistry");
-    TestProvider tp = new TestProvider(-2);
+    Registry<TProvider> r = registryServiceImpl.getRegistry("testRegistry");
+    TProvider tp = new TProvider(-2);
     r.add(tp);
     for ( int i = 99; i >= 0; i-- ) {
-      r.add(new TestProvider(i));
+      r.add(new TProvider(i));
     }
     r.remove(tp);
-    List<TestProvider> p = r.get();
+    List<TProvider> p = r.get();
     assertEquals(100, p.size());
     for ( int i = 0; i < 100; i++ ) {
       assertEquals(i, p.get(i).getPriority());

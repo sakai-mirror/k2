@@ -22,14 +22,14 @@ import org.sakaiproject.kernel.api.Provider;
 /**
  * 
  */
-public class TestProvider implements Provider {
+public class TProvider implements Provider {
 
   private int priority;
 
   /**
    * 
    */
-  public TestProvider(int priority) {
+  public TProvider(int priority) {
     this.priority = priority;
   }
   /**
