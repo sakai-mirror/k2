@@ -2,7 +2,10 @@
 <%@page import="org.sakaiproject.kernel.api.Kernel"%>
 <%@page import="org.sakaiproject.kernel.api.KernelManager"%>
 <%@page import="org.sakaiproject.kernel.api.ServiceSpec"%>
-<%@page import="org.sakaiproject.componentsample.api.HelloWorldService"%><html>
+<%@page import="org.sakaiproject.componentsample.api.HelloWorldService"%>
+
+<%@page import="java.util.Map.Entry"%>
+<html>
 <!--
   Copyright 2004 The Apache Software Foundation
 
@@ -27,9 +30,27 @@ KernelManager km = new KernelManager();
 Kernel kernel = km.getKernel();
 HelloWorldService  hello = kernel.getServiceManager().getService(new ServiceSpec(HelloWorldService.class));
 %>
-<br>
+<p>
 From deep within the kernel somewhere the HelloWorldSevice is whispering : <%= hello.getGreeting() %>
-<br>
+</p>
+<h3>JCR Sample</h3>
+<p>
+<dl>
+<% for (Entry e : hello.getJCRInfo().entrySet()) { %>
+<dt><%= e.getKey() %></dt>
+<dd><%= e.getValue() %></dd>
+<% } %>
+</dl>	
+</p>
+<h3>JPA Sample</h3>
+<p>
+<dl>
+<% for (Entry e : hello.getJPAInfo().entrySet()) { %>
+<dt><%= e.getKey() %></dt>
+<dd><%= e.getValue() %></dd>
+<% } %>
+</dl>
+</p>
 </font>
 </body>
 </html>

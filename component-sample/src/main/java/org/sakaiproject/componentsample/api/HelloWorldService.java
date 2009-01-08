@@ -17,6 +17,8 @@
  */
 package org.sakaiproject.componentsample.api;
 
+import java.util.Map;
+
 /**
  * This is a simple service interface, it will say HelloWorld
  */
@@ -26,4 +28,14 @@ public interface HelloWorldService {
    * @return a greeting.
    */
   String getGreeting();
+  
+  /*
+   * @return some interesting info about JCR
+   */
+  Map<String, String> getJCRInfo();
+  
+  /*
+   * @return some info about JPA
+   */
+  Map<String, String> getJPAInfo();
 }

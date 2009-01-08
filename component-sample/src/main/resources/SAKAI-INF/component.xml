@@ -9,8 +9,7 @@
     Component Loader will use this class to startup the component, it
     must implement the ComponentActivator class
   -->
-  <activator>org.sakaiproject.componentsample.Activator
-  </activator>
+  <activator>org.sakaiproject.componentsample.Activator</activator>
   <exports>
     <!--
       being a component this component provides something, we will put
@@ -32,6 +31,12 @@
     <dependency>
       <groupId>javax.jcr</groupId>
       <artifactId>jcr</artifactId>
+      <version>1.0</version>
+      <scope>SHARE</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.persistence</groupId>
+      <artifactId>persistence-api</artifactId>
       <version>1.0</version>
       <scope>SHARE</scope>
     </dependency>

@@ -17,16 +17,19 @@
  */
 package org.sakaiproject.componentsample.core;
 
+import org.sakaiproject.componentsample.api.InternalDateService;
+
 import java.text.DateFormat;
 import java.util.Date;
 
 /**
  * An example of an internal service, that we are not intending to expose.
  */
-public class InternalDateServiceImpl {
+public class InternalDateServiceImpl implements InternalDateService {
 
   /**
-   * @return return a suitabley formatted date.
+   * {@inheritDoc}
+   * @see org.sakaiproject.componentsample.api.InternalDateService#getDate()
    */
   public String getDate() {
     return DateFormat.getDateInstance().format(new Date());

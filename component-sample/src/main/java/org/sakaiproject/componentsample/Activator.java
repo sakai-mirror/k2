@@ -56,15 +56,13 @@ public class Activator implements ComponentActivator {
     // I could use Guice or Spring to do this, but I am going to do manual IoC
     // to keep it really simple
     InternalDateServiceImpl internalDateService = new InternalDateServiceImpl();
-    HelloWorldService helloWorldService = new HelloWorldServiceImpl(
-        internalDateService);
-    
+
 
     // thats it. my service is ready to go, so lets register it
     // get the service manager
     ServiceManager serviceManager = kernel.getServiceManager();
-    
-    // just for fun.. resolve the JCRService and get a reference to the respository.
+
+    // just for fun.. resolve the JCRService and get a reference to the repository.
     LOG.info("Getting JCR =============================");
     JCRService service = serviceManager.getService(new ServiceSpec(JCRService.class));
     Repository repo = service.getRepository();
@@ -73,12 +71,15 @@ public class Activator implements ComponentActivator {
     }
     LOG.info("Logged In OK-=============================");
 
+    HelloWorldService helloWorldService = new HelloWorldServiceImpl(
+        internalDateService, service);
+
     // create a ServiceSpecification for the class I want to register,
     // the class here MUST be a class that was exported (see component.xml)
     // otherwise
     // nothing else will be able to see it. The service manager might enforce
     // this if I get
-    // arround to it.
+    // around to it.
     ServiceSpec serviceSpec = new ServiceSpec(HelloWorldService.class);
 
     // register the service
