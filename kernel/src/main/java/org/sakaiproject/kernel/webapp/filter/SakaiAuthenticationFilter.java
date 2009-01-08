@@ -18,6 +18,8 @@
 package org.sakaiproject.kernel.webapp.filter;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.user.Authentication;
 import org.sakaiproject.kernel.api.user.AuthenticationResolverService;
@@ -37,12 +39,16 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Performs one of three types of authentication, form, basic or container controlled by the url parameter a which should be "FORM", "BASIC" or "TRUSTED".
- * If BASIC, the Authenticate header will be used, if FORM, a POST is expected with the parameters u and p for username and password.
- * If TRUSTED, the request object will have the username from the container. To activate the parameter l should be 1
+ * Performs one of three types of authentication, form, basic or container
+ * controlled by the url parameter a which should be "FORM", "BASIC" or
+ * "TRUSTED". If BASIC, the Authenticate header will be used, if FORM, a POST is
+ * expected with the parameters u and p for username and password. If TRUSTED,
+ * the request object will have the username from the container. To activate the
+ * parameter l should be 1
  */
 public class SakaiAuthenticationFilter implements Filter {
 
+  private static final Log LOG = LogFactory.getLog(SakaiAuthenticationFilter.class);
   private AuthenticationResolverService authenticationResolverService;
 
   /**
@@ -63,21 +69,26 @@ public class SakaiAuthenticationFilter implements Filter {
       FilterChain chain) throws IOException, ServletException {
     HttpServletRequest hrequest = (HttpServletRequest) request;
     if ("1".equals(hrequest.getParameter("l"))) {
-      AuthenticationType authNType = AuthenticationType.valueOf(request
-          .getParameter("a"));
-      switch (authNType) {
-      case BASIC:
-        doBasicAuth(hrequest);
-        break;
-      case FORM:
-        doForm(hrequest);
-        break;
-      case TRUSTED:
-        doTrusted(hrequest);
-        break;
+      try {
+        AuthenticationType authNType = AuthenticationType.valueOf(request
+            .getParameter("a"));
+        switch (authNType) {
+        case BASIC:
+          doBasicAuth(hrequest);
+          break;
+        case FORM:
+          doForm(hrequest);
+          break;
+        case TRUSTED:
+          doTrusted(hrequest);
+          break;
+        }
+      } catch (IllegalArgumentException e) {
+        LOG.info("Authentication type " + request.getParameter("a")
+            + " is not supported by this filter");
       }
     }
-    
+
     chain.doFilter(request, response);
 
   }
@@ -100,7 +111,7 @@ public class SakaiAuthenticationFilter implements Filter {
     };
     Authentication a = authenticationResolverService.authenticate(ep);
     if (a != null) {
-      hrequest.setAttribute(Authentication.REQUESTTOKEN, a.getUid());
+      hrequest.setAttribute(Authentication.REQUESTTOKEN, a);
     }
   }
 
@@ -178,10 +189,7 @@ public class SakaiAuthenticationFilter implements Filter {
         }
       }
     }
-    
-    
-    
-    
+
   }
 
   /**
