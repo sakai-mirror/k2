@@ -18,11 +18,12 @@
 package org.sakaiproject.kernel.api;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * A registry for adding providers.
  */
-public interface Registry<T> {
+public interface Registry<V,T extends Provider<V>> {
 
   /**
    * @param provider
@@ -39,6 +40,9 @@ public interface Registry<T> {
   /**
    * @return
    */
-  List<T> get();
+  List<T> getList();
+  
+  Map<V,T> getMap();
+  
 
 }

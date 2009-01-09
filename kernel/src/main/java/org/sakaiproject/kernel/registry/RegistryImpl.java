@@ -24,25 +24,29 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 
  */
-// TODO: no test coverage
-public class RegistryImpl<T extends Provider> implements
-    Registry<T> {
-  
+public class RegistryImpl<V, T extends Provider<V>> implements Registry<V, T> {
+
   List<T> providers = new ArrayList<T>();
 
   private Comparator<? super T> comparitor = new Comparator<T>() {
     public int compare(T o1, T o2) {
       return o1.getPriority() - o2.getPriority();
     }
-    
+
   };
+
+
+  private Map<V, T> mappedProviders = new ConcurrentHashMap<V, T>();
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.Registry#add(java.lang.Object)
    */
   public synchronized void add(T provider) {
@@ -51,10 +55,12 @@ public class RegistryImpl<T extends Provider> implements
     newList.add(provider);
     Collections.sort(newList, comparitor);
     providers = newList;
+    mappedProviders.put(provider.getKey(), provider);
   }
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.Registry#remove(java.lang.Object)
    */
   public synchronized void remove(T provider) {
@@ -63,14 +69,23 @@ public class RegistryImpl<T extends Provider> implements
     newList.remove(provider);
     Collections.sort(newList, comparitor);
     providers = newList;
+    mappedProviders.remove(provider);
   }
-  
+
   /**
    * @return the providers
    */
-  public List<T> get() {
+  public List<T> getList() {
     return providers;
   }
 
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.kernel.api.Registry#getMap()
+   */
+  public Map<V, T> getMap() {    
+    return mappedProviders ;
+  }
 
 }

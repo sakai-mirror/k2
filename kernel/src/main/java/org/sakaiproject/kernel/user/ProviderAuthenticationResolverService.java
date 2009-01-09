@@ -36,7 +36,7 @@ public class ProviderAuthenticationResolverService implements
     AuthenticationResolverService {
 
   private NullAuthenticationResolverServiceImpl nullService;
-  private Registry<AuthenticationResolverProvider> registry;
+  private Registry<String,AuthenticationResolverProvider<String>> registry;
 
   /**
    * 
@@ -47,7 +47,7 @@ public class ProviderAuthenticationResolverService implements
       RegistryService providerService) {
     this.nullService = nullService;
     this.registry = providerService
-        .getRegistry(PROVIDER_REGISTRY);
+        .getRegistry(PROVIDER_REGISTRY,false);
   }
 
   /**
@@ -57,12 +57,12 @@ public class ProviderAuthenticationResolverService implements
    */
   public Authentication authenticate(Principal principal)
       throws SecurityException {
-    List<AuthenticationResolverProvider> providers = registry.get();
+    List<AuthenticationResolverProvider<String>> providers = registry.getList();
     if (providers.size() == 0) {
       return nullService.authenticate(principal);
     }
     StringBuilder messages = new StringBuilder();
-    for (AuthenticationResolverProvider authN : providers) {
+    for (AuthenticationResolverProvider<String> authN : providers) {
       try {
         return authN.authenticate(principal);
       } catch (SecurityException se) {

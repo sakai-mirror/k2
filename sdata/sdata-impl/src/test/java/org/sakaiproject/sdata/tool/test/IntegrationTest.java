@@ -181,6 +181,7 @@ public class IntegrationTest {
 
     replay(config, request, response, session);
     SakaiServletRequest srequest = new SakaiServletRequest(request,userResolverService);
+    @SuppressWarnings("unused")
     SakaiServletResponse sresponse = new SakaiServletResponse(response,
         "JSESSIONID");
     sessionManagerService.bindRequest(srequest);

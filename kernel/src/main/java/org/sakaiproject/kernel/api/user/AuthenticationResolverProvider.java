@@ -24,7 +24,7 @@ import java.security.Principal;
 /**
  * 
  */
-public interface AuthenticationResolverProvider extends Provider {
+public interface AuthenticationResolverProvider<V> extends Provider<V> {
 
   /**
    * @param principal

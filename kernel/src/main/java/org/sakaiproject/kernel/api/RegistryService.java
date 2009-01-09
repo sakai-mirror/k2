@@ -32,7 +32,10 @@ public interface RegistryService {
    * @param type
    *          the name of the registry to retrieve, normally taken from the
    *          service in question.
+   * @param keyed
+   *          if true the registry is keyed, if false the registry is a sorted
+   *          registry.
    * @return the registry of providers used for that service.
    */
-  <T extends Provider> Registry<T> getRegistry(String type);
+  <V,T extends Provider<V>> Registry<V,T> getRegistry(String type);
 }

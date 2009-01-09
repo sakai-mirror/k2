@@ -25,7 +25,7 @@ import org.sakaiproject.kernel.api.userenv.UserEnvironment;
  * in an Access Control list. The Type of the SubjectStatement should be
  * {@link SubjectStatement.SubjectType.PROVIDED}
  */
-public interface SubjectTokenProvider extends Provider {
+public interface SubjectTokenProvider<V> extends Provider<V> {
 
   /**
    * Check for a match on a provided subject statement.

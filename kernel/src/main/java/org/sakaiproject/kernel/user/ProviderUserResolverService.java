@@ -39,7 +39,7 @@ public class ProviderUserResolverService implements
   private static final Log LOG = LogFactory.getLog(ProviderUserResolverService.class);
  
   private UserResolverService nullService;
-  private Registry<UserResolverProvider> registry;
+  private Registry<String,UserResolverProvider<String>> registry;
 
   /**
    * 
@@ -50,7 +50,7 @@ public class ProviderUserResolverService implements
       RegistryService providerService) {
     this.nullService = nullService;
     this.registry = providerService
-        .getRegistry(PROVIDER_REGISTRY);
+        .getRegistry(PROVIDER_REGISTRY,false);
   }
 
 
@@ -59,12 +59,12 @@ public class ProviderUserResolverService implements
    * @see org.sakaiproject.kernel.api.user.UserResolverService#resolve(java.lang.String)
    */
   public User resolve(String eid) {
-    List<UserResolverProvider> userResolverProviders = registry.get();
+    List<UserResolverProvider<String>> userResolverProviders = registry.getList();
     if ( userResolverProviders.size() == 0 ) {
       return nullService.resolve(eid);
     }
     StringBuilder messages = new StringBuilder();
-    for (UserResolverProvider userResolver : userResolverProviders) {
+    for (UserResolverProvider<String> userResolver : userResolverProviders) {
       try {
         User u =  userResolver.resolve(eid);
         if ( u != null ) {

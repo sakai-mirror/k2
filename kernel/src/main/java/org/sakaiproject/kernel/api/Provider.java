@@ -20,10 +20,15 @@ package org.sakaiproject.kernel.api;
 /**
  * A provider is something that has a priority to provide, what it provides is abstract.
  */
-public interface Provider  {
+public interface Provider<V>  {
   /**
    * @return the priority of the provider.
    */
   int getPriority();
-
+  
+  /**
+   * @return a key for a keyed provider
+   */
+  V getKey();
+  
 }

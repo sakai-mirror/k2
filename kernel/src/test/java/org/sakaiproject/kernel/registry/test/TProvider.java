@@ -22,15 +22,17 @@ import org.sakaiproject.kernel.api.Provider;
 /**
  * 
  */
-public class TProvider implements Provider {
+public class TProvider<V> implements Provider<V> {
 
   private int priority;
+  private V key;
 
   /**
    * 
    */
-  public TProvider(int priority) {
+  public TProvider(int priority, V key) {
     this.priority = priority;
+    this.key = key;
   }
   /**
    * {@inheritDoc}
@@ -38,6 +40,13 @@ public class TProvider implements Provider {
    */
   public int getPriority() {
     return priority;
+  }
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.Provider#getKey()
+   */
+  public V getKey() {
+    return key;
   }
 
 }

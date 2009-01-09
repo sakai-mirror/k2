@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class RegistryServiceImpl implements RegistryService {
 
-  Map<String, Registry<? extends Provider>> providerMap = new ConcurrentHashMap<String, Registry<? extends Provider>>();
+  Map<String, Registry<?,? extends Provider<?>>> providerMap = new ConcurrentHashMap<String, Registry<?,? extends Provider<?>>>();
 
 
   /**
@@ -37,14 +37,14 @@ public class RegistryServiceImpl implements RegistryService {
    * @see org.sakaiproject.kernel.api.user.ProviderRegistryService#getProviderRegistry(org.sakaiproject.kernel.api.user.ProviderRegistryType)
    */
   @SuppressWarnings("unchecked")
-  public <T extends Provider> Registry<T> getRegistry(
+  public <V,T extends Provider<V>> Registry<V,T> getRegistry(
       String type) {
-    Registry<? extends Provider> providerRegistry = providerMap.get(type);
+    Registry<V,? extends Provider> providerRegistry = (Registry<V, ? extends Provider>) providerMap.get(type);
     if ( providerRegistry == null ) {
-      providerRegistry = new RegistryImpl<T>();
-      providerMap.put(type, providerRegistry);
+      providerRegistry = new RegistryImpl<V,T>();
+      providerMap.put(type, (Registry<?, ? extends Provider<?>>) providerRegistry);
     }
-    return (Registry<T>) providerRegistry;
+    return (Registry<V,T>) providerRegistry;
   }
 
 

@@ -22,7 +22,7 @@ import org.sakaiproject.kernel.api.Provider;
 /**
  * A provider of resolution services.
  */
-public interface UserResolverProvider extends Provider {
+public interface UserResolverProvider<V> extends Provider<V> {
 
   /**
    * @param eid

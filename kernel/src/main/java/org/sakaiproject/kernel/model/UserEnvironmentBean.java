@@ -44,7 +44,7 @@ public class UserEnvironmentBean implements UserEnvironment {
   private String userid;
   private SubjectPermissionService subjectPermissionService;
   private boolean sealed = false;
-  private Registry<SubjectTokenProvider> registry;
+  private Registry<String,SubjectTokenProvider<String>> registry;
 
   @Inject
   public UserEnvironmentBean(SubjectPermissionService subjectPermissionService,
@@ -71,8 +71,8 @@ public class UserEnvironmentBean implements UserEnvironment {
   public boolean matches(SubjectStatement subject) {
     switch (subject.getSubjectType()) {
     case PROVIDED:
-      List<SubjectTokenProvider> providers = registry.get();
-      for (SubjectTokenProvider provider : providers) {
+      List<SubjectTokenProvider<String>> providers = registry.getList();
+      for (SubjectTokenProvider<String> provider : providers) {
         if (provider.matches(this, subject)) {
           return true;
         }

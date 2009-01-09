@@ -33,11 +33,11 @@ public class RegistryServiceTest {
   @Test
   public void testRegistryServiceAddForward() {
     RegistryServiceImpl registryServiceImpl = new RegistryServiceImpl();
-    Registry<TProvider> r = registryServiceImpl.getRegistry("testRegistry");
+    Registry<String,TProvider<String>> r = registryServiceImpl.getRegistry("testRegistry",false);
     for ( int i = 0; i < 100; i++ ) {
-      r.add(new TProvider(i));
+      r.add(new TProvider<String>(i,String.valueOf(i)));
     }
-    List<TProvider> p = r.get();
+    List<TProvider<String>> p = r.getList();
     for ( int i = 0; i < 100; i++ ) {
       assertEquals(i, p.get(i).getPriority());
     }
@@ -45,11 +45,11 @@ public class RegistryServiceTest {
   @Test
   public void testRegistryServiceAddReverse() {
     RegistryServiceImpl registryServiceImpl = new RegistryServiceImpl();
-    Registry<TProvider> r = registryServiceImpl.getRegistry("testRegistry");
+    Registry<String,TProvider<String>> r = registryServiceImpl.getRegistry("testRegistry",false);
     for ( int i = 99; i >= 0; i-- ) {
-      r.add(new TProvider(i));
+      r.add(new TProvider<String>(i,String.valueOf(i)));
     }
-    List<TProvider> p = r.get();
+    List<TProvider<String>> p = r.getList();
     for ( int i = 0; i < 100; i++ ) {
       assertEquals(i, p.get(i).getPriority());
     }
@@ -58,14 +58,14 @@ public class RegistryServiceTest {
   @Test
   public void testRegistryServiceRemove() {
     RegistryServiceImpl registryServiceImpl = new RegistryServiceImpl();
-    Registry<TProvider> r = registryServiceImpl.getRegistry("testRegistry");
-    TProvider tp = new TProvider(-2);
+    Registry<String,TProvider<String>> r = registryServiceImpl.getRegistry("testRegistry",false);
+    TProvider<String> tp = new TProvider<String>(-2,String.valueOf(-2));
     r.add(tp);
     for ( int i = 99; i >= 0; i-- ) {
-      r.add(new TProvider(i));
+      r.add(new TProvider<String>(i,String.valueOf(i)));
     }
     r.remove(tp);
-    List<TProvider> p = r.get();
+    List<TProvider<String>> p = r.getList();
     assertEquals(100, p.size());
     for ( int i = 0; i < 100; i++ ) {
       assertEquals(i, p.get(i).getPriority());
