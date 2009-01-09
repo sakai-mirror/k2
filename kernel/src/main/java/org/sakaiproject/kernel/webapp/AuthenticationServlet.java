@@ -17,7 +17,6 @@
  */
 package org.sakaiproject.kernel.webapp;
 
-import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.user.Authentication;
 
 import java.io.IOException;
@@ -36,7 +35,6 @@ public class AuthenticationServlet extends HttpServlet {
    * 
    */
   private static final long serialVersionUID = -2118658526409944277L;
-  private SessionManagerService sessionManagerService;
 
   /**
    * {@inheritDoc}

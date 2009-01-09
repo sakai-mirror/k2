@@ -50,7 +50,7 @@ public class ProviderUserResolverService implements
       RegistryService providerService) {
     this.nullService = nullService;
     this.registry = providerService
-        .getRegistry(PROVIDER_REGISTRY,false);
+        .getRegistry(PROVIDER_REGISTRY);
   }
 
 

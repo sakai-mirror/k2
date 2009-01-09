@@ -33,7 +33,7 @@ public class RegistryServiceTest {
   @Test
   public void testRegistryServiceAddForward() {
     RegistryServiceImpl registryServiceImpl = new RegistryServiceImpl();
-    Registry<String,TProvider<String>> r = registryServiceImpl.getRegistry("testRegistry",false);
+    Registry<String,TProvider<String>> r = registryServiceImpl.getRegistry("testRegistry");
     for ( int i = 0; i < 100; i++ ) {
       r.add(new TProvider<String>(i,String.valueOf(i)));
     }
@@ -45,7 +45,7 @@ public class RegistryServiceTest {
   @Test
   public void testRegistryServiceAddReverse() {
     RegistryServiceImpl registryServiceImpl = new RegistryServiceImpl();
-    Registry<String,TProvider<String>> r = registryServiceImpl.getRegistry("testRegistry",false);
+    Registry<String,TProvider<String>> r = registryServiceImpl.getRegistry("testRegistry");
     for ( int i = 99; i >= 0; i-- ) {
       r.add(new TProvider<String>(i,String.valueOf(i)));
     }
@@ -58,7 +58,7 @@ public class RegistryServiceTest {
   @Test
   public void testRegistryServiceRemove() {
     RegistryServiceImpl registryServiceImpl = new RegistryServiceImpl();
-    Registry<String,TProvider<String>> r = registryServiceImpl.getRegistry("testRegistry",false);
+    Registry<String,TProvider<String>> r = registryServiceImpl.getRegistry("testRegistry");
     TProvider<String> tp = new TProvider<String>(-2,String.valueOf(-2));
     r.add(tp);
     for ( int i = 99; i >= 0; i-- ) {
