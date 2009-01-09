@@ -32,9 +32,7 @@
       <modules>
         <module>agnostic</module>
         <module>kernel</module>
-<!--
         <module>component-sample</module>
--->
         <module>webapp-sample</module>
         <module>webdav</module>
         <module>webapps-assembly</module>

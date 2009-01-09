@@ -9,7 +9,7 @@
     Component Loader will use this class to startup the component, it
     must implement the ComponentActivator class
   -->
-  <activator>org.sakaiproject.componentsample.Activator</activator>
+  <activator>org.sakaiproject.componentsample.GuiceActivator</activator>
   <exports>
     <!--
       being a component this component provides something, we will put

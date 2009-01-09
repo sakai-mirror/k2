@@ -46,6 +46,8 @@ import org.sakaiproject.kernel.internal.api.KernelInitialization;
 import org.sakaiproject.kernel.internal.api.KernelInitializtionException;
 import org.sakaiproject.kernel.persistence.PersistenceModule;
 
+import javax.persistence.EntityManager;
+
 /**
  *
  */
@@ -57,7 +59,8 @@ public class Activator implements ComponentActivator {
       CacheManagerService.class, SessionManagerService.class,
       AuthzResolverService.class, PermissionQueryService.class,
       ReferenceResolverService.class, DataSourceService.class,
-      UserEnvironmentResolverService.class, RegistryService.class };
+      UserEnvironmentResolverService.class, RegistryService.class,
+      EntityManager.class};
   private static final Log LOG = LogFactory.getLog(Activator.class);
   @SuppressWarnings("unused")
   private Kernel kernel;
