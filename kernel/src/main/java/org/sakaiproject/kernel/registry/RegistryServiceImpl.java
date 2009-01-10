@@ -17,6 +17,8 @@
  */
 package org.sakaiproject.kernel.registry;
 
+import com.google.inject.Singleton;
+
 import org.sakaiproject.kernel.api.Provider;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
@@ -27,6 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 
  */
+@Singleton
 public class RegistryServiceImpl implements RegistryService {
 
   Map<String, Registry<?,? extends Provider<?>>> providerMap = new ConcurrentHashMap<String, Registry<?,? extends Provider<?>>>();
@@ -41,6 +44,7 @@ public class RegistryServiceImpl implements RegistryService {
       String type) {
     Registry<V,? extends Provider> providerRegistry = (Registry<V, ? extends Provider>) providerMap.get(type);
     if ( providerRegistry == null ) {
+      System.err.println("Creating new Registry for "+type+" in "+this);
       providerRegistry = new RegistryImpl<V,T>();
       providerMap.put(type, (Registry<?, ? extends Provider<?>>) providerRegistry);
     }

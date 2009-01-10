@@ -34,6 +34,7 @@ import org.sakaiproject.kernel.api.ShutdownService;
 import org.sakaiproject.kernel.api.authz.ReferenceResolverService;
 import org.sakaiproject.kernel.api.jcr.EventRegistration;
 import org.sakaiproject.kernel.api.jcr.JCRService;
+import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.user.AuthenticationResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
@@ -276,5 +277,12 @@ public class KernelModule extends AbstractModule {
     bind(AuthenticationResolverService.class).annotatedWith(
         Names.named(AuthenticationResolverServiceImpl.RESOLVER_CHAIN_HEAD)).to(
         ProviderAuthenticationResolverService.class).in(Scopes.SINGLETON);
+    
+    // bring this list up early so it can register itself
+    TypeLiteral<List<RestProvider>> restProviderList = new TypeLiteral<List<RestProvider>>() {
+    };
+    bind(restProviderList).toProvider(RestProviderListProvider.class).asEagerSingleton();
+
+    
   }
 }

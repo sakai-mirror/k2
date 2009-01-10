@@ -28,12 +28,18 @@ public class StringUtils {
    * @return
    */
   public static String[] split(String st, char sep) {
+
     char[] pn = st.toCharArray();
+    if (pn.length == 0) {
+      return new String[0];
+    }
     int n = 1;
     int start = 0;
     int end = pn.length;
-    while ( sep == pn[start] && start < end ) start++;
-    while( sep == pn[end-1] && start < end ) end--;
+    while (start < end && sep == pn[start])
+      start++;
+    while (start < end && sep == pn[end - 1])
+      end--;
     for (int i = start; i < end; i++) {
       if (sep == pn[i]) {
         n++;
@@ -45,10 +51,10 @@ public class StringUtils {
     for (int i = start; i < end; i++) {
       if (pn[i] == sep) {
         e[j++] = new String(pn, s, i - s);
-        s = i+1;
+        s = i + 1;
       }
     }
-    if ( s < end ) {
+    if (s < end) {
       e[j++] = new String(pn, s, end - s);
     }
     return e;
@@ -65,8 +71,10 @@ public class StringUtils {
     int n = 1;
     int start = 0;
     int end = pn.length;
-    while ( sep == pn[start] && start < end ) start++;
-    while( sep == pn[end-1] && start < end ) end--;
+    while (start < end && sep == pn[start])
+      start++;
+    while (start < end && sep == pn[end - 1])
+      end--;
     for (int i = start; i < end; i++) {
       if (sep == pn[i]) {
         n++;
@@ -78,10 +86,10 @@ public class StringUtils {
     for (int i = start; i < end && j < e.length; i++) {
       if (pn[i] == sep) {
         e[j++] = new String(pn, s, i - s);
-        s = i+1;
+        s = i + 1;
       }
     }
-    if ( s < end && j < e.length) {
+    if (s < end && j < e.length) {
       e[j++] = new String(pn, s, end - s);
     }
     return e;

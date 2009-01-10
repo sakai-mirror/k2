@@ -34,6 +34,7 @@ public class StringUtilsTest {
    */
   @Test
   public void testSplit() {
+    
     String[] e = StringUtils
         .split("a.test.of.something.that.should.be.ok", '.');
     assertEquals(8, e.length);
@@ -45,6 +46,8 @@ public class StringUtilsTest {
     assertEquals("should", e[5]);
     assertEquals("be", e[6]);
     assertEquals("ok", e[7]);
+    e = StringUtils.split("", '.');
+    assertEquals(0,e.length);
     e = StringUtils.split(".a.test.of.something.that.should.be.ok", '.');
     assertEquals(8, e.length);
     assertEquals("a", e[0]);
