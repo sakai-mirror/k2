@@ -39,38 +39,37 @@ public class RestDescription {
       + "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-US\" lang=\"en-US\">\n"
       + "<head profile=\"http://www.w3.org/2000/08/w3c-synd/#\"> \n"
       + "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /> \n"
-      + "<style type=\"text/css\">\n" +
-      "/**/\n" +
-      "body {\n" +
-      "  background-color:#FFFFFF;\n" +
-      "  font-family: arial, helvetica, sans-serif;\n" +
-      "}\n" +
-      "h1, h2, h3, h4, h5 {\n" +
-      "  border-bottom: thin solid;\n" +
-      "}\n" +
-      "h1 {\n" +
-      "   font-size: 1.5em;\n" +
-      "}\n" +
-      "h2 {\n" +
-      "   font-size: 1.3em;\n" +
-      "}\n" +
-      "h3 {\n" +
-      "   font-size: 1.2em;\n" +
-      "   font-style: italic;\n" +
-      "}\n" +
-      "dt {\n" +
-      "   font-weight: bold;\n" +
-      "   margin-top: 1em;\n" +
-      "   padding-left: 50px;\n" +
-      "   padding-top: 5px;\n" +
-      "   padding-bottom: 5px;\n" +
-      "}\n" +
-      "dd {\n" +
-      "   background:#CCCCCC none repeat scroll 0 0;\n" +
-      "}\n" +
-      "/**/\n" +
-      "</style>" +
-      "<title> ";
+      + "<style type=\"text/css\">\n"
+      + "/**/\n"
+      + "body {\n"
+      + "  background-color:#FFFFFF;\n"
+      + "  font-family: arial, helvetica, sans-serif;\n"
+      + "}\n"
+      + "h1, h2, h3, h4, h5 {\n"
+      + "  border-bottom: thin solid;\n"
+      + "}\n"
+      + "h1 {\n"
+      + "   font-size: 1.5em;\n"
+      + "}\n"
+      + "h2 {\n"
+      + "   font-size: 1.3em;\n"
+      + "}\n"
+      + "h3 {\n"
+      + "   font-size: 1.2em;\n"
+      + "   font-style: italic;\n"
+      + "}\n"
+      + "dt {\n"
+      + "   font-weight: bold;\n"
+      + "   margin-top: 1em;\n"
+      + "   padding-left: 50px;\n"
+      + "   padding-top: 5px;\n"
+      + "   padding-bottom: 5px;\n"
+      + "}\n"
+      + "dd {\n"
+      + "   background:#CCCCCC none repeat scroll 0 0;\n"
+      + "}\n"
+      + "/**/\n"
+      + "</style>" + "<title> ";
   private static final Object HTMLHEADER2 = "</title>" + "</head><body>";
   Map<String, Object> content = new HashMap<String, Object>();
   private String json;
