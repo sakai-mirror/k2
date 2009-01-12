@@ -136,11 +136,8 @@ public class RestMeProvider implements RestProvider {
       Locale locale = userLocale.getLocale(request.getLocale(), session);
       if (user == null || user.getUuid() == null
           || "anon".equals(user.getUuid())) {
-        System.err.println("Sending anon file ");
         sendOutput(response, locale, ANON_UE_FILE);
-        System.err.println("Done Sending anon file ");
       } else {
-        System.err.println("Sending auth file ");
         String mePath = getMePath(user.getUuid());
         Node n = jcrNodeFactoryService.getNode(mePath);
         if (n != null) {
@@ -148,7 +145,6 @@ public class RestMeProvider implements RestProvider {
         } else {
           sendDefaultUserOutput(response, locale, user.getEid());
         }
-        System.err.println("Done Sending auth file ");
       }
     } catch (RepositoryException re) {
       re.printStackTrace();

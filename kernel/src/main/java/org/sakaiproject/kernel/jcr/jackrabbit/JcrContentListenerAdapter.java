@@ -76,11 +76,9 @@ public class JcrContentListenerAdapter implements EventListener,
    * @see javax.jcr.observation.EventListener#onEvent(javax.jcr.observation.EventIterator)
    */
   public void onEvent(EventIterator events) {
-    System.err.println("Got JCR Event " + events);
     for (; events.hasNext();) {
       try {
         Event event = events.nextEvent();
-        dumpEvent(event);
         String path = event.getPath();
         if (path.endsWith(DATA_NODE)) {
           String filePath = path.substring(0, path.length()
@@ -97,34 +95,4 @@ public class JcrContentListenerAdapter implements EventListener,
 
     }
   }
-
-  private void dumpEvent(Event event) {
-    try {
-      switch (event.getType()) {
-      case Event.NODE_ADDED:
-        System.err.println("Event Node Added by " + event.getUserID() + " at "
-            + event.getPath());
-        break;
-      case Event.NODE_REMOVED:
-        System.err.println("Event Node Removed by " + event.getUserID()
-            + " at " + event.getPath());
-        break;
-      case Event.PROPERTY_ADDED:
-        System.err.println("Event Property Added by " + event.getUserID()
-            + " at " + event.getPath());
-        break;
-      case Event.PROPERTY_CHANGED:
-        System.err.println("Event Property Changed by " + event.getUserID()
-            + " at " + event.getPath());
-        break;
-      case Event.PROPERTY_REMOVED:
-        System.err.println("Event Property Removed by " + event.getUserID()
-            + " at " + event.getPath());
-        break;
-      }
-    } catch (RepositoryException rex) {
-      rex.printStackTrace();
-    }
-  }
-
 }

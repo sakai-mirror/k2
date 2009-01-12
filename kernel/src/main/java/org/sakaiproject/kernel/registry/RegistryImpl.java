@@ -50,7 +50,6 @@ public class RegistryImpl<V, T extends Provider<V>> implements Registry<V, T> {
    * @see org.sakaiproject.kernel.api.Registry#add(java.lang.Object)
    */
   public synchronized void add(T provider) {
-    System.err.println("Adding "+provider+" to "+this);
     List<T> newList = new ArrayList<T>();
     newList.addAll(providers);
     newList.add(provider);
@@ -77,7 +76,6 @@ public class RegistryImpl<V, T extends Provider<V>> implements Registry<V, T> {
    * @return the providers
    */
   public List<T> getList() {
-    System.err.println("Getting List from "+this);
     return providers;
   }
 
@@ -87,7 +85,6 @@ public class RegistryImpl<V, T extends Provider<V>> implements Registry<V, T> {
    * @see org.sakaiproject.kernel.api.Registry#getMap()
    */
   public Map<V, T> getMap() {    
-    System.err.println("Getting Map from "+this);
     return mappedProviders ;
   }
 

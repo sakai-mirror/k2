@@ -76,7 +76,6 @@ public class RestServlet extends HttpServlet {
       locator = elements[0];
     }
     Map<String, RestProvider> restProviders = registry.getMap();
-    System.err.println("Got Providers map "+restProviders);
     if ( locator == null ) {
       locator = "default";
     }
@@ -84,8 +83,7 @@ public class RestServlet extends HttpServlet {
       locator = "default";
     }
     RestProvider restProvider = restProviders.get(locator);
-    System.err.println("Got Provider for "+locator+" as "+restProviders);
-       if (restProvider == null) {
+    if (restProvider == null) {
       response.sendError(HttpServletResponse.SC_NOT_FOUND);
     } else {
       try {

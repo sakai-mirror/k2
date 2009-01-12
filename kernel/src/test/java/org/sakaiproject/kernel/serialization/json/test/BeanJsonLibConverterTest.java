@@ -108,7 +108,6 @@ public class BeanJsonLibConverterTest {
     
     String json = converter.convertToString(m);
     
-    System.err.println("Json is "+json);
     Map<String, Object> m3 = converter.convertToObject(json, Map.class);
     
     assertNotNull(m3);
@@ -121,7 +120,6 @@ public class BeanJsonLibConverterTest {
   public void testConvertArrayToString() {
     String json = converter.convertToString(new String[] { "element1", "element2" });
     
-    System.err.println("Json is "+json);
   }
 
   

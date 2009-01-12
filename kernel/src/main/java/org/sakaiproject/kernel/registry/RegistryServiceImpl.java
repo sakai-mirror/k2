@@ -44,7 +44,6 @@ public class RegistryServiceImpl implements RegistryService {
       String type) {
     Registry<V,? extends Provider> providerRegistry = (Registry<V, ? extends Provider>) providerMap.get(type);
     if ( providerRegistry == null ) {
-      System.err.println("Creating new Registry for "+type+" in "+this);
       providerRegistry = new RegistryImpl<V,T>();
       providerMap.put(type, (Registry<?, ? extends Provider<?>>) providerRegistry);
     }
