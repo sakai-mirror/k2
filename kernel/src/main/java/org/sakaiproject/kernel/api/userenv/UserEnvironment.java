@@ -79,4 +79,9 @@ public interface UserEnvironment extends Sealable {
    */
   String[] getSubjects();
 
+  /**
+   * @return
+   */
+  String getLocale();
+
 }

@@ -142,5 +142,12 @@ public class Activator implements ComponentActivator {
       ((RequiresStop) service).stop();
     }
   }
+  
+  /**
+   * @return the injector
+   */
+  public Injector getInjector() {
+    return injector;
+  }
 
 }

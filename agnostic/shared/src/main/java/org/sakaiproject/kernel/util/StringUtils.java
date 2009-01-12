@@ -29,6 +29,9 @@ public class StringUtils {
    */
   public static String[] split(String st, char sep) {
 
+    if ( st == null ) {
+      return new String[0];
+    }
     char[] pn = st.toCharArray();
     if (pn.length == 0) {
       return new String[0];

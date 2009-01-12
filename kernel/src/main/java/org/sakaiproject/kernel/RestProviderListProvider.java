@@ -23,6 +23,7 @@ import com.google.inject.Provider;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.rest.DefaultRestProvider;
 import org.sakaiproject.kernel.rest.RestAuthenticationProvider;
+import org.sakaiproject.kernel.rest.RestMeProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,9 +38,10 @@ public class RestProviderListProvider implements Provider<List<RestProvider>> {
    * 
    */
   @Inject
-  public RestProviderListProvider(DefaultRestProvider defaultRestProvider, RestAuthenticationProvider restAuthenticationProvider) {
+  public RestProviderListProvider(DefaultRestProvider defaultRestProvider, RestAuthenticationProvider restAuthenticationProvider, RestMeProvider restMeProvider) {
     list.add(restAuthenticationProvider);
     list.add(defaultRestProvider);
+    list.add(restMeProvider);
   }
   /**
    * {@inheritDoc}

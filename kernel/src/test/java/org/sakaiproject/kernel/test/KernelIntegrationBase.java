@@ -17,6 +17,8 @@
  */
 package org.sakaiproject.kernel.test;
 
+import com.google.inject.Injector;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.Activator;
@@ -49,6 +51,7 @@ public class KernelIntegrationBase {
   private static final Log LOG = LogFactory.getLog(KernelIntegrationBase.class);
   private static KernelLifecycle kernelLifecycle;
   private static KernelManager kernelManager;
+  private static Injector injector;
 
   public static void beforeClass() throws ComponentActivatorException {
     // If there are problems with startup and shutdown, these will prevent the
@@ -78,6 +81,7 @@ public class KernelIntegrationBase {
         ss.register((RequiresStop) s);
       }
     }
+    injector = activator.getInjector();
   }
 
   public static void afterClass() {
@@ -113,6 +117,13 @@ public class KernelIntegrationBase {
     sessionManagerService.bindRequest(wrequest);
     return wresponse;
 
+  }
+  
+  /**
+   * @return the injector
+   */
+  public static Injector getInjector() {
+    return injector;
   }
 
 }

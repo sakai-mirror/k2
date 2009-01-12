@@ -15,7 +15,7 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.webapp.test;
+package org.sakaiproject.kernel.rest.test;
 
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
@@ -34,6 +34,7 @@ import org.sakaiproject.kernel.rest.RestAuthenticationProvider;
 import org.sakaiproject.kernel.user.AuthenticationImpl;
 import org.sakaiproject.kernel.util.XmlUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
+import org.sakaiproject.kernel.webapp.test.InternalUser;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -46,7 +47,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * 
  */
-public class AuthenticationServletTest {
+public class RestAuthenticationProviderTest {
 
   @Test
   public void testGet() throws ServletException, IOException {

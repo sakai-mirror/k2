@@ -95,4 +95,12 @@ public class NullUserEnvironment implements UserEnvironment {
       
     };
   }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#getLocale()
+   */
+  public String getLocale() {
+    return "en_US";
+  }
 }

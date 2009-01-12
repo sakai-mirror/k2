@@ -45,6 +45,7 @@ public class UserEnvironmentBean implements UserEnvironment {
   private SubjectPermissionService subjectPermissionService;
   private boolean sealed = false;
   private Registry<String,SubjectTokenProvider<String>> registry;
+  private String locale;
 
   @Inject
   public UserEnvironmentBean(SubjectPermissionService subjectPermissionService,
@@ -188,4 +189,22 @@ public class UserEnvironmentBean implements UserEnvironment {
     return subjectsBean;
   }
 
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#getLocale()
+   */
+  public String getLocale() {
+    return locale;
+  }
+  
+    /**
+     * @param locale the locale to set
+     */
+    public void setLocale(String locale) {
+      if (sealed) {
+        throw new RuntimeException(
+            "Attempt to unseal a sealed UserEnvironmentBean ");
+      }
+      this.locale = locale;
+    }
 }
