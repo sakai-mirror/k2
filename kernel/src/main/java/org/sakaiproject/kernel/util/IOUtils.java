@@ -17,9 +17,12 @@
  */
 package org.sakaiproject.kernel.util;
 
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+
 
 /**
  * 
@@ -58,6 +61,22 @@ public class IOUtils {
       return sb.toString();
     }
     return null;
+  }
+
+  /**
+   * @param in
+   * @param outputStream
+   * @throws IOException 
+   */
+  public static void stream(InputStream from, OutputStream to) throws IOException {
+    byte[] b = new byte[4096];
+    for(int i = from.read(b, 0, 4096); i >= 0; i = from.read(b, 0, 4096)) {
+      if ( i == 0 ) {
+        Thread.yield();
+      } else {
+        to.write(b,0,i);
+      }
+    }
   }
 
 }
