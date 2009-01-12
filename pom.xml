@@ -76,6 +76,7 @@
           <redirectTestOutputToFile>true</redirectTestOutputToFile>
         </configuration>
      </plugin>
+<!--
       <plugin>
         <inherited>true</inherited>
         <groupId>org.sakaiproject.maven.plugins</groupId>
@@ -86,7 +87,6 @@
           <deployDirectory>${maven.tomcat.home}</deployDirectory>
           <webResources>
             <resource>
-<!-- this is relative to the this pom.xml directory -->
               <directory>${basedir}/src/webapp</directory>
               <includes>
                 <include>**/*.*</include>
@@ -95,6 +95,7 @@
           </webResources>
         </configuration>
       </plugin>
+-->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
