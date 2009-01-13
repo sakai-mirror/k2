@@ -19,6 +19,8 @@ package org.sakaiproject.kernel.user.jcr;
 
 import com.google.inject.Inject;
 
+import org.sakaiproject.kernel.api.Registry;
+import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.memory.Cache;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
@@ -28,6 +30,7 @@ import org.sakaiproject.kernel.api.user.UserResolverProvider;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.model.UserBean;
+import org.sakaiproject.kernel.user.ProviderUserResolverService;
 
 import java.util.List;
 
@@ -49,10 +52,18 @@ public class JcrUserResolverProvider implements UserResolverProvider {
    */
   @Inject
   public JcrUserResolverProvider(EntityManager entityManager,
-      CacheManagerService cacheManagerService, UserEnvironmentResolverService userEnvironmentResolverService) {
+      CacheManagerService cacheManagerService,
+      UserEnvironmentResolverService userEnvironmentResolverService,
+      RegistryService registryService) {
     this.entityManager = entityManager;
     cache = cacheManagerService.getCache(USERCACHE, CacheScope.INSTANCE);
     this.userEnvironmentResolverService = userEnvironmentResolverService;
+
+    // register as a user resolver
+    Registry<String, UserResolverProvider> userResolverRegistry = registryService
+        .getRegistry(ProviderUserResolverService.PROVIDER_REGISTRY);
+    userResolverRegistry.add(this);
+
   }
 
   /**
@@ -66,6 +77,7 @@ public class JcrUserResolverProvider implements UserResolverProvider {
       Query query = entityManager.createNamedQuery(UserBean.FINDBY_EID);
       query.setParameter(UserBean.EID_PARAM, eid);
       List<?> results = query.getResultList();
+      System.err.println("Got "+results.size()+" users");
       if (results.size() > 0) {
         u = (User) results.get(0);
         cache.put(eid, u);
@@ -81,7 +93,7 @@ public class JcrUserResolverProvider implements UserResolverProvider {
    */
   public UserInfo resolve(User user) {
     UserEnvironment ue = userEnvironmentResolverService.resolve(user);
-    if ( ue != null ) {
+    if (ue != null) {
       return ue.getUserInfo();
     }
     return null;

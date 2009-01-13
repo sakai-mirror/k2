@@ -29,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.ComponentManager;
 import org.sakaiproject.kernel.api.Kernel;
+import org.sakaiproject.kernel.api.Provider;
 import org.sakaiproject.kernel.api.ServiceManager;
 import org.sakaiproject.kernel.api.ShutdownService;
 import org.sakaiproject.kernel.api.authz.ReferenceResolverService;
@@ -287,6 +288,12 @@ public class KernelModule extends AbstractModule {
     TypeLiteral<List<RestProvider>> restProviderList = new TypeLiteral<List<RestProvider>>() {
     };
     bind(restProviderList).toProvider(RestProviderListProvider.class)
+        .asEagerSingleton();
+
+    // this is the list of all integrtion parts, annotated to avoid it being used elsewhere by mistake.
+    TypeLiteral<List<Provider<String>>> integrationProviderList = new TypeLiteral<List<Provider<String>>>() {
+    };
+    bind(integrationProviderList).annotatedWith(Names.named("forced-internal-1")).toProvider(IntegrationProviderListProvider.class)
         .asEagerSingleton();
 
   }

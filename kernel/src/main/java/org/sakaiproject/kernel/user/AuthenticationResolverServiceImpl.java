@@ -37,8 +37,8 @@ import java.security.Principal;
 
 /**
  * <p>
- * A caching authentication resolver service implementation, that uses a cache and chains to a chain of 
- * AuthenticationResolverServices.
+ * A caching authentication resolver service implementation, that uses a cache
+ * and chains to a chain of AuthenticationResolverServices.
  * </p>
  */
 @Singleton
@@ -57,21 +57,36 @@ public class AuthenticationResolverServiceImpl implements
   public AuthenticationResolverServiceImpl(
       @Named(RESOLVER_CHAIN_HEAD) AuthenticationResolverService nextInChain,
       @Named(RESOLVER_CHAIN_HEAD) AuthenticationManagerService authenticationManagerService,
-      AuthenticationCache authenticationCache) {
+      AuthenticationCache authenticationCache,
+      UserResolverService userResolverService) {
     this.authenticationCache = authenticationCache;
     this.nextInChain = nextInChain;
     this.authenticationManager = authenticationManagerService;
+    this.userResolverService = userResolverService;
   }
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.user.AuthenticationResolverService#authenticate(java.security.Principal)
    */
   public Authentication authenticate(Principal principal)
       throws SecurityException {
 
     Authentication rv = null;
-    if (principal instanceof IdPrincipal) {
+    if (principal instanceof ExternalTrustedPrincipal) {
+      ExternalTrustedPrincipal externalTrustedPrincipal = (ExternalTrustedPrincipal) principal;
+
+      User user = userResolverService.resolve(externalTrustedPrincipal
+          .getIdentifier());
+      if (user != null) {
+        rv = new AuthenticationImpl(user);
+      } else {
+        throw new SecurityException(
+            "Invalid Login: User not found in directory.");
+      }
+
+    } else if (principal instanceof IdPrincipal) {
       IdPrincipal idPrincipal = (IdPrincipal) principal;
 
       // Check the cache. If repeat authentication failures are being throttled,
@@ -88,17 +103,6 @@ public class AuthenticationResolverServiceImpl implements
 
       // Cache the authentication.
       authenticationCache.putAuthentication(idPrincipal, rv);
-    } else if (principal instanceof ExternalTrustedPrincipal) {
-      ExternalTrustedPrincipal externalTrustedPrincipal = (ExternalTrustedPrincipal) principal;
-
-      User user = userResolverService.resolve(externalTrustedPrincipal
-          .getIdentifier());
-      if (user != null) {
-        rv = new AuthenticationImpl(user);
-      } else {
-        throw new SecurityException(
-            "Invalid Login: User not found in directory.");
-      }
     } else {
       rv = nextInChain.authenticate(principal);
     }
@@ -110,10 +114,12 @@ public class AuthenticationResolverServiceImpl implements
 
   /**
    * {@inheritDoc}
-   * @see org.sakaiproject.kernel.api.user.AuthenticationManagerService#setAuthentication(java.security.Principal, java.security.Principal)
+   * 
+   * @see org.sakaiproject.kernel.api.user.AuthenticationManagerService#setAuthentication(java.security.Principal,
+   *      java.security.Principal)
    */
   public void setAuthentication(Principal oldPrincipal, Principal newPrincipal)
       throws SecurityException {
-     authenticationManager.setAuthentication(oldPrincipal,newPrincipal);
+    authenticationManager.setAuthentication(oldPrincipal, newPrincipal);
   }
 }

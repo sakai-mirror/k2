@@ -32,6 +32,7 @@ import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
+import org.sakaiproject.kernel.model.UserEnvironmentBean;
 import org.sakaiproject.kernel.util.IOUtils;
 import org.sakaiproject.kernel.util.PathUtils;
 
@@ -72,6 +73,8 @@ public class SimpleJcrUserEnvironmentResolverService implements
     this.beanConverter = beanConverter;
     cache = cacheManagerService.getCache("userenv",
         CacheScope.CLUSTERINVALIDATED);
+    cache.put("test", null);
+    cache.remove("test");
   }
 
   /**

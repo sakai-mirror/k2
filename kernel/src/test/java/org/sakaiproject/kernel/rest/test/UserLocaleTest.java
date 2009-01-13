@@ -39,8 +39,9 @@ public class UserLocaleTest {
     UserEnvironmentResolverService userEnvironmentResolverService = createMock(UserEnvironmentResolverService.class);
     Session session = createMock(Session.class);
     
-    expect(userEnvironmentResolverService.resolve(session)).andReturn(null).anyTimes();
+//    expect(userEnvironmentResolverService.resolve(session)).andReturn(null).anyTimes();
     expect(session.getAttribute("sakai.locale.")).andReturn(null).anyTimes();
+    expect(session.getUser()).andReturn(null).anyTimes();
     replay(userEnvironmentResolverService,session);
     UserLocale ul = new UserLocale(userEnvironmentResolverService);
     ul.getLocale(null, session);
@@ -54,6 +55,7 @@ public class UserLocaleTest {
     
     expect(userEnvironmentResolverService.resolve(session)).andReturn(null).anyTimes();
     expect(session.getAttribute("sakai.locale.")).andReturn(null).anyTimes();
+    expect(session.getUser()).andReturn(null).anyTimes();
     replay(userEnvironmentResolverService,session);
     UserLocale ul = new UserLocale(userEnvironmentResolverService);
 

@@ -18,38 +18,40 @@
 package org.sakaiproject.kernel;
 
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 
-import org.sakaiproject.kernel.api.rest.RestProvider;
-import org.sakaiproject.kernel.rest.DefaultRestProvider;
-import org.sakaiproject.kernel.rest.RestAuthenticationProvider;
-import org.sakaiproject.kernel.rest.RestMeProvider;
+import org.sakaiproject.kernel.api.Provider;
+import org.sakaiproject.kernel.user.jcr.JcrAuthenticationResolverProvider;
+import org.sakaiproject.kernel.user.jcr.JcrUserResolverProvider;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
+ * This provides all the integration providers, they register themselves with
+ * the relevant register on startup.
  */
-public class RestProviderListProvider implements Provider<List<RestProvider>> {
+public class IntegrationProviderListProvider implements
+    com.google.inject.Provider<List<Provider<String>>> {
 
-  private List<RestProvider> list = new ArrayList<RestProvider>();
+  private List<Provider<String>> list = new ArrayList<Provider<String>>();
+
   /**
    * 
    */
   @Inject
-  public RestProviderListProvider(DefaultRestProvider defaultRestProvider,
-      RestAuthenticationProvider restAuthenticationProvider,
-      RestMeProvider restMeProvider) {
-    list.add(restAuthenticationProvider);
-    list.add(defaultRestProvider);
-    list.add(restMeProvider);
+  public IntegrationProviderListProvider(
+      JcrAuthenticationResolverProvider authenticationResolverProvider,
+      JcrUserResolverProvider jcrUserResolverProvider) {
+    list.add(authenticationResolverProvider);
+    list.add(jcrUserResolverProvider);
   }
+
   /**
    * {@inheritDoc}
+   * 
    * @see com.google.inject.Provider#get()
    */
-  public List<RestProvider> get() {
+  public List<Provider<String>> get() {
     return list;
   }
 

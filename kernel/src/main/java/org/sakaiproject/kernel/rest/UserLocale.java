@@ -20,6 +20,7 @@ package org.sakaiproject.kernel.rest;
 import com.google.inject.Inject;
 
 import org.sakaiproject.kernel.api.session.Session;
+import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.util.StringUtils;
@@ -57,8 +58,11 @@ public class UserLocale {
   public Locale getLocale(Locale browserLocale, Session session) {
     Locale loc = null;
 
-    UserEnvironment userEnvironment = userEnvironmentResolverService
-        .resolve(session);
+    User user = session.getUser();
+    UserEnvironment userEnvironment = null;
+    if (user != null && user.getUuid() != null) {
+      userEnvironment = userEnvironmentResolverService.resolve(user);
+    }
     String localeKey = (String) session.getAttribute(LOCALE_SESSION_KEY);
     if (userEnvironment != null && localeKey == null) {
       localeKey = userEnvironment.getLocale();

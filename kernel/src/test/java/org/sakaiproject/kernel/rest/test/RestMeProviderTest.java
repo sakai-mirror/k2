@@ -40,6 +40,7 @@ import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
+import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
@@ -104,11 +105,9 @@ public class RestMeProviderTest extends KernelIntegrationBase {
     expect(request.getAttribute("_uuid")).andReturn(null).anyTimes();
     expect(session.getAttribute("_u")).andReturn(null).anyTimes();
     expect(session.getAttribute("_uu")).andReturn(null).anyTimes();
-    session.setAttribute((String) anyObject(), anyObject());
-    expectLastCall().atLeastOnce();
     expect(request.getLocale()).andReturn(new Locale("en","US")).anyTimes();
     expect(session.getAttribute("sakai.locale.")).andReturn(null).anyTimes();
-    response.setContentType("text/json");
+    response.setContentType(RestProvider.CONTENT_TYPE);
     expectLastCall().atLeastOnce();
     final ByteArrayOutputStream baos = new ByteArrayOutputStream();
     expect(response.getOutputStream()).andReturn(new ServletOutputStream() {
@@ -131,7 +130,7 @@ public class RestMeProviderTest extends KernelIntegrationBase {
     String responseString = new String(baos.toByteArray(),"UTF-8");
     
     System.err.println("Response Was "+responseString);
-    assertTrue(responseString.indexOf("userid : \"anon\"") > 0);
+    assertTrue(responseString.indexOf("uuid : null") > 0);
     
     cacheManagerService.unbind(CacheScope.REQUEST);
     verify(request,response,session);
@@ -158,7 +157,7 @@ public class RestMeProviderTest extends KernelIntegrationBase {
     expect(session.getAttribute("_uu")).andReturn(null).anyTimes();
     expect(request.getLocale()).andReturn(new Locale("en","US")).anyTimes();
     expect(session.getAttribute("sakai.locale.")).andReturn(null).anyTimes();
-    response.setContentType("text/json");
+    response.setContentType(RestProvider.CONTENT_TYPE);
     expectLastCall().atLeastOnce();
     final ByteArrayOutputStream baos = new ByteArrayOutputStream();
     expect(response.getOutputStream()).andReturn(new ServletOutputStream() {
@@ -237,7 +236,7 @@ public class RestMeProviderTest extends KernelIntegrationBase {
     expect(session.getAttribute("_uu")).andReturn(null).anyTimes();
     expect(request.getLocale()).andReturn(new Locale("en","US")).anyTimes();
     expect(session.getAttribute("sakai.locale.")).andReturn(null).anyTimes();
-    response.setContentType("text/json");
+    response.setContentType(RestProvider.CONTENT_TYPE);
     expectLastCall().atLeastOnce();
     final ByteArrayOutputStream baos = new ByteArrayOutputStream();
     expect(response.getOutputStream()).andReturn(new ServletOutputStream() {

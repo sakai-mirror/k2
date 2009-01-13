@@ -28,7 +28,7 @@ import java.security.NoSuchAlgorithmException;
  */
 public class StringUtils {
 
-  private static final char[] TOHEX = "0123456789ABCDEF".toCharArray();
+  private static final char[] TOHEX = "0123456789abcdef".toCharArray();
 
   /**
    * @param packageName
@@ -118,8 +118,10 @@ public class StringUtils {
     int i = 0;
     
     for (byte b : base) {
-      c[i++] = TOHEX[(b%0x0f)];
-      c[i++] = TOHEX[(b/0x0f)];      
+      int j = b;
+      j = j+128;
+      c[i++] = TOHEX[j/0x10];      
+      c[i++] = TOHEX[j%0x10];
     }
     return new String(c);
   }

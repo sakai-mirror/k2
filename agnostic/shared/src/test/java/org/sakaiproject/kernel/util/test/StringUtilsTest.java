@@ -22,6 +22,9 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.sakaiproject.kernel.util.StringUtils;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+
 /**
  * 
  */
@@ -129,6 +132,34 @@ public class StringUtilsTest {
     assertEquals("", e[1]);
     e = StringUtils.split("..............", '.',2);
     assertEquals(0, e.length);
+    
+//    StringUtils.byteToHex(base);
+//    StringUtils.sha1Hash(tohash);
   }
+  
+  @Test
+  public void testByteToHex() {
+   for ( int i = 0; i < 256; i++) {
+     
+     byte[] b = new byte[10];
+     for ( int j = 0; j < b.length; j++) {
+       b[j] = (byte) (i-128);
+     }
+     StringUtils.byteToHex(b);
+   }
+  }
+  
+  @Test
+  public void testSha1Hash() throws UnsupportedEncodingException, NoSuchAlgorithmException {
+    assertEquals("db2ae1644939bfbf8602a58bec78b39bfe660f58", StringUtils.sha1Hash("password"));
+    assertEquals("db2ae1644939bfbf8602a58bec78b39bfe660f58", StringUtils.sha1Hash("password"));
+    assertEquals("db2ae1644939bfbf8602a58bec78b39bfe660f58", StringUtils.sha1Hash("password"));
+    assertEquals("db2ae1644939bfbf8602a58bec78b39bfe660f58", StringUtils.sha1Hash("password"));
+    assertEquals("db2ae1644939bfbf8602a58bec78b39bfe660f58", StringUtils.sha1Hash("password"));
+    assertEquals("db2ae1644939bfbf8602a58bec78b39bfe660f58", StringUtils.sha1Hash("password"));
+    assertTrue(!"db2ae1644939bfbf8602a58bec78b39bfe660f58".equals(StringUtils.sha1Hash("password22")));
+  }
+  
+  
 
 }

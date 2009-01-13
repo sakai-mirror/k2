@@ -50,6 +50,7 @@ public class RegistryImpl<V, T extends Provider<V>> implements Registry<V, T> {
    * @see org.sakaiproject.kernel.api.Registry#add(java.lang.Object)
    */
   public synchronized void add(T provider) {
+    
     List<T> newList = new ArrayList<T>();
     newList.addAll(providers);
     newList.add(provider);

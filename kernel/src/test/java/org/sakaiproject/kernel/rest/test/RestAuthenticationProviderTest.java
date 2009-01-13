@@ -28,6 +28,7 @@ import net.sf.json.JSONObject;
 
 import org.junit.Test;
 import org.sakaiproject.kernel.api.RegistryService;
+import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.user.Authentication;
 import org.sakaiproject.kernel.registry.RegistryServiceImpl;
 import org.sakaiproject.kernel.rest.RestAuthenticationProvider;
@@ -60,7 +61,7 @@ public class RestAuthenticationProviderTest {
     StringWriter sw = new StringWriter();
     PrintWriter pw = new PrintWriter(sw);
     expect(response.getWriter()).andReturn(pw).anyTimes();
-    response.setContentType("text/json");
+    response.setContentType(RestProvider.CONTENT_TYPE);
     expectLastCall().anyTimes();
 
     replay(request, response);
@@ -90,7 +91,7 @@ public class RestAuthenticationProviderTest {
     PrintWriter pw = new PrintWriter(sw);
     expect(response.getWriter()).andReturn(pw).anyTimes();
 
-    response.setContentType("text/json");
+    response.setContentType(RestProvider.CONTENT_TYPE);
     expectLastCall().anyTimes();
 
     replay(request, response);
@@ -133,7 +134,7 @@ public class RestAuthenticationProviderTest {
     StringWriter sw = new StringWriter();
     PrintWriter pw = new PrintWriter(sw);
     expect(response.getWriter()).andReturn(pw).anyTimes();
-    response.setContentType("text/json");
+    response.setContentType(RestProvider.CONTENT_TYPE);
     expectLastCall().anyTimes();
 
     replay(request, response);
@@ -161,7 +162,7 @@ public class RestAuthenticationProviderTest {
     StringWriter sw = new StringWriter();
     PrintWriter pw = new PrintWriter(sw);
     expect(response.getWriter()).andReturn(pw).anyTimes();
-    response.setContentType("text/json");
+    response.setContentType(RestProvider.CONTENT_TYPE);
     expectLastCall().anyTimes();
 
     replay(request, response);

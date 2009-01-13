@@ -20,6 +20,8 @@ package org.sakaiproject.kernel.user.jcr;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import org.sakaiproject.kernel.api.Registry;
+import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.user.Authentication;
 import org.sakaiproject.kernel.api.user.AuthenticationManagerProvider;
@@ -29,6 +31,7 @@ import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.authz.simple.SimpleJcrUserEnvironmentResolverService;
 import org.sakaiproject.kernel.user.AuthenticationImpl;
+import org.sakaiproject.kernel.user.AuthenticationResolverServiceImpl;
 import org.sakaiproject.kernel.util.PathUtils;
 import org.sakaiproject.kernel.util.StringUtils;
 
@@ -44,7 +47,7 @@ import javax.jcr.Property;
 public class JcrAuthenticationResolverProvider implements
     AuthenticationResolverProvider, AuthenticationManagerProvider {
 
-  private static final String JCRPASSWORDHASH = "auth:sha1-password-hash";
+  public static final String JCRPASSWORDHASH = "sakai:sha1-password-hash";
   private String userEnvironmentBase;
   private JCRNodeFactoryService jcrNodeFactoryService;
   private UserResolverService userResolverService;
@@ -57,10 +60,19 @@ public class JcrAuthenticationResolverProvider implements
   public JcrAuthenticationResolverProvider(
       JCRNodeFactoryService jcrNodeFactoryService,
       @Named(SimpleJcrUserEnvironmentResolverService.JCR_USERENV_BASE) String userEnvironmentBase,
-      UserResolverService userResolverService) {
+      UserResolverService userResolverService, RegistryService registryService) {
     this.jcrNodeFactoryService = jcrNodeFactoryService;
     this.userEnvironmentBase = userEnvironmentBase;
     this.userResolverService = userResolverService;
+
+    // register as a resolver and a manager
+    Registry<String, AuthenticationResolverProvider> authResolverRegistry = registryService
+        .getRegistry(AuthenticationResolverServiceImpl.PROVIDER_REGISTRY);
+    authResolverRegistry.add(this);
+    Registry<String, AuthenticationManagerProvider> authManagerRegistry = registryService
+        .getRegistry(AuthenticationResolverServiceImpl.MANAGER_PROVIDER_REGISTRY);
+    authManagerRegistry.add(this);
+
   }
 
   /**
@@ -91,9 +103,9 @@ public class JcrAuthenticationResolverProvider implements
           throw new SecurityException("Authentication Failed for user "
               + idPwPrincipal.getIdentifier(), ex);
         }
-        throw new SecurityException("Authentication Failed for user "
-            + idPwPrincipal.getIdentifier());
       }
+      throw new SecurityException("Authentication Failed for user "
+          + idPwPrincipal.getIdentifier()+": not known to the system ");
     }
     throw new SecurityException("Authentication Principal " + principal
         + " not suitable for " + this.getClass().getName());

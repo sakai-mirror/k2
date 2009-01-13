@@ -71,6 +71,7 @@ public class ProviderAuthenticationResolverService implements
       try {
         return authN.authenticate(principal);
       } catch (SecurityException se) {
+        se.printStackTrace();
         if (messages.length() == 0) {
           messages.append("Authentication Failed:\n");
         }

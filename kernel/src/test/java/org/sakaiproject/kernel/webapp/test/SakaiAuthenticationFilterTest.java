@@ -33,6 +33,7 @@ import org.sakaiproject.kernel.test.KernelIntegrationBase;
 import org.sakaiproject.kernel.webapp.filter.SakaiAuthenticationFilter;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 import javax.jcr.RepositoryException;
 import javax.servlet.FilterChain;
@@ -50,9 +51,11 @@ public class SakaiAuthenticationFilterTest extends KernelIntegrationBase {
   private static final String BADBASE64AUTH = "Basic asdfasdfsfsd9921xx==";
   @BeforeClass
   public static void beforeThisClass() throws ComponentActivatorException,
-      RepositoryException, JCRNodeFactoryServiceException, IOException {
+      RepositoryException, JCRNodeFactoryServiceException, IOException, InterruptedException, NoSuchAlgorithmException {
     KernelIntegrationBase.beforeClass();
+    KernelIntegrationBase.loadTestUsers();
   }
+  
 
   @AfterClass
   public static void afterClass() {

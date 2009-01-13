@@ -35,7 +35,7 @@ import javax.persistence.Table;
  * 
  */
 @Entity
-@Table(name = "user")
+@Table(name = "user_eid")
 @NamedQueries(value = {
     @NamedQuery(name = UserBean.FINDBY_UID, query = "select u from UserBean u where u.uid = :uid"),
     @NamedQuery(name = UserBean.FINDBY_EID, query = "select u from UserBean u where u.eid = :eid") })

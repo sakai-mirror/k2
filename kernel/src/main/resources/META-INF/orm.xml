@@ -7,4 +7,6 @@
   </entity>
   <entity class="org.sakaiproject.kernel.model.GroupMembershipBean">
   </entity>
+  <entity class="org.sakaiproject.kernel.model.UserBean">
+  </entity>
 </entity-mappings>

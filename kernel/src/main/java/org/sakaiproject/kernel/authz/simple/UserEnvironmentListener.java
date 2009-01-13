@@ -137,11 +137,11 @@ public class UserEnvironmentListener implements JcrContentListener {
         User u = ue.getUser();
 
         Query userQuery = entityManager.createNamedQuery(UserBean.FINDBY_UID);
-        userQuery.setParameter(UserBean.FINDBY_UID, u.getUuid());
+        userQuery.setParameter(UserBean.UID_PARAM, u.getUuid());
         List<?> userBeansByUID = userQuery.getResultList();
 
         Query userQuery2 = entityManager.createNamedQuery(UserBean.FINDBY_EID);
-        userQuery2.setParameter(UserBean.FINDBY_EID, u.getEid());
+        userQuery2.setParameter(UserBean.EID_PARAM, u.getEid());
         List<?> userBeansByEID = userQuery.getResultList();
         boolean foundUserBean = false;
         List<UserBean> toRemoveUserBeans = new ArrayList<UserBean>();
