@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 public interface RestProvider extends Provider<String> {
 
   public static final String REST_REGISTRY = "rest.registry";
-  public static final String CONTENT_TYPE = "text/json";
+  public static final String CONTENT_TYPE = "text/plain";
 
   /**
    * Produces the output for the rest request, as json 
