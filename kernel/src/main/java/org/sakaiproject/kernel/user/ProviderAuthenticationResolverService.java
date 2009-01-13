@@ -22,6 +22,8 @@ import com.google.inject.Inject;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.user.Authentication;
+import org.sakaiproject.kernel.api.user.AuthenticationManagerProvider;
+import org.sakaiproject.kernel.api.user.AuthenticationManagerService;
 import org.sakaiproject.kernel.api.user.AuthenticationResolverProvider;
 import org.sakaiproject.kernel.api.user.AuthenticationResolverService;
 
@@ -33,10 +35,11 @@ import java.util.List;
  * registered from elsewhere
  */
 public class ProviderAuthenticationResolverService implements
-    AuthenticationResolverService {
+    AuthenticationResolverService, AuthenticationManagerService {
 
   private NullAuthenticationResolverServiceImpl nullService;
-  private Registry<String,AuthenticationResolverProvider<String>> registry;
+  private Registry<String,AuthenticationResolverProvider> registry;
+  private Registry<String,AuthenticationManagerProvider> managerRegistry;
 
   /**
    * 
@@ -44,10 +47,12 @@ public class ProviderAuthenticationResolverService implements
   @Inject
   public ProviderAuthenticationResolverService(
       NullAuthenticationResolverServiceImpl nullService,
-      RegistryService providerService) {
+      RegistryService registryService) {
     this.nullService = nullService;
-    this.registry = providerService
+    this.registry = registryService
         .getRegistry(PROVIDER_REGISTRY);
+    
+   this.managerRegistry = registryService.getRegistry(MANAGER_PROVIDER_REGISTRY);
   }
 
   /**
@@ -57,17 +62,42 @@ public class ProviderAuthenticationResolverService implements
    */
   public Authentication authenticate(Principal principal)
       throws SecurityException {
-    List<AuthenticationResolverProvider<String>> providers = registry.getList();
+    List<AuthenticationResolverProvider> providers = registry.getList();
     if (providers.size() == 0) {
       return nullService.authenticate(principal);
     }
     StringBuilder messages = new StringBuilder();
-    for (AuthenticationResolverProvider<String> authN : providers) {
+    for (AuthenticationResolverProvider authN : providers) {
       try {
         return authN.authenticate(principal);
       } catch (SecurityException se) {
         if (messages.length() == 0) {
           messages.append("Authentication Failed:\n");
+        }
+        messages.append("\t").append(authN).append(" said ").append(
+            se.getMessage()).append("\n");
+      }
+    }
+    throw new SecurityException(messages.toString());
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.user.AuthenticationManagerService#setAuthentication(java.security.Principal, java.security.Principal)
+   */
+  public void setAuthentication(Principal oldPrincipal, Principal newPrincipal)
+      throws SecurityException {
+    List<AuthenticationManagerProvider> providers = managerRegistry.getList();
+    if (providers.size() == 0) {
+      nullService.setAuthentication(oldPrincipal, newPrincipal);
+    }
+    StringBuilder messages = new StringBuilder();
+    for (AuthenticationManagerProvider authN : providers) {
+      try {
+        authN.setAuthentication(oldPrincipal, newPrincipal);
+      } catch (SecurityException se) {
+        if (messages.length() == 0) {
+          messages.append("Faield to set authentication:\n");
         }
         messages.append("\t").append(authN).append(" said ").append(
             se.getMessage()).append("\n");

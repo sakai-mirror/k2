@@ -23,6 +23,7 @@ import com.google.inject.Singleton;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.user.Authentication;
+import org.sakaiproject.kernel.api.user.AuthenticationManagerService;
 import org.sakaiproject.kernel.api.user.AuthenticationResolverService;
 import org.sakaiproject.kernel.api.user.IdPrincipal;
 import org.sakaiproject.kernel.api.user.User;
@@ -36,7 +37,7 @@ import java.security.Principal;
  */
 @Singleton
 public class NullAuthenticationResolverServiceImpl implements
-    AuthenticationResolverService {
+    AuthenticationResolverService, AuthenticationManagerService {
 
   private static final Log LOG = LogFactory.getLog(NullAuthenticationResolverServiceImpl.class);
   private UserResolverService userResolverService;
@@ -64,6 +65,14 @@ public class NullAuthenticationResolverServiceImpl implements
       return new AuthenticationImpl(u);
     }
     return null;
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.user.AuthenticationManagerService#setAuthentication(java.security.Principal, java.security.Principal)
+   */
+  public void setAuthentication(Principal oldPrincipal, Principal newPrincipal)
+      throws SecurityException {
   }
 
 }

@@ -21,6 +21,7 @@ import com.google.inject.ImplementedBy;
 import com.google.inject.Singleton;
 
 import org.sakaiproject.kernel.api.session.Session;
+import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.authz.simple.SimpleJcrUserEnvironmentResolverService;
 
 /**
@@ -45,12 +46,20 @@ public interface UserEnvironmentResolverService {
    * @return the UserEnvironment object.
    */
   UserEnvironment resolve(Session currentSession);
+  
+  /**
+   * Resolve a User Environment for an arbritary user, probably not this user.
+   * @param user the User that identifies the User environment
+   * @return the User Environment, or null if none is found.
+   */
+  UserEnvironment resolve(User user);
 
   /**
    * Remove the userEnvironment bound to the sessionId from any caches.
    * @param sessionId
    */
   void expire(String sessionId);
+
 
 
 }

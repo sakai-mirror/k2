@@ -22,6 +22,7 @@ import com.google.inject.Singleton;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.user.User;
+import org.sakaiproject.kernel.api.user.UserInfo;
 import org.sakaiproject.kernel.api.user.UserResolverService;
 
 /**
@@ -30,6 +31,7 @@ import org.sakaiproject.kernel.api.user.UserResolverService;
  */
 @Singleton
 public class NullUserResolverServiceImpl implements UserResolverService {
+
 
   private static final Log LOG = LogFactory
       .getLog(NullUserResolverServiceImpl.class);
@@ -57,6 +59,15 @@ public class NullUserResolverServiceImpl implements UserResolverService {
       }
 
     };
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.user.UserResolverService#resolve(org.sakaiproject.kernel.api.user.User)
+   */
+  public UserInfo resolve(User user) {
+    LOG.warn("NON PRODUCTION CORE: Null resolution of user info " + user);
+    return new NullUserInfo(user);
   }
 
 }

@@ -27,9 +27,12 @@ import org.sakaiproject.kernel.api.authz.SubjectPermissions;
 import org.sakaiproject.kernel.api.authz.SubjectStatement;
 import org.sakaiproject.kernel.api.authz.SubjectTokenProvider;
 import org.sakaiproject.kernel.api.authz.UserSubjects;
+import org.sakaiproject.kernel.api.user.User;
+import org.sakaiproject.kernel.api.user.UserInfo;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -39,12 +42,15 @@ public class UserEnvironmentBean implements UserEnvironment {
   private static final String USER_ENV_TTL = "userenvironment.ttl";
   private transient long expiry;
   private transient SubjectsBean subjectsBean;
+  private transient User user;
   private boolean superUser = false;
   private String[] subjects = new String[0];
-  private String userid;
+  private Map<String, String> properties;
+  private String uuid;
+  private String eid;
   private SubjectPermissionService subjectPermissionService;
   private boolean sealed = false;
-  private Registry<String,SubjectTokenProvider<String>> registry;
+  private Registry<String, SubjectTokenProvider<String>> registry;
   private String locale;
 
   @Inject
@@ -52,7 +58,8 @@ public class UserEnvironmentBean implements UserEnvironment {
       @Named(USER_ENV_TTL) int ttl, RegistryService registryService) {
     expiry = System.currentTimeMillis() + ttl;
     this.subjectPermissionService = subjectPermissionService;
-    this.registry = registryService.getRegistry(SubjectStatement.PROVIDER_REGISTRY);
+    this.registry = registryService
+        .getRegistry(SubjectStatement.PROVIDER_REGISTRY);
   }
 
   /**
@@ -66,6 +73,7 @@ public class UserEnvironmentBean implements UserEnvironment {
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#matches(org.sakaiproject.kernel.api.authz.SubjectStatement)
    */
   // TODO: No test coverage of this
@@ -90,9 +98,9 @@ public class UserEnvironmentBean implements UserEnvironment {
       }
       return false;
     case USERID:
-      return userid.equals(subject.getSubjectToken());
+      return uuid.equals(subject.getSubjectToken());
     case AUTHENTICATED:
-      return (userid != null && userid.trim().length() > 0);
+      return (uuid != null && uuid.trim().length() > 0);
     case ANON:
       return true;
     }
@@ -113,6 +121,7 @@ public class UserEnvironmentBean implements UserEnvironment {
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#isSuperUser()
    */
   public boolean isSuperUser() {
@@ -121,6 +130,7 @@ public class UserEnvironmentBean implements UserEnvironment {
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#getSubjects()
    */
   public String[] getSubjects() {
@@ -129,10 +139,14 @@ public class UserEnvironmentBean implements UserEnvironment {
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#getUserid()
    */
-  public String getUserid() {
-    return userid;
+  public User getUser() {
+    if (user == null) {
+      user = new UserBean(uuid, eid);
+    }
+    return user;
   }
 
   /**
@@ -148,15 +162,41 @@ public class UserEnvironmentBean implements UserEnvironment {
   }
 
   /**
-   * @param userid
-   *          the userid to set
+   * @param eid
+   *          the eid to set
    */
-  public void setUserid(String userid) {
+  public void setEid(String eid) {
     if (sealed) {
       throw new RuntimeException(
           "Attempt to unseal a sealed UserEnvironmentBean ");
     }
-    this.userid = userid;
+    this.eid = eid;
+  }
+
+  /**
+   * @param uuid
+   *          the uuid to set
+   */
+  public void setUuid(String uuid) {
+    if (sealed) {
+      throw new RuntimeException(
+          "Attempt to unseal a sealed UserEnvironmentBean ");
+    }
+    this.uuid = uuid;
+  }
+
+  /**
+   * @return the eid
+   */
+  public String getEid() {
+    return eid;
+  }
+
+  /**
+   * @return the uuid
+   */
+  public String getUuid() {
+    return uuid;
   }
 
   /**
@@ -182,6 +222,7 @@ public class UserEnvironmentBean implements UserEnvironment {
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#getUserSubjects()
    */
   public UserSubjects getUserSubjects() {
@@ -191,20 +232,47 @@ public class UserEnvironmentBean implements UserEnvironment {
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#getLocale()
    */
   public String getLocale() {
     return locale;
   }
-  
-    /**
-     * @param locale the locale to set
-     */
-    public void setLocale(String locale) {
-      if (sealed) {
-        throw new RuntimeException(
-            "Attempt to unseal a sealed UserEnvironmentBean ");
-      }
-      this.locale = locale;
+
+  /**
+   * @param locale
+   *          the locale to set
+   */
+  public void setLocale(String locale) {
+    if (sealed) {
+      throw new RuntimeException(
+          "Attempt to unseal a sealed UserEnvironmentBean ");
     }
+    this.locale = locale;
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#getUserInfo()
+   */
+  public UserInfo getUserInfo() {
+    return new UserInfo() {
+
+      public String getProperty(String name) {
+        return properties.get(name);
+      }
+
+      public User getUser() {
+        return null;
+      }
+
+      public void setProperty(String name, String value) {
+        // TODO Auto-generated method stub
+
+      }
+
+    };
+  }
+
 }

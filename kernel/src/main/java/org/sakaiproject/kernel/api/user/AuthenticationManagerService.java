@@ -17,25 +17,26 @@
  */
 package org.sakaiproject.kernel.api.user;
 
-import org.sakaiproject.kernel.api.Provider;
+import java.security.Principal;
 
 /**
- * A provider of resolution services.
+ * Manages authentication of the user.
  */
-public interface UserResolverProvider extends Provider<String> {
+public interface AuthenticationManagerService {
 
   /**
-   * @param eid
-   *          the Extenal user ID
-   * @return a User object, if no resolution is possible, return null.
-   */
-  User resolve(String eid);
-
-  /**
-   * resolve the user info from the user object.
+   * Set the authentication tokens for the user.
    * 
-   * @param user
-   * @return
+   * @param oldPrincipal
+   *          a Principal containing the old principals for the user.
+   * @param newPrincipal
+   *          a Principal containing the new principals for the user.
+   * @throws SecurityException
+   *           is the principals are not of the right type, or the user does not
+   *           exist, or the old principal does not authenticate the user
+   *           correctly.
    */
-  UserInfo resolve(User user);
+  void setAuthentication(Principal oldPrincipal, Principal newPrincipal)
+      throws SecurityException;
+
 }

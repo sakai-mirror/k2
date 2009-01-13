@@ -118,6 +118,7 @@ public class BeanJsonLibConverterTest {
   }
   @Test
   public void testConvertArrayToString() {
+    @SuppressWarnings("unused")
     String json = converter.convertToString(new String[] { "element1", "element2" });
     
   }

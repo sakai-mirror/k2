@@ -20,12 +20,19 @@ package org.sakaiproject.kernel.authz.simple;
 import org.sakaiproject.kernel.api.authz.SubjectPermissions;
 import org.sakaiproject.kernel.api.authz.SubjectStatement;
 import org.sakaiproject.kernel.api.authz.UserSubjects;
+import org.sakaiproject.kernel.api.user.User;
+import org.sakaiproject.kernel.api.user.UserInfo;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
+import org.sakaiproject.kernel.user.AnonUser;
+import org.sakaiproject.kernel.user.NullUserInfo;
 
 /**
  * 
  */
 public class NullUserEnvironment implements UserEnvironment {
+
+  private User user = new AnonUser();
+  private UserInfo userInfo  = new NullUserInfo(user);
 
   /**
    * {@inheritDoc}
@@ -61,10 +68,10 @@ public class NullUserEnvironment implements UserEnvironment {
 
   /**
    * {@inheritDoc}
-   * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#getUserid()
+   * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#getUser()
    */
-  public String getUserid() {
-    return "anon";
+  public User getUser() {
+    return user;
   }
 
   /**
@@ -103,4 +110,12 @@ public class NullUserEnvironment implements UserEnvironment {
   public String getLocale() {
     return "en_US";
   }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#getUserInfo()
+   */
+  public UserInfo getUserInfo() {
+    return userInfo;
+   }
 }

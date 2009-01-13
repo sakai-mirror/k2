@@ -37,6 +37,8 @@ public interface AuthenticationResolverService {
    * The name of the registry used for this type of service.
    */
   public static final String PROVIDER_REGISTRY = "authentication.provider.registry";
+  public static final String MANAGER_PROVIDER_REGISTRY = "authentication.manager.provider.registry";
+
 
   /**
    * Attempt to authenticate a user by the given evidence. Success produces the

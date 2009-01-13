@@ -29,6 +29,7 @@ import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.session.Session;
+import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.util.IOUtils;
@@ -75,25 +76,33 @@ public class SimpleJcrUserEnvironmentResolverService implements
 
   /**
    * {@inheritDoc}
-   * 
-   * @see org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService#resolve(org.sakaiproject.kernel.api.session.Session)
+   * @see org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService#resolve(org.sakaiproject.kernel.api.user.User)
    */
-  public UserEnvironment resolve(Session currentSession) {
-    String userId = currentSession.getUser().getUuid();
-    if (cache.containsKey(userId)) {
-      UserEnvironment ue = cache.get(userId);
+  public UserEnvironment resolve(User user) {
+    if (cache.containsKey(user.getUuid())) {
+      UserEnvironment ue = cache.get(user.getUuid());
       if (ue != null && !ue.hasExpired()) {
         return ue;
       }
     }
 
-    String userEnv = getUserEnvPath(userId);
+    String userEnv = getUserEnvPath(user.getUuid());
     UserEnvironment ue = loadUserEnvironmentBean(userEnv);
     if (ue != null) {
-      cache.put(userId, ue);
+      cache.put(user.getUuid(), ue);
       return ue;
     }
     return nullUserEnv;
+  }
+  
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService#resolve(org.sakaiproject.kernel.api.session.Session)
+   */
+  public UserEnvironment resolve(Session currentSession) {
+    return resolve(currentSession.getUser());
   }
   
   public void expire(String userId) {
@@ -144,7 +153,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
     String prefix = PathUtils.getUserPrefix(userId);
     return userEnvironmentBase + prefix + USERENV;
   }
-  
+
   
   
 

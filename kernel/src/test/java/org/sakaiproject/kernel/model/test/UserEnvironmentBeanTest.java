@@ -74,8 +74,9 @@ public class UserEnvironmentBeanTest {
     subjects[4] = ".engineering:student";
     UserEnvironmentBean uenvBean = injector
         .getInstance(UserEnvironmentBean.class);
-    uenvBean.setUserid("ib236");
-    uenvBean.setSubjects(subjects);
+    uenvBean.setUuid("ib236");
+    uenvBean.setEid("raven:ib236");
+      uenvBean.setSubjects(subjects);
     uenvBean.setSuperUser(false);
     uenvBean.seal();
     String json = converter.convertToString(uenvBean);
@@ -96,7 +97,8 @@ public class UserEnvironmentBeanTest {
     subjects[4] = ".engineering:student";
     UserEnvironmentBean uenvBean = injector
         .getInstance(UserEnvironmentBean.class);
-    uenvBean.setUserid("ib236");
+    uenvBean.setUuid("ib236");
+    uenvBean.setEid("raven:ib236");
     uenvBean.setSubjects(subjects);
     uenvBean.setSuperUser(false);
     uenvBean.seal();
@@ -109,7 +111,8 @@ public class UserEnvironmentBeanTest {
 
     subjects = new String[0];
     uenvBean = injector.getInstance(UserEnvironmentBean.class);
-    uenvBean.setUserid("admin");
+    uenvBean.setUuid("admin");
+    uenvBean.setEid("admin");
     uenvBean.setSubjects(subjects);
     uenvBean.setSuperUser(true);
     uenvBean.seal();
@@ -129,7 +132,7 @@ public class UserEnvironmentBeanTest {
       String[] subjects, String json, BeanConverter converter,
       UserEnvironmentBean userEnvironmentBean) {
     assertEquals(false, userEnvironmentBean.hasExpired());
-    assertEquals(uenvBean.getUserid(), userEnvironmentBean.getUserid());
+    assertEquals(uenvBean.getUser().getUuid(), userEnvironmentBean.getUser().getUuid());
     assertEquals(uenvBean.isSuperUser(), userEnvironmentBean.isSuperUser());
     String[] subjectList = userEnvironmentBean.getSubjects();
     if (subjects != null) {

@@ -178,7 +178,7 @@ public class ObservationTest extends KernelIntegrationBase {
     UserEnvironment userEnvironment = userEnvironmentResolverService
         .resolve(sessionManagerService.getCurrentSession());
     assertNotNull(userEnvironment);
-    assertEquals("ib236", userEnvironment.getUserid());
+    assertEquals("ib236", userEnvironment.getUser().getUuid());
     assertFalse(userEnvironment.hasExpired());
     
     UserEnvironmentBean userEnvironmentBean = (UserEnvironmentBean) userEnvironment;
@@ -214,7 +214,7 @@ public class ObservationTest extends KernelIntegrationBase {
     userEnvironment = userEnvironmentResolverService
         .resolve(sessionManagerService.getCurrentSession());
     assertNotNull(userEnvironment);
-    assertEquals("admin", userEnvironment.getUserid());
+    assertEquals("admin", userEnvironment.getUser().getUuid());
     assertFalse(userEnvironment.hasExpired());
     userEnvironmentBean = (UserEnvironmentBean) userEnvironment;
     subjects = userEnvironmentBean.getSubjects();

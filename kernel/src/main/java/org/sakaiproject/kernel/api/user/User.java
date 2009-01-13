@@ -20,7 +20,9 @@ package org.sakaiproject.kernel.api.user;
 import java.io.Serializable;
 
 /**
- * A user object binding EID to UUID
+ * A user object binding EID to UUID. This is a very lightweight object, as its
+ * used in the session and on each request. Do not add methods here, add them to
+ * the UserInfo object.
  */
 public interface User extends Serializable {
 

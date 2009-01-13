@@ -17,25 +17,34 @@
  */
 package org.sakaiproject.kernel.api.user;
 
-import org.sakaiproject.kernel.api.Provider;
-
 /**
- * A provider of resolution services.
+ * A user info bean defines the properties associated with the user, its a
+ * heavir weight object that is not so fast to retrieve comparet with the User
+ * object.
  */
-public interface UserResolverProvider extends Provider<String> {
+public interface UserInfo {
 
   /**
-   * @param eid
-   *          the Extenal user ID
-   * @return a User object, if no resolution is possible, return null.
+   * @return the user object defining the user that this is related to.
    */
-  User resolve(String eid);
+  User getUser();
 
   /**
-   * resolve the user info from the user object.
+   * Get a property from user info.
    * 
-   * @param user
+   * @param name
+   *          the name of the property
    * @return
    */
-  UserInfo resolve(User user);
+  String getProperty(String name);
+
+  /**
+   * Set a user info property.
+   * 
+   * @param name
+   *          the name of the property
+   * @param value
+   *          the value of the property
+   */
+  void setProperty(String name, String value);
 }

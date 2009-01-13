@@ -33,11 +33,20 @@ public interface UserResolverService {
    * The name of the registry used for this type of service.
    */
   public static final String PROVIDER_REGISTRY = "user.provider.registry";
+
   /**
    * @param eid
    *          the Extenal user ID
    * @return a User object
    */
   User resolve(String eid);
+
+  /**
+   * resolve the user info from the user object.
+   * 
+   * @param user
+   * @return
+   */
+  UserInfo resolve(User user);
 
 }

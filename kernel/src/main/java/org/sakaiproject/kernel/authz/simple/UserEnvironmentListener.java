@@ -26,9 +26,11 @@ import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
+import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.jcr.api.JcrContentListener;
 import org.sakaiproject.kernel.model.GroupMembershipBean;
+import org.sakaiproject.kernel.model.UserBean;
 import org.sakaiproject.kernel.model.UserEnvironmentBean;
 import org.sakaiproject.kernel.util.IOUtils;
 
@@ -65,7 +67,8 @@ public class UserEnvironmentListener implements JcrContentListener {
       @Named(SimpleJcrUserEnvironmentResolverService.JCR_USERENV_BASE) String userEnvironmentBase,
       @Named(BeanConverter.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
       SessionManagerService sessionManagerService,
-      UserEnvironmentResolverService userEnvironmentResolverService, EntityManager entityManager) {
+      UserEnvironmentResolverService userEnvironmentResolverService,
+      EntityManager entityManager) {
     this.userEnvironmentBase = userEnvironmentBase;
     this.jcrNodeFactoryService = jcrNodeFactoryService;
     this.beanConverter = beanConverter;
@@ -89,14 +92,14 @@ public class UserEnvironmentListener implements JcrContentListener {
             UserEnvironmentBean.class);
         ue.seal();
 
-        
-        userEnvironmentResolverService.expire(ue.getUserid());
+        userEnvironmentResolverService.expire(ue.getUser().getUuid());
 
         // the user environment bean contains a list of subjects, which the
         // users membership of groups
         Query query = entityManager
             .createNamedQuery(GroupMembershipBean.FINDBY_USER);
-        query.setParameter(GroupMembershipBean.USER_PARAM, ue.getUserid());
+        query.setParameter(GroupMembershipBean.USER_PARAM, ue.getUser()
+            .getUuid());
         List<?> membershipList = query.getResultList();
         List<GroupMembershipBean> toAdd = new ArrayList<GroupMembershipBean>();
         List<GroupMembershipBean> toRemove = new ArrayList<GroupMembershipBean>();
@@ -127,12 +130,53 @@ public class UserEnvironmentListener implements JcrContentListener {
             }
           }
           if (!found) {
-            toAdd.add(new GroupMembershipBean(ue.getUserid(), subject));
+            toAdd.add(new GroupMembershipBean(ue.getUser().getUuid(), subject));
+          }
+        }
+
+        User u = ue.getUser();
+
+        Query userQuery = entityManager.createNamedQuery(UserBean.FINDBY_UID);
+        userQuery.setParameter(UserBean.FINDBY_UID, u.getUuid());
+        List<?> userBeansByUID = userQuery.getResultList();
+
+        Query userQuery2 = entityManager.createNamedQuery(UserBean.FINDBY_EID);
+        userQuery2.setParameter(UserBean.FINDBY_EID, u.getEid());
+        List<?> userBeansByEID = userQuery.getResultList();
+        boolean foundUserBean = false;
+        List<UserBean> toRemoveUserBeans = new ArrayList<UserBean>();
+        for (Object o : userBeansByUID) {
+          UserBean ub = (UserBean) o;
+          if (!u.getUuid().equals(ub.getUuid())
+              || !u.getEid().equals(ub.getEid())) {
+            if (!toRemoveUserBeans.contains(ub)) {
+              toRemoveUserBeans.add(ub);
+            }
+          } else {
+            foundUserBean = true;
+          }
+        }
+        for (Object o : userBeansByEID) {
+          UserBean ub = (UserBean) o;
+          if (!u.getUuid().equals(ub.getUuid())
+              || !u.getEid().equals(ub.getEid())) {
+            if (!toRemoveUserBeans.contains(ub)) {
+              toRemoveUserBeans.add(ub);
+            }
+          } else {
+            foundUserBean = true;
           }
         }
 
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
+        if (!foundUserBean) {
+          UserBean ub = new UserBean(u.getUuid(), u.getEid());
+          entityManager.persist(ub);
+        }
+        for (UserBean ub : toRemoveUserBeans) {
+          entityManager.remove(ub);
+        }
         for (GroupMembershipBean gm : toRemove) {
           entityManager.remove(gm);
         }
@@ -140,7 +184,6 @@ public class UserEnvironmentListener implements JcrContentListener {
           entityManager.persist(gm);
         }
         transaction.commit();
-        
 
       } catch (UnsupportedEncodingException e) {
         LOG.error(e);

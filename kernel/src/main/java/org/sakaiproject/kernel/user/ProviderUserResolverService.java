@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.user.User;
+import org.sakaiproject.kernel.api.user.UserInfo;
 import org.sakaiproject.kernel.api.user.UserResolverProvider;
 import org.sakaiproject.kernel.api.user.UserResolverService;
 
@@ -39,7 +40,7 @@ public class ProviderUserResolverService implements
   private static final Log LOG = LogFactory.getLog(ProviderUserResolverService.class);
  
   private UserResolverService nullService;
-  private Registry<String,UserResolverProvider<String>> registry;
+  private Registry<String,UserResolverProvider> registry;
 
   /**
    * 
@@ -59,16 +60,45 @@ public class ProviderUserResolverService implements
    * @see org.sakaiproject.kernel.api.user.UserResolverService#resolve(java.lang.String)
    */
   public User resolve(String eid) {
-    List<UserResolverProvider<String>> userResolverProviders = registry.getList();
+    List<UserResolverProvider> userResolverProviders = registry.getList();
     if ( userResolverProviders.size() == 0 ) {
       return nullService.resolve(eid);
     }
     StringBuilder messages = new StringBuilder();
-    for (UserResolverProvider<String> userResolver : userResolverProviders) {
+    for (UserResolverProvider userResolver : userResolverProviders) {
       try {
         User u =  userResolver.resolve(eid);
         if ( u != null ) {
           return u;
+        }
+      } catch (Exception se) {
+        if (messages.length() == 0) {
+          messages.append("User Resolution Failed:\n");
+        }
+        messages.append("\t").append(userResolver).append(" said ").append(
+            se.getMessage()).append("\n");
+      }
+    }
+    LOG.info("User Resolution failed "+messages.toString());
+    return null;
+  }
+
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.user.UserResolverService#resolve(org.sakaiproject.kernel.api.user.User)
+   */
+  public UserInfo resolve(User user) {
+    List<UserResolverProvider> userResolverProviders = registry.getList();
+    if ( userResolverProviders.size() == 0 ) {
+      return nullService.resolve(user);
+    }
+    StringBuilder messages = new StringBuilder();
+    for (UserResolverProvider userResolver : userResolverProviders) {
+      try {
+        UserInfo ui =  userResolver.resolve(user);
+        if ( ui != null ) {
+          return ui;
         }
       } catch (Exception se) {
         if (messages.length() == 0) {

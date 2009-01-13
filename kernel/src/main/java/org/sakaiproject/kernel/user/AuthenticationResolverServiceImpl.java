@@ -26,6 +26,7 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 
 import org.sakaiproject.kernel.api.user.Authentication;
+import org.sakaiproject.kernel.api.user.AuthenticationManagerService;
 import org.sakaiproject.kernel.api.user.AuthenticationResolverService;
 import org.sakaiproject.kernel.api.user.ExternalTrustedPrincipal;
 import org.sakaiproject.kernel.api.user.IdPrincipal;
@@ -42,11 +43,12 @@ import java.security.Principal;
  */
 @Singleton
 public class AuthenticationResolverServiceImpl implements
-    AuthenticationResolverService {
+    AuthenticationResolverService, AuthenticationManagerService {
   public static final String RESOLVER_CHAIN_HEAD = "authentication.resolver.head";
   private AuthenticationCache authenticationCache;
   private AuthenticationResolverService nextInChain;
   private UserResolverService userResolverService;
+  private AuthenticationManagerService authenticationManager;
 
   /**
    * 
@@ -54,9 +56,11 @@ public class AuthenticationResolverServiceImpl implements
   @Inject
   public AuthenticationResolverServiceImpl(
       @Named(RESOLVER_CHAIN_HEAD) AuthenticationResolverService nextInChain,
+      @Named(RESOLVER_CHAIN_HEAD) AuthenticationManagerService authenticationManagerService,
       AuthenticationCache authenticationCache) {
     this.authenticationCache = authenticationCache;
     this.nextInChain = nextInChain;
+    this.authenticationManager = authenticationManagerService;
   }
 
   /**
@@ -102,5 +106,14 @@ public class AuthenticationResolverServiceImpl implements
       throw new SecurityException("Failed to authenticate " + principal);
     }
     return rv;
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.user.AuthenticationManagerService#setAuthentication(java.security.Principal, java.security.Principal)
+   */
+  public void setAuthentication(Principal oldPrincipal, Principal newPrincipal)
+      throws SecurityException {
+     authenticationManager.setAuthentication(oldPrincipal,newPrincipal);
   }
 }

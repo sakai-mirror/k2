@@ -17,10 +17,18 @@
  */
 package org.sakaiproject.kernel.util;
 
+import com.thoughtworks.xstream.core.util.Base64Encoder;
+
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 /**
  * 
  */
 public class StringUtils {
+
+  private static final char[] TOHEX = "0123456789ABCDEF".toCharArray();
 
   /**
    * @param packageName
@@ -29,7 +37,7 @@ public class StringUtils {
    */
   public static String[] split(String st, char sep) {
 
-    if ( st == null ) {
+    if (st == null) {
       return new String[0];
     }
     char[] pn = st.toCharArray();
@@ -96,6 +104,24 @@ public class StringUtils {
       e[j++] = new String(pn, s, end - s);
     }
     return e;
+  }
+
+  public static String sha1Hash(String tohash) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+    byte[] b = tohash.getBytes("UTF-8");
+    MessageDigest sha1 = MessageDigest.getInstance("SHA");
+    b = sha1.digest(b);
+    return byteToHex(b);
+  }
+
+  public static String byteToHex(byte[] base) {
+    char[] c = new char[base.length*2];
+    int i = 0;
+    
+    for (byte b : base) {
+      c[i++] = TOHEX[(b%0x0f)];
+      c[i++] = TOHEX[(b/0x0f)];      
+    }
+    return new String(c);
   }
 
 }
