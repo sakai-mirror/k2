@@ -1,5 +1,6 @@
 {
-  userid : "anon",
+  uuid : null,
+  eid : null,
   superUser: false,
   subjects : []
 }
