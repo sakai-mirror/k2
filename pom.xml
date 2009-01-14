@@ -39,7 +39,6 @@
         <module>sdata</module>
         <module>rest</module>
         <module>orm-test</module>
-        <module>jpa-test</module>
       </modules>
     </profile>
     <profile>
