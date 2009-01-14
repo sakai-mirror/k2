@@ -86,7 +86,8 @@ public class JcrAuthenticationResolverProvider implements
       // resolve the location of the users security file, which is the Userenv
       // file
       IdPwPrincipal idPwPrincipal = (IdPwPrincipal) principal;
-      User user = userResolverService.resolve(idPwPrincipal.getIdentifier());
+      System.err.println("Authenticating "+idPwPrincipal.getIdentifier()+":"+idPwPrincipal.getPassword());
+       User user = userResolverService.resolve(idPwPrincipal.getIdentifier());
       if (user != null) {
         try {
           String userEnvPath = getUserEnvPath(user.getUuid());

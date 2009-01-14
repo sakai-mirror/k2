@@ -68,6 +68,7 @@ public class SakaiAuthenticationFilter implements Filter {
   public void doFilter(ServletRequest request, ServletResponse response,
       FilterChain chain) throws IOException, ServletException {
     HttpServletRequest hrequest = (HttpServletRequest) request;
+    LOG.info("Authentication Filter runnign ");
     if ("1".equals(hrequest.getParameter("l"))) {
       try {
         AuthenticationType authNType = AuthenticationType.valueOf(request
@@ -87,6 +88,9 @@ public class SakaiAuthenticationFilter implements Filter {
         LOG.info("Authentication type " + request.getParameter("a")
             + " is not supported by this filter");
       }
+    } else {
+      LOG.info("Authentication Filter: no auth requested ");
+      
     }
 
     chain.doFilter(request, response);
@@ -141,6 +145,7 @@ public class SakaiAuthenticationFilter implements Filter {
           }
 
         };
+        LOG.info("Performing authentication for "+eid+" with "+principal);
         Authentication a = authenticationResolverService
             .authenticate(principal);
         if (a != null) {

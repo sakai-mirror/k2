@@ -69,6 +69,7 @@ public class ProviderAuthenticationResolverService implements
     StringBuilder messages = new StringBuilder();
     for (AuthenticationResolverProvider authN : providers) {
       try {
+        System.err.println("Trying to authenticate");
         return authN.authenticate(principal);
       } catch (SecurityException se) {
         se.printStackTrace();
