@@ -6,19 +6,31 @@
 
     <!-- META-INF/orm.xml is searched for by default -->
     <!-- or separate files can be listed specifically -->
+    <!--
     <mapping-file>org/sakaiproject/jpa/Address.orm.xml</mapping-file>
     <mapping-file>org/sakaiproject/jpa/Employee.orm.xml</mapping-file>
     <mapping-file>org/sakaiproject/jpa/Phone.orm.xml</mapping-file>
     <mapping-file>org/sakaiproject/jpa/Project.orm.xml</mapping-file>
-
+    -->
+    <class>org.sakaiproject.kernel.model.SubjectPermissionBean</class>
+    <class>org.sakaiproject.kernel.model.GroupMembershipBean</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
     <properties>
+      <!-- 
+      <property name="eclipselink.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver"/>
+      <property name="eclipselink.jdbc.url" value="jdbc:derby:testdb;create=true"/>
+      <property name="eclipselink.jdbc.user" value="sa"/>
+      <property name="eclipselink.jdbc.password" value=" "/>
+      <property name="eclipselink.target-server" value="None"/>
+      -->
+      <!--
       <property name="eclipselink.target-database" value="org.eclipse.persistence.platform.database.HSQLPlatform" />
       <property name="eclipselink.jdbc.driver" value="org.hsqldb.jdbcDriver" />
       <property name="eclipselink.jdbc.url" value="jdbc:hsqldb:mem:jpa" />
       <property name="eclipselink.jdbc.user" value="SA" />
       <property name="eclipselink.jdbc.password" value="" />
+      -->
       <property name="eclipselink.jdbc.write-connections.min" value="1" />
       <property name="eclipselink.jdbc.read-connections.min" value="1" />
       <property name="eclipselink.logging.level" value="FINE" />

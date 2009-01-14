@@ -38,6 +38,7 @@
         <module>webapps-assembly</module>
         <module>sdata</module>
         <module>rest</module>
+        <module>orm-test</module>
       </modules>
     </profile>
     <profile>
@@ -521,7 +522,7 @@
         <version>1.6.2</version>
       </dependency>
       <dependency>
-        <groupId>xstream</groupId>
+        <groupId>com.thoughtworks.xstream</groupId>
         <artifactId>xstream</artifactId>
         <version>1.2.2</version>
       </dependency>

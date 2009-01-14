@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2008 Sakai Foundation
- * 
+ *
  * Licensed under the Educational Community License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.osedu.org/licenses/ECL-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -21,7 +21,10 @@ import com.google.inject.name.Names;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.persistence.DataSourceService;
+import org.sakaiproject.kernel.component.core.SharedClassLoader;
+import org.sakaiproject.kernel.component.core.SharedClassLoaderContainer;
 import org.sakaiproject.kernel.persistence.dbcp.DataSourceServiceImpl;
 import org.sakaiproject.kernel.persistence.eclipselink.EntityManagerProvider;
 import org.sakaiproject.kernel.persistence.geronimo.TransactionManagerProvider;
@@ -38,13 +41,15 @@ import javax.transaction.TransactionManager;
 public class PersistenceModule extends AbstractModule {
   private static final Log LOG = LogFactory.getLog(PersistenceModule.class);
 
+  private Kernel kernel;
   private Properties properties;
 
-  public PersistenceModule() {
+  public PersistenceModule(Kernel kernel) {
     // the KernelModule and PersistenceModule classes were performing the same
     // properties read up. The activator now loads both of these modules into
     // the same injector so only one of them needs to read it up and
     // KernelModule does it first.
+    this.kernel = kernel;
   }
 
   public PersistenceModule(Properties properties) {
@@ -53,7 +58,7 @@ public class PersistenceModule extends AbstractModule {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see com.google.inject.AbstractModule#configure()
    */
   @Override
@@ -64,6 +69,22 @@ public class PersistenceModule extends AbstractModule {
     }
 
     // bind the base classes
+    // ServiceManager srvMgr = kernel.getServiceManager();
+    // bind(ArtifactResolverService.class).toProvider(
+    // new ServiceProvider<ArtifactResolverService>(srvMgr,
+    // ArtifactResolverService.class)).in(Scopes.SINGLETON);
+    // bind(Artifact.class).annotatedWith(
+    // Names.named(SharedClassLoader.SHARED_CLASSLOADER_ARTIFACT)).to(
+    // SharedClassloaderArtifact.class);
+    // bind(PackageRegistryService.class).toProvider(
+    // new ServiceProvider<PackageRegistryService>(srvMgr,
+    // PackageRegistryService.class)).in(Scopes.SINGLETON);
+
+    SharedClassLoaderContainer container =
+      kernel.getService(SharedClassLoaderContainer.class);
+
+    bind(SharedClassLoader.class).toInstance(
+        (SharedClassLoader) container.getManagedObject());
     bind(EntityManager.class).toProvider(EntityManagerProvider.class).in(
         Scopes.SINGLETON);
     bind(DataSource.class).toProvider(DataSourceServiceImpl.class).in(

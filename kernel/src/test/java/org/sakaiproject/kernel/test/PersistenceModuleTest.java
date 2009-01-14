@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2008 Sakai Foundation
- * 
+ *
  * Licensed under the Educational Community License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.osedu.org/licenses/ECL-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -16,12 +16,6 @@
 package org.sakaiproject.kernel.test;
 
 import static org.junit.Assert.assertNotNull;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Properties;
-import java.util.Map.Entry;
 
 import com.google.inject.CreationException;
 import com.google.inject.Guice;
@@ -36,12 +30,18 @@ import org.sakaiproject.kernel.component.KernelLifecycle;
 import org.sakaiproject.kernel.persistence.PersistenceModule;
 import org.sakaiproject.kernel.util.ResourceLoader;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Properties;
+import java.util.Map.Entry;
+
 import javax.persistence.EntityManager;
 import javax.sql.DataSource;
 import javax.transaction.TransactionManager;
 
 /**
- * 
+ *
  */
 public class PersistenceModuleTest {
   private static final String DEFAULT_PROPERTIES = "res://kernel-component.properties";
@@ -58,7 +58,7 @@ public class PersistenceModuleTest {
     Kernel kernel = kernelManager.getKernel();
 
     Injector injector = Guice.createInjector(new KernelModule(kernel, props),
-        new PersistenceModule());
+        new PersistenceModule(kernel));
     DataSource ds = injector.getInstance(DataSource.class);
     EntityManager em = injector.getInstance(EntityManager.class);
     TransactionManager tm = injector.getInstance(TransactionManager.class);

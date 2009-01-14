@@ -69,7 +69,7 @@ public class Activator implements ComponentActivator {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.sakaiproject.kernel.api.ComponentActivator#activate(org.sakaiproject
    * .kernel.api.Kernel)
@@ -80,7 +80,7 @@ public class Activator implements ComponentActivator {
     this.kernel = kernel;
     this.serviceManager = kernel.getServiceManager();
     this.injector = Guice.createInjector(new KernelModule(kernel),
-        new PersistenceModule());
+        new PersistenceModule(kernel));
 
     // export the services.
     try {
@@ -121,7 +121,7 @@ public class Activator implements ComponentActivator {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.sakaiproject.kernel.api.ComponentActivator#deactivate()
    */
   public void deactivate() {
@@ -142,7 +142,7 @@ public class Activator implements ComponentActivator {
       ((RequiresStop) service).stop();
     }
   }
-  
+
   /**
    * @return the injector
    */

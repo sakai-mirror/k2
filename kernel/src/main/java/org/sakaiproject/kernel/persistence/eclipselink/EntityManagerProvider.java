@@ -33,6 +33,7 @@ import org.apache.commons.logging.LogFactory;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.TargetServer;
 import org.sakaiproject.kernel.api.persistence.DataSourceService;
+import org.sakaiproject.kernel.component.core.PersistenceUnitClassLoader;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,20 +58,22 @@ public class EntityManagerProvider implements Provider<EntityManager> {
   public static final String JDBC_USERNAME = "jdbc.username";
   public static final String JDBC_PASSWORD = "jdbc.password";
 
-  private EntityManager entityManager;
+  private final EntityManager entityManager;
 
   /**
    * Construct an EclipseLink entity manager provider.
-   * 
+   *
    * @param minRead
    * @param minWrite
    * @param dataSourceService
    * @param unitName
    */
   @Inject
-  public EntityManagerProvider(@Named(DB_MIN_NUM_READ) String minRead,
+  public EntityManagerProvider(DataSourceService dataSourceService,
+      PersistenceUnitClassLoader persistenceCL,
+      @Named(DB_MIN_NUM_READ) String minRead,
       @Named(DB_MIN_WRITE) String minWrite,
-      DataSourceService dataSourceService, @Named(DB_UNITNAME) String unitName,
+      @Named(DB_UNITNAME) String unitName,
       @Named(JDBC_DRIVER_NAME) String driverClassName,
       @Named(JDBC_URL) String url, @Named(JDBC_USERNAME) String username,
       @Named(JDBC_PASSWORD) String password) {
@@ -85,14 +88,14 @@ public class EntityManagerProvider implements Provider<EntityManager> {
     properties.put(dataSourceService.getType(), dataSourceService
         .getDataSource());
 
+    // Configure the internal EclipseLink connection pool
     // LOG.info("Creating internal data source");
-    // // Configure the internal EclipseLink connection pool
     // properties.put(PersistenceUnitProperties.JDBC_DRIVER, driverClassName);
     // properties.put(PersistenceUnitProperties.JDBC_URL, url);
     // properties.put(PersistenceUnitProperties.JDBC_USER, username);
     // properties.put(PersistenceUnitProperties.JDBC_PASSWORD, password);
-    // properties.put(PersistenceUnitProperties.JDBC_READ_CONNECTIONS_MIN,
-    // minRead);
+    // properties
+    // .put(PersistenceUnitProperties.JDBC_READ_CONNECTIONS_MIN, minRead);
     // properties.put(PersistenceUnitProperties.JDBC_WRITE_CONNECTIONS_MIN,
     // minWrite);
 
@@ -117,15 +120,18 @@ public class EntityManagerProvider implements Provider<EntityManager> {
     // EnableIntegrityChecker.class.getName());
 
     LOG.info("Starting connection manager with properties " + properties);
-
+    final Thread currentThread = Thread.currentThread();
+    final ClassLoader saveClassLoader = currentThread.getContextClassLoader();
+    currentThread.setContextClassLoader(persistenceCL);
     EntityManagerFactory emFactory = Persistence.createEntityManagerFactory(
         unitName, properties);
     entityManager = emFactory.createEntityManager();
+    currentThread.setContextClassLoader(saveClassLoader);
   }
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see com.google.inject.Provider#get()
    */
   public EntityManager get() {
