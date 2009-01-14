@@ -139,6 +139,7 @@ public class RestMeProvider implements RestProvider {
         sendOutput(response, locale, ANON_UE_FILE);
       } else {
         String mePath = getMePath(user.getUuid());
+        System.err.println("Loading "+mePath+" for Rest Provider");
         Node n = jcrNodeFactoryService.getNode(mePath);
         if (n != null) {
           sendOutput(response, locale, mePath);
