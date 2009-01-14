@@ -101,7 +101,7 @@ public class ResourceLoaderTest {
     assertNotNull(in);
     in.close();
 
-    in = ResourceLoader.openResource("file:/" + path,this.getClass().getClassLoader());
+    in = ResourceLoader.openResource("file:" + path,this.getClass().getClassLoader());
     assertNotNull(in);
     in.close();
 

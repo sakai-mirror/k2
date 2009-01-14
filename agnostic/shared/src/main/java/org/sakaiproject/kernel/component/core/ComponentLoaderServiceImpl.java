@@ -35,6 +35,7 @@ import org.sakaiproject.kernel.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -53,14 +54,15 @@ public class ComponentLoaderServiceImpl implements ComponentLoaderService {
   private ArtifactResolverService artifactResolverService;
 
   /**
-   * @param artifactResolverService 
+   * @param artifactResolverService
    * @throws IOException
    * @throws ComponentSpecificationException
    * @throws KernelConfigurationException
    * 
    */
   @Inject
-  public ComponentLoaderServiceImpl(ComponentManager componentManager, ArtifactResolverService artifactResolverService) {
+  public ComponentLoaderServiceImpl(ComponentManager componentManager,
+      ArtifactResolverService artifactResolverService) {
     this.componentManager = componentManager;
     this.artifactResolverService = artifactResolverService;
   }
@@ -70,6 +72,7 @@ public class ComponentLoaderServiceImpl implements ComponentLoaderService {
       KernelConfigurationException {
     // convert the location set into a list of URLs
     List<URL> locations = new ArrayList<URL>();
+    LOG.info("Component Loacations has been set to " + componentLocations);
     for (String location : StringUtils.split(componentLocations, ';')) {
       location = location.trim();
       if (location.startsWith("maven-repo")) {
@@ -92,15 +95,18 @@ public class ComponentLoaderServiceImpl implements ComponentLoaderService {
           LOG.info("added component:" + location);
           locations.add(new URL(location));
         }
+      } else if (location.startsWith("classpath")) {
+        // resolve in the current classpath and add directly
+        fromClassloader = true;
       } else {
         LOG.info("Locating Components in " + location);
         for (File f : FileUtil.findAll(location, ".jar")) {
           URL url;
           String path = f.getCanonicalPath();
           if (path.indexOf("://") < 0) {
-            url = new URL("file" , "", path);
+            url = new URL("file", "", path);
           } else {
-        	url = new URL(path);
+            url = new URL(path);
           }
           LOG.info("    added component:" + url);
           locations.add(url);
@@ -122,17 +128,25 @@ public class ComponentLoaderServiceImpl implements ComponentLoaderService {
     for (Enumeration<URL> components = uclassloader
         .getResources(COMPONENT_SPEC_XML); components.hasMoreElements();) {
       URL url = components.nextElement();
-      String componentSpecXml = url.toString();
-      String source = componentSpecXml;
-      if (source.endsWith(COMPONENT_SPEC_XML)) {
-        source = source.substring(0, source.length()
-            - COMPONENT_SPEC_XML.length() - 2);
+      try {
+        String componentSpecXml = url.toURI().toString();
+        String source = componentSpecXml;
+        if (source.endsWith("!" + COMPONENT_SPEC_XML)) {
+          source = source.substring(0, source.length()
+              - COMPONENT_SPEC_XML.length() - 2);
+        }
+        if (source.endsWith(COMPONENT_SPEC_XML)) {
+          source = source.substring(0, source.length()
+              - COMPONENT_SPEC_XML.length() - 1);
+        }
+        if (source.startsWith("jar:")) {
+          source = source.substring(4);
+        }
+        LOG.info("Adding Component " + componentSpecXml + " from " + source);
+        specs.add(new URLComponentSpecificationImpl(source, componentSpecXml));
+      } catch (URISyntaxException e) {
+        LOG.warn("Failed to resolve URL " + e.getMessage());
       }
-      if (source.startsWith("jar:")) {
-        source = source.substring(4);
-      }
-      LOG.info("Adding Component " + url + " from " + source);
-      specs.add(new URLComponentSpecificationImpl(source, componentSpecXml));
     }
     if (specs.size() > 0) {
       uclassloader = null;
@@ -146,6 +160,9 @@ public class ComponentLoaderServiceImpl implements ComponentLoaderService {
       sb
           .append("\n so no components were loaded.\nI guess thats not what you wanted to happen!\n");
       LOG.error(sb.toString());
+    } else {
+      LOG
+          .error("No Components and no locations were specified by the load operation. Something needs to be specified ");
     }
     uclassloader = null;
   }

@@ -34,6 +34,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.api.KernelManager;
+import org.sakaiproject.kernel.api.Registry;
+import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
@@ -92,8 +94,11 @@ public class RestMeProviderTest extends KernelIntegrationBase {
     SessionManagerService sessionManagerService = km.getService(SessionManagerService.class);
     CacheManagerService cacheManagerService = km.getService(CacheManagerService.class);
     UserResolverService userResolverService = km.getService(UserResolverService.class);
-    Injector injector = KernelIntegrationBase.getInjector();
-    RestMeProvider rmp = injector.getInstance(RestMeProvider.class);
+    
+    RegistryService registryService = km.getService(RegistryService.class);
+    Registry<String, RestProvider> registry = registryService.getRegistry(RestProvider.REST_REGISTRY);
+    RestMeProvider rmp = (RestMeProvider) registry.getMap().get("me");
+    
     HttpServletRequest request = createMock(HttpServletRequest.class);
     HttpServletResponse response = createMock(HttpServletResponse.class);
     HttpSession session = createMock(HttpSession.class);
@@ -142,8 +147,9 @@ public class RestMeProviderTest extends KernelIntegrationBase {
     SessionManagerService sessionManagerService = km.getService(SessionManagerService.class);
     CacheManagerService cacheManagerService = km.getService(CacheManagerService.class);
     UserResolverService userResolverService = km.getService(UserResolverService.class);
-    Injector injector = KernelIntegrationBase.getInjector();
-    RestMeProvider rmp = injector.getInstance(RestMeProvider.class);
+    RegistryService registryService = km.getService(RegistryService.class);
+    Registry<String, RestProvider> registry = registryService.getRegistry(RestProvider.REST_REGISTRY);
+    RestMeProvider rmp = (RestMeProvider) registry.getMap().get("me");
     HttpServletRequest request = createMock(HttpServletRequest.class);
     HttpServletResponse response = createMock(HttpServletResponse.class);
     HttpSession session = createMock(HttpSession.class);
@@ -221,8 +227,9 @@ public class RestMeProviderTest extends KernelIntegrationBase {
       in.close();
     }
 
-    Injector injector = KernelIntegrationBase.getInjector();
-    RestMeProvider rmp = injector.getInstance(RestMeProvider.class);
+    RegistryService registryService = km.getService(RegistryService.class);
+    Registry<String, RestProvider> registry = registryService.getRegistry(RestProvider.REST_REGISTRY);
+    RestMeProvider rmp = (RestMeProvider) registry.getMap().get("me");
     HttpServletRequest request = createMock(HttpServletRequest.class);
     HttpServletResponse response = createMock(HttpServletResponse.class);
     HttpSession session = createMock(HttpSession.class);

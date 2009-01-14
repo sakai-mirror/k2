@@ -73,7 +73,6 @@ public class KernelIntegrationBase {
   private static final Log LOG = LogFactory.getLog(KernelIntegrationBase.class);
   private static KernelLifecycle kernelLifecycle;
   private static KernelManager kernelManager;
-  private static Injector injector;
   private static final String USERBASE = "res://org/sakaiproject/kernel/test/sampleuserenv/";
   private static final String[] USERS = new String[] {"admin","ib236","ieb" };
 
@@ -90,23 +89,12 @@ public class KernelIntegrationBase {
     FileUtil.deleteAll(dbBase);
     System.err.println("==========================================================================");
 
+    System.setProperty("sakai.kernel.properties", "inline://component.locations=classpath:;\n");
+    
     kernelLifecycle = new KernelLifecycle();
     kernelLifecycle.start();
 
     kernelManager = new KernelManager();
-    Kernel kernel = kernelManager.getKernel();
-    Activator activator = new Activator();
-    activator.activate(kernel);
-    for (Class<?> c : Activator.SERVICE_CLASSES) {
-
-      ShutdownService ss = kernel.getServiceManager().getService(
-          new ServiceSpec(ShutdownService.class));
-      Object s = kernel.getServiceManager().getService(new ServiceSpec(c));
-      if (s instanceof RequiresStop) {
-        ss.register((RequiresStop) s);
-      }
-    }
-    injector = activator.getInjector();
   }
 
   public static void afterClass() {
@@ -144,12 +132,6 @@ public class KernelIntegrationBase {
 
   }
   
-  /**
-   * @return the injector
-   */
-  public static Injector getInjector() {
-    return injector;
-  }
 
   /**
    * @throws IOException

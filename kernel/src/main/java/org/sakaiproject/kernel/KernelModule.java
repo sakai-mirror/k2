@@ -111,6 +111,8 @@ public class KernelModule extends AbstractModule {
    */
   public KernelModule(Kernel kernel) {
     this.kernel = kernel;
+    Exception ex = new Exception("Startup Route TraceBack");
+    ex.printStackTrace();
     InputStream is = null;
     try {
       is = ResourceLoader.openResource(DEFAULT_PROPERTIES, this.getClass()
