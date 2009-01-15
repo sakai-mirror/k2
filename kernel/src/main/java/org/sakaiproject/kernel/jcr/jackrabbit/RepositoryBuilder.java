@@ -43,6 +43,7 @@ import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
 import org.sakaiproject.kernel.util.ResourceLoader;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
@@ -247,7 +248,15 @@ public class RepositoryBuilder {
     try {
 
       injectorHolder.set(injector);
+      
+      System.err.println("Creating "+sharedFSBlobLocation);
+      System.err.println("Creating "+JOURNAL_LOCATION);
+      new File(sharedFSBlobLocation).mkdirs();
+      new File(journalLocation).mkdirs();
+      
+      
       RepositoryConfig rc = RepositoryConfig.create(bais, repositoryHome);
+      
       repository = RepositoryImpl.create(rc);
 
       Runtime.getRuntime().addShutdownHook(new Thread() {

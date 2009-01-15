@@ -306,7 +306,6 @@
     
     
     <!-- setup the cluster -->
-    <!-- 
     <Cluster id="${sakai.cluster}" >
       <Journal class="org.apache.jackrabbit.core.journal.FileJournal">
     	<param name="revision" value="${rep.home}/revision.log" />
@@ -322,6 +321,5 @@
  			<param name="revision" value="${rep.home}/repository/revision" />
        </Journal>
     </Cluster>
- -->
     
 </Repository>
