@@ -140,7 +140,6 @@ public class DependencyImpl implements Artifact {
   public String toString() {
     String s = nullTrim(groupId) + ":" + nullTrim(artifactId) + ":"
         + nullTrim(version) + nullTrim(classifier) + ":" + nullTrim(type);
-    LOG.info("String [" + s + "]");
     return s;
   }
 

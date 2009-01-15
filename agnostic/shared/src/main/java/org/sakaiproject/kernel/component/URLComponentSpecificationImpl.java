@@ -96,7 +96,6 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
     Reader in = null;
     InputStream xsd = null;
     try {
-      System.err.println("Loading components xml from "+d);
       specification = ResourceLoader.readResource(d,this.getClass().getClassLoader());
       xsd = ResourceLoader.openResource(COMPONENTS_XSD,this.getClass().getClassLoader());
       String errors = XSDValidator.validate(specification, xsd);

@@ -1,4 +1,4 @@
-package org.sakaiproject.kernel.jpa;
+package org.sakaiproject.jpa;
 
 public class Address
 {

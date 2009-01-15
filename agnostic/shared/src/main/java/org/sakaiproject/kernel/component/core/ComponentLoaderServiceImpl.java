@@ -21,12 +21,12 @@ import com.google.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.api.Artifact;
+import org.sakaiproject.kernel.api.ArtifactResolverService;
 import org.sakaiproject.kernel.api.ComponentLoaderService;
 import org.sakaiproject.kernel.api.ComponentManager;
 import org.sakaiproject.kernel.api.ComponentSpecification;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
-import org.sakaiproject.kernel.api.Artifact;
-import org.sakaiproject.kernel.api.ArtifactResolverService;
 import org.sakaiproject.kernel.api.KernelConfigurationException;
 import org.sakaiproject.kernel.component.URLComponentSpecificationImpl;
 import org.sakaiproject.kernel.component.model.DependencyImpl;
@@ -40,7 +40,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Loads components
@@ -71,7 +72,7 @@ public class ComponentLoaderServiceImpl implements ComponentLoaderService {
       throws IOException, ComponentSpecificationException,
       KernelConfigurationException {
     // convert the location set into a list of URLs
-    List<URL> locations = new ArrayList<URL>();
+    Map<String,URL> locations = new HashMap<String,URL>();
     LOG.info("Component Loacations has been set to " + componentLocations);
     for (String location : StringUtils.split(componentLocations, ';')) {
       location = location.trim();
@@ -79,7 +80,7 @@ public class ComponentLoaderServiceImpl implements ComponentLoaderService {
         Artifact dep = DependencyImpl.fromString(location);
         URL u = artifactResolverService.resolve(null, dep);
         LOG.info("added component:" + u);
-        locations.add(u);
+        locations.put(u.toString(),u);
       } else if (location.endsWith(".jar")) {
         if (location.indexOf("://") < 0) {
           File f = new File(location);
@@ -89,11 +90,12 @@ public class ComponentLoaderServiceImpl implements ComponentLoaderService {
           } else {
             URL url = new URL("file", "", f.getCanonicalPath());
             LOG.info("added component:" + url);
-            locations.add(url);
+            locations.put(url.toString(),url);
           }
         } else {
           LOG.info("added component:" + location);
-          locations.add(new URL(location));
+          URL u = new URL(location);
+          locations.put(u.toString(),u);
         }
       } else if (location.startsWith("classpath")) {
         // resolve in the current classpath and add directly
@@ -109,7 +111,7 @@ public class ComponentLoaderServiceImpl implements ComponentLoaderService {
             url = new URL(path);
           }
           LOG.info("    added component:" + url);
-          locations.add(url);
+          locations.put(url.toString(),url);
         }
       }
     }
@@ -121,36 +123,56 @@ public class ComponentLoaderServiceImpl implements ComponentLoaderService {
       parent = this.getClass().getClassLoader();
     }
     // find all the instances
-    URLClassLoader uclassloader = new URLClassLoader(locations
+    
+    LOG.info("+++++++++++search locations ++++++++++++++++++++++");
+    for ( URL location : locations.values() ) {
+      LOG.info("Searching in "+location.toString());
+    }
+    LOG.info("--------------------------------------------------");
+    URLClassLoader uclassloader = new URLClassLoader(locations.values()
         .toArray(new URL[0]), parent);
 
-    List<ComponentSpecification> specs = new ArrayList<ComponentSpecification>();
+    for ( URL u : uclassloader.getURLs() ) {
+      LOG.info("Configured with "+u);
+    }
+    for (Enumeration<URL> components = uclassloader
+        .getResources(COMPONENT_SPEC_XML); components.hasMoreElements();) {
+      LOG.info("Found "+components.nextElement());
+    }
+    
+    
+
+    Map<String,ComponentSpecification> specs = new HashMap<String,ComponentSpecification>();
     for (Enumeration<URL> components = uclassloader
         .getResources(COMPONENT_SPEC_XML); components.hasMoreElements();) {
       URL url = components.nextElement();
       try {
         String componentSpecXml = url.toURI().toString();
         String source = componentSpecXml;
-        if (source.endsWith("!" + COMPONENT_SPEC_XML)) {
-          source = source.substring(0, source.length()
-              - COMPONENT_SPEC_XML.length() - 2);
-        }
-        if (source.endsWith(COMPONENT_SPEC_XML)) {
+       if (source.endsWith(COMPONENT_SPEC_XML)) {
           source = source.substring(0, source.length()
               - COMPONENT_SPEC_XML.length() - 1);
         }
+       if ( source.endsWith("!") ) {
+         source = source.substring(0,source.length()-1);
+       }
         if (source.startsWith("jar:")) {
           source = source.substring(4);
         }
         LOG.info("Adding Component " + componentSpecXml + " from " + source);
-        specs.add(new URLComponentSpecificationImpl(source, componentSpecXml));
+        specs.put(source,new URLComponentSpecificationImpl(source, componentSpecXml));
       } catch (URISyntaxException e) {
         LOG.warn("Failed to resolve URL " + e.getMessage());
       }
     }
+    LOG.info("==========COMPONENT SET=====================");
+    for ( ComponentSpecification spec : specs.values()) {
+      LOG.info("Specification "+spec.getName());
+    }
+    LOG.info("============================================");
     if (specs.size() > 0) {
       uclassloader = null;
-      componentManager.startComponents(specs);
+      componentManager.startComponents(new ArrayList<ComponentSpecification>(specs.values()));
     } else if (locations.size() > 0) {
       StringBuilder sb = new StringBuilder();
       sb.append("No Components were found in the classpath:");

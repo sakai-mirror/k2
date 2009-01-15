@@ -105,7 +105,7 @@ public class KernelLifecycle implements CommonLifecycle<Kernel> {
    * @see org.sakaiproject.kernel.loader.common.CommonLifecycle#start()
    */
   public void start() {
-    LOG.info("Component Lifecycle is starting ==============================================");
+    LOG.info("==========PHASE 1 STARTING =================");
     try {
       long start = System.currentTimeMillis();
       lifecycleEvent(CommonLifecycleEvent.BEFORE_START);
@@ -198,7 +198,7 @@ public class KernelLifecycle implements CommonLifecycle<Kernel> {
       LOG.error("Failed to start Component Lifecycle ", ex);
       System.exit(FAILURE_CODE);
     }
-    LOG.info("Kernel Lifecycle Start Complete ===========================================");
+    LOG.info("============END of LIFECYCLE STARTUP===============================");
 
   }
 

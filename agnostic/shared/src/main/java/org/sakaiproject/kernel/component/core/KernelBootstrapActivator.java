@@ -107,16 +107,21 @@ public class KernelBootstrapActivator implements ComponentActivator {
         new ServiceSpec(ComponentLoaderService.class));
     Properties p = kbmodule.getProperties();
 
+    LOG.info("==========PHASE 1 START COMPLETE============");
     try {
       loader.load(p.getProperty("component.locations"), false);
+      LOG.info("==========PHASE 2 START COMPLETE============");
     } catch (IOException e) {
-      throw new ComponentActivatorException("Failed to load kernel components "
+      LOG.info("==========PHASE 2 START FAILED============");
+          throw new ComponentActivatorException("Failed to load kernel components "
           + e.getMessage(), e);
     } catch (ComponentSpecificationException e) {
-      throw new ComponentActivatorException("Failed to load kernel components "
+      LOG.info("==========PHASE 2 START FAILED============");
+            throw new ComponentActivatorException("Failed to load kernel components "
           + e.getMessage(), e);
     } catch (KernelConfigurationException e) {
-      throw new ComponentActivatorException("Failed to load kernel components "
+      LOG.info("==========PHASE 2 START FAILED============");
+           throw new ComponentActivatorException("Failed to load kernel components "
           + e.getMessage(), e);
     }
   }

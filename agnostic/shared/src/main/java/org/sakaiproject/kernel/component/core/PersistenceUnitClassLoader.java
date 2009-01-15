@@ -1,4 +1,4 @@
-/*******************************************************************************
+/* 
  * Copyright 2008 Sakai Foundation
  *
  * Licensed under the Educational Community License, Version 2.0 (the
@@ -157,8 +157,7 @@ public class PersistenceUnitClassLoader extends ClassLoader {
    *
    * @param parent
    */
-  @Inject
-  public PersistenceUnitClassLoader(final SharedClassLoader parent) {
+  public PersistenceUnitClassLoader(ClassLoader parent) {
     super(parent);
   }
 

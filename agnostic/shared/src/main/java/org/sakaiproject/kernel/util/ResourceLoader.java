@@ -68,7 +68,6 @@ public class ResourceLoader {
       URL url = new URL(resource);
       return url.openStream();
     } else if (resource.startsWith(FILE)) {
-      System.err.println("Trying to load local file "+resource);
       return new FileInputStream("/"+resource.substring(FILE.length()));
     } else if (resource.startsWith("jar:") || resource.indexOf("://") > 0) {
       URL url = new URL(resource);

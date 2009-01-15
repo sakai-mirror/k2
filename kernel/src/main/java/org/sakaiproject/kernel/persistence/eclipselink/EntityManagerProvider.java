@@ -70,7 +70,6 @@ public class EntityManagerProvider implements Provider<EntityManager> {
    */
   @Inject
   public EntityManagerProvider(DataSourceService dataSourceService,
-      PersistenceUnitClassLoader persistenceCL,
       @Named(DB_MIN_NUM_READ) String minRead,
       @Named(DB_MIN_WRITE) String minWrite,
       @Named(DB_UNITNAME) String unitName,
@@ -122,6 +121,7 @@ public class EntityManagerProvider implements Provider<EntityManager> {
     LOG.info("Starting connection manager with properties " + properties);
     final Thread currentThread = Thread.currentThread();
     final ClassLoader saveClassLoader = currentThread.getContextClassLoader();
+    PersistenceUnitClassLoader persistenceCL = new PersistenceUnitClassLoader(this.getClass().getClassLoader());
     currentThread.setContextClassLoader(persistenceCL);
     EntityManagerFactory emFactory = Persistence.createEntityManagerFactory(
         unitName, properties);

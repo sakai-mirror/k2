@@ -1,4 +1,4 @@
-package org.sakaiproject.kernel.jpa;
+package org.sakaiproject.jpa;
 
 import java.util.ArrayList;
 import java.util.List;

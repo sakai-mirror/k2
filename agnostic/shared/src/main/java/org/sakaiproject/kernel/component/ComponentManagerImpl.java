@@ -22,7 +22,6 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.Artifact;
 import org.sakaiproject.kernel.api.ClassLoaderService;
 import org.sakaiproject.kernel.api.ComponentActivator;
-import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.api.ComponentManager;
 import org.sakaiproject.kernel.api.ComponentSpecification;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
@@ -40,6 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -112,23 +112,25 @@ public class ComponentManagerImpl implements ComponentManager {
     stopComponents();
     LOG.info("== ComponentManager Shutdown Complete");
   }
-  
-  public boolean prepareStartComponent(ComponentSpecification spec) throws ComponentSpecificationException {
+
+  public boolean prepareStartComponent(ComponentSpecification spec)
+      throws ComponentSpecificationException {
 
     if (classloaders.containsKey(spec)) {
       return true;
     }
 
-    ClassLoader componentClassloader = Thread.currentThread().getContextClassLoader();
-  
+    ClassLoader componentClassloader = Thread.currentThread()
+        .getContextClassLoader();
+
     ClassLoaderService classLoaderService = kernel.getServiceManager()
         .getService(new ServiceSpec(ClassLoaderService.class));
     if (classLoaderService != null) {
       componentClassloader = classLoaderService.getComponentClassLoader(spec);
     }
-    
-    classloaders.put(spec,componentClassloader);
-    
+
+    classloaders.put(spec, componentClassloader);
+
     for (Artifact dependant : spec.getComponentDependencies()) {
       if (!dependant.isManaged()) {
         prepareStartComponent(componentsByName.get(dependant.toString()));
@@ -136,8 +138,7 @@ public class ComponentManagerImpl implements ComponentManager {
     }
 
     // scan for persistent classes
-    
-    
+
     return true;
   }
 
@@ -160,13 +161,13 @@ public class ComponentManagerImpl implements ComponentManager {
     if (components.containsKey(spec)) {
       return true;
     }
-    
-    
 
+    LOG.info("==================STARTING "+spec.getName());
     ClassLoader componentClassloader = classloaders.get(spec);
-    ClassLoader currentClassloader = Thread.currentThread().getContextClassLoader();
+    ClassLoader currentClassloader = Thread.currentThread()
+        .getContextClassLoader();
     Thread.currentThread().setContextClassLoader(componentClassloader);
-    
+
     try {
 
       for (Artifact dependant : spec.getComponentDependencies()) {
@@ -175,7 +176,7 @@ public class ComponentManagerImpl implements ComponentManager {
         }
       }
 
-      LOG.info("Activating " + spec + " with Class "
+      LOG.info("Activating " + spec.getName() + " with Class "
           + spec.getComponentActivatorClassName());
       Class<ComponentActivator> clazz = null;
       try {
@@ -202,14 +203,10 @@ public class ComponentManagerImpl implements ComponentManager {
 
       components.put(spec, activator);
       startedComponents.put(spec.getName(), spec);
+      LOG.info("==================STARTED   "+spec.getName());
       return true;
-    } catch (InstantiationException e) {
-      throw new KernelConfigurationException("Unable to start component "
-          + spec + " cause:" + e.getMessage(), e);
-    } catch (IllegalAccessException e) {
-      throw new KernelConfigurationException("Unable to start component "
-          + spec + " cause:" + e.getMessage(), e);
-    } catch (ComponentActivatorException e) {
+    } catch (Exception e) {
+      LOG.error("==================FAILED   "+spec.getName());
       throw new KernelConfigurationException("Unable to start component "
           + spec + " cause:" + e.getMessage(), e);
     } finally {
@@ -230,8 +227,8 @@ public class ComponentManagerImpl implements ComponentManager {
     try {
       // load a list of components urls from a properties file.
       Properties p = new Properties();
-      InputStream in = ResourceLoader
-          .openResource(DEFAULT_COMPONENTS_PROPERTIES,this.getClass().getClassLoader());
+      InputStream in = ResourceLoader.openResource(
+          DEFAULT_COMPONENTS_PROPERTIES, this.getClass().getClassLoader());
       try {
         if (in != null) {
           p.load(in);
@@ -326,21 +323,48 @@ public class ComponentManagerImpl implements ComponentManager {
         message.append("\t\tUnstable Component ").append(
             cs.getDependencyDescription()).append("\n");
       }
+    
     }
     if (errors.size() > 0) {
-      message
-          .append("\n\tERROR:The component dependency graph has unsatisfield dependencies\n");
+      Map<String,Map<String,String>> missing = new HashMap<String,  Map<String,String>>();
+      
       for (ComponentSpecification spec : errors) {
         for (Artifact d : spec.getComponentDependencies()) {
           if (!componentsByName.containsKey(d.toString())) {
-            message.append("\t\tComponent ").append(spec.getName()).append(
-                " depends on unsatisfied depedency ").append(d.toString())
-                .append("\n");
+            Map<String,String> l = missing.get(d.toString());
+            if ( l == null ) {
+              l = new HashMap<String, String>();
+              missing.put(d.toString(), l);
+            }
+            l.put(spec.getName(),spec.getName());
           }
         }
       }
+      message
+      .append("\n\tERROR:The component dependency graph has unsatisfield dependencies\n");
+
+      for (Entry<String, Map<String,String>> e : missing.entrySet() ) {
+        message.append("\n\tMissing dependency:").append(e.getKey()).append(" required by:");
+        for ( String n : e.getValue().values()) {
+          message.append("\n\t\t").append(n);
+        }
+      }
+      message.append("\n");
+      
     }
     if (message.length() > 0) {
+      
+      message
+      .append("\n\tINFO:There are "+toStart.size()+" components in this set are \n");
+      for ( ComponentSpecification spec : toStart ) {
+        message.append("\n\t\t").append(spec.getName());
+      }
+      message
+      .append("\n\tINFO: "+startedComponents.size()+" Components that have been started \n");
+      for ( ComponentSpecification spec : startedComponents.values() ) {
+        message.append("\n\t\t").append(spec.getName());
+      }
+      
       throw new ComponentSpecificationException(
           "Unable to start the component tree due to the following errors "
               + message.toString());
@@ -357,11 +381,17 @@ public class ComponentManagerImpl implements ComponentManager {
     Collections.sort(notStarted, new Comparator<ComponentSpecification>() {
 
       public int compare(ComponentSpecification o1, ComponentSpecification o2) {
-        return speclevel.get(o1) - speclevel.get(o2);
+        return speclevel.get(o2) - speclevel.get(o1);
       }
 
     });
-
+    
+    LOG.info("===START ORDER================There are "+notStarted+" components to start");
+    for ( ComponentSpecification spec : notStarted ) {
+      LOG.info(spec.getName()+" level "+speclevel.get(spec));
+    }
+    LOG.info("===END OF START ORDER=============================================");
+    
     return notStarted;
 
   }
@@ -453,10 +483,11 @@ public class ComponentManagerImpl implements ComponentManager {
   public void startComponents(List<ComponentSpecification> specs)
       throws ComponentSpecificationException, KernelConfigurationException {
     loadComponents(specs);
-    for (ComponentSpecification spec : getStartOrder(specs)) {
+    List<ComponentSpecification> sortedSpecs = getStartOrder(specs);
+    for (ComponentSpecification spec : sortedSpecs) {
       prepareStartComponent(spec);
     }
-    for (ComponentSpecification spec : getStartOrder(specs)) {
+    for (ComponentSpecification spec : sortedSpecs) {
       startComponent(spec);
     }
   }

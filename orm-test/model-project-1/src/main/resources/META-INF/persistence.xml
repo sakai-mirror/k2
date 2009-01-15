@@ -6,12 +6,11 @@
 
     <!-- META-INF/orm.xml is searched for by default -->
     <!-- or separate files can be listed specifically -->
-    <!--  
-    <mapping-file>org/sakaiproject/kernel/jpa/Address.orm.xml</mapping-file>
-    <mapping-file>org/sakaiproject/kernel/jpa/Employee.orm.xml</mapping-file>
-    <mapping-file>org/sakaiproject/kernel/jpa/Phone.orm.xml</mapping-file>
-    <mapping-file>org/sakaiproject/kernel/jpa/Project.orm.xml</mapping-file>
-    -->
+    <mapping-file>org/sakaiproject/jpa/Address.orm.xml</mapping-file>
+    <mapping-file>org/sakaiproject/jpa/Employee.orm.xml</mapping-file>
+    <mapping-file>org/sakaiproject/jpa/Phone.orm.xml</mapping-file>
+    <mapping-file>org/sakaiproject/jpa/Project.orm.xml</mapping-file>
+
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
     <properties>

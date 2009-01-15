@@ -17,17 +17,10 @@
  */
 package org.sakaiproject.kernel.test;
 
-import com.google.inject.Injector;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.sakaiproject.kernel.Activator;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
-import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.KernelManager;
-import org.sakaiproject.kernel.api.RequiresStop;
-import org.sakaiproject.kernel.api.ServiceSpec;
-import org.sakaiproject.kernel.api.ShutdownService;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
@@ -52,15 +45,8 @@ import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 
 import javax.jcr.AccessDeniedException;
-import javax.jcr.InvalidItemStateException;
-import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
-import javax.jcr.ReferentialIntegrityException;
 import javax.jcr.RepositoryException;
-import javax.jcr.lock.LockException;
-import javax.jcr.nodetype.ConstraintViolationException;
-import javax.jcr.nodetype.NoSuchNodeTypeException;
-import javax.jcr.version.VersionException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -149,6 +135,7 @@ public class KernelIntegrationBase {
       InputStream in = ResourceLoader.openResource(USERBASE+user+".json", SakaiAuthenticationFilter.class.getClassLoader());
       Node n = jcrNodeFactoryService.setInputStream(getUserEnvPath("ieb"), in);
       n.setProperty(JcrAuthenticationResolverProvider.JCRPASSWORDHASH, StringUtils.sha1Hash("password"));
+      n.save();
       in.close();
     }
     jcrService.getSession().save();
