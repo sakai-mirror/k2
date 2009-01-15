@@ -17,8 +17,6 @@
  */
 package org.sakaiproject.kernel.api;
 
-
-
 /**
  * The kernel.
  */
@@ -42,10 +40,11 @@ public interface Kernel {
 
   /**
    * Get the component parent classloader
+   * 
    * @return
    */
   ClassLoader getParentComponentClassLoader();
-  
+
   /**
    * Get a service, bound to an API, of the same type as the API
    * 
@@ -57,5 +56,16 @@ public interface Kernel {
    * @return the service or null if none is found.
    */
   <T> T getService(Class<T> serviceApi);
+
+  /**
+   * Get a class by name to ensure the class in question comes from within the
+   * kernel classloaders, in general the kernel is only access from classloaders
+   * attached to the kernel, but unit test will access from other classloaders.
+   * 
+   * @param name the name of the class to load
+   * @return that class loaded from the kernel classloader
+   * @throws ClassNotFoundException if the class could not be found 
+   */
+  Class<?> getClassByName(String name) throws ClassNotFoundException;
 
 }

@@ -82,7 +82,9 @@ public class ServiceManagerImpl implements ServiceManager {
    */
   @SuppressWarnings("unchecked")
   public <T> T getService(ServiceSpec serviceSpec) {
-    return (T) services.get(serviceSpec);
+    T service = (T) services.get(serviceSpec);
+    LOG.info("Got "+serviceSpec+" as "+service);
+    return service;
   }
 
   /**

@@ -38,7 +38,7 @@
         <module>webapps-assembly</module>
         <module>sdata</module>
         <module>rest</module>
-        <module>orm-test</module>
+<!--        <module>orm-test</module> -->
       </modules>
     </profile>
     <profile>
@@ -74,7 +74,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <redirectTestOutputToFile>true</redirectTestOutputToFile>
+          <redirectTestOutputToFile>false</redirectTestOutputToFile>
         </configuration>
      </plugin>
       <plugin>

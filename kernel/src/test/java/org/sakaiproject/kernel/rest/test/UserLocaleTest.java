@@ -18,14 +18,7 @@
 package org.sakaiproject.kernel.rest.test;
 
 
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
-
 import org.junit.Test;
-import org.sakaiproject.kernel.api.session.Session;
-import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.rest.UserLocale;
 
 import java.util.Locale;
@@ -34,34 +27,11 @@ import java.util.Locale;
  * 
  */
 public class UserLocaleTest {
-  @Test
-  public void testUserLocale() {
-    UserEnvironmentResolverService userEnvironmentResolverService = createMock(UserEnvironmentResolverService.class);
-    Session session = createMock(Session.class);
-    
-//    expect(userEnvironmentResolverService.resolve(session)).andReturn(null).anyTimes();
-    expect(session.getAttribute("sakai.locale.")).andReturn(null).anyTimes();
-    expect(session.getUser()).andReturn(null).anyTimes();
-    replay(userEnvironmentResolverService,session);
-    UserLocale ul = new UserLocale(userEnvironmentResolverService);
-    ul.getLocale(null, session);
-    verify(userEnvironmentResolverService,session);
-  }
   
   @Test
   public void testUserLocaleToMap() {
-    UserEnvironmentResolverService userEnvironmentResolverService = createMock(UserEnvironmentResolverService.class);
-    Session session = createMock(Session.class);
-    
-    expect(userEnvironmentResolverService.resolve(session)).andReturn(null).anyTimes();
-    expect(session.getAttribute("sakai.locale.")).andReturn(null).anyTimes();
-    expect(session.getUser()).andReturn(null).anyTimes();
-    replay(userEnvironmentResolverService,session);
-    UserLocale ul = new UserLocale(userEnvironmentResolverService);
-
-    System.err.println(ul.localeToMap(ul.getLocale(null, session)));
+    UserLocale ul = new UserLocale();
     System.err.println(ul.localeToMap(new Locale("")));
     System.err.println(ul.localeToMap(new Locale("en","US")));
-    verify(userEnvironmentResolverService,session);
   }
 }

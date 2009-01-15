@@ -60,7 +60,7 @@ public class Activator implements ComponentActivator {
       AuthzResolverService.class, PermissionQueryService.class,
       ReferenceResolverService.class, DataSourceService.class,
       UserEnvironmentResolverService.class, RegistryService.class,
-      EntityManager.class};
+      EntityManager.class };
   private static final Log LOG = LogFactory.getLog(Activator.class);
   @SuppressWarnings("unused")
   private Kernel kernel;
@@ -69,7 +69,7 @@ public class Activator implements ComponentActivator {
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see
    * org.sakaiproject.kernel.api.ComponentActivator#activate(org.sakaiproject
    * .kernel.api.Kernel)
@@ -114,14 +114,23 @@ public class Activator implements ComponentActivator {
    */
   private void exportService(Class<?> serviceClass)
       throws ServiceManagerException {
-    LOG.info("Exporting " + serviceClass);
-    serviceManager.registerService(new ServiceSpec(serviceClass), injector
-        .getInstance(serviceClass));
+    Object service = injector.getInstance(serviceClass);
+    LOG.info("Exporting " + serviceClass+" as "+service);
+    if (service == null) {
+      LOG
+          .fatal("____________________________________________________________________________________");
+      LOG
+          .fatal("Exported Service "
+              + serviceClass
+              + " as null, this service is missing from the kernel and everything that depends on it will break!");
+    } else {
+      serviceManager.registerService(new ServiceSpec(serviceClass), service);
+    }
   }
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see org.sakaiproject.kernel.api.ComponentActivator#deactivate()
    */
   public void deactivate() {

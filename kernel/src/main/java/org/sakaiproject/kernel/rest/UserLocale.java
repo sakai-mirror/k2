@@ -17,68 +17,16 @@
  */
 package org.sakaiproject.kernel.rest;
 
-import com.google.inject.Inject;
-
-import org.sakaiproject.kernel.api.session.Session;
-import org.sakaiproject.kernel.api.user.User;
-import org.sakaiproject.kernel.api.userenv.UserEnvironment;
-import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
-import org.sakaiproject.kernel.util.StringUtils;
-
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
 public class UserLocale {
 
-  protected String LOCALE_SESSION_KEY = "sakai.locale.";
 
   /** Preferences key for user's regional language locale */
   String LOCALE_KEY = "locale";
 
-  private UserEnvironmentResolverService userEnvironmentResolverService;
-
-  /**
-   * 
-   */
-  @Inject
-  public UserLocale(
-      UserEnvironmentResolverService userEnvironmentResolverService) {
-    this.userEnvironmentResolverService = userEnvironmentResolverService;
-  }
-
-  /**
-   * * Return user's prefered locale * First: return locale from Sakai user
-   * preferences, if available * Second: return locale from user session, if
-   * available * Last: return system default locale
-   * 
-   * @param locale * *
-   * @return user's Locale object
-   */
-  public Locale getLocale(Locale browserLocale, Session session) {
-    Locale loc = null;
-
-    User user = session.getUser();
-    UserEnvironment userEnvironment = null;
-    if (user != null && user.getUuid() != null) {
-      userEnvironment = userEnvironmentResolverService.resolve(user);
-    }
-    String localeKey = (String) session.getAttribute(LOCALE_SESSION_KEY);
-    if (userEnvironment != null && localeKey == null) {
-      localeKey = userEnvironment.getLocale();
-    }
-    String[] locValues = StringUtils.split(localeKey, '_');
-    if (locValues.length > 1) {
-      loc = new Locale(locValues[0], locValues[1]);
-    } else if (locValues.length == 1) {
-      loc = new Locale(locValues[0]);
-    } else if (browserLocale != null) {
-      loc = browserLocale;
-    } else {
-      loc = Locale.getDefault();
-    }
-    return loc;
-  }
 
   /**
    * @param locale

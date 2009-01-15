@@ -29,9 +29,8 @@ import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.user.User;
-import org.sakaiproject.kernel.authz.simple.SimpleJcrUserEnvironmentResolverService;
+import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.util.IOUtils;
-import org.sakaiproject.kernel.util.PathUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 
 import java.io.IOException;
@@ -55,10 +54,10 @@ public class RestMeProvider implements RestProvider {
   private static final String ANON_UE_FILE = "/configuration/defaults/anonue.json";
   private static RestDescription DESCRIPTION = new RestDescription();
   private JCRNodeFactoryService jcrNodeFactoryService;
-  private String userEnvironmentBase;
   private SessionManagerService sessionManagerService;
   private UserLocale userLocale;
   private BeanConverter beanConverter;
+  private UserEnvironmentResolverService userEnvironmentResolverService;
 
   @Inject
   public RestMeProvider(
@@ -67,15 +66,15 @@ public class RestMeProvider implements RestProvider {
       JCRNodeFactoryService jcrNodeFactoryService,
       UserLocale userLocale,
       @Named(BeanConverter.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
-      @Named(SimpleJcrUserEnvironmentResolverService.JCR_USERENV_BASE) String userEnvironmentBase) {
+      UserEnvironmentResolverService userEnvironmentResolverService) {
     Registry<String, RestProvider> registry = registryService
         .getRegistry(RestProvider.REST_REGISTRY);
     registry.add(this);
     this.sessionManagerService = sessionManagerService;
     this.jcrNodeFactoryService = jcrNodeFactoryService;
-    this.userEnvironmentBase = userEnvironmentBase;
     this.userLocale = userLocale;
     this.beanConverter = beanConverter;
+    this.userEnvironmentResolverService = userEnvironmentResolverService;
   }
 
   static {
@@ -109,14 +108,21 @@ public class RestMeProvider implements RestProvider {
                 + "locale is derived from the locale specified in the request, any prefereces "
                 + "expressed by the user and the " + "locale of the server. ");
     DESCRIPTION.addParameter("none", "The service accepts no parameters ");
-    DESCRIPTION.addHeader("none", "The service neither looks for headers nor sets any non standatd headers");
-    DESCRIPTION.addURLTemplate("me*", "The service is selected by /rest/me any training path will be ignored");
-    DESCRIPTION.addResponse("200", "The service returns a JSON body with 2 structures locale, and preferences. eg " +
-    		" { locale :{\"country\":\"US\",\"variant\":\"\",\"displayCountry\":\"United States\"," +
-    		"\"ISO3Country\":\"USA\",\"displayVariant\":\"\",\"language\":\"en\",\"displayLanguage\":\"English\"," +
-    		"\"ISO3Language\":\"eng\",\"displayName\":\"English (United States)\"}, " +
-    		"preferences :{ userid : \"ib236\",  superUser: false,  subjects : [\"group1:maintain\" ,\"group2:maintain\" ," +
-    		"\"group2:access\" ,\".engineering:student\"]}}");
+    DESCRIPTION
+        .addHeader("none",
+            "The service neither looks for headers nor sets any non standatd headers");
+    DESCRIPTION
+        .addURLTemplate("me*",
+            "The service is selected by /rest/me any training path will be ignored");
+    DESCRIPTION
+        .addResponse(
+            "200",
+            "The service returns a JSON body with 2 structures locale, and preferences. eg "
+                + " { locale :{\"country\":\"US\",\"variant\":\"\",\"displayCountry\":\"United States\","
+                + "\"ISO3Country\":\"USA\",\"displayVariant\":\"\",\"language\":\"en\",\"displayLanguage\":\"English\","
+                + "\"ISO3Language\":\"eng\",\"displayName\":\"English (United States)\"}, "
+                + "preferences :{ userid : \"ib236\",  superUser: false,  subjects : [\"group1:maintain\" ,\"group2:maintain\" ,"
+                + "\"group2:access\" ,\".engineering:student\"]}}");
 
   }
 
@@ -133,13 +139,13 @@ public class RestMeProvider implements RestProvider {
       Session session = sessionManagerService.getCurrentSession();
       User user = session.getUser();
 
-      Locale locale = userLocale.getLocale(request.getLocale(), session);
+      Locale locale = userEnvironmentResolverService.getUserLocale(request.getLocale(), session);
       if (user == null || user.getUuid() == null
           || "anon".equals(user.getUuid())) {
         sendOutput(response, locale, ANON_UE_FILE);
       } else {
-        String mePath = getMePath(user.getUuid());
-        System.err.println("Loading "+mePath+" for Rest Provider");
+        String mePath = userEnvironmentResolverService.getUserEnvironmentBasePath(user.getUuid())+UserEnvironmentResolverService.USERENV;
+        System.err.println("Loading " + mePath + " for Rest Provider");
         Node n = jcrNodeFactoryService.getNode(mePath);
         if (n != null) {
           sendOutput(response, locale, mePath);
@@ -206,15 +212,6 @@ public class RestMeProvider implements RestProvider {
     m.put("subjects", new String[0]);
     outputStream.print(beanConverter.convertToString(m));
     outputStream.print("}");
-  }
-
-  /**
-   * @return
-   */
-  public String getMePath(String userId) {
-    String prefix = PathUtils.getUserPrefix(userId);
-    return userEnvironmentBase + prefix
-        + SimpleJcrUserEnvironmentResolverService.USERENV;
   }
 
   /**

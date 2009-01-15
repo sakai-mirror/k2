@@ -32,12 +32,13 @@ import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
-import org.sakaiproject.kernel.model.UserEnvironmentBean;
 import org.sakaiproject.kernel.util.IOUtils;
 import org.sakaiproject.kernel.util.PathUtils;
+import org.sakaiproject.kernel.util.StringUtils;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Locale;
 
 import javax.jcr.RepositoryException;
 
@@ -48,7 +49,8 @@ public class SimpleJcrUserEnvironmentResolverService implements
     UserEnvironmentResolverService {
 
   public static final String JCR_USERENV_BASE = "jcruserenv.base";
-  public static final String USERENV = "userenv";
+  protected String LOCALE_SESSION_KEY = "sakai.locale.";
+
   private static final Log LOG = LogFactory
       .getLog(SimpleJcrUserEnvironmentResolverService.class);
   private JCRNodeFactoryService jcrNodeFactoryService;
@@ -165,7 +167,40 @@ public class SimpleJcrUserEnvironmentResolverService implements
     return userEnvironmentBase + prefix;
   }
 
-  
+  /**
+   * * Return user's prefered locale * First: return locale from Sakai user
+   * preferences, if available * Second: return locale from user session, if
+   * available * Last: return system default locale
+   * 
+   * @param locale * *
+   * @return user's Locale object
+   */
+  public Locale getUserLocale(Locale browserLocale, Session session) {
+    Locale loc = null;
+
+    User user = session.getUser();
+    UserEnvironment userEnvironment = null;
+    if (user != null && user.getUuid() != null) {
+      userEnvironment = resolve(user);
+    }
+    String localeKey = (String) session.getAttribute(LOCALE_SESSION_KEY);
+    if (userEnvironment != null && localeKey == null) {
+      localeKey = userEnvironment.getLocale();
+    }
+    String[] locValues = StringUtils.split(localeKey, '_');
+    if (locValues.length > 1) {
+      loc = new Locale(locValues[0], locValues[1]);
+    } else if (locValues.length == 1) {
+      loc = new Locale(locValues[0]);
+    } else if (browserLocale != null) {
+      loc = browserLocale;
+    } else {
+      loc = Locale.getDefault();
+    }
+    return loc;
+  }
+
+
   
 
 }

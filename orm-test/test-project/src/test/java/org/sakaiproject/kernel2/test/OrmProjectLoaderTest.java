@@ -15,8 +15,6 @@
  ******************************************************************************/
 package org.sakaiproject.kernel2.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.commons.logging.Log;
@@ -25,61 +23,21 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.sakaiproject.jpa.Employee;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
-import org.sakaiproject.kernel.api.Kernel;
-import org.sakaiproject.kernel.api.KernelManager;
-import org.sakaiproject.kernel.api.ServiceManager;
 import org.sakaiproject.kernel.component.KernelLifecycle;
 import org.sakaiproject.kernel.util.FileUtil;
-import org.sakaiproject.kernel2.mp2.Room;
 
 import java.io.File;
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 
 public class OrmProjectLoaderTest {
   private static final Log LOG = LogFactory.getLog(OrmProjectLoaderTest.class);
 
-  private static KernelLifecycle kernelLifecycle;
-  private static KernelManager kernelManager;
-
-  private static EntityManager em;
 
   @BeforeClass
-  public static void beforeClass() throws ComponentActivatorException {
-    // If there are problems with startup and shutdown, these will prevent the
-    // problem
-    File jcrBase = new File("target/jcr");
-    File dbBase = new File("target/testdb");
-    System.err
-        .println("==========================================================================");
-    System.err.println("Removing all previous JCR and DB traces from "
-        + jcrBase.getAbsolutePath() + " " + dbBase.getAbsolutePath());
+  public static void beforeClass() throws ComponentActivatorException, ClassNotFoundException {
 
-    FileUtil.deleteAll(jcrBase);
-    FileUtil.deleteAll(dbBase);
-    System.err
-        .println("==========================================================================");
-
-    
-    System.setProperty("sakai.kernel.properties", "inline://component.locations=classpath:;../model-project-1/target/;../model-project-2/target/;\n");
-
-    
-    kernelLifecycle = new KernelLifecycle();
-    kernelLifecycle.start();
-
-    kernelManager = new KernelManager();
-
-    Kernel kernel = kernelManager.getKernel();
-    ServiceManager sm = kernel.getServiceManager();
-    
-    em = kernelManager.getService(EntityManager.class);
-    
     
     /*
 
@@ -110,17 +68,6 @@ public class OrmProjectLoaderTest {
 
   @AfterClass
   public static void afterClass() {
-    if (em != null) {
-      em.close();
-    }
-    try {
-      if (kernelLifecycle != null) {
-        kernelLifecycle.stop();
-        kernelLifecycle.destroy();
-      }
-    } catch (Exception ex) {
-      LOG.info("Failed to stop kernel ", ex);
-    }
   }
 
   // ignore this because it is not relavent any more.
@@ -155,61 +102,39 @@ public class OrmProjectLoaderTest {
     assertTrue(count > 1);
   }
 
-  @Ignore
-  public void accessRemoteModel() throws Exception {
-    em.getTransaction().begin();
-
-    // look for model from kernel
-    Query selectSubject = em
-        .createQuery("select s from SubjectPermissionBean s");
-    assertEquals(0, selectSubject.getResultList().size());
-
-    // look for model from model-project-2
-    Query selectProject = em.createQuery("select r from Room r");
-    assertEquals(0, selectProject.getResultList().size());
-
-    // add something
-    Room r = new Room();
-    r.id = 1;
-    r.number = 1;
-    em.persist(r);
-
-    em.flush();
-
-    // single first name entry
-    Query selectByNumber = em
-        .createQuery("select r from Room r where r.number = ?1");
-    selectByNumber.setParameter(1, 1);
-    List<?> employees = selectByNumber.getResultList();
-    assertNotNull(employees);
-    assertEquals(1, employees.size());
-
-    em.getTransaction().rollback();
-  }
-
-  /**
-   * Ignore this test because there is a problem in it.
-   * 
-   * @throws Exception
-   */
-  @Ignore
-  public void accesLocalModel() throws Exception {
-    em.getTransaction().begin();
-
-    Query select = em.createQuery("select e from Employee e");
-    assertEquals(0, select.getResultList().size());
-
-    Employee e = new Employee();
-    e.setFirstName("Carl");
-    em.persist(e);
-    em.flush();
-
-    assertEquals(1, select.getResultList().size());
-
-    em.getTransaction().rollback();
-  }
- 
+  
   @Test
-  public void dummy() {
+  public void dummySoThereIsATest() {
+    // If there are problems with startup and shutdown, these will prevent the
+    // problem
+    File jcrBase = new File("target/jcr");
+    File dbBase = new File("target/testdb");
+    System.err
+        .println("==========================================================================");
+    System.err.println("Removing all previous JCR and DB traces from "
+        + jcrBase.getAbsolutePath() + " " + dbBase.getAbsolutePath());
+
+    FileUtil.deleteAll(jcrBase);
+    FileUtil.deleteAll(dbBase);
+    System.err
+        .println("==========================================================================");
+
+    
+    System.setProperty("sakai.kernel.properties", "inline://component.locations=classpath:;../model-project-1/target/;../model-project-2/target/;target/\n");
+
+    // the tests are in the activator
+    KernelLifecycle kernelLifecycle = new KernelLifecycle();
+    kernelLifecycle.start();
+
+    
+    try {
+      if (kernelLifecycle != null) {
+        kernelLifecycle.stop();
+        kernelLifecycle.destroy();
+      }
+    } catch (Exception ex) {
+      LOG.info("Failed to stop kernel ", ex);
+    }
+
   }
 }

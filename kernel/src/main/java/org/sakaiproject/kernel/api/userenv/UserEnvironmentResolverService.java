@@ -24,6 +24,8 @@ import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.authz.simple.SimpleJcrUserEnvironmentResolverService;
 
+import java.util.Locale;
+
 /**
  * The UserEnvironmentResolverService resolves {@link UserEnvironment} based on
  * {@link Session} objects.
@@ -39,6 +41,11 @@ public interface UserEnvironmentResolverService {
   public static final String TTL = "userenv.ttl";
 
   /**
+   * The Name of the userenv file in the system.
+   */
+  public static final String USERENV = "userenv";
+
+  /**
    * Get a {@link UserEnvironment} objects based on the supplied session.
    * 
    * @param currentSession
@@ -46,27 +53,43 @@ public interface UserEnvironmentResolverService {
    * @return the UserEnvironment object.
    */
   UserEnvironment resolve(Session currentSession);
-  
+
   /**
    * Resolve a User Environment for an arbritary user, probably not this user.
-   * @param user the User that identifies the User environment
+   * 
+   * @param user
+   *          the User that identifies the User environment
    * @return the User Environment, or null if none is found.
    */
   UserEnvironment resolve(User user);
 
   /**
    * Remove the userEnvironment bound to the sessionId from any caches.
+   * 
    * @param sessionId
    */
   void expire(String sessionId);
 
   /**
-   * Get the implementations concept of path for the userEnvironment storage space.
-   * @param userId the UUID of ther user
+   * Get the implementations concept of path for the userEnvironment storage
+   * space.
+   * 
+   * @param userId
+   *          the UUID of ther user
    * @return the absolute path of the user environment storage space.
    */
   String getUserEnvironmentBasePath(String userId);
 
-
+  /**
+   * Get the locale for the request, session settings take precedence, followed
+   * by persisted preference followed by the browser, then the system.
+   * 
+   * @param browserLocale
+   *          the locale of the request
+   * @param session
+   *          the session associated with the request
+   * @return the computed Locale
+   */
+  Locale getUserLocale(Locale browserLocale, Session session);
 
 }

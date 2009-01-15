@@ -113,5 +113,14 @@ public class KernelImpl implements Kernel {
     }
   }
 
+  /**
+   * {@inheritDoc}
+   * @throws ClassNotFoundException 
+   * @see org.sakaiproject.kernel.api.Kernel#getClassByName(java.lang.String)
+   */
+  public Class<?> getClassByName(String name) throws ClassNotFoundException {
+    return this.getClass().getClassLoader().loadClass(name);
+  }
+
 
 }
