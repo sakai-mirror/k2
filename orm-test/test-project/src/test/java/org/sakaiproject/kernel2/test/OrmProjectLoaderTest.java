@@ -80,7 +80,6 @@ public class OrmProjectLoaderTest {
     
     em = kernelManager.getService(EntityManager.class);
     
-    assertNotNull("Failed to get EntityManager from Kernel ",em);
     
     /*
 
@@ -208,5 +207,9 @@ public class OrmProjectLoaderTest {
     assertEquals(1, select.getResultList().size());
 
     em.getTransaction().rollback();
+  }
+ 
+  @Test
+  public void dummy() {
   }
 }
