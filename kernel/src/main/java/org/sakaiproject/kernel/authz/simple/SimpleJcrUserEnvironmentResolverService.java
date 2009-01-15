@@ -153,8 +153,16 @@ public class SimpleJcrUserEnvironmentResolverService implements
    * @return
    */
   public String getUserEnvPath(String userId) {
+    return getUserEnvironmentBasePath(userId)+USERENV;
+  }
+  
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService#getUserEnvironmentBasePath(java.lang.String)
+   */
+  public String getUserEnvironmentBasePath(String userId) {
     String prefix = PathUtils.getUserPrefix(userId);
-    return userEnvironmentBase + prefix + USERENV;
+    return userEnvironmentBase + prefix;
   }
 
   

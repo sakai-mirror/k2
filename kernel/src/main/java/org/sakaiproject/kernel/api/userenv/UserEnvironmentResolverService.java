@@ -65,7 +65,7 @@ public interface UserEnvironmentResolverService {
    * @param userId the UUID of ther user
    * @return the absolute path of the user environment storage space.
    */
-  String getUserEnvPath(String userId);
+  String getUserEnvironmentBasePath(String userId);
 
 
 
