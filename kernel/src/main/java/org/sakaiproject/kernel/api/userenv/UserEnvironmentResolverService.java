@@ -60,6 +60,13 @@ public interface UserEnvironmentResolverService {
    */
   void expire(String sessionId);
 
+  /**
+   * Get the implementations concept of path for the userEnvironment storage space.
+   * @param userId the UUID of ther user
+   * @return the absolute path of the user environment storage space.
+   */
+  String getUserEnvPath(String userId);
+
 
 
 }
