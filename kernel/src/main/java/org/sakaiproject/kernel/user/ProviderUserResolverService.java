@@ -112,4 +112,33 @@ public class ProviderUserResolverService implements
     return null;
   }
 
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.user.UserResolverService#resolveWithUUID(java.lang.String)
+   */
+  public User resolveWithUUID(String uuid) {
+    List<UserResolverProvider> userResolverProviders = registry.getList();
+    if ( userResolverProviders.size() == 0 ) {
+      return nullService.resolveWithUUID(uuid);
+    }
+    StringBuilder messages = new StringBuilder();
+    for (UserResolverProvider userResolver : userResolverProviders) {
+      try {
+        User u =  userResolver.resolveWithUUID(uuid);
+        if ( u != null ) {
+          return u;
+        }
+      } catch (Exception se) {
+        if (messages.length() == 0) {
+          messages.append("User Resolution Failed:\n");
+        }
+        messages.append("\t").append(userResolver).append(" said ").append(
+            se.getMessage()).append("\n");
+      }
+    }
+    LOG.info("User Resolution failed "+messages.toString());
+    return null;
+  }
+
 }

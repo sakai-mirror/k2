@@ -72,7 +72,7 @@ public class JcrUserResolverProvider implements UserResolverProvider {
    * @see org.sakaiproject.kernel.api.user.UserResolverProvider#resolve(java.lang.String)
    */
   public User resolve(String eid) {
-    User u = cache.get(eid);
+    User u = cache.get("eid:"+eid);
     if (u == null) {
       Query query = entityManager.createNamedQuery(UserBean.FINDBY_EID);
       query.setParameter(UserBean.EID_PARAM, eid);
@@ -80,7 +80,7 @@ public class JcrUserResolverProvider implements UserResolverProvider {
       System.err.println("Got "+results.size()+" users");
       if (results.size() > 0) {
         u = (User) results.get(0);
-        cache.put(eid, u);
+        cache.put("eid:"+eid, u);
       }
     }
     return u;
@@ -115,6 +115,25 @@ public class JcrUserResolverProvider implements UserResolverProvider {
    */
   public int getPriority() {
     return 0;
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.user.UserResolverProvider#resolveWithUUID(java.lang.String)
+   */
+  public User resolveWithUUID(String uuid) {
+    User u = cache.get("uid:"+uuid);
+    if (u == null) {
+      Query query = entityManager.createNamedQuery(UserBean.FINDBY_UID);
+      query.setParameter(UserBean.UID_PARAM, uuid);
+      List<?> results = query.getResultList();
+      System.err.println("Got "+results.size()+" users");
+      if (results.size() > 0) {
+        u = (User) results.get(0);
+        cache.put("uid:"+uuid, u);
+      }
+    }
+    return u;
   }
 
 }

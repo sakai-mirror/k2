@@ -70,4 +70,28 @@ public class NullUserResolverServiceImpl implements UserResolverService {
     return new NullUserInfo(user);
   }
 
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.user.UserResolverService#resolveWithUUID(java.lang.String)
+   */
+  public User resolveWithUUID(final String identifier) {
+    LOG.warn("NON PRODUCTION CORE: Null resolution of user " + identifier);
+    return new User() {
+
+      /**
+       * 
+       */
+      private static final long serialVersionUID = 3786435035308647068L;
+
+      public String getEid() {
+        return identifier;
+      }
+
+      public String getUuid() {
+        return identifier;
+      }
+
+    };
+  }
+
 }

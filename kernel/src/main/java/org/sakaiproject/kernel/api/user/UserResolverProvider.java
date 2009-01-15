@@ -38,4 +38,11 @@ public interface UserResolverProvider extends Provider<String> {
    * @return
    */
   UserInfo resolve(User user);
+
+  /**
+   * Resolve a UUID into a user object.
+   * @param uuid the Unique User ID
+   * @return a User Object
+   */
+  User resolveWithUUID(String uuid);
 }
