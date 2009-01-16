@@ -26,10 +26,13 @@ import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
+import org.sakaiproject.kernel.api.site.SiteService;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.jcr.api.JcrContentListener;
 import org.sakaiproject.kernel.model.GroupMembershipBean;
+import org.sakaiproject.kernel.model.SiteBean;
+import org.sakaiproject.kernel.model.SiteIndexBean;
 import org.sakaiproject.kernel.model.UserBean;
 import org.sakaiproject.kernel.model.UserEnvironmentBean;
 import org.sakaiproject.kernel.util.IOUtils;
@@ -45,21 +48,27 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
 /**
- * 
+ *
  */
 public class UserEnvironmentListener implements JcrContentListener {
 
   private static final Log LOG = LogFactory
       .getLog(UserEnvironmentListener.class);
-  private String userEnvironmentBase;
-  private BeanConverter beanConverter;
-  private JCRNodeFactoryService jcrNodeFactoryService;
-  private EntityManager entityManager;
-  private UserEnvironmentResolverService userEnvironmentResolverService;
+  private final String userEnvironmentBase;
+  private final BeanConverter beanConverter;
+  private final JCRNodeFactoryService jcrNodeFactoryService;
+  private final EntityManager entityManager;
+  private final UserEnvironmentResolverService userEnvironmentResolverService;
 
   /**
+   * Constructor with all required dependencies.
+   *
+   * @param jcrNodeFactoryService
+   * @param userEnvironmentBase
+   * @param beanConverter
+   * @param sessionManagerService
+   * @param userEnvironmentResolverService
    * @param entityManager
-   * 
    */
   @Inject
   public UserEnvironmentListener(
@@ -78,130 +87,155 @@ public class UserEnvironmentListener implements JcrContentListener {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.jcr.api.JcrContentListener#onEvent(int,
    *      java.lang.String, java.lang.String, java.lang.String)
    */
   public void onEvent(int type, String userID, String filePath, String fileName) {
-    if (fileName.equals(SimpleJcrUserEnvironmentResolverService.USERENV)
-        && filePath.startsWith(userEnvironmentBase)) {
-      try {
-        String userEnvBody = IOUtils.readFully(jcrNodeFactoryService
-            .getInputStream(filePath), "UTF-8");
-        UserEnvironmentBean ue = beanConverter.convertToObject(userEnvBody,
-            UserEnvironmentBean.class);
-        ue.seal();
+    if (filePath.startsWith(userEnvironmentBase)) {
+      if (fileName.equals(SimpleJcrUserEnvironmentResolverService.USERENV)) {
+        try {
+          String userEnvBody = IOUtils.readFully(jcrNodeFactoryService
+              .getInputStream(filePath), "UTF-8");
+          UserEnvironmentBean ue = beanConverter.convertToObject(userEnvBody,
+              UserEnvironmentBean.class);
+          ue.seal();
 
-        userEnvironmentResolverService.expire(ue.getUser().getUuid());
+          userEnvironmentResolverService.expire(ue.getUser().getUuid());
 
-        // the user environment bean contains a list of subjects, which the
-        // users membership of groups
-        Query query = entityManager
-            .createNamedQuery(GroupMembershipBean.FINDBY_USER);
-        query.setParameter(GroupMembershipBean.USER_PARAM, ue.getUser()
-            .getUuid());
-        List<?> membershipList = query.getResultList();
-        List<GroupMembershipBean> toAdd = new ArrayList<GroupMembershipBean>();
-        List<GroupMembershipBean> toRemove = new ArrayList<GroupMembershipBean>();
+          // the user environment bean contains a list of subjects, which the
+          // users membership of groups
+          Query query = entityManager
+              .createNamedQuery(GroupMembershipBean.FINDBY_USER);
+          query.setParameter(GroupMembershipBean.USER_PARAM, ue.getUser()
+              .getUuid());
+          List<?> membershipList = query.getResultList();
+          List<GroupMembershipBean> toAdd = new ArrayList<GroupMembershipBean>();
+          List<GroupMembershipBean> toRemove = new ArrayList<GroupMembershipBean>();
 
-        for (Object o : membershipList) {
-          GroupMembershipBean groupMembershipBean = (GroupMembershipBean) o;
-          String subjectToken = groupMembershipBean.getSubjectToken();
-          boolean found = false;
-          for (String subject : ue.getSubjects()) {
-            if (subjectToken.equals(subject)) {
-              found = true;
-              break;
-            }
-          }
-          if (!found) {
-            toRemove.add(groupMembershipBean);
-          }
-        }
-
-        for (String subject : ue.getSubjects()) {
-          boolean found = false;
           for (Object o : membershipList) {
             GroupMembershipBean groupMembershipBean = (GroupMembershipBean) o;
             String subjectToken = groupMembershipBean.getSubjectToken();
-            if (subject.equals(subjectToken)) {
-              found = true;
-              break;
+            boolean found = false;
+            for (String subject : ue.getSubjects()) {
+              if (subjectToken.equals(subject)) {
+                found = true;
+                break;
+              }
+            }
+            if (!found) {
+              toRemove.add(groupMembershipBean);
             }
           }
-          if (!found) {
-            toAdd.add(new GroupMembershipBean(ue.getUser().getUuid(), subject));
-          }
-        }
 
-        User u = ue.getUser();
-
-        Query userQuery = entityManager.createNamedQuery(UserBean.FINDBY_UID);
-        userQuery.setParameter(UserBean.UID_PARAM, u.getUuid());
-        List<?> userBeansByUID = userQuery.getResultList();
-
-        Query userQuery2 = entityManager.createNamedQuery(UserBean.FINDBY_EID);
-        userQuery2.setParameter(UserBean.EID_PARAM, u.getEid());
-        List<?> userBeansByEID = userQuery.getResultList();
-        boolean foundUserBean = false;
-        List<UserBean> toRemoveUserBeans = new ArrayList<UserBean>();
-        for (Object o : userBeansByUID) {
-          UserBean ub = (UserBean) o;
-          if (!u.getUuid().equals(ub.getUuid())
-              || !u.getEid().equals(ub.getEid())) {
-            if (!toRemoveUserBeans.contains(ub)) {
-              toRemoveUserBeans.add(ub);
+          for (String subject : ue.getSubjects()) {
+            boolean found = false;
+            for (Object o : membershipList) {
+              GroupMembershipBean groupMembershipBean = (GroupMembershipBean) o;
+              String subjectToken = groupMembershipBean.getSubjectToken();
+              if (subject.equals(subjectToken)) {
+                found = true;
+                break;
+              }
             }
-          } else {
-            foundUserBean = true;
-          }
-        }
-        for (Object o : userBeansByEID) {
-          UserBean ub = (UserBean) o;
-          if (!u.getUuid().equals(ub.getUuid())
-              || !u.getEid().equals(ub.getEid())) {
-            if (!toRemoveUserBeans.contains(ub)) {
-              toRemoveUserBeans.add(ub);
+            if (!found) {
+              toAdd
+                  .add(new GroupMembershipBean(ue.getUser().getUuid(), subject));
             }
-          } else {
-            foundUserBean = true;
           }
-        }
 
-        EntityTransaction transaction = entityManager.getTransaction();
-        transaction.begin();
-        if (!foundUserBean) {
-          UserBean ub = new UserBean(u.getUuid(), u.getEid());
-          entityManager.persist(ub);
-        }
-        for (UserBean ub : toRemoveUserBeans) {
-          entityManager.remove(ub);
-        }
-        for (GroupMembershipBean gm : toRemove) {
-          entityManager.remove(gm);
-        }
-        for (GroupMembershipBean gm : toAdd) {
-          entityManager.persist(gm);
-        }
-        transaction.commit();
+          User u = ue.getUser();
 
-      } catch (UnsupportedEncodingException e) {
-        LOG.error(e);
-      } catch (IOException e) {
-        LOG.warn("Failed to read userenv " + filePath + " cause :"
-            + e.getMessage());
-        LOG.debug(e);
-      } catch (RepositoryException e) {
-        LOG.warn("Failed to read userenv for " + filePath + " cause :"
-            + e.getMessage());
-        LOG.debug(e);
-      } catch (JCRNodeFactoryServiceException e) {
-        LOG.warn("Failed to read userenv for " + filePath + " cause :"
-            + e.getMessage());
-        LOG.debug(e);
+          Query userQuery = entityManager.createNamedQuery(UserBean.FINDBY_UID);
+          userQuery.setParameter(UserBean.UID_PARAM, u.getUuid());
+          List<?> userBeansByUID = userQuery.getResultList();
+
+          Query userQuery2 = entityManager
+              .createNamedQuery(UserBean.FINDBY_EID);
+          userQuery2.setParameter(UserBean.EID_PARAM, u.getEid());
+          List<?> userBeansByEID = userQuery.getResultList();
+          boolean foundUserBean = false;
+          List<UserBean> toRemoveUserBeans = new ArrayList<UserBean>();
+          for (Object o : userBeansByUID) {
+            UserBean ub = (UserBean) o;
+            if (!u.getUuid().equals(ub.getUuid())
+                || !u.getEid().equals(ub.getEid())) {
+              if (!toRemoveUserBeans.contains(ub)) {
+                toRemoveUserBeans.add(ub);
+              }
+            } else {
+              foundUserBean = true;
+            }
+          }
+          for (Object o : userBeansByEID) {
+            UserBean ub = (UserBean) o;
+            if (!u.getUuid().equals(ub.getUuid())
+                || !u.getEid().equals(ub.getEid())) {
+              if (!toRemoveUserBeans.contains(ub)) {
+                toRemoveUserBeans.add(ub);
+              }
+            } else {
+              foundUserBean = true;
+            }
+          }
+
+          EntityTransaction transaction = entityManager.getTransaction();
+          transaction.begin();
+          if (!foundUserBean) {
+            UserBean ub = new UserBean(u.getUuid(), u.getEid());
+            entityManager.persist(ub);
+          }
+          for (UserBean ub : toRemoveUserBeans) {
+            entityManager.remove(ub);
+          }
+          for (GroupMembershipBean gm : toRemove) {
+            entityManager.remove(gm);
+          }
+          for (GroupMembershipBean gm : toAdd) {
+            entityManager.persist(gm);
+          }
+          transaction.commit();
+
+        } catch (UnsupportedEncodingException e) {
+          LOG.error(e);
+        } catch (IOException e) {
+          LOG.warn("Failed to read userenv " + filePath + " cause :"
+              + e.getMessage());
+          LOG.debug(e);
+        } catch (RepositoryException e) {
+          LOG.warn("Failed to read userenv for " + filePath + " cause :"
+              + e.getMessage());
+          LOG.debug(e);
+        } catch (JCRNodeFactoryServiceException e) {
+          LOG.warn("Failed to read userenv for " + filePath + " cause :"
+              + e.getMessage());
+          LOG.debug(e);
+        }
+      } else if (fileName.equals(SiteService.FILE_GROUPDEF)) {
+        try {
+          String groupDefBody = IOUtils.readFully(jcrNodeFactoryService
+              .getInputStream(filePath), "UTF-8");
+          SiteBean site = beanConverter.convertToObject(groupDefBody,
+              SiteBean.class);
+          SiteIndexBean index = new SiteIndexBean();
+          index.setId(site.getId());
+          index.setName(site.getName());
+          index.setRef(filePath + fileName);
+          entityManager.persist(index);
+        } catch (UnsupportedEncodingException e) {
+          LOG.warn("Failed to read groupdef for " + filePath + " cause :"
+              + e.getMessage(), e);
+        } catch (IOException e) {
+          LOG.warn("Failed to read groupdef for " + filePath + " cause :"
+              + e.getMessage(), e);
+        } catch (RepositoryException e) {
+          LOG.warn("Failed to read groupdef for " + filePath + " cause :"
+              + e.getMessage(), e);
+        } catch (JCRNodeFactoryServiceException e) {
+          LOG.warn("Failed to read groupdef for " + filePath + " cause :"
+              + e.getMessage(), e);
+        }
       }
     }
-
   }
-
 }

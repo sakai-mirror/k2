@@ -39,6 +39,7 @@ import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.persistence.DataSourceService;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
+import org.sakaiproject.kernel.api.site.SiteService;
 import org.sakaiproject.kernel.api.user.AuthenticationResolverService;
 import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
@@ -60,7 +61,7 @@ public class Activator implements ComponentActivator {
       AuthzResolverService.class, PermissionQueryService.class,
       ReferenceResolverService.class, DataSourceService.class,
       UserEnvironmentResolverService.class, RegistryService.class,
-      EntityManager.class };
+      EntityManager.class, SiteService.class };
   private static final Log LOG = LogFactory.getLog(Activator.class);
   @SuppressWarnings("unused")
   private Kernel kernel;

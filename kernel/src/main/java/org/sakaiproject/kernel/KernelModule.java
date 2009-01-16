@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2008 Sakai Foundation
- * 
+ *
  * Licensed under the Educational Community License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.osedu.org/licenses/ECL-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -37,6 +37,7 @@ import org.sakaiproject.kernel.api.jcr.EventRegistration;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
+import org.sakaiproject.kernel.api.site.SiteService;
 import org.sakaiproject.kernel.api.user.AuthenticationManagerService;
 import org.sakaiproject.kernel.api.user.AuthenticationResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
@@ -54,6 +55,7 @@ import org.sakaiproject.kernel.serialization.json.BeanJsonLibConfig;
 import org.sakaiproject.kernel.serialization.json.BeanJsonLibConverter;
 import org.sakaiproject.kernel.serialization.json.BeanProcessor;
 import org.sakaiproject.kernel.serialization.json.ValueProcessor;
+import org.sakaiproject.kernel.site.SiteServiceImpl;
 import org.sakaiproject.kernel.user.AuthenticationResolverServiceImpl;
 import org.sakaiproject.kernel.user.ProviderAuthenticationResolverService;
 import org.sakaiproject.kernel.util.ResourceLoader;
@@ -101,11 +103,11 @@ public class KernelModule extends AbstractModule {
   /**
    * The kernel which the bootstrap component exists within.
    */
-  private Kernel kernel;
+  private final Kernel kernel;
 
   /**
    * Create a Guice module for the kernel bootstrap.
-   * 
+   *
    * @param kernel
    *          the kernel performing the bootstrap.
    */
@@ -182,7 +184,7 @@ public class KernelModule extends AbstractModule {
 
   /**
    * Create the bootstrap module with a kernel and supplied properties.
-   * 
+   *
    * @param kernel
    * @param properties
    */
@@ -193,7 +195,7 @@ public class KernelModule extends AbstractModule {
 
   /**
    * Configure the guice bindings.
-   * 
+   *
    * @see com.google.inject.AbstractModule#configure()
    */
   @Override
@@ -233,6 +235,9 @@ public class KernelModule extends AbstractModule {
     bind(BeanConverter.class).annotatedWith(
         Names.named(BeanConverter.REPOSITORY_BEANCONVETER)).to(
         BeanJsonLibConverter.class).in(Scopes.SINGLETON);
+
+    // site service
+    bind(SiteService.class).to(SiteServiceImpl.class).in(Scopes.SINGLETON);
 
     // config for the bean converter
     bind(Map.class).to(HashMap.class);
@@ -295,6 +300,5 @@ public class KernelModule extends AbstractModule {
     };
     bind(integrationProviderList).annotatedWith(Names.named("forced-internal-1")).toProvider(IntegrationProviderListProvider.class)
         .asEagerSingleton();
-
   }
 }

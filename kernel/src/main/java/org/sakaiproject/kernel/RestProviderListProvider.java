@@ -24,26 +24,28 @@ import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.rest.DefaultRestProvider;
 import org.sakaiproject.kernel.rest.RestAuthenticationProvider;
 import org.sakaiproject.kernel.rest.RestMeProvider;
+import org.sakaiproject.kernel.rest.RestSiteProvider;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
+ *
  */
 public class RestProviderListProvider implements Provider<List<RestProvider>> {
 
-  private List<RestProvider> list = new ArrayList<RestProvider>();
+  private final List<RestProvider> list = new ArrayList<RestProvider>();
   /**
-   * 
+   *
    */
   @Inject
   public RestProviderListProvider(DefaultRestProvider defaultRestProvider,
       RestAuthenticationProvider restAuthenticationProvider,
-      RestMeProvider restMeProvider) {
+      RestMeProvider restMeProvider, RestSiteProvider siteProvider) {
     list.add(restAuthenticationProvider);
     list.add(defaultRestProvider);
     list.add(restMeProvider);
+    list.add(siteProvider);
   }
   /**
    * {@inheritDoc}
