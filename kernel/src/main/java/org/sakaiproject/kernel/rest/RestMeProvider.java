@@ -132,12 +132,15 @@ public class RestMeProvider implements RestProvider {
    * @see org.sakaiproject.kernel.api.rest.RestProvider#dispatch(java.lang.String[],
    *      javax.servlet.http.HttpServletRequest,
    *      javax.servlet.http.HttpServletResponse)
+   *      /x/y/z?searchOrder=1231231
    */
   public void dispatch(String[] elements, HttpServletRequest request,
       HttpServletResponse response) throws ServletException, IOException {
     try {
       Session session = sessionManagerService.getCurrentSession();
       User user = session.getUser();
+      
+      System.err.println("Got user as "+user);
 
       Locale locale = userEnvironmentResolverService.getUserLocale(request.getLocale(), session);
       if (user == null || user.getUuid() == null
