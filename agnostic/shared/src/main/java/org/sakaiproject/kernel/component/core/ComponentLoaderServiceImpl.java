@@ -100,16 +100,16 @@ public class ComponentLoaderServiceImpl implements ComponentLoaderService {
       } else if (location.startsWith("classpath")) {
         // resolve in the current classpath and add directly
         fromClassloader = true;
+      } else if ( location.endsWith(COMPONENT_SPEC_XML) ) {
+          location = location.substring(0,location.length()-COMPONENT_SPEC_XML.length());
+          File f = new File(location);
+          URL url = f.toURI().toURL();
+          LOG.info("    added component:" + url);
+          locations.put(url.toString(),url);
       } else {
         LOG.info("Locating Components in " + location);
         for (File f : FileUtil.findAll(location, ".jar")) {
-          URL url;
-          String path = f.getCanonicalPath();
-          if (path.indexOf("://") < 0) {
-            url = new URL("file", "", path);
-          } else {
-            url = new URL(path);
-          }
+          URL url = f.toURI().toURL();
           LOG.info("    added component:" + url);
           locations.put(url.toString(),url);
         }

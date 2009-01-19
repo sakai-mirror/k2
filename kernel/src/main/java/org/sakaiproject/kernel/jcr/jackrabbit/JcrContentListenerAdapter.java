@@ -79,6 +79,7 @@ public class JcrContentListenerAdapter implements EventListener,
     for (; events.hasNext();) {
       try {
         Event event = events.nextEvent();
+        LOG.info("Firing event "+event);
         String path = event.getPath();
         if (path.endsWith(DATA_NODE)) {
           String filePath = path.substring(0, path.length()

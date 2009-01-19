@@ -120,7 +120,7 @@ public class OrmProjectLoaderTest {
         .println("==========================================================================");
 
     
-    System.setProperty("sakai.kernel.properties", "inline://component.locations=classpath:;../model-project-1/target/;../model-project-2/target/;target/\n");
+    System.setProperty("sakai.kernel.properties", "inline://component.locations=target/classes/SAKAI-INF/component.xml;../model-project-1/target/classes/SAKAI-INF/component.xml;../model-project-2/target/classes/SAKAI-INF/component.xml;../../kernel/target/classes/SAKAI-INF/component.xml\n");
 
     // the tests are in the activator
     KernelLifecycle kernelLifecycle = new KernelLifecycle();

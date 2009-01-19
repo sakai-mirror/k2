@@ -65,6 +65,9 @@ public class Activator implements ComponentActivator {
     assertEquals(1, employees.size());
 
     em.getTransaction().rollback();
+    
+    
+    System.err.println("TEST PASSED OK");
   }
 
   /**
@@ -86,6 +89,7 @@ public class Activator implements ComponentActivator {
     assertEquals(1, select.getResultList().size());
 
     em.getTransaction().rollback();
+    System.err.println("TEST PASSED OK");
   }
   
 
