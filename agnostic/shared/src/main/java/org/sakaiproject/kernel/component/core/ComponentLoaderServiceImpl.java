@@ -159,6 +159,9 @@ public class ComponentLoaderServiceImpl implements ComponentLoaderService {
         if (source.startsWith("jar:")) {
           source = source.substring(4);
         }
+        if (source.endsWith("/")) {
+          source = source.substring(0, source.length() - 1);
+        }
         LOG.info("Adding Component " + componentSpecXml + " from " + source);
         specs.put(source,new URLComponentSpecificationImpl(source, componentSpecXml));
       } catch (URISyntaxException e) {
