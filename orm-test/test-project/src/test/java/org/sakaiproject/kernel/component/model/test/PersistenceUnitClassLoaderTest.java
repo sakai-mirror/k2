@@ -161,7 +161,7 @@ public class PersistenceUnitClassLoaderTest {
         XPathConstants.NODESET);
     // this should be 2 but will need to change if class nodes are added
     // persistence.xml of kernel
-    assertEquals(2, nodes.getLength());
+    assertTrue(nodes.getLength()>2);
 
     final XPathExpression XPATH_MAPPING_TEXT = XPATH
         .compile("//persistence/persistence-unit/mapping-file/text()");
