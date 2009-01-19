@@ -45,8 +45,10 @@ public class StartupActionProvider implements Provider<List<StartupAction>> {
       PopulateBaseRepository populateBaseRepository) {
     startupActions = new ArrayList<StartupAction>();
     startupActions.add(repositoryStartup);
-    startupActions.add(populateBaseRepository);
+    // we must register the event listeners before we populate the repository
+    // so that all the events fire.
     startupActions.add(registerEventListeners);
+    startupActions.add(populateBaseRepository);
     
   }
 
