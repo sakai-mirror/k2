@@ -56,6 +56,8 @@ public class JettyServerTest {
    */
   @BeforeClass
   public static void setUpOnce() throws Exception {
+    System.setProperty("sakai.kernel.properties",
+    "inline://core.component.locations=\n");
     server = new JettyServer();
     server.start();
   }
@@ -70,6 +72,7 @@ public class JettyServerTest {
     if (server != null) {
       server.stop();
     }
+    System.clearProperty("sakai.kernel.properties");
   }
 
   private WebClient webClient;
