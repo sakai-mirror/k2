@@ -42,6 +42,7 @@ public class ServiceSpec {
    *          the API class that the service represents.
    */
   public ServiceSpec(Class<?> service) {
+    checkClientClassloader(service);
     serviceClass = service;
     ofType = false;
   }
@@ -62,8 +63,30 @@ public class ServiceSpec {
    *          true all services of a type may be located.
    */
   public ServiceSpec(Class<?> service, boolean ofType) {
+    checkClientClassloader(service);
     serviceClass = service;
     this.ofType = ofType;
+  }
+
+  /**
+   * Checks to see if the classloader are bound into the kernel or shared
+   * classloader.
+   * 
+   * @param service
+   * @throws ClassNotFoundException
+   */
+  private void checkClientClassloader(Class<?> service) {
+    String serviceName = service.getName();
+    try {
+      Class<?> myClass = this.getClass().getClassLoader()
+          .loadClass(serviceName);
+      if (!myClass.equals(service)) {
+        throw new ClassLoaderMisconfigurationException(service, myClass);
+      }
+    } catch (ClassNotFoundException ex) {
+      throw new RuntimeException("The service identified by the class "
+          + serviceName + " is not available to the service manager ");
+    }
   }
 
   /**
@@ -76,13 +99,11 @@ public class ServiceSpec {
   public boolean matches(ServiceSpec serviceSpec) {
     if (equals(serviceSpec)) {
       return true;
-    } else if (ofType) {      
+    } else if (ofType) {
       return getServiceClass().isAssignableFrom(serviceSpec.getServiceClass());
     }
     return false;
   }
-
-
 
   /**
    * @return the service class of this ServiceSpec.
@@ -106,7 +127,8 @@ public class ServiceSpec {
    * Custom equals delegates to the equals of the service class if the test
    * object is a ServiceSpec instanceof.
    * 
-   * @param object the test object.
+   * @param object
+   *          the test object.
    * @return true if equal.
    * @see java.lang.Object#equals(java.lang.Object)
    */
@@ -118,9 +140,10 @@ public class ServiceSpec {
     }
     return super.equals(object);
   }
-  
+
   /**
-   * @return a string representation of the spec, namely the service classname that the spec represents.
+   * @return a string representation of the spec, namely the service classname
+   *         that the spec represents.
    * @see java.lang.Object#toString()
    */
   @Override

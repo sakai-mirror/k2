@@ -115,7 +115,6 @@ public class ComponentManagerImpl implements ComponentManager {
 
   public boolean prepareStartComponent(ComponentSpecification spec)
       throws ComponentSpecificationException {
-
     if (classloaders.containsKey(spec)) {
       return true;
     }
@@ -162,7 +161,7 @@ public class ComponentManagerImpl implements ComponentManager {
       return true;
     }
 
-    LOG.info("==================STARTING "+spec.getName());
+    LOG.info("==================STARTING " + spec.getName());
     ClassLoader componentClassloader = classloaders.get(spec);
     ClassLoader currentClassloader = Thread.currentThread()
         .getContextClassLoader();
@@ -203,10 +202,10 @@ public class ComponentManagerImpl implements ComponentManager {
 
       components.put(spec, activator);
       startedComponents.put(spec.getName(), spec);
-      LOG.info("==================STARTED   "+spec.getName());
+      LOG.info("==================STARTED   " + spec.getName());
       return true;
     } catch (Exception e) {
-      LOG.error("==================FAILED   "+spec.getName());
+      LOG.error("==================FAILED   " + spec.getName());
       throw new KernelConfigurationException("Unable to start component "
           + spec + " cause:" + e.getMessage(), e);
     } finally {
@@ -323,48 +322,49 @@ public class ComponentManagerImpl implements ComponentManager {
         message.append("\t\tUnstable Component ").append(
             cs.getDependencyDescription()).append("\n");
       }
-    
+
     }
     if (errors.size() > 0) {
-      Map<String,Map<String,String>> missing = new HashMap<String,  Map<String,String>>();
-      
+      Map<String, Map<String, String>> missing = new HashMap<String, Map<String, String>>();
+
       for (ComponentSpecification spec : errors) {
         for (Artifact d : spec.getComponentDependencies()) {
           if (!componentsByName.containsKey(d.toString())) {
-            Map<String,String> l = missing.get(d.toString());
-            if ( l == null ) {
+            Map<String, String> l = missing.get(d.toString());
+            if (l == null) {
               l = new HashMap<String, String>();
               missing.put(d.toString(), l);
             }
-            l.put(spec.getName(),spec.getName());
+            l.put(spec.getName(), spec.getName());
           }
         }
       }
       message
-      .append("\n\tERROR:The component dependency graph has unsatisfield dependencies\n");
+          .append("\n\tERROR:The component dependency graph has unsatisfield dependencies\n");
 
-      for (Entry<String, Map<String,String>> e : missing.entrySet() ) {
-        message.append("\n\tMissing dependency:").append(e.getKey()).append(" required by:");
-        for ( String n : e.getValue().values()) {
+      for (Entry<String, Map<String, String>> e : missing.entrySet()) {
+        message.append("\n\tMissing dependency:").append(e.getKey()).append(
+            " required by:");
+        for (String n : e.getValue().values()) {
           message.append("\n\t\t").append(n);
         }
       }
       message.append("\n");
-      
+
     }
     if (message.length() > 0) {
-      
-      message
-      .append("\n\tINFO:There are "+toStart.size()+" components in this set are \n");
-      for ( ComponentSpecification spec : toStart ) {
+
+      message.append("\n\tINFO:There are " + toStart.size()
+          + " components in this set are \n");
+      for (ComponentSpecification spec : toStart) {
         message.append("\n\t\t").append(spec.getName());
       }
-      message
-      .append("\n\tINFO: "+startedComponents.size()+" Components that have been started \n");
-      for ( ComponentSpecification spec : startedComponents.values() ) {
+      message.append("\n\tINFO: " + startedComponents.size()
+          + " Components that have been started \n");
+      for (ComponentSpecification spec : startedComponents.values()) {
         message.append("\n\t\t").append(spec.getName());
       }
-      
+
       throw new ComponentSpecificationException(
           "Unable to start the component tree due to the following errors "
               + message.toString());
@@ -385,13 +385,15 @@ public class ComponentManagerImpl implements ComponentManager {
       }
 
     });
-    
-    LOG.info("===START ORDER================There are "+notStarted+" components to start");
-    for ( ComponentSpecification spec : notStarted ) {
-      LOG.info(spec.getName()+" level "+speclevel.get(spec));
+
+    LOG.info("===START ORDER================There are " + notStarted
+        + " components to start");
+    for (ComponentSpecification spec : notStarted) {
+      LOG.info(spec.getName() + " level " + speclevel.get(spec));
     }
-    LOG.info("===END OF START ORDER=============================================");
-    
+    LOG
+        .info("===END OF START ORDER=============================================");
+
     return notStarted;
 
   }
