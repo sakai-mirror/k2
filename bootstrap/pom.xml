@@ -84,5 +84,82 @@
         </plugins>
       </build>
     </profile>
+    <profile>
+      <id>overlay-run-only</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>compile</id>
+                <phase>compile</phase>
+                <configuration>
+                  <tasks>
+                    <!-- unzip the overlay -->
+                    <unzip
+                      src="${settings.localRepository}/org/sakaiproject/kernel2/agnostic/assembly/${project.version}/assembly-${project.version}-kernel-core.zip"
+                      dest="${basedir}/target/runtime" overwrite="true" />
+                    <unzip
+                      src="${settings.localRepository}/org/sakaiproject/kernel2/agnostic/webapps-assembly/${project.version}/webapps-assembly-${project.version}-kernel-core.zip"
+                      dest="${basedir}/target/runtime" overwrite="true" />
+                    <!-- execute tomcat -->
+                    <chmod file="${basedir}/target/runtime/bin/catalina.sh"
+                      perm="775" />
+                    <chmod
+                      file="${basedir}/target/runtime/bin/setclasspath.sh"
+                      perm="775" />
+                    <chmod file="${basedir}/start.sh" perm="775" />
+                    <exec dir="${basedir}" executable="${basedir}/start.sh"
+                      failonerror="true">
+                      <arg value="run" />
+                    </exec>
+                  </tasks>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>run-only</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>compile</id>
+                <phase>compile</phase>
+                <configuration>
+                  <tasks>
+                    <!-- execute tomcat -->
+                    <chmod file="${basedir}/target/runtime/bin/catalina.sh"
+                      perm="775" />
+                    <chmod
+                      file="${basedir}/target/runtime/bin/setclasspath.sh"
+                      perm="775" />
+                    <chmod file="${basedir}/start.sh" perm="775" />
+                    <exec dir="${basedir}" executable="${basedir}/start.sh"
+                      failonerror="true">
+                      <arg value="run" />
+                    </exec>
+                  </tasks>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 </project>

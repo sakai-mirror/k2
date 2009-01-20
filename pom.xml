@@ -51,6 +51,26 @@
         <module>webapps-assembly</module>
       </modules>
     </profile>
+    <profile>
+      <id>overlay-run-only</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <modules>
+        <module>bootstrap</module>
+        <module>webapps-assembly</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>run-only</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <modules>
+        <module>bootstrap</module>
+        <module>webapps-assembly</module>
+      </modules>
+    </profile>
   </profiles>
   <!-- ===================================================================== -->
   <!-- M A I L I N G L I S T S -->
@@ -74,7 +94,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <redirectTestOutputToFile>true</redirectTestOutputToFile>
+          <redirectTestOutputToFile>false</redirectTestOutputToFile>
         </configuration>
      </plugin>
       <plugin>

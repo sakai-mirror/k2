@@ -6,5 +6,11 @@ then
   unset CATALINA_HOME
 fi
 
-export SAKAI_KERNEL_PROPERTIES=`pwd`/localkernel.properties
+if [ "${SAKAI_KERNEL_PROPERTIES}" = "" ] 
+then
+  export SAKAI_KERNEL_PROPERTIES=`pwd`/localkernel.properties
+fi
+echo "SAKAI_KERNEL_PROPERTIES is set to $SAKAI_KERNEL_PROPERTIES"
+
+
 target/runtime/bin/catalina.sh $*
