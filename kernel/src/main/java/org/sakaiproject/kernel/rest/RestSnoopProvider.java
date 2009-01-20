@@ -20,26 +20,17 @@ package org.sakaiproject.kernel.rest;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-import org.apache.derby.impl.sql.compile.HasNodeVisitor;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
-import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
-import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
-import org.sakaiproject.kernel.api.session.SessionManagerService;
-import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
-import org.sakaiproject.kernel.util.IOUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
-import javax.jcr.RepositoryException;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
@@ -109,24 +100,24 @@ public class RestSnoopProvider implements RestProvider {
     Map<String, Object> sessionAttributes = new HashMap<String, Object>();
     session.put("attributes", sessionAttributes);
     HttpSession hs = request.getSession();
-    for (Enumeration<String> e = hs.getAttributeNames(); e.hasMoreElements();) {
-      String n = e.nextElement();
+    for (Enumeration<?> e = hs.getAttributeNames(); e.hasMoreElements();) {
+      String n = (String) e.nextElement();
       sessionAttributes.put(n, hs.getAttribute(n));
     }
 
     Map<String, Object> requestAttributes = new HashMap<String, Object>();
     req.put("attributes", requestAttributes);
-    for (Enumeration<String> e = request.getAttributeNames(); e
+    for (Enumeration<?> e = request.getAttributeNames(); e
         .hasMoreElements();) {
-      String n = e.nextElement();
+      String n = (String) e.nextElement();
       requestAttributes.put(n, request.getAttribute(n));
     }
 
     Map<String, Object> requestParamiters = new HashMap<String, Object>();
     req.put("parameters", requestParamiters);
-    for (Enumeration<String> e = request.getParameterNames(); e
+    for (Enumeration<?> e = request.getParameterNames(); e
         .hasMoreElements();) {
-      String n = e.nextElement();
+      String n = (String) e.nextElement();
       requestParamiters.put(n, request.getParameter(n));
     }
 
@@ -144,7 +135,6 @@ public class RestSnoopProvider implements RestProvider {
 
     snoop.put("user", "Remote User "+request.getRemoteUser());
 
-    InputStream in = null;
     response.setContentType(RestProvider.CONTENT_TYPE);
     ServletOutputStream outputStream = response.getOutputStream();
     outputStream.print(beanConverter.convertToString(snoop));

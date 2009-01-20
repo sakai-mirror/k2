@@ -29,11 +29,11 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
 
 /**
- * An implementation of the Session, where the user is recoreded as an
+ * An implementation of the Session, where the user is recorded as an
  * attribute.
  */
-@SuppressWarnings("deprecation")
 // TODO: not tested with an authorization
+@SuppressWarnings("deprecation")
 public class SessionImpl implements Session {
 
   /**
@@ -146,6 +146,7 @@ public class SessionImpl implements Session {
    * 
    * @see javax.servlet.http.HttpSession#getSessionContext()
    */
+  @SuppressWarnings("deprecation")
   public HttpSessionContext getSessionContext() {
     return baseSession.getSessionContext();
   }
@@ -155,6 +156,7 @@ public class SessionImpl implements Session {
    * 
    * @see javax.servlet.http.HttpSession#getValue(java.lang.String)
    */
+  @SuppressWarnings("deprecation")
   public Object getValue(String name) {
     return baseSession.getValue(name);
   }
@@ -164,6 +166,7 @@ public class SessionImpl implements Session {
    * 
    * @see javax.servlet.http.HttpSession#getValueNames()
    */
+  @SuppressWarnings("deprecation")
   public String[] getValueNames() {
     return baseSession.getValueNames();
   }
@@ -193,6 +196,7 @@ public class SessionImpl implements Session {
    * @see javax.servlet.http.HttpSession#putValue(java.lang.String,
    *      java.lang.Object)
    */
+  @SuppressWarnings("deprecation")
   public void putValue(String name, Object value) {
     baseSession.putValue(name, value);
   }
@@ -211,6 +215,7 @@ public class SessionImpl implements Session {
    * 
    * @see javax.servlet.http.HttpSession#removeValue(java.lang.String)
    */
+  @SuppressWarnings("deprecation")
   public void removeValue(String name) {
     baseSession.removeValue(name);
   }
