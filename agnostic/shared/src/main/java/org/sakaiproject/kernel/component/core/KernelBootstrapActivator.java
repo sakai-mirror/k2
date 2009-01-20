@@ -109,7 +109,7 @@ public class KernelBootstrapActivator implements ComponentActivator {
 
     LOG.info("==========PHASE 1 START COMPLETE============");
     try {
-      loader.load(p.getProperty("component.locations"), false);
+      loader.load(p.getProperty("core.component.locations")+p.getProperty("component.locations"), false);
       LOG.info("==========PHASE 2 START COMPLETE============");
     } catch (IOException e) {
       LOG.info("==========PHASE 2 START FAILED============");

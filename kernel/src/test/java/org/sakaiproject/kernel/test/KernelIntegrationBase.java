@@ -60,23 +60,26 @@ public class KernelIntegrationBase {
   private static KernelLifecycle kernelLifecycle;
   private static KernelManager kernelManager;
   private static final String USERBASE = "res://org/sakaiproject/kernel/test/sampleuserenv/";
-  private static final String[] USERS = new String[] {"admin","ib236","ieb" };
-
+  private static final String[] USERS = new String[] { "admin", "ib236", "ieb" };
 
   public static void beforeClass() throws ComponentActivatorException {
     // If there are problems with startup and shutdown, these will prevent the
     // problem
     File jcrBase = new File("target/jcr");
     File dbBase = new File("target/testdb");
-    System.err.println("==========================================================================");
-    System.err.println("Removing all previous JCR and DB traces from "+jcrBase.getAbsolutePath()+" "+dbBase.getAbsolutePath());
-    
+    System.err
+        .println("==========================================================================");
+    System.err.println("Removing all previous JCR and DB traces from "
+        + jcrBase.getAbsolutePath() + " " + dbBase.getAbsolutePath());
+
     FileUtil.deleteAll(jcrBase);
     FileUtil.deleteAll(dbBase);
-    System.err.println("==========================================================================");
+    System.err
+        .println("==========================================================================");
 
-    System.setProperty("sakai.kernel.properties", "inline://component.locations=classpath:;\n");
-    
+    System.setProperty("sakai.kernel.properties",
+        "inline://core.component.locations=\ncomponent.locations=classpath:;\n");
+
     kernelLifecycle = new KernelLifecycle();
     kernelLifecycle.start();
 
@@ -89,6 +92,7 @@ public class KernelIntegrationBase {
     } catch (Exception ex) {
       LOG.info("Failed to stop kernel ", ex);
     }
+    KernelIntegrationBase.enableKernelStartup();
   }
 
   /**
@@ -107,8 +111,10 @@ public class KernelIntegrationBase {
    * @return
    */
   protected HttpServletResponse startRequest(HttpServletRequest request,
-      HttpServletResponse response, String cookieName, UserResolverService userResolverService) {
-    SakaiServletRequest wrequest = new SakaiServletRequest(request,userResolverService);
+      HttpServletResponse response, String cookieName,
+      UserResolverService userResolverService) {
+    SakaiServletRequest wrequest = new SakaiServletRequest(request,
+        userResolverService);
     SakaiServletResponse wresponse = new SakaiServletResponse(response,
         cookieName);
     SessionManagerService sessionManagerService = kernelManager
@@ -117,41 +123,61 @@ public class KernelIntegrationBase {
     return wresponse;
 
   }
-  
 
   /**
    * @throws IOException
    * @throws AccessDeniedException
    * @throws RepositoryException
    * @throws JCRNodeFactoryServiceException
-   * @throws InterruptedException 
-   * @throws NoSuchAlgorithmException 
+   * @throws InterruptedException
+   * @throws NoSuchAlgorithmException
    */
-  public static void loadTestUsers() throws IOException, AccessDeniedException,  RepositoryException, JCRNodeFactoryServiceException, InterruptedException, NoSuchAlgorithmException {
+  public static void loadTestUsers() throws IOException, AccessDeniedException,
+      RepositoryException, JCRNodeFactoryServiceException,
+      InterruptedException, NoSuchAlgorithmException {
     KernelManager km = new KernelManager();
-    JCRNodeFactoryService jcrNodeFactoryService = km.getService(JCRNodeFactoryService.class);
+    JCRNodeFactoryService jcrNodeFactoryService = km
+        .getService(JCRNodeFactoryService.class);
     JCRService jcrService = km.getService(JCRService.class);
-    for ( String user : USERS ) {
-      InputStream in = ResourceLoader.openResource(USERBASE+user+".json", SakaiAuthenticationFilter.class.getClassLoader());
+    for (String user : USERS) {
+      InputStream in = ResourceLoader.openResource(USERBASE + user + ".json",
+          SakaiAuthenticationFilter.class.getClassLoader());
       Node n = jcrNodeFactoryService.setInputStream(getUserEnvPath("ieb"), in);
-      n.setProperty(JcrAuthenticationResolverProvider.JCRPASSWORDHASH, StringUtils.sha1Hash("password"));
+      n.setProperty(JcrAuthenticationResolverProvider.JCRPASSWORDHASH,
+          StringUtils.sha1Hash("password"));
       n.save();
       in.close();
     }
     jcrService.getSession().save();
     Thread.yield();
     Thread.sleep(1000);
-    
-    
-    
-    
+
   }
+
   /**
    * @return
    */
   public static String getUserEnvPath(String userId) {
     String prefix = PathUtils.getUserPrefix(userId);
-    return "/userenv" + prefix + SimpleJcrUserEnvironmentResolverService.USERENV;
+    return "/userenv" + prefix
+        + SimpleJcrUserEnvironmentResolverService.USERENV;
+  }
+
+  /**
+   * Stops the default kernel from starting up when the lifecycle is started,
+   * used when there is a test that wants to test an aspect of the kernel
+   * startup.
+   */
+  public static void disableKernelStartup() {
+    System.setProperty("sakai.kernel.properties",
+        "inline://core.component.locations=\n");
+  }
+
+  /**
+   * Re-enable kernel startup 
+   */
+  public static void enableKernelStartup() {
+    System.clearProperty("sakai.kernel.properties");
   }
 
 }

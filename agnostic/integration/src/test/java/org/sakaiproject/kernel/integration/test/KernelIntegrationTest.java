@@ -40,6 +40,7 @@ public class KernelIntegrationTest {
    */
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
+    System.setProperty("sakai.kernel.properties", "inline://core.component.locations=\n");    
     kernelLifecycle = new KernelLifecycle();
     kernelLifecycle.start();
   }
@@ -51,6 +52,7 @@ public class KernelIntegrationTest {
   public static void tearDownAfterClass() throws Exception {
     kernelLifecycle.stop();
     kernelLifecycle.destroy();
+    System.clearProperty("sakai.kernel.properties");
   }
 
   /**

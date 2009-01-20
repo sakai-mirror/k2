@@ -22,7 +22,9 @@ import static org.junit.Assert.fail;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sakaiproject.kernel.api.ComponentManager;
 import org.sakaiproject.kernel.api.ComponentSpecification;
@@ -45,6 +47,18 @@ public class ComponentManagerImplTest {
   private static final Log LOG = LogFactory
       .getLog(ComponentManagerImplTest.class);
 
+  @BeforeClass
+  public static void beforeClass() {
+
+    System.setProperty("sakai.kernel.properties", "inline://core.component.locations=\n");    
+  }
+  
+  @AfterClass
+  public static void afterClass() {
+    System.clearProperty("sakai.kernel.properties");
+  
+  }
+  
   @Before
   public void before() {
     kernel = new KernelImpl();
@@ -70,6 +84,8 @@ public class ComponentManagerImplTest {
    */
   @Test
   public void testStart() throws Exception {
+    // override the defaults
+
     ComponentManagerImpl cm = new ComponentManagerImpl(kernel);
     cm.start();
     cm.stop();

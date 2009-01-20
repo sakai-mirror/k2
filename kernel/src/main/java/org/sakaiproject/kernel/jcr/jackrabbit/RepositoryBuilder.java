@@ -249,8 +249,6 @@ public class RepositoryBuilder {
 
       injectorHolder.set(injector);
       
-      System.err.println("Creating "+sharedFSBlobLocation);
-      System.err.println("Creating "+JOURNAL_LOCATION);
       new File(sharedFSBlobLocation).mkdirs();
       new File(journalLocation).mkdirs();
       

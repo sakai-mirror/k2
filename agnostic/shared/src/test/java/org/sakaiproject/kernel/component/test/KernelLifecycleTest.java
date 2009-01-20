@@ -19,7 +19,9 @@ package org.sakaiproject.kernel.component.test;
 
 import static org.junit.Assert.*;
 
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sakaiproject.kernel.component.KernelLifecycle;
 
@@ -29,6 +31,16 @@ import org.sakaiproject.kernel.component.KernelLifecycle;
 public class KernelLifecycleTest {
 
   private KernelLifecycle kl;
+
+  @BeforeClass
+  public static void beforeClass() {
+    System.setProperty("sakai.kernel.properties", "inline://core.component.locations=\n");    
+  }
+  
+  @AfterClass
+  public static void afterClass() {
+    System.clearProperty("sakai.kernel.properties");  
+  }
 
   /**
    * @throws java.lang.Exception

@@ -23,7 +23,9 @@ import static org.junit.Assert.assertTrue;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sakaiproject.kernel.Activator;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
@@ -48,8 +50,9 @@ public class CacheTest {
   private Cache<String> named_cache;
   private CacheManagerService cacheManagerService;
   
-  @Before
-  public void start()throws ComponentActivatorException {
+  @BeforeClass
+  public static void startClass()throws ComponentActivatorException {
+    KernelIntegrationBase.disableKernelStartup();
  // If there are problems with startup and shutdown, these will prevent the
     // problem
     File jcrBase = new File("target/jcr");
@@ -77,18 +80,31 @@ public class CacheTest {
         ss.register((RequiresStop) s);
       }
     }
-    cacheManagerService = kernelManager.getService(CacheManagerService.class);
-    default_cache = cacheManagerService.getCache(null, CacheScope.INSTANCE);
-    named_cache = cacheManagerService.getCache("namedCache", CacheScope.INSTANCE);
   }
   
-  @After
-  public void cleanup() {
+  @AfterClass
+  public static void afterClass() {
     try {
       kernelLifecycle.stop();
     } catch (Exception ex) {
       LOG.info("Failed to stop kernel ", ex);
     }
+    KernelIntegrationBase.enableKernelStartup();
+  }
+  
+  @Before
+  public void before() {
+    cacheManagerService = kernelManager.getService(CacheManagerService.class);
+    default_cache = cacheManagerService.getCache(null, CacheScope.INSTANCE);
+    named_cache = cacheManagerService.getCache("namedCache", CacheScope.INSTANCE);
+    
+  }
+  
+  
+  @After
+  public void after() {
+    default_cache.clear();
+    named_cache.clear();
   }
 
   @Test

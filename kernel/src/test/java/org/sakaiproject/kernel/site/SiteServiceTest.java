@@ -22,6 +22,7 @@ import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -37,6 +38,7 @@ import org.sakaiproject.kernel.component.KernelLifecycle;
 import org.sakaiproject.kernel.model.RoleBean;
 import org.sakaiproject.kernel.model.SiteBean;
 import org.sakaiproject.kernel.session.SessionImpl;
+import org.sakaiproject.kernel.test.KernelIntegrationBase;
 import org.sakaiproject.kernel.util.FileUtil;
 import org.sakaiproject.kernel.webapp.SakaiServletRequest;
 import org.sakaiproject.kernel.webapp.test.InternalUser;
@@ -57,6 +59,7 @@ public class SiteServiceTest {
 
   @BeforeClass
   public static void beforeClass() throws Exception {
+    KernelIntegrationBase.disableKernelStartup();
     File jcrBase = new File("target/jcr");
     File dbBase = new File("target/testdb");
     System.err
@@ -103,6 +106,12 @@ public class SiteServiceTest {
     verify(request);
 
     sessMgr.bindRequest(req);
+  }
+
+  @AfterClass
+  public static void afterClass() {
+    KernelIntegrationBase.enableKernelStartup();
+  
   }
 
   @Test

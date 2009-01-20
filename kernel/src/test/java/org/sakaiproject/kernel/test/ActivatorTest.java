@@ -54,7 +54,8 @@ public class ActivatorTest {
 
   @Before
   public void start() throws KernelConfigurationException {
-    // If there are problems with startup and shutdown, these will prevent the
+    KernelIntegrationBase.disableKernelStartup();
+        // If there are problems with startup and shutdown, these will prevent the
     // problem
     FileUtil.deleteAll(new File("target/jcr"));
     FileUtil.deleteAll(new File("target/testdb"));
@@ -75,6 +76,7 @@ public class ActivatorTest {
     } catch (Exception ex) {
       LOG.info("Failed to stop kernel ", ex);
     }
+    KernelIntegrationBase.enableKernelStartup();
   }
 
   /**

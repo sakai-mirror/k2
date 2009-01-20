@@ -22,6 +22,8 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.spi.Message;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sakaiproject.kernel.KernelModule;
 import org.sakaiproject.kernel.api.Kernel;
@@ -48,6 +50,16 @@ public class PersistenceModuleTest {
   private static final String LOCAL_PROPERTIES = "SAKAI_KERNEL_COMPONENT_PROPERTIES";
   private static final String SYS_LOCAL_PROPERTIES = "sakai.kernel.component.properties";
 
+  @BeforeClass
+  public static void beforeClass() {
+    KernelIntegrationBase.disableKernelStartup();
+  }
+  
+  @AfterClass
+  public static void afterClass() {
+    KernelIntegrationBase.enableKernelStartup();
+  }
+  
   @Test
   public void loadModule() throws Exception {
     Properties props = readSysProps();
