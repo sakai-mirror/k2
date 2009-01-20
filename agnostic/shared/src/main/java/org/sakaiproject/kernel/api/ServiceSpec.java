@@ -17,6 +17,8 @@
  */
 package org.sakaiproject.kernel.api;
 
+import org.sakaiproject.kernel.component.core.SharedClassLoader;
+
 /**
  * Services are specified and searched for using a ServiceSpec class, this may
  * be a direct match or it may be a search for services implementing a certain
@@ -76,16 +78,18 @@ public class ServiceSpec {
    * @throws ClassNotFoundException
    */
   private void checkClientClassloader(Class<?> service) {
-    String serviceName = service.getName();
-    try {
-      Class<?> myClass = this.getClass().getClassLoader()
-          .loadClass(serviceName);
-      if (!myClass.equals(service)) {
-        throw new ClassLoaderMisconfigurationException(service, myClass);
-      }
-    } catch (ClassNotFoundException ex) {
-      throw new RuntimeException("The service identified by the class "
-          + serviceName + " is not available to the service manager ");
+    if ( service == null ) {
+      return;
+    }
+    ClassLoader cl = service.getClassLoader();
+    if ( cl == null || cl.equals(this.getClass().getClassLoader())) {
+      return;
+    }
+    while ( cl != null && !(cl instanceof SharedClassLoader) ) {
+      cl = cl.getParent();
+    }
+    if ( cl == null ) {
+        throw new ClassLoaderMisconfigurationException(service, this.getClass());
     }
   }
 
