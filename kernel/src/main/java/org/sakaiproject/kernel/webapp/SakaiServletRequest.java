@@ -24,8 +24,11 @@ import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.session.SessionImpl;
 
 import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -36,15 +39,19 @@ public class SakaiServletRequest extends HttpServletRequestWrapper {
   public static final String NO_SESSION_USE = "_no_session";
   private Session session;
   private UserResolverService userResolverService;
+  private HttpServletResponse response;
+  private String cookieName;
 
   /**
    * @param request
    * @param sessionManagerService
    */
-  public SakaiServletRequest(ServletRequest request,
+  public SakaiServletRequest(ServletRequest request, ServletResponse response, String cookieName,
       UserResolverService userResolverService) {
     super((HttpServletRequest) request);
     this.userResolverService = userResolverService;
+    this.response = (HttpServletResponse) response;
+    this.cookieName = cookieName;
   }
 
   /**
@@ -58,6 +65,11 @@ public class SakaiServletRequest extends HttpServletRequestWrapper {
       if (session == null) {
         HttpSession rsession = super.getSession();
         if (rsession != null) {
+          Cookie c = new Cookie(cookieName,rsession.getId());
+          c.setPath("/");
+          c.setMaxAge(-1);
+          response.addCookie(c);
+          System.err.println("New Session created and cookie set to"+c);
           session = new SessionImpl(rsession, (Authentication) super
               .getAttribute(Authentication.REQUESTTOKEN), userResolverService);
         }

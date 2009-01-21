@@ -44,6 +44,7 @@ import java.io.StringWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  * 
@@ -80,9 +81,11 @@ public class RestAuthenticationProviderTest {
     RegistryService registryService = new RegistryServiceImpl();
     HttpServletResponse response = createMock(HttpServletResponse.class);
     HttpServletRequest request = createMock(HttpServletRequest.class);
+    HttpSession session = createMock(HttpSession.class);
     expect(request.getMethod()).andReturn("GET").anyTimes();
 
     expect(request.getParameter("l")).andReturn("1").anyTimes();
+    expect(request.getSession()).andReturn(session).anyTimes();
     AuthenticationImpl authN = new AuthenticationImpl(new InternalUser("ieb"));
     expect(request.getAttribute(Authentication.REQUESTTOKEN)).andReturn(authN);
 
@@ -152,7 +155,9 @@ public class RestAuthenticationProviderTest {
     RegistryService registryService = new RegistryServiceImpl();
     HttpServletResponse response = createMock(HttpServletResponse.class);
     HttpServletRequest request = createMock(HttpServletRequest.class);
+    HttpSession session = createMock(HttpSession.class);
     expect(request.getMethod()).andReturn("POST").anyTimes();
+    expect(request.getSession()).andReturn(session).anyTimes();
 
     expect(request.getParameter("l")).andReturn("1").anyTimes();
     AuthenticationImpl authN = new AuthenticationImpl(new InternalUser("ieb"));

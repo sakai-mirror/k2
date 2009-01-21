@@ -44,7 +44,7 @@ import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
 import org.sakaiproject.kernel.rest.RestMeProvider;
-import org.sakaiproject.kernel.test.AuthZServiceTest;
+import org.sakaiproject.kernel.test.AuthZServiceKernelUnitT;
 import org.sakaiproject.kernel.test.KernelIntegrationBase;
 import org.sakaiproject.kernel.util.PathUtils;
 import org.sakaiproject.kernel.util.ResourceLoader;
@@ -68,21 +68,22 @@ import javax.servlet.http.HttpSession;
 /**
  * 
  */
-public class RestMeProviderTest extends KernelIntegrationBase {
+public class RestMeProviderKernelUnitT extends KernelIntegrationBase {
   
-  private static final Log LOG = LogFactory.getLog(AuthZServiceTest.class);
+  private static final Log LOG = LogFactory.getLog(AuthZServiceKernelUnitT.class);
   private static final String[] USERS = { "admin", "ib236" };
   private static final String TEST_USERENV = "res://org/sakaiproject/kernel/test/sampleuserenv/";
+  private static boolean shutdown;
 
 
   @BeforeClass
-  public static void beforeClass() throws ComponentActivatorException {
-    KernelIntegrationBase.beforeClass();
+  public static void beforeThisClass() throws ComponentActivatorException {
+    shutdown = KernelIntegrationBase.beforeClass();
   }
   
   @AfterClass
-  public static void afterClass() {
-    KernelIntegrationBase.afterClass();
+  public static void afterThisClass() {
+    KernelIntegrationBase.afterClass(shutdown);
   }
 
   @Test
@@ -123,7 +124,7 @@ public class RestMeProviderTest extends KernelIntegrationBase {
     expectLastCall().atLeastOnce();
       replay(request,response,session);
     
-    SakaiServletRequest sakaiServletRequest = new SakaiServletRequest(request,userResolverService);
+    SakaiServletRequest sakaiServletRequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
     sessionManagerService.bindRequest(sakaiServletRequest);
     
     
@@ -174,7 +175,7 @@ public class RestMeProviderTest extends KernelIntegrationBase {
     expectLastCall().atLeastOnce();
       replay(request,response,session);
     
-    SakaiServletRequest sakaiServletRequest = new SakaiServletRequest(request,userResolverService);
+    SakaiServletRequest sakaiServletRequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
     sessionManagerService.bindRequest(sakaiServletRequest);
     
     
@@ -218,7 +219,7 @@ public class RestMeProviderTest extends KernelIntegrationBase {
       LOG.info("Saving "+userEnvironmentPath);
       jcrNodeFactoryService.createFile(userEnvironmentPath);
       InputStream in = ResourceLoader.openResource(TEST_USERENV + userName
-          + ".json", AuthZServiceTest.class.getClassLoader());
+          + ".json", AuthZServiceKernelUnitT.class.getClassLoader());
       jcrNodeFactoryService.setInputStream(userEnvironmentPath, in);
       jsession.save();
       in.close();
@@ -254,7 +255,7 @@ public class RestMeProviderTest extends KernelIntegrationBase {
     expectLastCall().atLeastOnce();
       replay(request,response,session);
     
-    SakaiServletRequest sakaiServletRequest = new SakaiServletRequest(request,userResolverService);
+    SakaiServletRequest sakaiServletRequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
     sessionManagerService.bindRequest(sakaiServletRequest);
     
     

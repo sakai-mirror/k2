@@ -43,6 +43,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  * 
@@ -108,10 +109,17 @@ public class SakaiRequestFilter implements Filter {
    */
   public void doFilter(ServletRequest request, ServletResponse response,
       FilterChain chain) throws IOException, ServletException {
+    boolean requestHasNoSession = true;
     if ( noSession ) {
       request.setAttribute(SakaiServletRequest.NO_SESSION_USE, "true");
+    } else {
+      HttpServletRequest hrequest = (HttpServletRequest) request;
+      HttpSession hsession = hrequest.getSession(false);
+      if ( hsession != null ) {
+        requestHasNoSession = false;
+      }
     }
-    SakaiServletRequest wrequest = new SakaiServletRequest(request,userResolverService);
+    SakaiServletRequest wrequest = new SakaiServletRequest(request,response,cookieName,userResolverService);
     SakaiServletResponse wresponse = new SakaiServletResponse(response,
         cookieName);
     sessionManagerService.bindRequest(wrequest);
@@ -143,6 +151,14 @@ public class SakaiRequestFilter implements Filter {
     } finally {
       cacheManagerService.unbind(CacheScope.REQUEST);
     }
+    if ( requestHasNoSession ) {
+      HttpServletRequest hrequest = (HttpServletRequest) request;
+      HttpSession hsession = hrequest.getSession(false);
+      if ( hsession != null ) {
+        LOG.info("New Session Created with ID "+hsession.getId());
+      }
+    }
+    
   }
 
 }

@@ -45,21 +45,22 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * 
  */
-public class SakaiAuthenticationFilterTest extends KernelIntegrationBase {
+public class SakaiAuthenticationFilterKernelUnitT extends KernelIntegrationBase {
 
   private static final String BASE64AUTH = "Basic aWViOnBhc3N3b3Jk"; // ieb:password
   private static final String BADBASE64AUTH = "Basic asdfasdfsfsd9921xx==";
+  private static boolean shutdown;
   @BeforeClass
   public static void beforeThisClass() throws ComponentActivatorException,
       RepositoryException, JCRNodeFactoryServiceException, IOException, InterruptedException, NoSuchAlgorithmException {
-    KernelIntegrationBase.beforeClass();
+    shutdown = KernelIntegrationBase.beforeClass();
     KernelIntegrationBase.loadTestUsers();
   }
   
 
   @AfterClass
   public static void afterClass() {
-    KernelIntegrationBase.afterClass();
+    KernelIntegrationBase.afterClass(shutdown);
   }
 
   @Test

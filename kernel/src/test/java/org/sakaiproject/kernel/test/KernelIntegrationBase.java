@@ -62,37 +62,52 @@ public class KernelIntegrationBase {
   private static final String USERBASE = "res://org/sakaiproject/kernel/test/sampleuserenv/";
   private static final String[] USERS = new String[] { "admin", "ib236", "ieb" };
 
-  public static void beforeClass() throws ComponentActivatorException {
-    // If there are problems with startup and shutdown, these will prevent the
-    // problem
-    File jcrBase = new File("target/jcr");
-    File dbBase = new File("target/testdb");
-    System.err
-        .println("==========================================================================");
-    System.err.println("Removing all previous JCR and DB traces from "
-        + jcrBase.getAbsolutePath() + " " + dbBase.getAbsolutePath());
+  public static boolean beforeClass() throws ComponentActivatorException {
+    if (kernelManager == null) {
+      System.err.println("has no kernel has been started ");
+      // If there are problems with startup and shutdown, these will prevent the
+      // problem
+      File jcrBase = new File("target/jcr");
+      File dbBase = new File("target/testdb");
+      System.err
+          .println("==========================================================================");
+      System.err.println("Removing all previous JCR and DB traces from "
+          + jcrBase.getAbsolutePath() + " " + dbBase.getAbsolutePath());
 
-    FileUtil.deleteAll(jcrBase);
-    FileUtil.deleteAll(dbBase);
-    System.err
-        .println("==========================================================================");
+      FileUtil.deleteAll(jcrBase);
+      FileUtil.deleteAll(dbBase);
+      System.err
+          .println("==========================================================================");
 
-    System.setProperty("sakai.kernel.properties",
-        "inline://core.component.locations=\ncomponent.locations=classpath:;\n");
+      System
+          .setProperty("sakai.kernel.properties",
+              "inline://core.component.locations=\ncomponent.locations=classpath:;\n");
 
-    kernelLifecycle = new KernelLifecycle();
-    kernelLifecycle.start();
+      kernelLifecycle = new KernelLifecycle();
+      kernelLifecycle.start();
 
-    kernelManager = new KernelManager();
+      kernelManager = new KernelManager();
+      return true;
+    } else {
+      System.err.println("Reusing the kernel ");
+      return false;
+    }
   }
 
-  public static void afterClass() {
-    try {
-      kernelLifecycle.stop();
-    } catch (Exception ex) {
-      LOG.info("Failed to stop kernel ", ex);
+  public static void afterClass(boolean shutdown) {
+    
+    if (false) {
+      try {
+        kernelLifecycle.stop();
+      } catch (Exception ex) {
+        LOG.info("Failed to stop kernel ", ex);
+      }
+      kernelManager = null;
+      kernelLifecycle= null;
+      KernelIntegrationBase.enableKernelStartup();
+    } else {
+      System.err.println("Keeping kernel alive ");
     }
-    KernelIntegrationBase.enableKernelStartup();
   }
 
   /**
@@ -113,8 +128,8 @@ public class KernelIntegrationBase {
   protected HttpServletResponse startRequest(HttpServletRequest request,
       HttpServletResponse response, String cookieName,
       UserResolverService userResolverService) {
-    SakaiServletRequest wrequest = new SakaiServletRequest(request,
-        userResolverService);
+    SakaiServletRequest wrequest = new SakaiServletRequest(request, response,
+        cookieName, userResolverService);
     SakaiServletResponse wresponse = new SakaiServletResponse(response,
         cookieName);
     SessionManagerService sessionManagerService = kernelManager
@@ -174,7 +189,7 @@ public class KernelIntegrationBase {
   }
 
   /**
-   * Re-enable kernel startup 
+   * Re-enable kernel startup
    */
   public static void enableKernelStartup() {
     System.clearProperty("sakai.kernel.properties");

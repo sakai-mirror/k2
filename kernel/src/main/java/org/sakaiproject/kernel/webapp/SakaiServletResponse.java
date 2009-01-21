@@ -44,10 +44,14 @@ public class SakaiServletResponse extends HttpServletResponseWrapper {
    */
   @Override
   public void addCookie(Cookie cookie) {
+    System.err.println("Adding cookie "+cookie.getName());
     if ( cookieName.equals(cookie.getName()) )  {
       cookie.setPath("/");
+      System.err.println("Cookie path set to / " );
     }
     super.addCookie(cookie);
   }
+  
+  
 
 }

@@ -37,16 +37,17 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * 
  */
-public class RequestFilterTest extends KernelIntegrationBase {
+public class RequestFilterKernelUnitT extends KernelIntegrationBase {
   
+  private static boolean shutdown;
   @BeforeClass
-  public static void beforeClass() throws ComponentActivatorException {
-    KernelIntegrationBase.beforeClass();
+  public static void beforeThisClass() throws ComponentActivatorException {
+    shutdown = KernelIntegrationBase.beforeClass();
   }
   
   @AfterClass
-  public static void afterClass() {
-    KernelIntegrationBase.afterClass();
+  public static void afterThisClass() {
+    KernelIntegrationBase.afterClass(shutdown);
   }
 
   /**
@@ -67,6 +68,7 @@ public class RequestFilterTest extends KernelIntegrationBase {
     EasyMock.expect(request.getPathInfo()).andReturn("/sdata/f");
     EasyMock.expect(request.getRemoteUser()).andReturn("ib236").anyTimes();
     EasyMock.expect(filterConfig.getInitParameter("no-session")).andReturn(null).anyTimes();
+    EasyMock.expect(request.getSession(false)).andReturn(null).anyTimes();
     chain.doFilter((ServletRequest)EasyMock.anyObject(), (ServletResponse)EasyMock.anyObject());
     EasyMock.replay(filterConfig,request,response,chain);
     
@@ -92,6 +94,7 @@ public class RequestFilterTest extends KernelIntegrationBase {
     EasyMock.expect(filterConfig.getInitParameter("time-requests")).andReturn(null);
     EasyMock.expect(request.getRemoteUser()).andReturn("ib236").anyTimes();
     EasyMock.expect(filterConfig.getInitParameter("no-session")).andReturn(null).anyTimes();
+    EasyMock.expect(request.getSession(false)).andReturn(null).anyTimes();
     chain.doFilter((ServletRequest)EasyMock.anyObject(), (ServletResponse)EasyMock.anyObject());
     EasyMock.replay(filterConfig,request,response,chain);
     

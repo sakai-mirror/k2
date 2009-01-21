@@ -42,16 +42,18 @@ import javax.jcr.Session;
 /**
  * 
  */
-public class RepositoryTest extends KernelIntegrationBase {
+public class RepositoryKernelUnitT extends KernelIntegrationBase {
+
+  private static boolean shutdown;
 
   @BeforeClass
-  public static void beforeClass() throws ComponentActivatorException {
-    KernelIntegrationBase.beforeClass();
+  public static void beforeThisClass() throws ComponentActivatorException {
+    shutdown = KernelIntegrationBase.beforeClass();
   }
 
   @AfterClass
   public static void afterClass() {
-    KernelIntegrationBase.afterClass();
+    KernelIntegrationBase.afterClass(shutdown);
   }
 
   @Test

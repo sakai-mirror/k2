@@ -20,87 +20,44 @@ package org.sakaiproject.kernel.test;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.sakaiproject.kernel.Activator;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
-import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.KernelManager;
-import org.sakaiproject.kernel.api.RequiresStop;
-import org.sakaiproject.kernel.api.ServiceSpec;
-import org.sakaiproject.kernel.api.ShutdownService;
 import org.sakaiproject.kernel.api.memory.Cache;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
-import org.sakaiproject.kernel.component.KernelLifecycle;
-import org.sakaiproject.kernel.util.FileUtil;
 
-import java.io.File;
-
-public class CacheTest {
-  private static final Log LOG = LogFactory.getLog(ActivatorTest.class);
-  private static KernelLifecycle kernelLifecycle;
+public class CacheKernelUnitT {
   private static KernelManager kernelManager;
+  private static boolean shutdown;
   private Cache<String> default_cache;
   private Cache<String> named_cache;
   private CacheManagerService cacheManagerService;
-  
+
   @BeforeClass
-  public static void startClass()throws ComponentActivatorException {
-    KernelIntegrationBase.disableKernelStartup();
- // If there are problems with startup and shutdown, these will prevent the
-    // problem
-    File jcrBase = new File("target/jcr");
-    File dbBase = new File("target/testdb");
-    System.err.println("==========================================================================");
-    System.err.println("Removing all previous JCR and DB traces from "+jcrBase.getAbsolutePath()+" "+dbBase.getAbsolutePath());
-    
-    FileUtil.deleteAll(jcrBase);
-    FileUtil.deleteAll(dbBase);
-    System.err.println("==========================================================================");
-
-    kernelLifecycle = new KernelLifecycle();
-    kernelLifecycle.start();
-
+  public static void startClass() throws ComponentActivatorException {
+    shutdown = KernelIntegrationBase.beforeClass();
     kernelManager = new KernelManager();
-    Kernel kernel = kernelManager.getKernel();
-    Activator activator = new Activator();
-    activator.activate(kernel);
-    for (Class<?> c : Activator.SERVICE_CLASSES) {
-
-      ShutdownService ss = kernel.getServiceManager().getService(
-          new ServiceSpec(ShutdownService.class));
-      Object s = kernel.getServiceManager().getService(new ServiceSpec(c));
-      if (s instanceof RequiresStop) {
-        ss.register((RequiresStop) s);
-      }
-    }
   }
-  
+
   @AfterClass
   public static void afterClass() {
-    try {
-      kernelLifecycle.stop();
-    } catch (Exception ex) {
-      LOG.info("Failed to stop kernel ", ex);
-    }
-    KernelIntegrationBase.enableKernelStartup();
+    KernelIntegrationBase.afterClass(shutdown);
   }
-  
+
   @Before
   public void before() {
     cacheManagerService = kernelManager.getService(CacheManagerService.class);
     default_cache = cacheManagerService.getCache(null, CacheScope.INSTANCE);
-    named_cache = cacheManagerService.getCache("namedCache", CacheScope.INSTANCE);
-    
+    named_cache = cacheManagerService.getCache("namedCache",
+        CacheScope.INSTANCE);
+
   }
-  
-  
+
   @After
   public void after() {
     default_cache.clear();
@@ -116,14 +73,15 @@ public class CacheTest {
     assertTrue(default_cache.containsKey("test"));
     assertTrue(default_cache.containsKey("test2"));
     default_cache.clear();
-    //Make sure all entries were removed
+    // Make sure all entries were removed
     assertFalse(default_cache.containsKey("test"));
     assertFalse(default_cache.containsKey("test2"));
   }
 
   @Test
   public void testThreadCacheClear() {
-    Cache<String> thread_cache = cacheManagerService.getCache(null, CacheScope.THREAD);
+    Cache<String> thread_cache = cacheManagerService.getCache(null,
+        CacheScope.THREAD);
     assertFalse(thread_cache.containsKey("test"));
     assertFalse(thread_cache.containsKey("test2"));
     thread_cache.put("test", "123");
@@ -131,11 +89,11 @@ public class CacheTest {
     assertTrue(thread_cache.containsKey("test"));
     assertTrue(thread_cache.containsKey("test2"));
     thread_cache.clear();
-    //Make sure all entries were removed
+    // Make sure all entries were removed
     assertFalse(thread_cache.containsKey("test"));
     assertFalse(thread_cache.containsKey("test2"));
   }
-  
+
   @Test
   public void testRemove() {
     default_cache.put("test", "123");
@@ -143,24 +101,25 @@ public class CacheTest {
     default_cache.put("test2", "321");
     assertTrue(default_cache.containsKey("test2"));
     default_cache.remove("test");
-    //Make sure we only removed the requested entry
+    // Make sure we only removed the requested entry
     assertFalse(default_cache.containsKey("test"));
     assertTrue(default_cache.containsKey("test2"));
   }
-  
+
   @Test
-  public void testThreadCacheRemove(){
-    Cache<String> thread_cache = cacheManagerService.getCache(null, CacheScope.THREAD);
+  public void testThreadCacheRemove() {
+    Cache<String> thread_cache = cacheManagerService.getCache(null,
+        CacheScope.THREAD);
     thread_cache.put("test", "123");
     assertTrue(thread_cache.containsKey("test"));
     thread_cache.put("test2", "1234");
     assertTrue(thread_cache.containsKey("test2"));
     thread_cache.remove("test");
-    //Make sure we only removed the requested entry
+    // Make sure we only removed the requested entry
     assertFalse(thread_cache.containsKey("test"));
     assertTrue(thread_cache.containsKey("test2"));
   }
-  
+
   @Test
   public void testOverwrite() {
     default_cache.clear();
@@ -168,7 +127,7 @@ public class CacheTest {
     default_cache.put("test", "321");
     assertTrue(default_cache.get("test").equals("321"));
   }
-  
+
   @Test
   public void testCacheIsolation() {
     default_cache.clear();

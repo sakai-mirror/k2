@@ -35,6 +35,7 @@ import org.sakaiproject.kernel.session.SessionImpl;
 import org.sakaiproject.kernel.webapp.SakaiServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -72,6 +73,7 @@ public class SakaiServletRequestTest {
   @Test
   public void testGetRemoteUserNone() {
     HttpServletRequest request = createMock(HttpServletRequest.class);
+    HttpServletResponse response = createMock(HttpServletResponse.class);
     UserResolverService userResolverService = createMock(UserResolverService.class);
 
     expect(request.getRemoteUser()).andReturn(null);
@@ -80,7 +82,7 @@ public class SakaiServletRequestTest {
     expect(request.getAttribute("_no_session")).andReturn(null);
     replay(request,userResolverService);
 
-    SakaiServletRequest srequest = new SakaiServletRequest(request,userResolverService);
+    SakaiServletRequest srequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
     assertNull(srequest.getRemoteUser());
     verify(request,userResolverService);
   }
@@ -88,12 +90,13 @@ public class SakaiServletRequestTest {
   @Test
   public void testGetRemoteUserFromRequest() {
     HttpServletRequest request = createMock(HttpServletRequest.class);
+    HttpServletResponse response = createMock(HttpServletResponse.class);
     UserResolverService userResolverService = createMock(UserResolverService.class);
 
     expect(request.getRemoteUser()).andReturn("ieb");
     replay(request,userResolverService);
 
-    SakaiServletRequest srequest = new SakaiServletRequest(request,userResolverService);
+    SakaiServletRequest srequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
     assertEquals("ieb", srequest.getRemoteUser());
     verify(request,userResolverService);
   }
@@ -101,6 +104,8 @@ public class SakaiServletRequestTest {
   @Test
   public void testGetRemoteUserFromSession() {
     HttpServletRequest request = createMock(HttpServletRequest.class);
+    HttpServletResponse response = createMock(HttpServletResponse.class);
+
     UserResolverService userResolverService = createMock(UserResolverService.class);
     User user = new InternalUser("ieb2");
     HttpSession session = createMock(HttpSession.class);
@@ -111,7 +116,7 @@ public class SakaiServletRequestTest {
     expect(request.getAttribute("_no_session")).andReturn(null);
     replay(request,session,userResolverService);
 
-    SakaiServletRequest srequest = new SakaiServletRequest(request,userResolverService);
+    SakaiServletRequest srequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
     assertEquals("ieb2", srequest.getRemoteUser());
     verify(request,session,userResolverService);
 
@@ -125,15 +130,18 @@ public class SakaiServletRequestTest {
   @Test
   public void testGetSession() {
     HttpServletRequest request = createMock(HttpServletRequest.class);
+    HttpServletResponse response = createMock(HttpServletResponse.class);
+
     UserResolverService userResolverService = createMock(UserResolverService.class);
 
     HttpSession session = createMock(HttpSession.class);
     expect(request.getSession()).andReturn(session);
+    expect(session.getId()).andReturn("1234").anyTimes();
     expect(request.getAttribute("_uuid")).andReturn(null);
     expect(request.getAttribute("_no_session")).andReturn(null);
     replay(request,session,userResolverService);
 
-    SakaiServletRequest srequest = new SakaiServletRequest(request,userResolverService);
+    SakaiServletRequest srequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
     assertTrue(srequest.getSession() instanceof SessionImpl);
     verify(request,session,userResolverService);
   }
@@ -146,6 +154,8 @@ public class SakaiServletRequestTest {
   @Test
   public void testGetSakaiSessionTrue() {
     HttpServletRequest request = createMock(HttpServletRequest.class);
+    HttpServletResponse response = createMock(HttpServletResponse.class);
+
     UserResolverService userResolverService = createMock(UserResolverService.class);
 
     HttpSession session = createMock(HttpSession.class);
@@ -154,7 +164,7 @@ public class SakaiServletRequestTest {
     expect(request.getAttribute("_no_session")).andReturn(null);
     replay(request,session,userResolverService);
 
-    SakaiServletRequest srequest = new SakaiServletRequest(request,userResolverService);
+    SakaiServletRequest srequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
     assertTrue(srequest.getSession(true) instanceof SessionImpl);
     verify(request,session,userResolverService);
   }
@@ -167,6 +177,8 @@ public class SakaiServletRequestTest {
   @Test
   public void testGetSakaiSessionFalse() {
     HttpServletRequest request = createMock(HttpServletRequest.class);
+    HttpServletResponse response = createMock(HttpServletResponse.class);
+
     UserResolverService userResolverService = createMock(UserResolverService.class);
 
     HttpSession session = createMock(HttpSession.class);
@@ -174,7 +186,7 @@ public class SakaiServletRequestTest {
     expect(request.getAttribute("_no_session")).andReturn(null);
     replay(request,session,userResolverService);
 
-    SakaiServletRequest srequest = new SakaiServletRequest(request,userResolverService);
+    SakaiServletRequest srequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
     assertNull(srequest.getSession(false));
     verify(request,session,userResolverService);
   }
@@ -186,6 +198,8 @@ public class SakaiServletRequestTest {
   @Test
   public void testGetSakaiSession() {
     HttpServletRequest request = createMock(HttpServletRequest.class);
+    HttpServletResponse response = createMock(HttpServletResponse.class);
+
     UserResolverService userResolverService = createMock(UserResolverService.class);
 
     HttpSession session = createMock(HttpSession.class);
@@ -194,7 +208,7 @@ public class SakaiServletRequestTest {
     expect(request.getAttribute("_no_session")).andReturn(null).anyTimes();
     replay(request,session,userResolverService);
 
-    SakaiServletRequest srequest = new SakaiServletRequest(request,userResolverService);
+    SakaiServletRequest srequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
     Session s = srequest.getSakaiSession();
     assertTrue(srequest.getSession(true) instanceof SessionImpl);
     assertEquals(s, srequest.getSession());

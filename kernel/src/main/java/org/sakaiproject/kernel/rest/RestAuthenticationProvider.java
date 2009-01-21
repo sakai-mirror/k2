@@ -140,7 +140,9 @@ public class RestAuthenticationProvider implements RestProvider {
         // login didnt happen, so it must be a 401
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         return;
-      }
+      } 
+      // ensure there is a session, if the filter is setup to provide sessions
+      request.getSession();
     }
     // pull the user to get it in the session and send a 200
     request.getRemoteUser();

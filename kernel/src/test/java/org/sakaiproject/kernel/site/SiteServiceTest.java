@@ -47,6 +47,7 @@ import java.io.File;
 
 import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -92,6 +93,7 @@ public class SiteServiceTest {
 
     User user = new InternalUser("testUser1");
     HttpSession session = createMock(HttpSession.class);
+    HttpServletResponse response = createMock(HttpServletResponse.class);
     expect(request.getRemoteUser()).andReturn("");
     expect(request.getSession(false)).andReturn(session);
     expect(session.getAttribute(SessionImpl.USER)).andReturn(user).anyTimes();
@@ -101,7 +103,7 @@ public class SiteServiceTest {
     expect(request.getAttribute("_no_session")).andReturn(null).anyTimes();
     replay(request, session);
 
-    SakaiServletRequest req = new SakaiServletRequest(request, userRes);
+    SakaiServletRequest req = new SakaiServletRequest(request,response,"JSESSIONID", userRes);
     assertNotNull(req.getRemoteUser());
     verify(request);
 

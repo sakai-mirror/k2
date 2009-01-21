@@ -180,7 +180,7 @@ public class IntegrationTest {
     expect(request.getPathInfo()).andReturn("/pmissmatch/sdfsd/sdf/cds.xt/");
 
     replay(config, request, response, session);
-    SakaiServletRequest srequest = new SakaiServletRequest(request,userResolverService);
+    SakaiServletRequest srequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
     @SuppressWarnings("unused")
     SakaiServletResponse sresponse = new SakaiServletResponse(response,
         "JSESSIONID");
@@ -251,7 +251,7 @@ public class IntegrationTest {
     response.sendError(404);
     replay(config, request, response, session);
 
-    SakaiServletRequest srequest = new SakaiServletRequest(request,userResolverService);
+    SakaiServletRequest srequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
     SakaiServletResponse sresponse = new SakaiServletResponse(response,
         "JSESSIONID");
     sessionManagerService.bindRequest(srequest);
@@ -292,7 +292,7 @@ public class IntegrationTest {
     response.sendError(404, "No Handler Found");
 
     replay(config, request, response, session);
-    SakaiServletRequest srequest = new SakaiServletRequest(request,userResolverService);
+    SakaiServletRequest srequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
     SakaiServletResponse sresponse = new SakaiServletResponse(response,
         "JSESSIONID");
     sessionManagerService.bindRequest(srequest);
@@ -331,7 +331,7 @@ public class IntegrationTest {
     response.sendError(404, "No Handler Found");
 
     replay(config, request, response, session);
-    SakaiServletRequest srequest = new SakaiServletRequest(request,userResolverService);
+    SakaiServletRequest srequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
     SakaiServletResponse sresponse = new SakaiServletResponse(response,
         "JSESSIONID");
     sessionManagerService.bindRequest(srequest);
@@ -389,7 +389,7 @@ public class IntegrationTest {
     response.setStatus(200);
 
     replay(config, request, response, session);
-    SakaiServletRequest srequest = new SakaiServletRequest(request,userResolverService);
+    SakaiServletRequest srequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
     SakaiServletResponse sresponse = new SakaiServletResponse(response,
         "JSESSIONID");
     sessionManagerService.bindRequest(srequest);
@@ -474,7 +474,7 @@ public class IntegrationTest {
     }).anyTimes();
 
     replay(config, request, response, session);
-    SakaiServletRequest srequest = new SakaiServletRequest(request,userResolverService);
+    SakaiServletRequest srequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
     SakaiServletResponse sresponse = new SakaiServletResponse(response,
         "JSESSIONID");
     sessionManagerService.bindRequest(srequest);
@@ -561,7 +561,7 @@ public class IntegrationTest {
     }).anyTimes();
 
     replay(config, request, response, session);
-    SakaiServletRequest srequest = new SakaiServletRequest(request,userResolverService);
+    SakaiServletRequest srequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
     SakaiServletResponse sresponse = new SakaiServletResponse(response,
         "JSESSIONID");
     sessionManagerService.bindRequest(srequest);
@@ -616,7 +616,7 @@ public class IntegrationTest {
     JCRDumper dumper = new JCRDumper(jcrService);
     reset(request, response, session);
     replay(request, response, session);
-    SakaiServletRequest srequest = new SakaiServletRequest(request,userResolverService);
+    SakaiServletRequest srequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
     SakaiServletResponse sresponse = new SakaiServletResponse(response,
         "JSESSIONID");
     sessionManagerService.bindRequest(srequest);
@@ -627,7 +627,7 @@ public class IntegrationTest {
 
     reset(request, response, session);
     replay(request, response, session);
-    srequest = new SakaiServletRequest(request,userResolverService);
+    srequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
     sresponse = new SakaiServletResponse(response, "JSESSIONID");
     sessionManagerService.bindRequest(srequest);
     authzResolverService.setRequestGrant("testDumper");
@@ -638,7 +638,7 @@ public class IntegrationTest {
 
     reset(request, response, session);
     replay(request, response, session);
-    srequest = new SakaiServletRequest(request,userResolverService);
+    srequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
     sresponse = new SakaiServletResponse(response, "JSESSIONID");
     sessionManagerService.bindRequest(srequest);
     authzResolverService.setRequestGrant("testDumper");
@@ -648,7 +648,7 @@ public class IntegrationTest {
 
     reset(request, response, session);
     replay(request, response, session);
-    srequest = new SakaiServletRequest(request,userResolverService);
+    srequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
     sresponse = new SakaiServletResponse(response, "JSESSIONID");
     sessionManagerService.bindRequest(srequest);
     authzResolverService.setRequestGrant("testDumper");
@@ -658,7 +658,7 @@ public class IntegrationTest {
 
     reset(request, response, session);
     replay(request, response, session);
-    srequest = new SakaiServletRequest(request,userResolverService);
+    srequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
     sresponse = new SakaiServletResponse(response, "JSESSIONID");
     sessionManagerService.bindRequest(srequest);
     authzResolverService.setRequestGrant("testDumper");
