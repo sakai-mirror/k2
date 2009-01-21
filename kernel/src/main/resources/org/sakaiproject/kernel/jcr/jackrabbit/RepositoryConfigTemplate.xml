@@ -307,10 +307,12 @@
     
     <!-- setup the cluster -->
     <Cluster id="${sakai.cluster}" >
+<!--
       <Journal class="org.apache.jackrabbit.core.journal.FileJournal">
     	<param name="revision" value="${rep.home}/revision.log" />
     	<param name="directory" value="${journal.location}" />
-  	  </Journal>
+      </Journal>
+-->
         <Journal class="org.apache.jackrabbit.core.journal.DatabaseJournal">
   			<param name="url" value="${db.url}" />
   			<param name="user" value="${db.user}"/>
