@@ -58,21 +58,7 @@ public class SakaiServletResponseTest {
   public void testSakaiServletRequest() {
   }
 
-  @Test
-  public void testSetSessionCookie() {
-    HttpServletResponse response = createMock(HttpServletResponse.class);
-    Cookie cookie = new Cookie("JSESSIONID","1");
-    cookie.setPath("/a/longer/path");
-    response.addCookie(cookie);
-    replay(response);
 
-    SakaiServletResponse sresponse = new SakaiServletResponse(response,"JSESSIONID");
-    sresponse.addCookie(cookie);
-    Assert.assertEquals("/", cookie.getPath());
-    verify(response);
-    
-    
-  }
 
   @Test
   public void testSetNonSessionCookie() {
@@ -82,7 +68,7 @@ public class SakaiServletResponseTest {
     response.addCookie(cookie);
     replay(response);
 
-    SakaiServletResponse sresponse = new SakaiServletResponse(response,"JSESSIONID");
+    SakaiServletResponse sresponse = new SakaiServletResponse(response);
     sresponse.addCookie(cookie);
     Assert.assertEquals("/a/longer/path", cookie.getPath());
     verify(response);

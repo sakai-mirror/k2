@@ -18,7 +18,6 @@
 package org.sakaiproject.kernel.webapp;
 
 import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
@@ -27,30 +26,14 @@ import javax.servlet.http.HttpServletResponseWrapper;
  */
 public class SakaiServletResponse extends HttpServletResponseWrapper {
 
-  private String cookieName;
-
   /**
    * @param response
    * @param sessionManagerService 
    */
-  public SakaiServletResponse(ServletResponse response, String cookieName) {
+  public SakaiServletResponse(ServletResponse response) {
     super((HttpServletResponse) response);
-    this.cookieName = cookieName;
   }
   
-  /**
-   * {@inheritDoc}
-   * @see javax.servlet.http.HttpServletResponseWrapper#addCookie(javax.servlet.http.Cookie)
-   */
-  @Override
-  public void addCookie(Cookie cookie) {
-    System.err.println("Adding cookie "+cookie.getName());
-    if ( cookieName.equals(cookie.getName()) )  {
-      cookie.setPath("/");
-      System.err.println("Cookie path set to / " );
-    }
-    super.addCookie(cookie);
-  }
   
   
 

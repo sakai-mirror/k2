@@ -53,10 +53,6 @@ public class SakaiRequestFilter implements Filter {
 
   private static final String TIME_REQUEST = "time-requests";
 
-  private static final String COOKIE_NAME = "cookie-name";
-
-  private static final String DEFAULT_COOKIE_NAME = "JSESSIONID";
-
   private static final String NO_SESSION = "no-session";
 
   private boolean timeOn = false;
@@ -64,8 +60,6 @@ public class SakaiRequestFilter implements Filter {
   private SessionManagerService sessionManagerService;
 
   private CacheManagerService cacheManagerService;
-
-  private String cookieName;
 
   private UserResolverService userResolverService;
 
@@ -77,10 +71,6 @@ public class SakaiRequestFilter implements Filter {
    * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
    */
   public void init(FilterConfig config) throws ServletException {
-    cookieName = config.getInitParameter(COOKIE_NAME);
-    if (cookieName == null || cookieName.trim().length() == 0) {
-      cookieName = DEFAULT_COOKIE_NAME;
-    }
     timeOn = "true".equals(config.getInitParameter(TIME_REQUEST));
     KernelManager kernelManager = new KernelManager();
     sessionManagerService = kernelManager
@@ -89,7 +79,7 @@ public class SakaiRequestFilter implements Filter {
     userResolverService = kernelManager.getService(UserResolverService.class);
     LOG.info(" SessionManagerService " + sessionManagerService);
     LOG.info(" Cache Manager Service " + cacheManagerService);
-    noSession  = "true".equals(config.getInitParameter(NO_SESSION));
+    noSession = "true".equals(config.getInitParameter(NO_SESSION));
   }
 
   /**
@@ -109,19 +99,13 @@ public class SakaiRequestFilter implements Filter {
    */
   public void doFilter(ServletRequest request, ServletResponse response,
       FilterChain chain) throws IOException, ServletException {
-    boolean requestHasNoSession = true;
-    if ( noSession ) {
+    HttpServletRequest hrequest = (HttpServletRequest) request;
+    String requestedSessionID = hrequest.getRequestedSessionId();
+    if (noSession) {
       request.setAttribute(SakaiServletRequest.NO_SESSION_USE, "true");
-    } else {
-      HttpServletRequest hrequest = (HttpServletRequest) request;
-      HttpSession hsession = hrequest.getSession(false);
-      if ( hsession != null ) {
-        requestHasNoSession = false;
-      }
     }
-    SakaiServletRequest wrequest = new SakaiServletRequest(request,response,cookieName,userResolverService);
-    SakaiServletResponse wresponse = new SakaiServletResponse(response,
-        cookieName);
+    SakaiServletRequest wrequest = new SakaiServletRequest(request, response, userResolverService, sessionManagerService);
+    SakaiServletResponse wresponse = new SakaiServletResponse(response);
     sessionManagerService.bindRequest(wrequest);
     try {
 
@@ -132,7 +116,6 @@ public class SakaiRequestFilter implements Filter {
 
         } finally {
           long end = System.currentTimeMillis();
-          HttpServletRequest hrequest = (HttpServletRequest) request;
           LOG.info("Request took " + hrequest.getMethod() + " "
               + hrequest.getPathInfo() + " " + (end - start) + " ms");
         }
@@ -151,14 +134,11 @@ public class SakaiRequestFilter implements Filter {
     } finally {
       cacheManagerService.unbind(CacheScope.REQUEST);
     }
-    if ( requestHasNoSession ) {
-      HttpServletRequest hrequest = (HttpServletRequest) request;
-      HttpSession hsession = hrequest.getSession(false);
-      if ( hsession != null ) {
-        LOG.info("New Session Created with ID "+hsession.getId());
-      }
+    HttpSession hsession = hrequest.getSession(false);
+    if (hsession != null && !hsession.getId().equals(requestedSessionID)) {
+      LOG.info("New Session Created with ID " + hsession.getId());
     }
-    
+
   }
 
 }

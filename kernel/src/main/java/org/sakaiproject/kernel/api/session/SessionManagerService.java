@@ -23,6 +23,9 @@ import com.google.inject.Singleton;
 import org.sakaiproject.kernel.session.SessionManagerServiceImpl;
 
 import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  * The session manager service manages sessions
@@ -43,6 +46,14 @@ public interface SessionManagerService {
    * @param request bind the current request to the thread
    */
   void bindRequest(ServletRequest request);
+
+
+  /**
+   * @param request
+   * @param response 
+   * @return
+   */
+  HttpSession getSession(HttpServletRequest request, HttpServletResponse response, boolean create);
 
   
   

@@ -17,6 +17,9 @@
  */
 package org.sakaiproject.kernel.test;
 
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.expectLastCall;
+
 import org.easymock.EasyMock;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -31,6 +34,7 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -62,12 +66,15 @@ public class RequestFilterKernelUnitT extends KernelIntegrationBase {
     HttpServletResponse response = EasyMock.createMock(HttpServletResponse.class);
     FilterChain chain = EasyMock.createMock(FilterChain.class);
   
-    EasyMock.expect(filterConfig.getInitParameter("cookie-name")).andReturn("JSESSIONID");
     EasyMock.expect(filterConfig.getInitParameter("time-requests")).andReturn("true");
     EasyMock.expect(request.getMethod()).andReturn("GET");
+    response.addCookie((Cookie) anyObject());
+    expectLastCall().anyTimes();
+
     EasyMock.expect(request.getPathInfo()).andReturn("/sdata/f");
     EasyMock.expect(request.getRemoteUser()).andReturn("ib236").anyTimes();
     EasyMock.expect(filterConfig.getInitParameter("no-session")).andReturn(null).anyTimes();
+    EasyMock.expect(request.getRequestedSessionId()).andReturn(null).anyTimes();
     EasyMock.expect(request.getSession(false)).andReturn(null).anyTimes();
     chain.doFilter((ServletRequest)EasyMock.anyObject(), (ServletResponse)EasyMock.anyObject());
     EasyMock.replay(filterConfig,request,response,chain);
@@ -90,10 +97,13 @@ public class RequestFilterKernelUnitT extends KernelIntegrationBase {
     HttpServletResponse response = EasyMock.createMock(HttpServletResponse.class);
     FilterChain chain = EasyMock.createMock(FilterChain.class);
   
-    EasyMock.expect(filterConfig.getInitParameter("cookie-name")).andReturn(null);
     EasyMock.expect(filterConfig.getInitParameter("time-requests")).andReturn(null);
     EasyMock.expect(request.getRemoteUser()).andReturn("ib236").anyTimes();
+    response.addCookie((Cookie) anyObject());
+    expectLastCall().anyTimes();
+
     EasyMock.expect(filterConfig.getInitParameter("no-session")).andReturn(null).anyTimes();
+    EasyMock.expect(request.getRequestedSessionId()).andReturn(null).anyTimes();
     EasyMock.expect(request.getSession(false)).andReturn(null).anyTimes();
     chain.doFilter((ServletRequest)EasyMock.anyObject(), (ServletResponse)EasyMock.anyObject());
     EasyMock.replay(filterConfig,request,response,chain);

@@ -696,6 +696,7 @@ public class JCRHandler extends AbstractHandler {
   public void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     if (request.getRemoteUser() == null) {
+      log.info("No User, denied ");
       response.sendError(401);
     } else {
       snoopRequest(request);
@@ -723,19 +724,24 @@ public class JCRHandler extends AbstractHandler {
         }
       } catch (UnauthorizedException ape) {
         // catch any Unauthorized exceptions and send a 401
+        log.info(ape);
         response.reset();
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ape
             .getMessage());
       } catch (PermissionDeniedException pde) {
         // catch any permission denied exceptions, and send a 403
+        log.info(pde);
         response.reset();
         response.sendError(HttpServletResponse.SC_FORBIDDEN, pde.getMessage());
       } catch (SDataException sde) {
+        log.info(sde);
         sendError(request, response, sde);
 
       } catch (RepositoryException rex) {
+        log.info(rex);
         sendError(request, response, rex);
       } catch (JCRNodeFactoryServiceException jfe) {
+        log.info(jfe);
         sendError(request, response, jfe);
       }
     }

@@ -71,6 +71,7 @@ import java.util.Properties;
 import java.util.Map.Entry;
 
 import javax.jcr.Credentials;
+import javax.servlet.http.HttpSession;
 
 /**
  * A Guice module used to create the kernel component.
@@ -249,6 +250,11 @@ public class KernelModule extends AbstractModule {
     bind(UserEnvironment.class).annotatedWith(
         Names.named(UserEnvironment.NULLUSERENV)).to(NullUserEnvironment.class)
         .in(Scopes.SINGLETON);
+    
+    
+    TypeLiteral<Map<String, HttpSession>> sessionMap = new TypeLiteral<Map<String,HttpSession>>() {};
+    bind(sessionMap).toProvider(SessionMapProvider.class);
+    
 
     TypeLiteral<List<EventRegistration>> eventList = new TypeLiteral<List<EventRegistration>>() {
     };
@@ -300,5 +306,7 @@ public class KernelModule extends AbstractModule {
     };
     bind(integrationProviderList).annotatedWith(Names.named("forced-internal-1")).toProvider(IntegrationProviderListProvider.class)
         .asEagerSingleton();
+    
+    
   }
 }

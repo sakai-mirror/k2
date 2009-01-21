@@ -15,40 +15,37 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.sdata.tool.configuration;
+package org.sakaiproject.kernel;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.google.inject.name.Named;
+import com.google.inject.Singleton;
+import com.google.inject.util.ReferenceMap;
+import com.google.inject.util.ReferenceType;
 
-import org.sakaiproject.sdata.tool.JCRHandler;
-import org.sakaiproject.sdata.tool.JCRUserStorageHandler;
-import org.sakaiproject.sdata.tool.SnoopHandler;
-import org.sakaiproject.sdata.tool.api.Handler;
-
-import java.util.HashMap;
 import java.util.Map;
 
-/**
- * 
- */
-public class SDataHandlerProvider implements Provider<Map<String, Handler>> {
+import javax.servlet.http.HttpSession;
 
-  private Map<String, Handler> handlerMap;
+/**
+ * THis is a weak session map that will only hold references as long as the
+ * underlying sessions are still strongly referenced, if they are not strongly
+ * reference because they have expired, they will appear not to exist in the
+ * map. This is in a provider since its possible others want to change the way
+ * sessions are centralized.
+ */
+@Singleton
+public class SessionMapProvider implements Provider<Map<String, HttpSession>> {
+
+  private ReferenceMap<String, HttpSession> map;
 
   /**
-   * 
+   * Create the session map provider
    */
   @Inject
-  public SDataHandlerProvider(JCRHandler jcrHandler,
-      JCRUserStorageHandler jcrUserStorageHandler,
-      SnoopHandler snoopHandler,
-      @Named(JCRHandler.HANDLER_KEY) String jcrKey,
-      @Named(JCRUserStorageHandler.HANDLER_KEY) String jcrUserKey) {
-    handlerMap = new HashMap<String, Handler>();
-    handlerMap.put(jcrKey, jcrHandler);
-    handlerMap.put(jcrUserKey, jcrUserStorageHandler);
-    handlerMap.put("snoop", snoopHandler);
+  public SessionMapProvider() {
+    map = new ReferenceMap<String, HttpSession>(ReferenceType.WEAK,
+        ReferenceType.WEAK);
   }
 
   /**
@@ -56,8 +53,8 @@ public class SDataHandlerProvider implements Provider<Map<String, Handler>> {
    * 
    * @see com.google.inject.Provider#get()
    */
-  public Map<String, Handler> get() {
-    return handlerMap;
+  public Map<String, HttpSession> get() {
+    return map;
   }
 
 }

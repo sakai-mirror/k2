@@ -17,7 +17,9 @@
  */
 package org.sakaiproject.kernel.test;
 
+import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.reset;
 import static org.easymock.EasyMock.verify;
@@ -70,6 +72,7 @@ import javax.jcr.lock.LockException;
 import javax.jcr.nodetype.ConstraintViolationException;
 import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.version.VersionException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -278,6 +281,13 @@ public class AuthZServiceKernelUnitT extends KernelIntegrationBase {
     expect(request.getSession(true)).andReturn(session).anyTimes();
     expect(request.getSession(false)).andReturn(session).anyTimes();
     expect(session.getId()).andReturn(userName + "SESSIONID-123").anyTimes();
+    expect(request.getRequestedSessionId()).andReturn(userName + "SESSIONID-123").anyTimes();
+    Cookie cookie = new Cookie("SAKAIID","SESSIONID-123");
+    expect(request.getCookies()).andReturn(new Cookie[]{cookie}).anyTimes();
+
+    response.addCookie((Cookie) anyObject());
+    expectLastCall().anyTimes();
+
     expect(session.getAttribute(SessionImpl.USER)).andReturn(u).anyTimes();
     expect(request.getAttribute("_uuid")).andReturn(null).anyTimes();
     expect(request.getAttribute("_no_session")).andReturn(null).anyTimes();

@@ -31,7 +31,7 @@ import org.sakaiproject.kernel.webapp.test.SakaiAuthenticationFilterKernelUnitT;
 @RunWith(Suite.class)
 @SuiteClasses( { CacheKernelUnitT.class, RepositoryKernelUnitT.class, ObservationKernelUnitT.class, AuthZServiceKernelUnitT.class,
     RequestFilterKernelUnitT.class, SakaiAuthenticationFilterKernelUnitT.class,
-    RestMeProviderKernelUnitT.class
+    RestMeProviderKernelUnitT.class, SessionManagerServiceKernelUnitT.class
 
 })
 public class AllKernelTest {

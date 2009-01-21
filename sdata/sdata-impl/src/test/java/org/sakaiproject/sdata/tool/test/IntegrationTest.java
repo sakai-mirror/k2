@@ -180,10 +180,10 @@ public class IntegrationTest {
     expect(request.getPathInfo()).andReturn("/pmissmatch/sdfsd/sdf/cds.xt/");
 
     replay(config, request, response, session);
-    SakaiServletRequest srequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
+    SakaiServletRequest srequest = new SakaiServletRequest(request, response,
+        userResolverService, sessionManagerService);
     @SuppressWarnings("unused")
-    SakaiServletResponse sresponse = new SakaiServletResponse(response,
-        "JSESSIONID");
+    SakaiServletResponse sresponse = new SakaiServletResponse(response);
     sessionManagerService.bindRequest(srequest);
     authzResolverService.setRequestGrant("testServletRequest");
     ControllerServlet controllerServlet = new ControllerServlet();
@@ -251,9 +251,9 @@ public class IntegrationTest {
     response.sendError(404);
     replay(config, request, response, session);
 
-    SakaiServletRequest srequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
-    SakaiServletResponse sresponse = new SakaiServletResponse(response,
-        "JSESSIONID");
+    SakaiServletRequest srequest = new SakaiServletRequest(request, response,
+        userResolverService, sessionManagerService);
+    SakaiServletResponse sresponse = new SakaiServletResponse(response);
     sessionManagerService.bindRequest(srequest);
     authzResolverService.setRequestGrant("testServletRequest1");
 
@@ -292,9 +292,9 @@ public class IntegrationTest {
     response.sendError(404, "No Handler Found");
 
     replay(config, request, response, session);
-    SakaiServletRequest srequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
-    SakaiServletResponse sresponse = new SakaiServletResponse(response,
-        "JSESSIONID");
+    SakaiServletRequest srequest = new SakaiServletRequest(request, response,
+        userResolverService, sessionManagerService);
+    SakaiServletResponse sresponse = new SakaiServletResponse(response);
     sessionManagerService.bindRequest(srequest);
     authzResolverService.setRequestGrant("testServletRequest2");
     ControllerServlet controllerServlet = new ControllerServlet();
@@ -331,9 +331,9 @@ public class IntegrationTest {
     response.sendError(404, "No Handler Found");
 
     replay(config, request, response, session);
-    SakaiServletRequest srequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
-    SakaiServletResponse sresponse = new SakaiServletResponse(response,
-        "JSESSIONID");
+    SakaiServletRequest srequest = new SakaiServletRequest(request, response,
+        userResolverService, sessionManagerService);
+    SakaiServletResponse sresponse = new SakaiServletResponse(response);
     sessionManagerService.bindRequest(srequest);
     authzResolverService.setRequestGrant("testServletRequest3");
     ControllerServlet controllerServlet = new ControllerServlet();
@@ -389,9 +389,9 @@ public class IntegrationTest {
     response.setStatus(200);
 
     replay(config, request, response, session);
-    SakaiServletRequest srequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
-    SakaiServletResponse sresponse = new SakaiServletResponse(response,
-        "JSESSIONID");
+    SakaiServletRequest srequest = new SakaiServletRequest(request, response,
+        userResolverService, sessionManagerService);
+    SakaiServletResponse sresponse = new SakaiServletResponse(response);
     sessionManagerService.bindRequest(srequest);
     authzResolverService.setRequestGrant("testServletRequest4");
     ControllerServlet controllerServlet = new ControllerServlet();
@@ -474,9 +474,9 @@ public class IntegrationTest {
     }).anyTimes();
 
     replay(config, request, response, session);
-    SakaiServletRequest srequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
-    SakaiServletResponse sresponse = new SakaiServletResponse(response,
-        "JSESSIONID");
+    SakaiServletRequest srequest = new SakaiServletRequest(request, response,
+        userResolverService, sessionManagerService);
+    SakaiServletResponse sresponse = new SakaiServletResponse(response);
     sessionManagerService.bindRequest(srequest);
     authzResolverService.setRequestGrant("testGet");
 
@@ -561,9 +561,9 @@ public class IntegrationTest {
     }).anyTimes();
 
     replay(config, request, response, session);
-    SakaiServletRequest srequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
-    SakaiServletResponse sresponse = new SakaiServletResponse(response,
-        "JSESSIONID");
+    SakaiServletRequest srequest = new SakaiServletRequest(request, response,
+        userResolverService, sessionManagerService);
+    SakaiServletResponse sresponse = new SakaiServletResponse(response);
     sessionManagerService.bindRequest(srequest);
     authzResolverService.setRequestGrant("testGetMetatData");
 
@@ -616,9 +616,9 @@ public class IntegrationTest {
     JCRDumper dumper = new JCRDumper(jcrService);
     reset(request, response, session);
     replay(request, response, session);
-    SakaiServletRequest srequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
-    SakaiServletResponse sresponse = new SakaiServletResponse(response,
-        "JSESSIONID");
+    SakaiServletRequest srequest = new SakaiServletRequest(request, response,
+        userResolverService, sessionManagerService);
+    SakaiServletResponse sresponse = new SakaiServletResponse(response);
     sessionManagerService.bindRequest(srequest);
     authzResolverService.setRequestGrant("testDumper");
     dumper.doDelete(srequest, sresponse);
@@ -627,8 +627,9 @@ public class IntegrationTest {
 
     reset(request, response, session);
     replay(request, response, session);
-    srequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
-    sresponse = new SakaiServletResponse(response, "JSESSIONID");
+    srequest = new SakaiServletRequest(request, response, userResolverService,
+        sessionManagerService);
+    sresponse = new SakaiServletResponse(response);
     sessionManagerService.bindRequest(srequest);
     authzResolverService.setRequestGrant("testDumper");
     generateDumperCallSequence("GET", request, response);
@@ -638,8 +639,9 @@ public class IntegrationTest {
 
     reset(request, response, session);
     replay(request, response, session);
-    srequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
-    sresponse = new SakaiServletResponse(response, "JSESSIONID");
+    srequest = new SakaiServletRequest(request, response, userResolverService,
+        sessionManagerService);
+    sresponse = new SakaiServletResponse(response);
     sessionManagerService.bindRequest(srequest);
     authzResolverService.setRequestGrant("testDumper");
     dumper.doHead(srequest, sresponse);
@@ -648,8 +650,9 @@ public class IntegrationTest {
 
     reset(request, response, session);
     replay(request, response, session);
-    srequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
-    sresponse = new SakaiServletResponse(response, "JSESSIONID");
+    srequest = new SakaiServletRequest(request, response, userResolverService,
+        sessionManagerService);
+    sresponse = new SakaiServletResponse(response);
     sessionManagerService.bindRequest(srequest);
     authzResolverService.setRequestGrant("testDumper");
     dumper.doPost(srequest, sresponse);
@@ -658,8 +661,9 @@ public class IntegrationTest {
 
     reset(request, response, session);
     replay(request, response, session);
-    srequest = new SakaiServletRequest(request,response,"JSESSIONID",userResolverService);
-    sresponse = new SakaiServletResponse(response, "JSESSIONID");
+    srequest = new SakaiServletRequest(request, response, userResolverService,
+        sessionManagerService);
+    sresponse = new SakaiServletResponse(response);
     sessionManagerService.bindRequest(srequest);
     authzResolverService.setRequestGrant("testDumper");
     dumper.doPut(srequest, sresponse);

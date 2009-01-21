@@ -46,6 +46,7 @@ import org.sakaiproject.kernel.webapp.test.InternalUser;
 import java.io.File;
 
 import javax.persistence.PersistenceException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -88,6 +89,8 @@ public class SiteServiceTest {
     SessionManagerService sessMgr = kernel
         .getService(SessionManagerService.class);
     UserResolverService userRes = kernel.getService(UserResolverService.class);
+    SessionManagerService sessionManagerService = kernel
+        .getService(SessionManagerService.class);
 
     HttpServletRequest request = createMock(HttpServletRequest.class);
 
@@ -98,14 +101,19 @@ public class SiteServiceTest {
     expect(request.getSession(false)).andReturn(session);
     expect(session.getAttribute(SessionImpl.USER)).andReturn(user).anyTimes();
 
+    expect(request.getRequestedSessionId()).andReturn("TEST-12222").anyTimes();
+    Cookie cookie = new Cookie("SAKAIID","SESSIONID-123");
+    expect(request.getCookies()).andReturn(new Cookie[]{cookie}).anyTimes();
+    expect(session.getId()).andReturn("TEST-12222").anyTimes();
     expect(request.getRemoteUser()).andReturn("").anyTimes();
     expect(request.getAttribute("_uuid")).andReturn(null).anyTimes();
     expect(request.getAttribute("_no_session")).andReturn(null).anyTimes();
     replay(request, session);
 
-    SakaiServletRequest req = new SakaiServletRequest(request,response,"JSESSIONID", userRes);
+    SakaiServletRequest req = new SakaiServletRequest(request, response,
+        userRes, sessionManagerService);
     assertNotNull(req.getRemoteUser());
-    verify(request);
+    verify(request, session);
 
     sessMgr.bindRequest(req);
   }
@@ -113,7 +121,7 @@ public class SiteServiceTest {
   @AfterClass
   public static void afterClass() {
     KernelIntegrationBase.enableKernelStartup();
-  
+
   }
 
   @Test

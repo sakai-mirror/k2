@@ -19,6 +19,7 @@ package org.sakaiproject.kernel.session;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.google.inject.name.Named;
 
 import org.sakaiproject.kernel.api.memory.Cache;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
@@ -27,7 +28,13 @@ import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.webapp.SakaiServletRequest;
 
+import java.util.Map;
+
 import javax.servlet.ServletRequest;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  * 
@@ -40,11 +47,18 @@ public class SessionManagerServiceImpl implements SessionManagerService {
    */
   private static final String REQUEST_CACHE = "request";
   private static final String CURRENT_REQUEST = "_r";
+  private static final String SESSION_COOKIE = "http.global.cookiename";
   private CacheManagerService cacheManagerService;
+  private Map<String, HttpSession> sessionMap;
+  private String cookieName;
 
   @Inject
-  public SessionManagerServiceImpl(CacheManagerService cacheManagerService) {
+  public SessionManagerServiceImpl(CacheManagerService cacheManagerService,
+      Map<String, HttpSession> sessionMap,
+      @Named(SESSION_COOKIE) String cookieName) {
     this.cacheManagerService = cacheManagerService;
+    this.sessionMap = sessionMap;
+    this.cookieName = cookieName;
   }
 
   /**
@@ -83,5 +97,54 @@ public class SessionManagerServiceImpl implements SessionManagerService {
 
   }
 
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.kernel.api.session.SessionManagerService#getSession(javax.servlet.http.HttpServletRequest,
+   *      boolean)
+   */
+  public HttpSession getSession(HttpServletRequest request,
+      HttpServletResponse response, boolean create) {
+    // try and get it from the cache, if there use it, otherwise create it and
+    // place it in the cache.
+    // try the container location first
+    String sessionID = request.getRequestedSessionId();
+    HttpSession session = null;
+    if (sessionID != null) {
+      // if its not in the map... its not the right session
+      session = sessionMap.get(sessionID);
+    }
+    // try the cookie
+    if (session == null) {
+      sessionID = null;
+      // could be its in a cookie
+      Cookie[] cookies = request.getCookies();
+      if (cookies != null) {
+        for (Cookie c : cookies) {
+          if (cookieName.equals(c.getName())) {
+            sessionID = c.getValue();
+            break;
+          }
+        }
+      }
+      if (sessionID != null) {
+        session = sessionMap.get(sessionID);
+      }
+      if (session == null) {
+        // not in the map of could have no session, so create one (if requested)
+        // go back and create with the sever, which will set a cookie,
+        // that OK, but also set my cookie.
+        session = request.getSession(create);
+        if (session != null) {
+          Cookie c = new Cookie(cookieName, session.getId());
+          c.setPath("/");
+          c.setMaxAge(-1);
+          response.addCookie(c);
+          sessionMap.put(session.getId(), session);
+        }
+      }
+    }
+    return session;
+  }
 
 }

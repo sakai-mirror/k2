@@ -128,12 +128,11 @@ public class KernelIntegrationBase {
   protected HttpServletResponse startRequest(HttpServletRequest request,
       HttpServletResponse response, String cookieName,
       UserResolverService userResolverService) {
-    SakaiServletRequest wrequest = new SakaiServletRequest(request, response,
-        cookieName, userResolverService);
-    SakaiServletResponse wresponse = new SakaiServletResponse(response,
-        cookieName);
     SessionManagerService sessionManagerService = kernelManager
-        .getService(SessionManagerService.class);
+    .getService(SessionManagerService.class);
+    SakaiServletRequest wrequest = new SakaiServletRequest(request, response,
+         userResolverService, sessionManagerService);
+    SakaiServletResponse wresponse = new SakaiServletResponse(response);
     sessionManagerService.bindRequest(wrequest);
     return wresponse;
 
