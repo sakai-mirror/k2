@@ -18,6 +18,9 @@
     <export>
     	<name>javax.persistence</name>
     </export>
+    <export>
+      <name>org.sakaiproject.kernel.model</name>
+    </export>
   </exports>
   <dependencies>
     <dependency>
