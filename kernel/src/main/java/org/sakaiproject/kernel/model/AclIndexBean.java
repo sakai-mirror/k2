@@ -17,6 +17,7 @@ package org.sakaiproject.kernel.model;
 
 import org.sakaiproject.kernel.api.authz.SubjectStatement;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
@@ -51,7 +52,6 @@ public class AclIndexBean {
   /**
    * The key of this ACS as used for searching.
    */
-  @Id
   private String key;
 
   /**
@@ -71,6 +71,8 @@ public class AclIndexBean {
    */
   private String ref;
 
+  @Id
+  @Column(name = "STATEMENT_KEY")
   public String getKey() {
     return key;
   }
