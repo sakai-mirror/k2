@@ -37,7 +37,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -78,10 +77,8 @@ public class SiteServiceImpl implements SiteService {
       String json = beanConverter.convertToString(site);
       String fileNode = buildFilePath(site.getId());
       try {
-        Node node = jcrNodeFactoryService.createFile(fileNode);
         jcrNodeFactoryService.setInputStream(fileNode,
             new ByteArrayInputStream(json.getBytes()));
-        node.save();
       } catch (RepositoryException e1) {
         throw new SiteCreationException(e1.getMessage(), e1);
       } catch (JCRNodeFactoryServiceException e2) {

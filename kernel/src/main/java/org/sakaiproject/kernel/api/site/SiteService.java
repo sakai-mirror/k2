@@ -24,7 +24,7 @@ public interface SiteService {
   /**
    * Path where site information is stored in the user environment.
    */
-  String PATH_MYSITES = "MySites/";
+  String PATH_MYSITES = "MySites";
 
   /**
    * Name of the group definition file.

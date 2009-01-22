@@ -110,13 +110,37 @@ public abstract class PropertiesLoader {
     }
   }
 
+  /**
+   * Get all the loaded properties.
+   *
+   * @return
+   */
   public Properties getProperties() {
     return properties;
   }
 
   /**
+   * @see java.util.Properties#getProperty(String)
+   * @param key
+   * @return
+   */
+  public String getProperty(String key) {
+    return properties.getProperty(key);
+  }
+
+  /**
+   * @see java.util.Properties#getProperty(String, String)
+   * @param key
+   * @param defaultValue
+   * @return
+   */
+  public String getProperty(String key, String defaultValue) {
+    return properties.getProperty(key, defaultValue);
+  }
+
+  /**
    * The location of the default properties file.
-   *
+   * 
    * @return
    */
   protected abstract String getDefaultProperties();
