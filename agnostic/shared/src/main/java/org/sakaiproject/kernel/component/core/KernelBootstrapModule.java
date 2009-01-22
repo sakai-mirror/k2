@@ -143,6 +143,13 @@ public class KernelBootstrapModule extends AbstractModule {
             + LOCAL_PROPERTIES
             + " to a resource location to override kernel properties");
       }
+      
+      StringBuilder sb = new StringBuilder();
+      sb.append("Merged Propery Set:\n");
+      for( Entry<?, ?> e : properties.entrySet()) {
+        sb.append("\tKey[").append(e.getKey()).append("] value[").append(e.getValue()).append("]\n");
+      }
+      LOG.info(sb.toString());
     } catch (IOException e) {
       LOG.info("Failed to startup ",e);
       throw new CreationException(Arrays.asList(new Message(

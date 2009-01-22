@@ -33,6 +33,7 @@ import org.sakaiproject.kernel.api.PackageExport;
 import org.sakaiproject.kernel.api.PackageRegistryService;
 
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,7 +57,7 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
   public ClassLoaderServiceImpl(SharedClassLoader sharedClassLoader,
       PackageRegistryService packageRegistryService,
       ArtifactResolverService artifactResolverService,
-      @Named("kernel.classloaderIsolation") boolean classloaderIsolation ) {
+      @Named("kernel.classloaderIsolation") boolean classloaderIsolation) {
     this.sharedClassLoader = sharedClassLoader;
     this.packageRegistryService = packageRegistryService;
     this.artifactResolverService = artifactResolverService;
@@ -84,6 +85,8 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
         URL url = artifactResolverService.resolve(u, artifact);
         if (url != null) {
           urls.add(url);
+          LOG.warn(spec.getName() + "::Added  " + artifact
+              + " to local component classloader ");
         } else {
           LOG.warn(spec.getName() + "::Did not add dependency " + artifact
               + " to local component classloader ");
@@ -93,9 +96,15 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
     ClassLoader cl = null;
     if (!classloaderIsolation || (spec.isKernelBootstrap() && urls.size() == 0)) {
       cl = this.getClass().getClassLoader();
+      if (!classloaderIsolation) {
+        LOG
+            .warn("Component Classloader is not isolated, using "
+                + cl
+                + " which MUST contain all the kernel dependencies for this test to run ");
+      }
     } else {
       cl = new ComponentClassLoader(packageRegistryService, urls
-          .toArray(new URL[0]), sharedClassLoader,spec.getComponentArtifact());
+          .toArray(new URL[0]), sharedClassLoader, spec.getComponentArtifact());
     }
     // add the shared dependencies
     for (Artifact artifact : spec.getDependencies()) {
@@ -113,10 +122,6 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
       }
     }
 
-    
-    
-    
-    
     return cl;
   }
 }

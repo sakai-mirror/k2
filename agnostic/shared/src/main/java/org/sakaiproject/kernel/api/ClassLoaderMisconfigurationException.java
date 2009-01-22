@@ -54,10 +54,16 @@ public class ClassLoaderMisconfigurationException extends RuntimeException {
         .append("\tcomponent bootstrap mechanism, and webapps must be loaded in the webapp container with a modified \n");
     message
         .append("\twebapp lifecycle. The classloaders dont have to be the same, but they should have a common parent, the shared classloader\n");
+    message.append("\tYour Class is:").append(
+        remoteClass.getName()).append("\n");
+    message.append("\tThe Service is:").append(
+        kernelClass.getName()).append("\n");
     message.append("\tYour Classloader is:").append(
-        remoteClass.getClassLoader());
-    message.append("\tThe Kenel Classloader is:").append(
-        kernelClass.getClassLoader());
+        remoteClass.getClassLoader()).append("\n");
+    message.append("\tThe Service Classloader is:").append(
+        kernelClass.getClassLoader()).append("\n");
+    message.append("\tAlso check that the service API you are loading has been exported");
+    
     return message.toString();
   }
 

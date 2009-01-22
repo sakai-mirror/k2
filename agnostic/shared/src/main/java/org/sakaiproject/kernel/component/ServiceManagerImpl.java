@@ -19,6 +19,8 @@ package org.sakaiproject.kernel.component;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.api.ClassLoaderMisconfigurationException;
+import org.sakaiproject.kernel.api.ClassLoaderService;
 import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.ServiceManager;
 import org.sakaiproject.kernel.api.ServiceManagerException;
@@ -83,6 +85,14 @@ public class ServiceManagerImpl implements ServiceManager {
   @SuppressWarnings("unchecked")
   public <T> T getService(ServiceSpec serviceSpec) {
     T service = (T) services.get(serviceSpec);
+    if ( service == null ) {
+      String serviceName = serviceSpec.getServiceClass().getName();
+      for ( ServiceSpec ss : services.keySet() ) {
+        if ( serviceName.equals(ss.getServiceClass().getName()) ) {
+          throw new ClassLoaderMisconfigurationException(serviceSpec.getServiceClass(),ss.getServiceClass());
+        }
+      }
+    }
     LOG.info("Got "+serviceSpec+" as "+service);
     return service;
   }

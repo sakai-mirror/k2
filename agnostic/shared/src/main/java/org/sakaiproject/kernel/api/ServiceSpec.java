@@ -17,7 +17,7 @@
  */
 package org.sakaiproject.kernel.api;
 
-import org.sakaiproject.kernel.component.core.SharedClassLoader;
+import org.sakaiproject.kernel.component.core.ComponentClassLoader;
 
 /**
  * Services are specified and searched for using a ServiceSpec class, this may
@@ -44,7 +44,6 @@ public class ServiceSpec {
    *          the API class that the service represents.
    */
   public ServiceSpec(Class<?> service) {
-    checkClientClassloader(service);
     serviceClass = service;
     ofType = false;
   }
@@ -65,33 +64,10 @@ public class ServiceSpec {
    *          true all services of a type may be located.
    */
   public ServiceSpec(Class<?> service, boolean ofType) {
-    checkClientClassloader(service);
     serviceClass = service;
     this.ofType = ofType;
   }
 
-  /**
-   * Checks to see if the classloader are bound into the kernel or shared
-   * classloader.
-   * 
-   * @param service
-   * @throws ClassNotFoundException
-   */
-  private void checkClientClassloader(Class<?> service) {
-    if ( service == null ) {
-      return;
-    }
-    ClassLoader cl = service.getClassLoader();
-    if ( cl == null || cl.equals(this.getClass().getClassLoader())) {
-      return;
-    }
-    while ( cl != null && !(cl instanceof SharedClassLoader) ) {
-      cl = cl.getParent();
-    }
-    if ( cl == null ) {
-        throw new ClassLoaderMisconfigurationException(service, this.getClass());
-    }
-  }
 
   /**
    * Check if this specification matches the supplied search specification.
