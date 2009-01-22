@@ -44,7 +44,7 @@ public class SessionImpl implements Session {
    * The attribute name of the unresolved internal user id, from the
    * authentication object.
    */
-  private static final String UNRESOLVED_UID = "_uu";
+  public static final String UNRESOLVED_UID = "_uu";
   private HttpSession baseSession;
   private UserResolverService userResolverService;
 
@@ -241,6 +241,15 @@ public class SessionImpl implements Session {
    */
   public void setMaxInactiveInterval(int interval) {
     baseSession.setMaxInactiveInterval(interval);
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.session.Session#removeUser()
+   */
+  public void removeUser() {
+    baseSession.removeAttribute(USER);
+    baseSession.removeAttribute(UNRESOLVED_UID);
   }
 
 }
