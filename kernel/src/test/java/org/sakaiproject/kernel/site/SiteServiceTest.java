@@ -19,12 +19,12 @@ import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.sakaiproject.kernel.api.ComponentActivator;
 import org.sakaiproject.kernel.api.Kernel;
@@ -44,8 +44,8 @@ import org.sakaiproject.kernel.webapp.SakaiServletRequest;
 import org.sakaiproject.kernel.webapp.test.InternalUser;
 
 import java.io.File;
+import java.util.Random;
 
-import javax.persistence.PersistenceException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -126,8 +126,9 @@ public class SiteServiceTest {
 
   @Test
   public void createSite() {
+    String siteId = generateSiteId();
     SiteBean site = new SiteBean();
-    site.setId("testSite1");
+    site.setId(siteId);
     site.setName("Test Site 1");
     site.setDescription("Site 1 for unit testing");
     site.setType("project");
@@ -141,11 +142,12 @@ public class SiteServiceTest {
     siteService.createSite(site);
   }
 
-  @Ignore
+  @Test
   // ignoring until synchronous index updating is available
   public void createDuplicateSite() {
+    String siteId = generateSiteId();
     SiteBean site = new SiteBean();
-    site.setId("testSite2");
+    site.setId(siteId);
     site.setName("Test Site 2");
     site.setDescription("Site 2 for unit testing");
     site.setType("project");
@@ -161,18 +163,17 @@ public class SiteServiceTest {
     try {
       siteService.createSite(site);
       fail("Duplicate site IDs are not allowed");
-    } catch (PersistenceException e) {
-      //
     } catch (NonUniqueIdException e) {
       // this is the correct response
     }
   }
 
-  @Ignore
+  @Test
   // ignoring until synchronous index updating is available
   public void getSite() {
+    String siteId = generateSiteId();
     SiteBean site = new SiteBean();
-    site.setId("testSite3");
+    site.setId(siteId);
     site.setName("Test Site 3");
     site.setDescription("Site 3 for unit testing");
     site.setType("project");
@@ -184,7 +185,15 @@ public class SiteServiceTest {
     site.setRoles(roles);
 
     siteService.createSite(site);
-    SiteBean siteGet = siteService.getSite("testSite3");
+    SiteBean siteGet = siteService.getSite(siteId);
     assertNotNull(siteGet);
+    assertEquals(siteGet.getId(), site.getId());
+    assertEquals(siteGet.getName(), site.getName());
+  }
+
+  private String generateSiteId() {
+    String siteBase = "testSite-";
+    siteBase += new Random().nextLong();
+    return siteBase;
   }
 }

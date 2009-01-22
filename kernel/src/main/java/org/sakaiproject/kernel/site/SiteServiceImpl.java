@@ -37,8 +37,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
+import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
@@ -153,17 +155,30 @@ public class SiteServiceImpl implements SiteService {
    * {@inheritDoc}
    *
    * @see org.sakaiproject.kernel.api.site.SiteService#saveSite(org.sakaiproject.kernel.model.SiteBean)
+   * @todo Refactor to use synchronous event call which needs to be created.
    */
   public void saveSite(SiteBean site) throws SiteException,
       SiteCreationException {
+    EntityTransaction trans = entityManager.getTransaction();
+    trans.begin();
+    SiteIndexBean bean = new SiteIndexBean();
+    bean.setId(site.getId());
+    bean.setName(site.getName());
+    entityManager.persist(bean);
+
     String json = beanConverter.convertToString(site);
     String fileNode = buildFilePath(site.getId());
     try {
-      jcrNodeFactoryService.setInputStream(fileNode, new ByteArrayInputStream(
-          json.getBytes()));
+      Node node = jcrNodeFactoryService.setInputStream(fileNode,
+          new ByteArrayInputStream(json.getBytes()));
+      bean.setRef(node.getPath());
+      entityManager.persist(bean);
+      trans.commit();
     } catch (RepositoryException e1) {
+      trans.rollback();
       throw new SiteCreationException(e1.getMessage(), e1);
     } catch (JCRNodeFactoryServiceException e2) {
+      trans.rollback();
       throw new SiteCreationException(e2.getMessage(), e2);
     }
   }
