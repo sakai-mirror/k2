@@ -17,6 +17,9 @@
  */
 package org.sakaiproject.kernel.registry;
 
+import com.google.inject.util.ReferenceMap;
+import com.google.inject.util.ReferenceType;
+
 import org.sakaiproject.kernel.api.Provider;
 import org.sakaiproject.kernel.api.Registry;
 
@@ -25,7 +28,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 
@@ -42,7 +44,11 @@ public class RegistryImpl<V, T extends Provider<V>> implements Registry<V, T> {
   };
 
 
-  private Map<V, T> mappedProviders = new ConcurrentHashMap<V, T>();
+  /**
+   * A map of providers, using weak references to ensure that when the remote object is GC's the 
+   * reference is dropped from the map. 
+   */
+  private Map<V, T> mappedProviders = new ReferenceMap<V, T>(ReferenceType.STRONG,ReferenceType.WEAK);
 
   /**
    * {@inheritDoc}
