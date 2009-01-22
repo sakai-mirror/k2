@@ -10,16 +10,16 @@
       <name>org.sakaiproject.kernel.api</name>
     </export>
     <export>
+      <name>org.sakaiproject.kernel.model</name>
+    </export>
+    <export>
       <name>org.sakaiproject.kernel.util</name>
     </export>
     <export>
       <name>org.sakaiproject.kernel.webapp</name>
     </export>
     <export>
-    	<name>javax.persistence</name>
-    </export>
-    <export>
-      <name>org.sakaiproject.kernel.model</name>
+      <name>javax.persistence</name>
     </export>
   </exports>
   <dependencies>

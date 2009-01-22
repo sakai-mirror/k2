@@ -53,9 +53,11 @@ public class AclListenerTest extends KernelIntegrationBase {
   private static ReferenceResolverService referenceResolverService;
   private final String TEST_FILE = "testFile.txt";
 
+  private static boolean fromBeforeClass;
+
   @BeforeClass
-  public static void beforeClass() throws ComponentActivatorException {
-    KernelIntegrationBase.beforeClass();
+  public static void beforeMyClass() throws ComponentActivatorException {
+    fromBeforeClass = KernelIntegrationBase.beforeClass();
 
     KernelManager manager = new KernelManager();
     kernel = manager.getKernel();
@@ -67,8 +69,8 @@ public class AclListenerTest extends KernelIntegrationBase {
   }
 
   @AfterClass
-  public static void afterClass() {
-    KernelIntegrationBase.afterClass();
+  public static void afterMyClass() {
+    KernelIntegrationBase.afterClass(fromBeforeClass);
   }
 
   @Test
