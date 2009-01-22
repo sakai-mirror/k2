@@ -46,7 +46,7 @@ import javax.persistence.Query;
 /**
  *
  */
-public class AclListenerTest extends KernelIntegrationBase {
+public class AclListenerT {
 
   private static Kernel kernel;
   private static JCRNodeFactoryService jcrService;
@@ -54,11 +54,11 @@ public class AclListenerTest extends KernelIntegrationBase {
   private static ReferenceResolverService referenceResolverService;
   private final String TEST_FILE = "testFile.txt";
 
-  private static boolean fromBeforeClass;
+  private static boolean shutdown;
 
   @BeforeClass
   public static void beforeMyClass() throws ComponentActivatorException {
-    fromBeforeClass = KernelIntegrationBase.beforeClass();
+    shutdown = KernelIntegrationBase.beforeClass();
 
     KernelManager manager = new KernelManager();
     kernel = manager.getKernel();
@@ -71,7 +71,7 @@ public class AclListenerTest extends KernelIntegrationBase {
 
   @AfterClass
   public static void afterMyClass() {
-    KernelIntegrationBase.afterClass(fromBeforeClass);
+    KernelIntegrationBase.afterClass(shutdown);
   }
 
   @Test

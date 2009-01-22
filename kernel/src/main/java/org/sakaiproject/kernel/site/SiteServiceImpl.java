@@ -161,16 +161,15 @@ public class SiteServiceImpl implements SiteService {
       SiteCreationException {
     EntityTransaction trans = entityManager.getTransaction();
     trans.begin();
-    SiteIndexBean bean = new SiteIndexBean();
-    bean.setId(site.getId());
-    bean.setName(site.getName());
-    entityManager.persist(bean);
 
     String json = beanConverter.convertToString(site);
     String fileNode = buildFilePath(site.getId());
     try {
       Node node = jcrNodeFactoryService.setInputStream(fileNode,
           new ByteArrayInputStream(json.getBytes()));
+      SiteIndexBean bean = new SiteIndexBean();
+      bean.setId(site.getId());
+      bean.setName(site.getName());
       bean.setRef(node.getPath());
       entityManager.persist(bean);
       trans.commit();

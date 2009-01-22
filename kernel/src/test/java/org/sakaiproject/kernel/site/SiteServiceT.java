@@ -26,7 +26,6 @@ import static org.junit.Assert.fail;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.sakaiproject.kernel.api.ComponentActivator;
 import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
@@ -34,16 +33,13 @@ import org.sakaiproject.kernel.api.site.NonUniqueIdException;
 import org.sakaiproject.kernel.api.site.SiteService;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.user.UserResolverService;
-import org.sakaiproject.kernel.component.KernelLifecycle;
 import org.sakaiproject.kernel.model.RoleBean;
 import org.sakaiproject.kernel.model.SiteBean;
 import org.sakaiproject.kernel.session.SessionImpl;
 import org.sakaiproject.kernel.test.KernelIntegrationBase;
-import org.sakaiproject.kernel.util.FileUtil;
 import org.sakaiproject.kernel.webapp.SakaiServletRequest;
 import org.sakaiproject.kernel.webapp.test.InternalUser;
 
-import java.io.File;
 import java.util.Random;
 
 import javax.servlet.http.Cookie;
@@ -54,43 +50,28 @@ import javax.servlet.http.HttpSession;
 /**
  *
  */
-public class SiteServiceTest {
+public class SiteServiceT {
 
   protected static Kernel kernel;
   protected static SiteService siteService;
 
+  private static boolean shutdown;
+
   @BeforeClass
   public static void beforeClass() throws Exception {
-    KernelIntegrationBase.disableKernelStartup();
-    File jcrBase = new File("target/jcr");
-    File dbBase = new File("target/testdb");
-    System.err
-        .println("==========================================================================");
-    System.err.println("Removing all previous JCR and DB traces from "
-        + jcrBase.getAbsolutePath() + " " + dbBase.getAbsolutePath());
-
-    FileUtil.deleteAll(jcrBase);
-    FileUtil.deleteAll(dbBase);
-    System.err
-        .println("==========================================================================");
-
-    KernelLifecycle lifecycle = new KernelLifecycle();
-    lifecycle.start();
-
+    shutdown = KernelIntegrationBase.beforeClass();
     KernelManager manager = new KernelManager();
     kernel = manager.getKernel();
-
-    ComponentActivator activator = new org.sakaiproject.kernel.Activator();
-    activator.activate(kernel);
 
     siteService = kernel.getService(SiteService.class);
     assertNotNull(siteService);
 
     SessionManagerService sessMgr = kernel
         .getService(SessionManagerService.class);
+    assertNotNull(sessMgr);
+
     UserResolverService userRes = kernel.getService(UserResolverService.class);
-    SessionManagerService sessionManagerService = kernel
-        .getService(SessionManagerService.class);
+    assertNotNull(userRes);
 
     HttpServletRequest request = createMock(HttpServletRequest.class);
 
@@ -111,7 +92,7 @@ public class SiteServiceTest {
     replay(request, session);
 
     SakaiServletRequest req = new SakaiServletRequest(request, response,
-        userRes, sessionManagerService);
+        userRes, sessMgr);
     assertNotNull(req.getRemoteUser());
     verify(request, session);
 
@@ -120,8 +101,7 @@ public class SiteServiceTest {
 
   @AfterClass
   public static void afterClass() {
-    KernelIntegrationBase.enableKernelStartup();
-
+    KernelIntegrationBase.afterClass(shutdown);
   }
 
   @Test
