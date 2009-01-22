@@ -35,15 +35,16 @@ public interface SiteService {
    * Validates if a given id is unique.
    *
    * @param id
-   * @return
+   * @return true if the site
    */
   boolean siteExists(String id);
 
   /**
-   * Retrieves a requested site by id.
+   * Retrieves a requested site by id. If the site doesn't exist, null will be
+   * returned.
    *
    * @param id
-   * @return
+   * @return The requested site or null if not found.
    */
   SiteBean getSite(String id);
 
@@ -52,5 +53,23 @@ public interface SiteService {
    *
    * @param site
    */
-  void createSite(SiteBean site);
+  void createSite(SiteBean site) throws SiteCreationException,
+      NonUniqueIdException;
+
+  /**
+   * Saves a site. If the given site ID exists then the site is updated. If the
+   * site is not found, a new site is created.
+   *
+   * @param site
+   * @throws SiteException
+   * @throws SiteCreationException
+   */
+  void saveSite(SiteBean site) throws SiteException, SiteCreationException;
+
+  /**
+   * Deletes a site.
+   * 
+   * @param id
+   */
+  void deleteSite(String id);
 }

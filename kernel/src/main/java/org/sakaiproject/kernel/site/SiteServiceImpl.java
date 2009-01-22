@@ -74,16 +74,7 @@ public class SiteServiceImpl implements SiteService {
   public void createSite(SiteBean site) throws SiteCreationException,
       NonUniqueIdException {
     if (!siteExists(site.getId())) {
-      String json = beanConverter.convertToString(site);
-      String fileNode = buildFilePath(site.getId());
-      try {
-        jcrNodeFactoryService.setInputStream(fileNode,
-            new ByteArrayInputStream(json.getBytes()));
-      } catch (RepositoryException e1) {
-        throw new SiteCreationException(e1.getMessage(), e1);
-      } catch (JCRNodeFactoryServiceException e2) {
-        throw new SiteCreationException(e2.getMessage(), e2);
-      }
+      saveSite(site);
     } else {
       throw new NonUniqueIdException("Site ID [" + site.getId() + "] exists");
     }
@@ -148,5 +139,32 @@ public class SiteServiceImpl implements SiteService {
     String siteNode = userPath + PATH_MYSITES + PathUtils.getUserPrefix(id)
         + FILE_GROUPDEF;
     return siteNode;
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @see org.sakaiproject.kernel.api.site.SiteService#deleteSite(java.lang.String)
+   */
+  public void deleteSite(String id) {
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @see org.sakaiproject.kernel.api.site.SiteService#saveSite(org.sakaiproject.kernel.model.SiteBean)
+   */
+  public void saveSite(SiteBean site) throws SiteException,
+      SiteCreationException {
+    String json = beanConverter.convertToString(site);
+    String fileNode = buildFilePath(site.getId());
+    try {
+      jcrNodeFactoryService.setInputStream(fileNode, new ByteArrayInputStream(
+          json.getBytes()));
+    } catch (RepositoryException e1) {
+      throw new SiteCreationException(e1.getMessage(), e1);
+    } catch (JCRNodeFactoryServiceException e2) {
+      throw new SiteCreationException(e2.getMessage(), e2);
+    }
   }
 }
