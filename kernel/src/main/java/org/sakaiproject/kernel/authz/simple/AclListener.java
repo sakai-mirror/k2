@@ -61,71 +61,75 @@ public class AclListener implements JcrContentListener {
    *      java.lang.String, java.lang.String, java.lang.String)
    */
   public void onEvent(int type, String userID, String filePath, String fileName) {
-    Query query = entityManager
-        .createNamedQuery(AclIndexBean.Queries.FINDBY_PATH);
-    query.setParameter(AclIndexBean.QueryParams.FINDBY_PATH_PATH, filePath);
-    List<AclIndexBean> currentIndex = query.getResultList();
+    if (type == Event.PROPERTY_ADDED || type == Event.PROPERTY_CHANGED
+        || type == Event.PROPERTY_REMOVED) {
 
-    ArrayList<AclIndexBean> toCreate = new ArrayList<AclIndexBean>();
-    ArrayList<AclIndexBean> toUpdate = new ArrayList<AclIndexBean>();
-    ArrayList<AclIndexBean> toDelete = new ArrayList<AclIndexBean>();
+      ArrayList<AclIndexBean> toCreate = new ArrayList<AclIndexBean>();
+      ArrayList<AclIndexBean> toUpdate = new ArrayList<AclIndexBean>();
+      ArrayList<AclIndexBean> toDelete = new ArrayList<AclIndexBean>();
 
-    try {
-      Node node = jcrNodeFactoryService.getNode(filePath);
-      Property acl = node.getProperty(JCRConstants.MIX_ACL);
-      for (Value val : acl.getValues()) {
-        AccessControlStatement acs = new JcrAccessControlStatementImpl(val
-            .getString());
+      Query query = entityManager
+          .createNamedQuery(AclIndexBean.Queries.FINDBY_PATH);
+      query.setParameter(AclIndexBean.QueryParams.FINDBY_PATH_PATH, filePath);
+      List<AclIndexBean> currentIndex = query.getResultList();
 
-        switch (type) {
-        case Event.PROPERTY_ADDED:
-          if (inList(acs, currentIndex) == null) {
-            toCreate.add(convert(acs));
-          }
-          break;
-        case Event.PROPERTY_CHANGED:
-          AclIndexBean indexBean = inList(acs, currentIndex);
-          if (indexBean != null) {
-            toUpdate.add(indexBean);
-          }
-          break;
-        case Event.PROPERTY_REMOVED:
-          if (inList(acs, currentIndex) == null) {
-            toDelete.add(convert(acs));
-          }
-          break;
-        }
-      }
-
-      EntityTransaction trans = entityManager.getTransaction();
-      trans.begin();
       try {
-        if (!toCreate.isEmpty()) {
-          for (AclIndexBean bean : toCreate) {
-            entityManager.persist(bean);
-          }
-        } else if (!toUpdate.isEmpty()) {
-          for (AclIndexBean bean : toUpdate) {
-            entityManager.persist(bean);
-          }
-        } else if (!toDelete.isEmpty()) {
-          for (AclIndexBean bean : toDelete) {
-            entityManager.remove(bean);
+        Node node = jcrNodeFactoryService.getNode(filePath);
+        Property acl = node.getProperty(JCRConstants.MIX_ACL);
+        for (Value val : acl.getValues()) {
+          AccessControlStatement acs = new JcrAccessControlStatementImpl(val
+              .getString());
+
+          switch (type) {
+          case Event.PROPERTY_ADDED:
+            if (inList(acs, currentIndex) == null) {
+              toCreate.add(convert(acs));
+            }
+            break;
+          case Event.PROPERTY_CHANGED:
+            AclIndexBean indexBean = inList(acs, currentIndex);
+            if (indexBean != null) {
+              toUpdate.add(indexBean);
+            }
+            break;
+          case Event.PROPERTY_REMOVED:
+            if (inList(acs, currentIndex) == null) {
+              toDelete.add(convert(acs));
+            }
+            break;
           }
         }
-        trans.commit();
-      } catch (Exception e) {
-        LOG.error(
-            "Transaction rolled back due to a problem when updating the ACL index: "
-                + e.getMessage(), e);
-        trans.rollback();
+
+        EntityTransaction trans = entityManager.getTransaction();
+        trans.begin();
+        try {
+          if (!toCreate.isEmpty()) {
+            for (AclIndexBean bean : toCreate) {
+              entityManager.persist(bean);
+            }
+          } else if (!toUpdate.isEmpty()) {
+            for (AclIndexBean bean : toUpdate) {
+              entityManager.persist(bean);
+            }
+          } else if (!toDelete.isEmpty()) {
+            for (AclIndexBean bean : toDelete) {
+              entityManager.remove(bean);
+            }
+          }
+          trans.commit();
+        } catch (Exception e) {
+          LOG.error(
+              "Transaction rolled back due to a problem when updating the ACL index: "
+                  + e.getMessage(), e);
+          trans.rollback();
+        }
+      } catch (RepositoryException e) {
+        // nothing we can do
+        LOG.error(e.getMessage(), e);
+      } catch (JCRNodeFactoryServiceException e) {
+        // nothing we can do
+        LOG.error(e.getMessage(), e);
       }
-    } catch (RepositoryException e) {
-      // nothing we can do
-      LOG.error(e.getMessage(), e);
-    } catch (JCRNodeFactoryServiceException e) {
-      // nothing we can do
-      LOG.error(e.getMessage(), e);
     }
   }
 

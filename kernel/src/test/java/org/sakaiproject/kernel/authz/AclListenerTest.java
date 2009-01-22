@@ -95,7 +95,6 @@ public class AclListenerTest extends KernelIntegrationBase {
     parent.addAccessControlStatement(grantReadToHttpGetInheritable);
 
     results = query.getResultList();
-    node.getSession().save();
 
     assertEquals(1, results.size());
   }
