@@ -260,8 +260,8 @@ public class RestMeProviderKernelUnitT extends KernelIntegrationBase {
     HttpServletResponse response = createMock(HttpServletResponse.class);
     HttpSession session = createMock(HttpSession.class);
 
-    expect(request.getRequestedSessionId()).andReturn("SESSIONID-123").anyTimes();
-    expect(session.getId()).andReturn("SESSIONID-123").anyTimes();
+    expect(request.getRequestedSessionId()).andReturn("SESSIONID-123A").anyTimes();
+    expect(session.getId()).andReturn("SESSIONID-123A").anyTimes();
     expect(request.getCookies()).andReturn(null).anyTimes();
     expect(request.getAttribute("_no_session")).andReturn(null).anyTimes();
     expect(request.getSession(true)).andReturn(session).anyTimes();
@@ -294,9 +294,11 @@ public class RestMeProviderKernelUnitT extends KernelIntegrationBase {
 
     rmp.dispatch(new String[] { "me", "garbage" }, request, response);
 
+    System.err.println("=====================================FAILING HERE ");
     String responseString = new String(baos.toByteArray(), "UTF-8");
     System.err.println("Response Was " + responseString);
     assertTrue(responseString.indexOf("\"ib236\"") > 0);
+    System.err.println("=====================================FAILING HERE PASED ");
 
     cacheManagerService.unbind(CacheScope.REQUEST);
     verify(request, response, session);
