@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
+import org.sakaiproject.kernel.authz.AclListenerTest;
 import org.sakaiproject.kernel.rest.test.RestMeProviderKernelUnitT;
 import org.sakaiproject.kernel.webapp.test.SakaiAuthenticationFilterKernelUnitT;
 
@@ -29,11 +30,11 @@ import org.sakaiproject.kernel.webapp.test.SakaiAuthenticationFilterKernelUnitT;
  *
  */
 @RunWith(Suite.class)
-@SuiteClasses( { CacheKernelUnitT.class, RepositoryKernelUnitT.class, ObservationKernelUnitT.class, AuthZServiceKernelUnitT.class,
+@SuiteClasses( { CacheKernelUnitT.class, RepositoryKernelUnitT.class,
+    ObservationKernelUnitT.class, AuthZServiceKernelUnitT.class,
     RequestFilterKernelUnitT.class, SakaiAuthenticationFilterKernelUnitT.class,
-    RestMeProviderKernelUnitT.class, SessionManagerServiceKernelUnitT.class
-
-})
+    RestMeProviderKernelUnitT.class, SessionManagerServiceKernelUnitT.class,
+    AclListenerTest.class })
 public class AllKernelTest {
   private static boolean shutdown;
   static {

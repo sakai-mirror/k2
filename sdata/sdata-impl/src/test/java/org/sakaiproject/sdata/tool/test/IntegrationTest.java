@@ -53,8 +53,8 @@ import org.sakaiproject.kernel.api.memory.CacheScope;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.component.KernelLifecycle;
-import org.sakaiproject.kernel.component.core.KernelBootstrapModule;
 import org.sakaiproject.kernel.util.ResourceLoader;
+import org.sakaiproject.kernel.util.KernelProperties;
 import org.sakaiproject.kernel.webapp.SakaiServletRequest;
 import org.sakaiproject.kernel.webapp.SakaiServletResponse;
 import org.sakaiproject.sdata.tool.ControllerServlet;
@@ -115,7 +115,7 @@ public class IntegrationTest {
         .info("Got res://integration-kernel.properties from ResourceLoader using "
             + ControllerServlet.class.getClassLoader());
     
-    System.setProperty(KernelBootstrapModule.SYS_LOCAL_PROPERTIES,
+    System.setProperty(KernelProperties.SYS_LOCAL_PROPERTIES,
         "res://integration-kernel.properties");
     kl = new KernelLifecycle();
     kl.start();
@@ -131,7 +131,7 @@ public class IntegrationTest {
     if (kl != null) {
       kl.stop();
     }
-    System.clearProperty(KernelBootstrapModule.SYS_LOCAL_PROPERTIES);
+    System.clearProperty(KernelProperties.SYS_LOCAL_PROPERTIES);
   }
 
   private SessionManagerService sessionManagerService;

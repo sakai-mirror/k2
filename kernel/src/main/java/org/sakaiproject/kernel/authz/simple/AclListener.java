@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
@@ -123,6 +124,8 @@ public class AclListener implements JcrContentListener {
                   + e.getMessage(), e);
           trans.rollback();
         }
+      } catch (PathNotFoundException e) {
+        // nothing to care about. this happens when there is no ACL on the node
       } catch (RepositoryException e) {
         // nothing we can do
         LOG.error(e.getMessage(), e);

@@ -22,7 +22,7 @@ public class KernelProperties extends PropertiesLoader {
   /**
    * Location of the kernel properties.
    */
-  private final static String DEFAULT_PROPERTIES = "res://kernel.properties";
+  public static final String DEFAULT_PROPERTIES = "res://kernel.properties";
 
   /**
    * the environment variable that contains overrides to kernel properties
@@ -37,7 +37,7 @@ public class KernelProperties extends PropertiesLoader {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.util.PropertiesLoader#getDefaultProperties()
    */
   @Override
