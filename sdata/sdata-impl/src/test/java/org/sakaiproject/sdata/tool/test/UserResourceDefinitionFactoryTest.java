@@ -68,6 +68,8 @@ public class UserResourceDefinitionFactoryTest {
           try {
             ResourceDefinition rd = rdf.getSpec(request);
             String rp = rd.getRepositoryPath();
+            
+            System.err.println("Got Path "+rp);
 
             assertTrue("Repository Paths must not be null ", rp != null);
             assertTrue("Repository Paths must be absolute ", rp.startsWith("/"));

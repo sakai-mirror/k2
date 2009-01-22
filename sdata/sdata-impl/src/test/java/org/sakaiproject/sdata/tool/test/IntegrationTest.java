@@ -114,10 +114,12 @@ public class IntegrationTest {
     LOG
         .info("Got res://integration-kernel.properties from ResourceLoader using "
             + ControllerServlet.class.getClassLoader());
+    
     System.setProperty(KernelBootstrapModule.SYS_LOCAL_PROPERTIES,
         "res://integration-kernel.properties");
     kl = new KernelLifecycle();
     kl.start();
+    
 
     KernelManager km = new KernelManager();
     kernel = km.getKernel();
