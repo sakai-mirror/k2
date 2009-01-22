@@ -18,7 +18,7 @@ package org.sakaiproject.kernel.api.site;
 import org.sakaiproject.kernel.model.SiteBean;
 
 /**
- * Provides functionality for working Sites.
+ * Provides functionality for working with Sites.
  */
 public interface SiteService {
   /**

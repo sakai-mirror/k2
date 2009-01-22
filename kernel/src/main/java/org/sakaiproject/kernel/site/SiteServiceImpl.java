@@ -31,6 +31,7 @@ import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.model.SiteBean;
 import org.sakaiproject.kernel.model.SiteIndexBean;
 import org.sakaiproject.kernel.util.IOUtils;
+import org.sakaiproject.kernel.util.PathUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -147,7 +148,8 @@ public class SiteServiceImpl implements SiteService {
   private String buildFilePath(String id) {
     User user = sessMgr.getCurrentSession().getUser();
     String userPath = userEnvRes.getUserEnvironmentBasePath(user.getUuid());
-    String siteNode = userPath + PATH_MYSITES + id + "/" + FILE_GROUPDEF;
+    String siteNode = userPath + PATH_MYSITES + PathUtils.getUserPrefix(id)
+        + FILE_GROUPDEF;
     return siteNode;
   }
 }

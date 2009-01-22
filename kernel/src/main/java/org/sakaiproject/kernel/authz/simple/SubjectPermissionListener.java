@@ -30,6 +30,8 @@ import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.jcr.api.JcrContentListener;
 import org.sakaiproject.kernel.model.GroupBean;
 import org.sakaiproject.kernel.model.RoleBean;
+import org.sakaiproject.kernel.model.SiteBean;
+import org.sakaiproject.kernel.model.SiteIndexBean;
 import org.sakaiproject.kernel.model.SubjectPermissionBean;
 import org.sakaiproject.kernel.util.IOUtils;
 
@@ -44,21 +46,21 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
 /**
- * 
+ *
  */
 public class SubjectPermissionListener implements JcrContentListener {
 
   private static final Log LOG = LogFactory
       .getLog(SubjectPermissionListener.class);
   private static final String GROUP_FILE_NAME = "groupdef.json";
-  private BeanConverter beanConverter;
-  private JCRNodeFactoryService jcrNodeFactoryService;
-  private EntityManager entityManager;
-  private SubjectPermissionService subjectPermissionService;
+  private final BeanConverter beanConverter;
+  private final JCRNodeFactoryService jcrNodeFactoryService;
+  private final EntityManager entityManager;
+  private final SubjectPermissionService subjectPermissionService;
 
   /**
    * @param entityManager
-   * 
+   *
    */
   @Inject
   public SubjectPermissionListener(
@@ -76,7 +78,7 @@ public class SubjectPermissionListener implements JcrContentListener {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.jcr.api.JcrContentListener#onEvent(int,
    *      java.lang.String, java.lang.String, java.lang.String)
    */
@@ -85,76 +87,13 @@ public class SubjectPermissionListener implements JcrContentListener {
       try {
         String groupBody = IOUtils.readFully(jcrNodeFactoryService
             .getInputStream(filePath), "UTF-8");
-        GroupBean groupBean = beanConverter.convertToObject(groupBody,
-            GroupBean.class);
-
-        // expire all permission sets associated with this
-        for (String subjectToken : groupBean.getSubjectTokens()) {
-          subjectPermissionService.expire(subjectToken);
-        }
-        
-        
-
-        // the user environment bean contains a list of subjects, which the
-        // users membership of groups
-        Query query = entityManager
-            .createNamedQuery(SubjectPermissionBean.FINDBY_GROUP);
-        query.setParameter(SubjectPermissionBean.PARAM_GROUP, groupBean.getName());
-        List<?> subjectPermissionList = query.getResultList();
-        List<SubjectPermissionBean> toAdd = new ArrayList<SubjectPermissionBean>();
-        List<SubjectPermissionBean> toRemove = new ArrayList<SubjectPermissionBean>();
-
-        for (Object o : subjectPermissionList) {
-          SubjectPermissionBean subjectPermissionBean = (SubjectPermissionBean) o;
-          String subjectToken = subjectPermissionBean.getSubjectToken();
-          String permission = subjectPermissionBean.getPermissionToken();
-          boolean found = false;
-          for (RoleBean role : groupBean.getRoles()) {
-            String subject = role.getSubjectToken(groupBean.getName());          
-            if (subjectToken.equals(subject)) {
-              for ( String rolePermission : role.getPermissions() ) {
-                if ( permission.equals(rolePermission) ) {
-                  found = true;
-                  break;
-                }
-              }
-              if ( found ) {
-                break;
-              }
-            }
-          }
-          if (!found) {
-            toRemove.add(subjectPermissionBean);
-          }
-        }
-
-        for (RoleBean roleBean : groupBean.getRoles()) {
-          String subject = roleBean.getSubjectToken(groupBean.getName());
-          for ( String permission : roleBean.getPermissions() ) {
-            boolean found = false;
-            for (Object o : subjectPermissionList) {
-              SubjectPermissionBean subjectPermissionBean = (SubjectPermissionBean) o;
-              if (subject.equals(subjectPermissionBean.getSubjectToken()) && permission.equals(subjectPermissionBean.getPermissionToken()) ) {
-                found = true;
-                break;
-              }
-            }
-            if (!found) {
-              toAdd.add(new SubjectPermissionBean(groupBean.getName(), roleBean.getName(), subject, permission));
-            }
-            
-          }
-        }
-
         EntityTransaction transaction = entityManager.getTransaction();
-        transaction.begin();
-        for (SubjectPermissionBean spb : toRemove) {
-          entityManager.remove(spb);
-        }
-        for (SubjectPermissionBean spb : toAdd) {
-          entityManager.persist(spb);
-        }
-        transaction.commit();
+
+        // update the index for subjects and groups
+        updateSubjectPermissionIndex(groupBody, transaction);
+
+        // update the index used for searching sites
+        updateSiteIndex(groupBody, filePath, transaction);
 
       } catch (UnsupportedEncodingException e) {
         LOG.error(e);
@@ -173,5 +112,90 @@ public class SubjectPermissionListener implements JcrContentListener {
       }
     }
 
+  }
+
+  private void updateSubjectPermissionIndex(String groupBody,
+      EntityTransaction transaction) {
+    GroupBean groupBean = beanConverter.convertToObject(groupBody,
+        GroupBean.class);
+
+    // expire all permission sets associated with this
+    for (String subjectToken : groupBean.getSubjectTokens()) {
+      subjectPermissionService.expire(subjectToken);
+    }
+
+    // the user environment bean contains a list of subjects, which the
+    // users membership of groups
+    Query query = entityManager
+        .createNamedQuery(SubjectPermissionBean.FINDBY_GROUP);
+    query.setParameter(SubjectPermissionBean.PARAM_GROUP, groupBean.getName());
+    List<?> subjectPermissionList = query.getResultList();
+    List<SubjectPermissionBean> toAdd = new ArrayList<SubjectPermissionBean>();
+    List<SubjectPermissionBean> toRemove = new ArrayList<SubjectPermissionBean>();
+
+    for (Object o : subjectPermissionList) {
+      SubjectPermissionBean subjectPermissionBean = (SubjectPermissionBean) o;
+      String subjectToken = subjectPermissionBean.getSubjectToken();
+      String permission = subjectPermissionBean.getPermissionToken();
+      boolean found = false;
+      for (RoleBean role : groupBean.getRoles()) {
+        String subject = role.getSubjectToken(groupBean.getName());
+        if (subjectToken.equals(subject)) {
+          for ( String rolePermission : role.getPermissions() ) {
+            if ( permission.equals(rolePermission) ) {
+              found = true;
+              break;
+            }
+          }
+          if ( found ) {
+            break;
+          }
+        }
+      }
+      if (!found) {
+        toRemove.add(subjectPermissionBean);
+      }
+    }
+
+    for (RoleBean roleBean : groupBean.getRoles()) {
+      String subject = roleBean.getSubjectToken(groupBean.getName());
+      for ( String permission : roleBean.getPermissions() ) {
+        boolean found = false;
+        for (Object o : subjectPermissionList) {
+          SubjectPermissionBean subjectPermissionBean = (SubjectPermissionBean) o;
+          if (subject.equals(subjectPermissionBean.getSubjectToken()) && permission.equals(subjectPermissionBean.getPermissionToken()) ) {
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          toAdd.add(new SubjectPermissionBean(groupBean.getName(), roleBean.getName(), subject, permission));
+        }
+
+      }
+    }
+
+    transaction.begin();
+    for (SubjectPermissionBean spb : toRemove) {
+      entityManager.remove(spb);
+    }
+    for (SubjectPermissionBean spb : toAdd) {
+      entityManager.persist(spb);
+    }
+    transaction.commit();
+  }
+
+  private void updateSiteIndex(String groupBody, String filePath,
+      EntityTransaction transaction) {
+    SiteBean site = beanConverter
+        .convertToObject(groupBody, SiteBean.class);
+    SiteIndexBean index = new SiteIndexBean();
+    index.setId(site.getId());
+    index.setName(site.getName());
+    index.setRef(filePath);
+
+    transaction.begin();
+    entityManager.persist(index);
+    transaction.commit();
   }
 }

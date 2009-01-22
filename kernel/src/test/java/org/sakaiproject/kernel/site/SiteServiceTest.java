@@ -24,7 +24,6 @@ import static org.junit.Assert.fail;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.sakaiproject.kernel.api.ComponentActivator;
 import org.sakaiproject.kernel.api.Kernel;
@@ -141,7 +140,7 @@ public class SiteServiceTest {
     siteService.createSite(site);
   }
 
-  @Ignore
+  @Test
   public void createDuplicateSite() {
     SiteBean site = new SiteBean();
     site.setId("testSite2");
@@ -167,7 +166,7 @@ public class SiteServiceTest {
     }
   }
 
-  @Ignore
+  @Test
   public void getSite() {
     SiteBean site = new SiteBean();
     site.setId("testSite3");

@@ -26,13 +26,10 @@ import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
-import org.sakaiproject.kernel.api.site.SiteService;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.jcr.api.JcrContentListener;
 import org.sakaiproject.kernel.model.GroupMembershipBean;
-import org.sakaiproject.kernel.model.SiteBean;
-import org.sakaiproject.kernel.model.SiteIndexBean;
 import org.sakaiproject.kernel.model.UserBean;
 import org.sakaiproject.kernel.model.UserEnvironmentBean;
 import org.sakaiproject.kernel.util.IOUtils;
@@ -210,30 +207,6 @@ public class UserEnvironmentListener implements JcrContentListener {
           LOG.warn("Failed to read userenv for " + filePath + " cause :"
               + e.getMessage());
           LOG.debug(e);
-        }
-      } else if (fileName.equals(SiteService.FILE_GROUPDEF)) {
-        try {
-          String groupDefBody = IOUtils.readFully(jcrNodeFactoryService
-              .getInputStream(filePath), "UTF-8");
-          SiteBean site = beanConverter.convertToObject(groupDefBody,
-              SiteBean.class);
-          SiteIndexBean index = new SiteIndexBean();
-          index.setId(site.getId());
-          index.setName(site.getName());
-          index.setRef(filePath + fileName);
-          entityManager.persist(index);
-        } catch (UnsupportedEncodingException e) {
-          LOG.warn("Failed to read groupdef for " + filePath + " cause :"
-              + e.getMessage(), e);
-        } catch (IOException e) {
-          LOG.warn("Failed to read groupdef for " + filePath + " cause :"
-              + e.getMessage(), e);
-        } catch (RepositoryException e) {
-          LOG.warn("Failed to read groupdef for " + filePath + " cause :"
-              + e.getMessage(), e);
-        } catch (JCRNodeFactoryServiceException e) {
-          LOG.warn("Failed to read groupdef for " + filePath + " cause :"
-              + e.getMessage(), e);
         }
       }
     }
