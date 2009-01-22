@@ -189,13 +189,15 @@ public class SubjectPermissionListener implements JcrContentListener {
       EntityTransaction transaction) {
     SiteBean site = beanConverter
         .convertToObject(groupBody, SiteBean.class);
-    SiteIndexBean index = new SiteIndexBean();
-    index.setId(site.getId());
-    index.setName(site.getName());
-    index.setRef(filePath);
+    if (site.getId() != null) {
+      SiteIndexBean index = new SiteIndexBean();
+      index.setId(site.getId());
+      index.setName(site.getName());
+      index.setRef(filePath);
 
-    transaction.begin();
-    entityManager.persist(index);
-    transaction.commit();
+      transaction.begin();
+      entityManager.persist(index);
+      transaction.commit();
+    }
   }
 }
