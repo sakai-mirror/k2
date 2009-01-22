@@ -36,6 +36,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 /**
  * 
  */
@@ -115,6 +116,21 @@ public class SnoopHandlerTest {
         
       }).times(2);
      
+     expect(request.getAttributeNames()).andAnswer(new IAnswer<Enumeration<String>>(){
+
+       public Enumeration<String> answer() throws Throwable {
+         Vector<String> v = new Vector<String>();
+         v.add("v");
+         v.add("t");
+         return v.elements();
+       }
+        
+      });
+     expect(request.getAttribute("v")).andReturn("v attribute");
+     expect(request.getAttribute("t")).andReturn("t attribute");
+     expect(request.getSession()).andReturn(null);
+     expect(request.getRemoteUser()).andReturn("user");
+   
 
      
     replay(request,response);

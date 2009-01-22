@@ -104,7 +104,9 @@ public class UserResourceDefinitionFactory implements ResourceDefinitionFactory 
           "User must be logged in to use preference service ");
     }
 
+    System.err.println("Getting Prefix for "+user);
     String pathPrefix = PathUtils.getUserPrefix(user);
+    System.err.println("Prefix was "+pathPrefix);
 
     path = pathPrefix + path;
 

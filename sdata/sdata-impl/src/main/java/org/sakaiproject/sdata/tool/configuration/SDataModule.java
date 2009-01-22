@@ -42,6 +42,8 @@ import org.sakaiproject.sdata.tool.api.SDataFunction;
 import org.sakaiproject.sdata.tool.api.SecurityAssertion;
 import org.sakaiproject.sdata.tool.json.JsonHandlerSerializer;
 import org.sakaiproject.sdata.tool.util.NullSecurityAssertion;
+import org.sakaiproject.sdata.tool.util.ResourceDefinitionFactoryImpl;
+import org.sakaiproject.sdata.tool.util.UserResourceDefinitionFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -102,8 +104,8 @@ public class SDataModule extends AbstractModule {
     };
 
     bind(ResourceDefinitionFactory.class).annotatedWith(
-        Names.named(JCRHandler.RESOURCE_DEFINITION_FACTORY)).toProvider(
-        JCRHandlerResourceDefinitionProvider.class);
+        Names.named(JCRHandler.RESOURCE_DEFINITION_FACTORY)).to(
+        ResourceDefinitionFactoryImpl.class);
 
     bind(sdfunctionMap).annotatedWith(
         Names.named(JCRHandler.RESOURCE_FUNCTION_FACTORY)).toProvider(
@@ -114,7 +116,7 @@ public class SDataModule extends AbstractModule {
 
     bind(ResourceDefinitionFactory.class).annotatedWith(
         Names.named(JCRUserStorageHandler.RESOURCE_DEFINITION_FACTORY))
-        .toProvider(JCRUserHandlerResourceDefinitionProvider.class);
+        .to(UserResourceDefinitionFactory.class);
     bind(sdfunctionMap).annotatedWith(
         Names.named(JCRUserStorageHandler.RESOURCE_FUNCTION_FACTORY))
         .toProvider(JCRUserHandlerFunctionProvider.class);

@@ -32,6 +32,6 @@ import org.junit.runners.Suite.SuiteClasses;
     UserResourceDefinitionFactoryTest.class, JsonHandlerSerializerTest.class
 
 })
-public class TestAll {
+public class AllUnitSuite {
 
 }

@@ -316,7 +316,9 @@ public class ControllerServlet extends HttpServlet {
       ;
     String key = new String(path, start, end - start);
     
-    return configuration.getHandlerRegister().get(key);
+    Handler h = configuration.getHandlerRegister().get(key);
+    System.err.println("Key "+key+" matched "+h);
+    return h;
   }
 
   /*

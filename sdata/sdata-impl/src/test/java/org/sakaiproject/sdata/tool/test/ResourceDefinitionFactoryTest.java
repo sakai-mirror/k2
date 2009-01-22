@@ -57,10 +57,8 @@ public class ResourceDefinitionFactoryTest {
     HttpServletRequest request = createMock(HttpServletRequest.class);
 
     for (String basePath : basePaths) {
-      ResourceDefinitionFactoryImpl rdf = new ResourceDefinitionFactoryImpl();
-      rdf.setBasePath(basePath);
-      rdf.setBaseUrl("");
-      rdf.setSecurityAssertion(new NullSecurityAssertion());
+      ResourceDefinitionFactoryImpl rdf = new ResourceDefinitionFactoryImpl(
+          basePath, "", new NullSecurityAssertion());
       for (String testPath : testPaths) {
         reset(request);
         expect(request.getPathInfo()).andReturn(testPath).anyTimes();

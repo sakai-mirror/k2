@@ -93,6 +93,8 @@ public class JCRUserStorageHandler extends JCRHandler {
       @Named(RESOURCE_SERIALIZER) HandlerSerialzer serializer) {
     super(jcrNodeFactory, resourceDefinitionFactory, resourceFunctionFactory,
         serializer);
+    
+    System.err.println(this+" Resource Defintion Factory is "+resourceDefinitionFactory);
   }
 
 }

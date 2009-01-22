@@ -22,7 +22,9 @@
 package org.sakaiproject.sdata.tool.util;
 
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
+import org.sakaiproject.sdata.tool.JCRHandler;
 import org.sakaiproject.sdata.tool.api.ResourceDefinition;
 import org.sakaiproject.sdata.tool.api.ResourceDefinitionFactory;
 import org.sakaiproject.sdata.tool.api.SDataException;
@@ -44,25 +46,14 @@ public class ResourceDefinitionFactoryImpl implements ResourceDefinitionFactory 
   private SecurityAssertion securityAssertion;
 
   @Inject
-  public ResourceDefinitionFactoryImpl() {
-  }
-  /**
-   * @param basePath the basePath to set
-   */
-  public void setBasePath(String basePath) {
+  public ResourceDefinitionFactoryImpl(
+      @Named(JCRHandler.BASE_REPOSITORY_PATH) String basePath,
+      @Named(JCRHandler.BASE_URL) String baseUrl,
+      @Named(JCRHandler.SECURITY_ASSERTION) SecurityAssertion securityAssertion) {
     this.basePath = basePath;
-  }
-  /**
-   * @param baseUrl the baseUrl to set
-   */
-  public void setBaseUrl(String baseUrl) {
     this.baseUrl = baseUrl;
-  }
-  /**
-   * @param securityAssertion the securityAssertion to set
-   */
-  public void setSecurityAssertion(SecurityAssertion securityAssertion) {
     this.securityAssertion = securityAssertion;
+    
   }
 
   /**
