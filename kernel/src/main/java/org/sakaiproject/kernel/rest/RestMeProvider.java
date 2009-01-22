@@ -157,7 +157,6 @@ public class RestMeProvider implements RestProvider {
         }
       }
     } catch (RepositoryException re) {
-      re.printStackTrace();
       throw new ServletException(re.getMessage(), re);
     } catch (JCRNodeFactoryServiceException e) {
       throw new ServletException(e.getMessage(), e);
@@ -177,10 +176,10 @@ public class RestMeProvider implements RestProvider {
     InputStream in = null;
     response.setContentType(RestProvider.CONTENT_TYPE);
     ServletOutputStream outputStream = response.getOutputStream();
-    outputStream.print("{ locale :");
+    outputStream.print("{ \"locale\" :");
     outputStream.print(beanConverter.convertToString(userLocale
         .localeToMap(locale)));
-    outputStream.print(", preferences :");
+    outputStream.print(", \"preferences\" :");
     try {
       in = jcrNodeFactoryService.getInputStream(ueFile);
       String userEnvString = IOUtils.readFully(in, "UTF-8");

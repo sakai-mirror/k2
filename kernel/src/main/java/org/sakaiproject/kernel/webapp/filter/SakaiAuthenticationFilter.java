@@ -37,6 +37,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Performs one of three types of authentication, form, basic or container
@@ -68,6 +69,7 @@ public class SakaiAuthenticationFilter implements Filter {
   public void doFilter(ServletRequest request, ServletResponse response,
       FilterChain chain) throws IOException, ServletException {
     HttpServletRequest hrequest = (HttpServletRequest) request;
+    HttpServletResponse hresponse = (HttpServletResponse) response;
     LOG.info("Authentication Filter runnign ");
     if ("1".equals(hrequest.getParameter("l"))) {
       try {
@@ -84,6 +86,12 @@ public class SakaiAuthenticationFilter implements Filter {
           doTrusted(hrequest);
           break;
         }
+      } catch ( SecurityException se ) {
+        // catch any Security exceptions and send a 401
+        hresponse.reset();
+        hresponse
+            .sendError(HttpServletResponse.SC_UNAUTHORIZED, se.getMessage());
+        return;
       } catch (IllegalArgumentException e) {
         LOG.info("Authentication type " + request.getParameter("a")
             + " is not supported by this filter");

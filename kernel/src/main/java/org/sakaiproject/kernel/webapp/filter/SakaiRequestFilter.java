@@ -122,6 +122,11 @@ public class SakaiRequestFilter implements Filter {
       } else {
         chain.doFilter(wrequest, wresponse);
       }
+    } catch (SecurityException se) {
+      // catch any Security exceptions and send a 401
+      wresponse.reset();
+      wresponse
+          .sendError(HttpServletResponse.SC_UNAUTHORIZED, se.getMessage());
     } catch (UnauthorizedException ape) {
       // catch any Unauthorized exceptions and send a 401
       wresponse.reset();
