@@ -50,10 +50,6 @@ public class NullUserResolverServiceImpl implements UserResolverService {
        */
       private static final long serialVersionUID = 3786435035308647068L;
 
-      public String getEid() {
-        return identifier;
-      }
-
       public String getUuid() {
         return identifier;
       }
@@ -83,9 +79,6 @@ public class NullUserResolverServiceImpl implements UserResolverService {
        */
       private static final long serialVersionUID = 3786435035308647068L;
 
-      public String getEid() {
-        return identifier;
-      }
 
       public String getUuid() {
         return identifier;

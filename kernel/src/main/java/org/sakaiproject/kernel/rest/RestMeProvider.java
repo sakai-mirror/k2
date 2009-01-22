@@ -153,7 +153,7 @@ public class RestMeProvider implements RestProvider {
         if (n != null) {
           sendOutput(response, locale, mePath);
         } else {
-          sendDefaultUserOutput(response, locale, user.getEid());
+          sendDefaultUserOutput(response, locale, user.getUuid());
         }
       }
     } catch (RepositoryException re) {
@@ -183,7 +183,11 @@ public class RestMeProvider implements RestProvider {
     outputStream.print(", preferences :");
     try {
       in = jcrNodeFactoryService.getInputStream(ueFile);
-      IOUtils.stream(in, outputStream);
+      String userEnvString = IOUtils.readFully(in, "UTF-8");
+      Map<String, Object> safeMap = beanConverter.convertToObject(userEnvString, Map.class);
+      safeMap.remove("eid");
+      String json = beanConverter.convertToString(safeMap);
+      outputStream.print(json);
     } finally {
       try {
         in.close();
@@ -201,7 +205,7 @@ public class RestMeProvider implements RestProvider {
    * @throws IOException
    */
   private void sendDefaultUserOutput(HttpServletResponse response,
-      Locale locale, String userEid) throws RepositoryException,
+      Locale locale, String userUuid) throws RepositoryException,
       JCRNodeFactoryServiceException, IOException {
     response.setContentType(RestProvider.CONTENT_TYPE);
     ServletOutputStream outputStream = response.getOutputStream();
@@ -210,7 +214,7 @@ public class RestMeProvider implements RestProvider {
         .localeToMap(locale)));
     outputStream.print(", preferences :");
     Map<String, Object> m = new HashMap<String, Object>();
-    m.put("userid", userEid);
+    m.put("uuid", userUuid);
     m.put("superUser", false);
     m.put("subjects", new String[0]);
     outputStream.print(beanConverter.convertToString(m));

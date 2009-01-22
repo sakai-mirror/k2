@@ -34,11 +34,8 @@ public class AuthenticationImpl implements Authentication {
   /** The UUID identifier string. */
   protected String uid = null;
 
-  /** The enterprise identifier string. */
-  protected String eid = null;
-
   /**
-   * Construct, with uid and eid
+   * Construct, with uid
    * 
    * @param uid
    *          The UUID internal end user identifier string.
@@ -47,7 +44,6 @@ public class AuthenticationImpl implements Authentication {
    */
   public AuthenticationImpl(User u) {
     uid = u.getUuid();
-    eid = u.getEid();
   }
 
   /**
@@ -57,10 +53,4 @@ public class AuthenticationImpl implements Authentication {
     return uid;
   }
 
-  /**
-   * @inheritDoc
-   */
-  public String getEid() {
-    return eid;
-  }
 }

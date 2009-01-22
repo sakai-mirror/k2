@@ -61,7 +61,7 @@ public class NullAuthenticationResolverServiceImpl implements
     if (principal instanceof IdPrincipal) {
       User u = userResolverService.resolve(((IdPrincipal) principal)
           .getIdentifier());
-      LOG.warn("NON PRODUCTION CODE: NULL Authentication of user "+u.getEid());
+      LOG.warn("NON PRODUCTION CODE: NULL Authentication of user "+u.getUuid());
       return new AuthenticationImpl(u);
     }
     return null;

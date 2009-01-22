@@ -146,8 +146,8 @@ public class RestMeProviderKernelUnitT extends KernelIntegrationBase {
 
     String responseString = new String(baos.toByteArray(), "UTF-8");
 
-    System.err.println("Response Was " + responseString);
-    assertTrue(responseString.indexOf("uuid : null") > 0);
+    System.err.println("Response Wasxxxx " + responseString);
+    assertTrue(responseString.indexOf("uuid") < 0);
 
     cacheManagerService.unbind(CacheScope.REQUEST);
     verify(request, response, session);

@@ -32,7 +32,6 @@ public class UserObjectTest {
   @Test
   public void testAnonUser() {
     User u = new AnonUser();
-    assertEquals("anon", u.getEid());
     assertEquals("anon", u.getUuid());
   }
 

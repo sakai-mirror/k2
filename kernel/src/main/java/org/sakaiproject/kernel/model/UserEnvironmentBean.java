@@ -148,6 +148,14 @@ public class UserEnvironmentBean implements UserEnvironment {
     }
     return user;
   }
+  
+  
+  /**
+   * @return
+   */
+  public UserBean getUserBean() {
+    return (UserBean) getUser();
+  }
 
   /**
    * @param superUser

@@ -34,6 +34,6 @@ public interface User extends Serializable {
   /**
    * @return the external EID associated with the user.
    */
-  String getEid();
+  //String getEid();
 
 }

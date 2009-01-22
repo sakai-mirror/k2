@@ -41,11 +41,8 @@ public class SakaiUserPrincipalTest {
     User user2 = createMock(User.class);
     User user3 = createMock(User.class);
     
-    expect(user.getEid()).andReturn("ib236").anyTimes();
     expect(user.getUuid()).andReturn("uid:ib236").anyTimes();
-    expect(user2.getEid()).andReturn("ib236").anyTimes();
     expect(user2.getUuid()).andReturn("uid:ib236").anyTimes();
-    expect(user3.getEid()).andReturn("ib236-3").anyTimes();
     expect(user3.getUuid()).andReturn("uid:ib236-3").anyTimes();
     
     replay(user,user2,user3);
