@@ -16,11 +16,9 @@
 package org.sakaiproject.kernel;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.CreationException;
 import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
-import com.google.inject.spi.Message;
 
 import net.sf.ezmorph.Morpher;
 import net.sf.json.JsonConfig;
@@ -58,17 +56,13 @@ import org.sakaiproject.kernel.serialization.json.ValueProcessor;
 import org.sakaiproject.kernel.site.SiteServiceImpl;
 import org.sakaiproject.kernel.user.AuthenticationResolverServiceImpl;
 import org.sakaiproject.kernel.user.ProviderAuthenticationResolverService;
-import org.sakaiproject.kernel.util.ResourceLoader;
+import org.sakaiproject.kernel.util.KernelComponentProperties;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Map.Entry;
 
 import javax.jcr.Credentials;
 import javax.servlet.http.HttpSession;
@@ -77,22 +71,6 @@ import javax.servlet.http.HttpSession;
  * A Guice module used to create the kernel component.
  */
 public class KernelModule extends AbstractModule {
-
-  /**
-   * Location of the kernel properties.
-   */
-  private final static String DEFAULT_PROPERTIES = "res://kernel-component.properties";
-
-  /**
-   * the environment variable that contains overrides to kernel properties
-   */
-  public static final String LOCAL_PROPERTIES = "SAKAI_KERNEL_COMPONENT_PROPERTIES";
-
-  /**
-   * The System property name that contains overrides to the kernel properties
-   * resource
-   */
-  public static final String SYS_LOCAL_PROPERTIES = "sakai.kernel.component.properties";
 
   private static final Log LOG = LogFactory.getLog(KernelModule.class);
 
@@ -112,75 +90,9 @@ public class KernelModule extends AbstractModule {
    * @param kernel
    *          the kernel performing the bootstrap.
    */
-  public KernelModule(Kernel kernel) {
+   public KernelModule(Kernel kernel) {
     this.kernel = kernel;
-    InputStream is = null;
-    try {
-      is = ResourceLoader.openResource(DEFAULT_PROPERTIES, this.getClass()
-          .getClassLoader());
-      properties = new Properties();
-      properties.load(is);
-      LOG.info("Loaded " + properties.size() + " properties from "
-          + DEFAULT_PROPERTIES);
-    } catch (IOException e) {
-      throw new CreationException(Arrays.asList(new Message(
-          "Unable to load properties: " + DEFAULT_PROPERTIES)));
-    } finally {
-      try {
-        if (is != null) {
-          is.close();
-        }
-      } catch (IOException e) {
-        // dont care about this.
-      }
-    }
-    // load local properties if specified as a system property
-    String localPropertiesLocation = System.getenv(LOCAL_PROPERTIES);
-    String sysLocalPropertiesLocation = System
-        .getProperty(SYS_LOCAL_PROPERTIES);
-    if (sysLocalPropertiesLocation != null) {
-      localPropertiesLocation = sysLocalPropertiesLocation;
-    }
-    try {
-      if (localPropertiesLocation != null
-          && localPropertiesLocation.trim().length() > 0) {
-        is = ResourceLoader.openResource(localPropertiesLocation, this
-            .getClass().getClassLoader());
-        Properties localProperties = new Properties();
-        localProperties.load(is);
-        for (Entry<Object, Object> o : localProperties.entrySet()) {
-          String k = o.getKey().toString();
-          if (k.startsWith("+")) {
-            String p = properties.getProperty(k.substring(1));
-            if (p != null) {
-              properties.put(k.substring(1), p + o.getValue());
-            } else {
-              properties.put(o.getKey(), o.getValue());
-            }
-          } else {
-            properties.put(o.getKey(), o.getValue());
-          }
-        }
-        LOG.info("Loaded " + localProperties.size() + " properties from "
-            + localPropertiesLocation);
-      } else {
-        LOG.info("No Local Properties Override, set system property "
-            + LOCAL_PROPERTIES
-            + " to a resource location to override kernel properties");
-      }
-    } catch (IOException e) {
-      LOG.info("Failed to startup ", e);
-      throw new CreationException(Arrays.asList(new Message(
-          "Unable to load properties: " + localPropertiesLocation)));
-    } finally {
-      try {
-        if (is != null) {
-          is.close();
-        }
-      } catch (IOException e) {
-        // dont care about this.
-      }
-    }
+    properties = new KernelComponentProperties().getProperties();
   }
 
   /**

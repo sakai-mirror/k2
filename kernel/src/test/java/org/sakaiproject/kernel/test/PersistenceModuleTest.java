@@ -17,10 +17,8 @@ package org.sakaiproject.kernel.test;
 
 import static org.junit.Assert.assertNotNull;
 
-import com.google.inject.CreationException;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.spi.Message;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -30,13 +28,9 @@ import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.component.KernelLifecycle;
 import org.sakaiproject.kernel.persistence.PersistenceModule;
-import org.sakaiproject.kernel.util.ResourceLoader;
+import org.sakaiproject.kernel.util.KernelComponentProperties;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Properties;
-import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
 import javax.sql.DataSource;
@@ -46,23 +40,19 @@ import javax.transaction.TransactionManager;
  *
  */
 public class PersistenceModuleTest {
-  private static final String DEFAULT_PROPERTIES = "res://kernel-component.properties";
-  private static final String LOCAL_PROPERTIES = "SAKAI_KERNEL_COMPONENT_PROPERTIES";
-  private static final String SYS_LOCAL_PROPERTIES = "sakai.kernel.component.properties";
-
   @BeforeClass
   public static void beforeClass() {
     KernelIntegrationBase.disableKernelStartup();
   }
-  
+
   @AfterClass
   public static void afterClass() {
     KernelIntegrationBase.enableKernelStartup();
   }
-  
+
   @Test
   public void loadModule() throws Exception {
-    Properties props = readSysProps();
+    Properties props = new KernelComponentProperties().getProperties();
     KernelLifecycle kernelLifecycle = new KernelLifecycle();
     kernelLifecycle.start();
 
@@ -78,71 +68,5 @@ public class PersistenceModuleTest {
     assertNotNull(em);
     assertNotNull(tm);
     em.close();
-  }
-
-  private Properties readSysProps() {
-    /**
-     * The properties for the kernel
-     */
-    Properties properties = null;
-    InputStream is = null;
-    try {
-      is = ResourceLoader.openResource(DEFAULT_PROPERTIES, this.getClass()
-          .getClassLoader());
-      properties = new Properties();
-      properties.load(is);
-    } catch (IOException e) {
-      throw new CreationException(Arrays.asList(new Message(
-          "Unable to load properties: " + DEFAULT_PROPERTIES)));
-    } finally {
-      try {
-        if (is != null) {
-          is.close();
-        }
-      } catch (IOException e) {
-        // dont care about this.
-      }
-    }
-    // load local properties if specified as a system property
-    String localPropertiesLocation = System.getenv(LOCAL_PROPERTIES);
-    String sysLocalPropertiesLocation = System
-        .getProperty(SYS_LOCAL_PROPERTIES);
-    if (sysLocalPropertiesLocation != null) {
-      localPropertiesLocation = sysLocalPropertiesLocation;
-    }
-    try {
-      if (localPropertiesLocation != null
-          && localPropertiesLocation.trim().length() > 0) {
-        is = ResourceLoader.openResource(localPropertiesLocation, this
-            .getClass().getClassLoader());
-        Properties localProperties = new Properties();
-        localProperties.load(is);
-        for (Entry<Object, Object> o : localProperties.entrySet()) {
-          String k = o.getKey().toString();
-          if (k.startsWith("+")) {
-            String p = properties.getProperty(k.substring(1));
-            if (p != null) {
-              properties.put(k.substring(1), p + o.getValue());
-            } else {
-              properties.put(o.getKey(), o.getValue());
-            }
-          } else {
-            properties.put(o.getKey(), o.getValue());
-          }
-        }
-      }
-    } catch (IOException e) {
-      throw new CreationException(Arrays.asList(new Message(
-          "Unable to load properties: " + localPropertiesLocation)));
-    } finally {
-      try {
-        if (is != null) {
-          is.close();
-        }
-      } catch (IOException e) {
-        // dont care about this.
-      }
-    }
-    return properties;
   }
 }

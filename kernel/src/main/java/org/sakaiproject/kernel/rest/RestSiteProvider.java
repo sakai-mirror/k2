@@ -55,8 +55,9 @@ public class RestSiteProvider implements RestProvider {
     DESC
         .setShortDescription("Creates a site and adds the current user as the owner.");
     DESC.addSection(1, "Introduction", "");
-    DESC.addSection(2, "LIST", "");
+    DESC.addSection(2, "CHECKID", "");
     DESC.addSection(3, "CREATE", "");
+    DESC.addSection(4, "GET", "");
   }
 
   @Inject

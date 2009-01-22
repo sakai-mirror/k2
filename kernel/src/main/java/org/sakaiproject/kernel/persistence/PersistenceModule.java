@@ -41,7 +41,7 @@ import javax.transaction.TransactionManager;
 public class PersistenceModule extends AbstractModule {
   private static final Log LOG = LogFactory.getLog(PersistenceModule.class);
 
-  private Kernel kernel;
+  private final Kernel kernel;
   private Properties properties;
 
   public PersistenceModule(Kernel kernel) {
@@ -52,7 +52,8 @@ public class PersistenceModule extends AbstractModule {
     this.kernel = kernel;
   }
 
-  public PersistenceModule(Properties properties) {
+  public PersistenceModule(Kernel kernel, Properties properties) {
+    this.kernel = kernel;
     this.properties = properties;
   }
 
@@ -67,18 +68,6 @@ public class PersistenceModule extends AbstractModule {
       LOG.info("Loading supplied properties");
       Names.bindProperties(this.binder(), properties);
     }
-
-    // bind the base classes
-    // ServiceManager srvMgr = kernel.getServiceManager();
-    // bind(ArtifactResolverService.class).toProvider(
-    // new ServiceProvider<ArtifactResolverService>(srvMgr,
-    // ArtifactResolverService.class)).in(Scopes.SINGLETON);
-    // bind(Artifact.class).annotatedWith(
-    // Names.named(SharedClassLoader.SHARED_CLASSLOADER_ARTIFACT)).to(
-    // SharedClassloaderArtifact.class);
-    // bind(PackageRegistryService.class).toProvider(
-    // new ServiceProvider<PackageRegistryService>(srvMgr,
-    // PackageRegistryService.class)).in(Scopes.SINGLETON);
 
     SharedClassLoaderContainer container =
       kernel.getService(SharedClassLoaderContainer.class);
