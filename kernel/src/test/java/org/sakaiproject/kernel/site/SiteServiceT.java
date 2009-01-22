@@ -56,9 +56,11 @@ public class SiteServiceT {
   protected static SiteService siteService;
 
   private static boolean shutdown;
+  private static Random rand;
 
   @BeforeClass
   public static void beforeClass() throws Exception {
+    rand = new Random();
     shutdown = KernelIntegrationBase.beforeClass();
     KernelManager manager = new KernelManager();
     kernel = manager.getKernel();
@@ -173,7 +175,7 @@ public class SiteServiceT {
 
   private String generateSiteId() {
     String siteBase = "testSite-";
-    siteBase += new Random().nextLong();
+    siteBase += rand.nextLong();
     return siteBase;
   }
 }

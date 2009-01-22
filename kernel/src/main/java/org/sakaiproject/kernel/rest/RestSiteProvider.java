@@ -17,6 +17,8 @@ package org.sakaiproject.kernel.rest;
 
 import com.google.inject.Inject;
 
+import org.sakaiproject.kernel.api.Registry;
+import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.site.SiteService;
 import org.sakaiproject.kernel.model.RoleBean;
@@ -61,8 +63,12 @@ public class RestSiteProvider implements RestProvider {
   }
 
   @Inject
-  public RestSiteProvider(SiteService siteService) {
+  public RestSiteProvider(RegistryService registryService,
+      SiteService siteService) {
     this.siteService = siteService;
+    Registry<String, RestProvider> restRegistry = registryService
+        .getRegistry(RestProvider.REST_REGISTRY);
+    restRegistry.add(this);
   }
 
   /**

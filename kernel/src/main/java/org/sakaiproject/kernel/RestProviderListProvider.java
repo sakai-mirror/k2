@@ -47,7 +47,6 @@ public class RestProviderListProvider implements Provider<List<RestProvider>> {
     list.add(restAuthenticationProvider);
     list.add(defaultRestProvider);
     list.add(restMeProvider);
-    list.add(siteProvider);
     list.add(restSnoopProvider);
   }
   /**
