@@ -18,6 +18,7 @@
 package org.sakaiproject.kernel.user.jcr;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
@@ -40,6 +41,7 @@ import javax.persistence.Query;
 /**
  * 
  */
+@Singleton
 public class JcrUserResolverProvider implements UserResolverProvider {
 
   private static final String USERCACHE = "userbean.cache";

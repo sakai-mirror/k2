@@ -40,10 +40,6 @@ public interface UserEnvironmentResolverService {
    */
   public static final String TTL = "userenv.ttl";
 
-  /**
-   * The Name of the userenv file in the system.
-   */
-  public static final String USERENV = "userenv";
 
   /**
    * Get a {@link UserEnvironment} objects based on the supplied session.
@@ -91,5 +87,6 @@ public interface UserEnvironmentResolverService {
    * @return the computed Locale
    */
   Locale getUserLocale(Locale browserLocale, Session session);
+
 
 }

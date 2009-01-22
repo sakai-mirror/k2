@@ -33,6 +33,7 @@ import org.sakaiproject.kernel.model.RoleBean;
 import org.sakaiproject.kernel.model.SiteBean;
 import org.sakaiproject.kernel.model.SiteIndexBean;
 import org.sakaiproject.kernel.model.SubjectPermissionBean;
+import org.sakaiproject.kernel.user.jcr.JcrUserFactoryService;
 import org.sakaiproject.kernel.util.IOUtils;
 
 import java.io.IOException;
@@ -65,7 +66,7 @@ public class SubjectPermissionListener implements JcrContentListener {
   @Inject
   public SubjectPermissionListener(
       JCRNodeFactoryService jcrNodeFactoryService,
-      @Named(SimpleJcrUserEnvironmentResolverService.JCR_USERENV_BASE) String userEnvironmentBase,
+      @Named(JcrUserFactoryService.JCR_USERENV_BASE) String userEnvironmentBase,
       @Named(BeanConverter.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
       SessionManagerService sessionManagerService,
       SubjectPermissionService subjectPermissionService,

@@ -30,6 +30,7 @@ import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
+import org.sakaiproject.kernel.user.UserFactoryService;
 import org.sakaiproject.kernel.util.IOUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 
@@ -147,7 +148,7 @@ public class RestMeProvider implements RestProvider {
           || "anon".equals(user.getUuid())) {
         sendOutput(response, locale, ANON_UE_FILE);
       } else {
-        String mePath = userEnvironmentResolverService.getUserEnvironmentBasePath(user.getUuid())+UserEnvironmentResolverService.USERENV;
+        String mePath = userEnvironmentResolverService.getUserEnvironmentBasePath(user.getUuid())+UserFactoryService.USERENV;
         System.err.println("Loading " + mePath + " for Rest Provider");
         Node n = jcrNodeFactoryService.getNode(mePath);
         if (n != null) {

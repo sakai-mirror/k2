@@ -29,9 +29,9 @@ import org.sakaiproject.kernel.api.user.AuthenticationResolverProvider;
 import org.sakaiproject.kernel.api.user.IdPwPrincipal;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.user.UserResolverService;
-import org.sakaiproject.kernel.authz.simple.SimpleJcrUserEnvironmentResolverService;
 import org.sakaiproject.kernel.user.AuthenticationImpl;
 import org.sakaiproject.kernel.user.AuthenticationResolverServiceImpl;
+import org.sakaiproject.kernel.user.UserFactoryService;
 import org.sakaiproject.kernel.util.PathUtils;
 import org.sakaiproject.kernel.util.StringUtils;
 
@@ -59,7 +59,7 @@ public class JcrAuthenticationResolverProvider implements
   @Inject
   public JcrAuthenticationResolverProvider(
       JCRNodeFactoryService jcrNodeFactoryService,
-      @Named(SimpleJcrUserEnvironmentResolverService.JCR_USERENV_BASE) String userEnvironmentBase,
+      @Named(JcrUserFactoryService.JCR_USERENV_BASE) String userEnvironmentBase,
       UserResolverService userResolverService, RegistryService registryService) {
     this.jcrNodeFactoryService = jcrNodeFactoryService;
     this.userEnvironmentBase = userEnvironmentBase;
@@ -185,6 +185,6 @@ public class JcrAuthenticationResolverProvider implements
   public String getUserEnvPath(String userId) {
     String prefix = PathUtils.getUserPrefix(userId);
     return userEnvironmentBase + prefix
-        + SimpleJcrUserEnvironmentResolverService.USERENV;
+        + UserFactoryService.USERENV;
   }
 }

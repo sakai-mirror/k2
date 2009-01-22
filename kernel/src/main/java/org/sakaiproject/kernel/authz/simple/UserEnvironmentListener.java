@@ -31,6 +31,8 @@ import org.sakaiproject.kernel.jcr.api.JcrContentListener;
 import org.sakaiproject.kernel.model.GroupMembershipBean;
 import org.sakaiproject.kernel.model.UserBean;
 import org.sakaiproject.kernel.model.UserEnvironmentBean;
+import org.sakaiproject.kernel.user.UserFactoryService;
+import org.sakaiproject.kernel.user.jcr.JcrUserFactoryService;
 import org.sakaiproject.kernel.util.IOUtils;
 
 import java.io.IOException;
@@ -69,7 +71,7 @@ public class UserEnvironmentListener implements JcrContentListener {
   @Inject
   public UserEnvironmentListener(
       JCRNodeFactoryService jcrNodeFactoryService,
-      @Named(SimpleJcrUserEnvironmentResolverService.JCR_USERENV_BASE) String userEnvironmentBase,
+      @Named(JcrUserFactoryService.JCR_USERENV_BASE) String userEnvironmentBase,
       @Named(BeanConverter.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
       SessionManagerService sessionManagerService,
       UserEnvironmentResolverService userEnvironmentResolverService,
@@ -89,7 +91,7 @@ public class UserEnvironmentListener implements JcrContentListener {
    */
   public void onEvent(int type, String userID, String filePath, String fileName) {
     if (filePath.startsWith(userEnvironmentBase)) {
-      if (fileName.equals(SimpleJcrUserEnvironmentResolverService.USERENV)) {
+      if (fileName.equals(UserFactoryService.USERENV)) {
         try {
           String userEnvBody = IOUtils.readFully(jcrNodeFactoryService
               .getInputStream(filePath), "UTF-8");

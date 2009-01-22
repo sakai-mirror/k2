@@ -32,8 +32,8 @@ import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
+import org.sakaiproject.kernel.user.UserFactoryService;
 import org.sakaiproject.kernel.util.IOUtils;
-import org.sakaiproject.kernel.util.PathUtils;
 import org.sakaiproject.kernel.util.StringUtils;
 
 import java.io.IOException;
@@ -48,16 +48,15 @@ import javax.jcr.RepositoryException;
 public class SimpleJcrUserEnvironmentResolverService implements
     UserEnvironmentResolverService {
 
-  public static final String JCR_USERENV_BASE = "jcruserenv.base";
   protected String LOCALE_SESSION_KEY = "sakai.locale.";
 
   private static final Log LOG = LogFactory
       .getLog(SimpleJcrUserEnvironmentResolverService.class);
   private JCRNodeFactoryService jcrNodeFactoryService;
-  private String userEnvironmentBase;
   private BeanConverter beanConverter;
   private UserEnvironment nullUserEnv;
   private Cache<UserEnvironment> cache;
+  private UserFactoryService userFactoryService;
 
   /**
  * 
@@ -65,14 +64,14 @@ public class SimpleJcrUserEnvironmentResolverService implements
   @Inject
   public SimpleJcrUserEnvironmentResolverService(
       JCRNodeFactoryService jcrNodeFactoryService,
-      @Named(JCR_USERENV_BASE) String userEnvironmentBase,
       CacheManagerService cacheManagerService,
       @Named(BeanConverter.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
-      @Named(UserEnvironment.NULLUSERENV) UserEnvironment nullUserEnv) {
+      @Named(UserEnvironment.NULLUSERENV) UserEnvironment nullUserEnv,
+      UserFactoryService userFactoryService) {
     this.jcrNodeFactoryService = jcrNodeFactoryService;
-    this.userEnvironmentBase = userEnvironmentBase;
     this.nullUserEnv = nullUserEnv;
     this.beanConverter = beanConverter;
+    this.userFactoryService = userFactoryService;
     cache = cacheManagerService.getCache("userenv",
         CacheScope.CLUSTERINVALIDATED);
     cache.put("test", null);
@@ -91,7 +90,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
       }
     }
 
-    String userEnv = getUserEnvPath(user.getUuid());
+    String userEnv = userFactoryService.getUserEnvPath(user.getUuid());
     UserEnvironment ue = loadUserEnvironmentBean(userEnv);
     if (ue != null) {
       cache.put(user.getUuid(), ue);
@@ -151,20 +150,13 @@ public class SimpleJcrUserEnvironmentResolverService implements
   
   
 
-  /**
-   * @return
-   */
-  public String getUserEnvPath(String userId) {
-    return getUserEnvironmentBasePath(userId)+USERENV;
-  }
   
   /**
    * {@inheritDoc}
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService#getUserEnvironmentBasePath(java.lang.String)
    */
-  public String getUserEnvironmentBasePath(String userId) {
-    String prefix = PathUtils.getUserPrefix(userId);
-    return userEnvironmentBase + prefix;
+  public String getUserEnvironmentBasePath(String userId) {   
+    return  userFactoryService.getUserEnvironmentBasePath(userId);
   }
 
   /**
@@ -199,6 +191,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
     }
     return loc;
   }
+
 
 
   

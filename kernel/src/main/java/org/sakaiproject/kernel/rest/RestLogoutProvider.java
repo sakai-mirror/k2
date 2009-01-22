@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
- * 
+ * Logout Rest Provider 
  */
 public class RestLogoutProvider implements RestProvider {
 
@@ -66,11 +66,14 @@ public class RestLogoutProvider implements RestProvider {
           session.removeAttribute(Session.UNRESOLVED_UID);
           session.removeAttribute(Session.USER);
         }
+        response.setContentType(RestProvider.CONTENT_TYPE);
         response.getOutputStream().print("{ \"response\" : \"OK\" }");
       } else {
+        response.setContentType(RestProvider.CONTENT_TYPE);
         response.getOutputStream().print("{ \"response\" : \"Not Logged In\" }");      
       }
     } else {
+      response.setContentType(RestProvider.CONTENT_TYPE);
       response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
     }    
   }

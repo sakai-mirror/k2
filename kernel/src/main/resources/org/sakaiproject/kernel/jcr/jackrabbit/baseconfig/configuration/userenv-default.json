@@ -1,6 +1,5 @@
 {
-  "uuid" : null,
-  "eid":null,
   "superUser" : false,
+  "type" : "default",
   "subjects" : []
 }

@@ -54,6 +54,8 @@ import org.sakaiproject.kernel.serialization.json.ValueProcessor;
 import org.sakaiproject.kernel.site.SiteServiceImpl;
 import org.sakaiproject.kernel.user.AuthenticationResolverServiceImpl;
 import org.sakaiproject.kernel.user.ProviderAuthenticationResolverService;
+import org.sakaiproject.kernel.user.UserFactoryService;
+import org.sakaiproject.kernel.user.jcr.JcrUserFactoryService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -94,7 +96,6 @@ public class KernelModule extends AbstractModule {
    * The kernel which the bootstrap component exists within.
    */
   private final Kernel kernel;
-
 
   /**
    * Create the bootstrap module with a kernel and supplied properties.
@@ -159,6 +160,9 @@ public class KernelModule extends AbstractModule {
     bind(Map[].class).to(HashMap[].class);
     bind(JsonConfig.class).annotatedWith(Names.named("SakaiKernelJsonConfig"))
         .to(BeanJsonLibConfig.class);
+
+    bind(UserFactoryService.class).to(JcrUserFactoryService.class).in(
+        Scopes.SINGLETON);
 
     bind(UserEnvironment.class).annotatedWith(
         Names.named(UserEnvironment.NULLUSERENV)).to(NullUserEnvironment.class)

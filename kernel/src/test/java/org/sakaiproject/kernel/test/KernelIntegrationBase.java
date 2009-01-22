@@ -28,8 +28,8 @@ import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.user.UserResolverService;
-import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.component.KernelLifecycle;
+import org.sakaiproject.kernel.user.UserFactoryService;
 import org.sakaiproject.kernel.user.jcr.JcrAuthenticationResolverProvider;
 import org.sakaiproject.kernel.util.FileUtil;
 import org.sakaiproject.kernel.util.PathUtils;
@@ -174,7 +174,7 @@ public class KernelIntegrationBase {
   public static String getUserEnvPath(String userId) {
     String prefix = PathUtils.getUserPrefix(userId);
     return "/userenv" + prefix
-        + UserEnvironmentResolverService.USERENV;
+        + UserFactoryService.USERENV;
   }
 
   /**

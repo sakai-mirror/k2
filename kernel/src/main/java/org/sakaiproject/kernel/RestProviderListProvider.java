@@ -27,6 +27,7 @@ import org.sakaiproject.kernel.rest.RestLogoutProvider;
 import org.sakaiproject.kernel.rest.RestMeProvider;
 import org.sakaiproject.kernel.rest.RestSiteProvider;
 import org.sakaiproject.kernel.rest.RestSnoopProvider;
+import org.sakaiproject.kernel.rest.RestUserProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,12 +45,14 @@ public class RestProviderListProvider implements Provider<List<RestProvider>> {
   public RestProviderListProvider(DefaultRestProvider defaultRestProvider,
       RestAuthenticationProvider restAuthenticationProvider,
       RestMeProvider restMeProvider, RestSiteProvider siteProvider, 
-      RestSnoopProvider restSnoopProvider, RestLogoutProvider restLogoutProvider) {
+      RestSnoopProvider restSnoopProvider, RestLogoutProvider restLogoutProvider,
+      RestUserProvider restUserProvider) {
     list.add(restAuthenticationProvider);
     list.add(defaultRestProvider);
     list.add(restMeProvider);
     list.add(restSnoopProvider);
     list.add(restLogoutProvider);
+    list.add(restUserProvider);
   }
 
   /**

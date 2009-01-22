@@ -24,9 +24,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
-import org.sakaiproject.kernel.authz.simple.SimpleJcrUserEnvironmentResolverService;
 import org.sakaiproject.kernel.jcr.api.internal.RepositoryStartupException;
 import org.sakaiproject.kernel.jcr.api.internal.StartupAction;
+import org.sakaiproject.kernel.user.UserFactoryService;
+import org.sakaiproject.kernel.user.jcr.JcrUserFactoryService;
 import org.sakaiproject.kernel.util.PathUtils;
 import org.sakaiproject.kernel.util.ResourceLoader;
 import org.sakaiproject.kernel.util.StringUtils;
@@ -58,7 +59,7 @@ public class PopulateBaseRepository implements StartupAction {
   @Inject
   public PopulateBaseRepository(
       JCRNodeFactoryService jFactoryService,
-      @Named(SimpleJcrUserEnvironmentResolverService.JCR_USERENV_BASE) String userEnvironmentBase) {
+      @Named(JcrUserFactoryService.JCR_USERENV_BASE) String userEnvironmentBase) {
     this.jcrNodeFactoryService = jFactoryService;
     this.userEnvironmentBase = userEnvironmentBase;
   }
@@ -158,7 +159,7 @@ public class PopulateBaseRepository implements StartupAction {
   public String getUserEnvPath(String userId) {
     String prefix = PathUtils.getUserPrefix(userId);
     return userEnvironmentBase + prefix
-        + SimpleJcrUserEnvironmentResolverService.USERENV;
+        + UserFactoryService.USERENV;
   }
 
 }
