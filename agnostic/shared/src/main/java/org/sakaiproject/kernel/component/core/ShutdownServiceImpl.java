@@ -19,6 +19,8 @@ package org.sakaiproject.kernel.component.core;
 
 import com.google.inject.Inject;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.RequiresStop;
 import org.sakaiproject.kernel.api.ServiceManagerException;
 import org.sakaiproject.kernel.api.ShutdownService;
@@ -31,6 +33,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class ShutdownServiceImpl implements RequiresStop, ShutdownService {
 
+  private static final Log LOG = LogFactory.getLog(ShutdownServiceImpl.class);
   /**
    * A list of services to stop on reload.
    */
@@ -54,7 +57,12 @@ public class ShutdownServiceImpl implements RequiresStop, ShutdownService {
    */
   public void stop() {
     for (RequiresStop s : tostop) {
-      s.stop();
+      try {
+        s.stop();
+      } catch ( Exception ex ) {
+        LOG.debug("Failed to Shutdown "+s,ex);
+        LOG.error("Failed to Shutdown "+s+" because:"+ex.getMessage());
+      }
     }
   }
 
