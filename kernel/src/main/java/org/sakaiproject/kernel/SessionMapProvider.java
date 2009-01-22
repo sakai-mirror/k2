@@ -44,7 +44,7 @@ public class SessionMapProvider implements Provider<Map<String, HttpSession>> {
    */
   @Inject
   public SessionMapProvider() {
-    map = new ReferenceMap<String, HttpSession>(ReferenceType.WEAK,
+    map = new ReferenceMap<String, HttpSession>(ReferenceType.STRONG,
         ReferenceType.WEAK);
   }
 

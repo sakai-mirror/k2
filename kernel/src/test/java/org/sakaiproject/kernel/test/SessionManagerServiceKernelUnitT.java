@@ -70,14 +70,12 @@ public class SessionManagerServiceKernelUnitT {
     // should try and create a session, but not force it
     expect(request.getSession(false)).andReturn(session);
     
-    // then it should get the session id to set the cookie
-    expect(session.getId()).andReturn(sessionID);
   
     response.addCookie((Cookie) anyObject());
     expectLastCall();
-    
-    // and then in the map
-    expect(session.getId()).andReturn(sessionID);
+
+    expect(session.getId()).andReturn(sessionID).atLeastOnce();
+
     
     
     
@@ -98,6 +96,7 @@ public class SessionManagerServiceKernelUnitT {
     reset(request, response, session);
     
     expect(request.getRequestedSessionId()).andReturn(sessionID);
+    expect(session.getAttribute("check-valid")).andReturn(null).anyTimes();
     
     // no cookies, not called should come from the map
     // expect(request.getCookies()).andReturn(null);
@@ -132,14 +131,12 @@ public class SessionManagerServiceKernelUnitT {
     // should try and create a session, but not force it
     expect(request.getSession(false)).andReturn(session);
     
-    // then it should get the session id to set the cookie
-    expect(session.getId()).andReturn(sessionID);
   
     response.addCookie((Cookie) anyObject());
     expectLastCall();
     
-    // and then in the map
-    expect(session.getId()).andReturn(sessionID);
+    expect(session.getId()).andReturn(sessionID).atLeastOnce();
+    expect(session.getAttribute("check-valid")).andReturn(null).anyTimes();
     
     
     
@@ -163,6 +160,7 @@ public class SessionManagerServiceKernelUnitT {
     Cookie cookie = new Cookie("SAKAIID",sessionID); // from kernel-component.properties
     // came from the cookie
     expect(request.getCookies()).andReturn(new Cookie[] {cookie});
+    expect(session.getAttribute("check-valid")).andReturn(null).anyTimes();
     
     
   
@@ -191,14 +189,12 @@ public class SessionManagerServiceKernelUnitT {
     // should try and create a session, but not force it
     expect(request.getSession(false)).andReturn(session);
     
-    // then it should get the session id to set the cookie
-    expect(session.getId()).andReturn(sessionID);
   
     response.addCookie((Cookie) anyObject());
     expectLastCall();
     
-    // and then in the map
-    expect(session.getId()).andReturn(sessionID);
+    expect(session.getId()).andReturn(sessionID).atLeastOnce();
+    expect(session.getAttribute("check-valid")).andReturn(null).anyTimes();
     
     
     
@@ -219,6 +215,7 @@ public class SessionManagerServiceKernelUnitT {
     
     // the session ID does not exist
     expect(request.getRequestedSessionId()).andReturn("23423423");
+    expect(session.getAttribute("check-valid")).andReturn(null).anyTimes();
 
     // but the cookie does, and we should still get the one we want.
     Cookie cookie = new Cookie("SAKAIID",sessionID); // from kernel-component.properties

@@ -112,7 +112,9 @@ public class SessionManagerServiceImpl implements SessionManagerService {
     HttpSession session = null;
     if (sessionID != null) {
       // if its not in the map... its not the right session
-      session = sessionMap.get(sessionID);
+      session = checkSession(sessionMap.get(sessionID));
+      System.err.println("SessionManager (standard): Got Sesssion " + sessionID
+          + " as " + session + " from " + sessionMap);
     }
     // try the cookie
     if (session == null) {
@@ -128,7 +130,9 @@ public class SessionManagerServiceImpl implements SessionManagerService {
         }
       }
       if (sessionID != null) {
-        session = sessionMap.get(sessionID);
+        session = checkSession(sessionMap.get(sessionID));
+        System.err.println("SessionManager (cookie): Got Sesssion " + sessionID
+            + " as " + session + " from " + sessionMap);
       }
       if (session == null) {
         // not in the map of could have no session, so create one (if requested)
@@ -136,15 +140,37 @@ public class SessionManagerServiceImpl implements SessionManagerService {
         // that OK, but also set my cookie.
         session = request.getSession(create);
         if (session != null) {
+          System.err.println("SessionManager (created): Got Sesssion "
+              + session.getId() + " as " + session + " from " + sessionMap);
           Cookie c = new Cookie(cookieName, session.getId());
           c.setPath("/");
           c.setMaxAge(-1);
           response.addCookie(c);
+          System.err.println("SessionManager (put): Got Sesssion "
+              + session.getId() + " as " + session + " from " + sessionMap);
           sessionMap.put(session.getId(), session);
+        } else {
+          System.err.println("SessionManager (failed to created): Sesssion "
+              + sessionID + " as " + session + " from " + sessionMap);
         }
       }
     }
     return session;
+  }
+
+  /**
+   * @param httpSession
+   * @return
+   */
+  private HttpSession checkSession(HttpSession httpSession) {
+    try {
+      if (httpSession != null) {
+        httpSession.getAttribute("check-valid");
+      }
+      return httpSession;
+    } catch (IllegalStateException e) {
+      return null;
+    }
   }
 
 }
