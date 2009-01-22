@@ -49,6 +49,7 @@ public class RestProviderListProvider implements Provider<List<RestProvider>> {
     list.add(restMeProvider);
     list.add(restSnoopProvider);
   }
+
   /**
    * {@inheritDoc}
    * @see com.google.inject.Provider#get()
