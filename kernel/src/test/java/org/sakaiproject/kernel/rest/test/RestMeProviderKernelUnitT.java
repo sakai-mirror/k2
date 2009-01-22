@@ -108,9 +108,9 @@ public class RestMeProviderKernelUnitT extends KernelIntegrationBase {
     HttpSession session = createMock(HttpSession.class);
     
     
-    expect(request.getRequestedSessionId()).andReturn("SESSIONID-123").anyTimes();
-    expect(session.getId()).andReturn("SESSIONID-123").anyTimes();
-    Cookie cookie = new Cookie("SAKAIID","SESSIONID-123");
+    expect(request.getRequestedSessionId()).andReturn("SESSIONID-123-1").anyTimes();
+    expect(session.getId()).andReturn("SESSIONID-123-1").anyTimes();
+    Cookie cookie = new Cookie("SAKAIID","SESSIONID-123-1");
     expect(request.getCookies()).andReturn(new Cookie[]{cookie}).anyTimes();
 
 

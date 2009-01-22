@@ -28,7 +28,7 @@ import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.component.KernelLifecycle;
 import org.sakaiproject.kernel.persistence.PersistenceModule;
-import org.sakaiproject.kernel.util.KernelComponentProperties;
+import org.sakaiproject.kernel.util.PropertiesLoader;
 
 import java.util.Properties;
 
@@ -52,7 +52,10 @@ public class PersistenceModuleTest {
 
   @Test
   public void loadModule() throws Exception {
-    Properties props = new KernelComponentProperties().getProperties();
+    Properties props = PropertiesLoader.load(this.getClass().getClassLoader(),
+        KernelModule.DEFAULT_PROPERTIES, KernelModule.LOCAL_PROPERTIES,
+        KernelModule.SYS_LOCAL_PROPERTIES);
+    
     KernelLifecycle kernelLifecycle = new KernelLifecycle();
     kernelLifecycle.start();
 

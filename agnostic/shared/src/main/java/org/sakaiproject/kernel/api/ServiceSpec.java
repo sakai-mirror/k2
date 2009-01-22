@@ -17,7 +17,6 @@
  */
 package org.sakaiproject.kernel.api;
 
-import org.sakaiproject.kernel.component.core.ComponentClassLoader;
 
 /**
  * Services are specified and searched for using a ServiceSpec class, this may

@@ -28,30 +28,44 @@ import java.util.Properties;
 import java.util.Map.Entry;
 
 /**
+ * Loads properties accepting overrides from named system varaibles and named
+ * environment variables.
  */
-public abstract class PropertiesLoader {
+public final class PropertiesLoader {
   private static final Log log = LogFactory.getLog(PropertiesLoader.class);
 
   /**
-   * The properties for the kernel
+   * @param classLoader
+   *          the classloader where the properties are to be loaded from.
    */
-  public Properties properties;
-
   /**
-   *
+   * @param classLoader
+   *          the classloader where the properties are to be loaded from.
+   * @param defaultPropertiesLocation
+   *          the default location in above name where the property will come
+   *          from
+   * @param localPropertiesName
+   *          the name of the environment varaible that stores the local
+   *          properties
+   * @param sysPropertiesName
+   *          the name of the java system property that contains local
+   *          properties.
+   * @return a properties set.
    */
-  public PropertiesLoader() {
+  public static Properties load(ClassLoader classLoader,
+      String defaultPropertiesLocation, String localPropertiesName,
+      String sysPropertiesName) {
     InputStream is = null;
+    Properties properties;
     try {
-      is = ResourceLoader.openResource(getDefaultProperties(), this.getClass()
-          .getClassLoader());
+      is = ResourceLoader.openResource(defaultPropertiesLocation, classLoader);
       properties = new Properties();
       properties.load(is);
       log.info("Loaded " + properties.size() + " properties from "
-          + getDefaultProperties());
+          + defaultPropertiesLocation);
     } catch (IOException e) {
       throw new CreationException(Arrays.asList(new Message(
-          "Unable to load properties: " + getDefaultProperties())));
+          "Unable to load properties: " + defaultPropertiesLocation)));
     } finally {
       try {
         if (is != null) {
@@ -62,17 +76,15 @@ public abstract class PropertiesLoader {
       }
     }
     // load local properties if specified as a system property
-    String localPropertiesLocation = System.getenv(getLocalProperties());
-    String sysLocalPropertiesLocation = System
-        .getProperty(getSysLocalProperties());
+    String localPropertiesLocation = System.getenv(localPropertiesName);
+    String sysLocalPropertiesLocation = System.getProperty(sysPropertiesName);
     if (sysLocalPropertiesLocation != null) {
       localPropertiesLocation = sysLocalPropertiesLocation;
     }
     try {
       if (localPropertiesLocation != null
           && localPropertiesLocation.trim().length() > 0) {
-        is = ResourceLoader.openResource(localPropertiesLocation, this
-            .getClass().getClassLoader());
+        is = ResourceLoader.openResource(localPropertiesLocation, classLoader);
         Properties localProperties = new Properties();
         localProperties.load(is);
         for (Entry<Object, Object> o : localProperties.entrySet()) {
@@ -92,9 +104,18 @@ public abstract class PropertiesLoader {
             + localPropertiesLocation);
       } else {
         log.info("No Local Properties Override, set system property "
-            + getLocalProperties()
+            + localPropertiesName
             + " to a resource location to override kernel properties");
       }
+
+      StringBuilder sb = new StringBuilder();
+      sb.append("Merged Propery Set:\n");
+      for (Entry<?, ?> e : properties.entrySet()) {
+        sb.append("\tKey[").append(e.getKey()).append("] value[").append(
+            e.getValue()).append("]\n");
+      }
+      log.info(sb.toString());
+
     } catch (IOException e) {
       log.info("Failed to startup ", e);
       throw new CreationException(Arrays.asList(new Message(
@@ -108,55 +129,6 @@ public abstract class PropertiesLoader {
         // dont care about this.
       }
     }
-  }
-
-  /**
-   * Get all the loaded properties.
-   *
-   * @return
-   */
-  public Properties getProperties() {
     return properties;
   }
-
-  /**
-   * @see java.util.Properties#getProperty(String)
-   * @param key
-   * @return
-   */
-  public String getProperty(String key) {
-    return properties.getProperty(key);
-  }
-
-  /**
-   * @see java.util.Properties#getProperty(String, String)
-   * @param key
-   * @param defaultValue
-   * @return
-   */
-  public String getProperty(String key, String defaultValue) {
-    return properties.getProperty(key, defaultValue);
-  }
-
-  /**
-   * The location of the default properties file.
-   * 
-   * @return
-   */
-  protected abstract String getDefaultProperties();
-
-  /**
-   * The environment variable that contains overrides to kernel properties
-   *
-   * @return
-   */
-  protected abstract String getLocalProperties();
-
-  /**
-   * The System property name that contains overrides to the kernel properties
-   * resource.
-   *
-   * @return
-   */
-  protected abstract String getSysLocalProperties();
 }

@@ -21,8 +21,6 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 import com.google.inject.name.Names;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.Artifact;
 import org.sakaiproject.kernel.api.ArtifactResolverService;
 import org.sakaiproject.kernel.api.ClassLoaderService;
@@ -32,7 +30,7 @@ import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.PackageRegistryService;
 import org.sakaiproject.kernel.api.ServiceManager;
 import org.sakaiproject.kernel.api.ShutdownService;
-import org.sakaiproject.kernel.util.KernelProperties;
+import org.sakaiproject.kernel.util.PropertiesLoader;
 
 import java.util.Properties;
 
@@ -45,7 +43,21 @@ import java.util.Properties;
  */
 public class KernelBootstrapModule extends AbstractModule {
 
-  private static final Log LOG = LogFactory.getLog(KernelBootstrapModule.class);
+  /**
+   * Location of the kernel properties.
+   */
+  public static final String DEFAULT_PROPERTIES = "res://kernel.properties";
+
+  /**
+   * the environment variable that contains overrides to kernel properties
+   */
+  public static final String LOCAL_PROPERTIES = "SAKAI_KERNEL_PROPERTIES";
+
+  /**
+   * The System property name that contains overrides to the kernel properties
+   * resource
+   */
+  public static final String SYS_LOCAL_PROPERTIES = "sakai.kernel.properties";
 
   /**
    * The properties for the kernel
@@ -59,22 +71,23 @@ public class KernelBootstrapModule extends AbstractModule {
 
   /**
    * Create a Guice module for the kernel bootstrap.
-   *
+   * 
    * This loads properties from res://kernel.properites and looks for the
    * environment variable SAKAI_KERNEL_PROPERTIES for the location of local
    * overrides
-   *
+   * 
    * @param kernel
    *          the kernel performing the bootstrap.
    */
-   public KernelBootstrapModule(Kernel kernel) {
+  public KernelBootstrapModule(Kernel kernel) {
     this.kernel = kernel;
-    properties = new KernelProperties().getProperties();
+    properties = PropertiesLoader.load(this.getClass().getClassLoader(),
+        DEFAULT_PROPERTIES, LOCAL_PROPERTIES, SYS_LOCAL_PROPERTIES);
   }
 
   /**
    * Create the bootstrap module with a kernel and supplied properties.
-   *
+   * 
    * @param kernel
    * @param properties
    */
@@ -85,7 +98,7 @@ public class KernelBootstrapModule extends AbstractModule {
 
   /**
    * Configure the guice bindings.
-   *
+   * 
    * @see com.google.inject.AbstractModule#configure()
    */
   @Override

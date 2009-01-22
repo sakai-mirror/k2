@@ -21,9 +21,10 @@ import com.google.inject.name.Names;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.KernelModule;
 import org.sakaiproject.kernel.api.persistence.DataSourceService;
 import org.sakaiproject.kernel.persistence.dbcp.DataSourceServiceImpl;
-import org.sakaiproject.kernel.util.KernelComponentProperties;
+import org.sakaiproject.kernel.util.PropertiesLoader;
 
 import java.util.Properties;
 
@@ -38,7 +39,9 @@ public class DataSourceModule extends AbstractModule {
   private final Properties properties;
 
   public DataSourceModule() {
-    properties = new KernelComponentProperties().getProperties();
+    properties = PropertiesLoader.load(this.getClass().getClassLoader(),
+        KernelModule.DEFAULT_PROPERTIES, KernelModule.LOCAL_PROPERTIES,
+        KernelModule.SYS_LOCAL_PROPERTIES);
   }
 
   public DataSourceModule(Properties properties) {

@@ -20,7 +20,6 @@ package org.sakaiproject.kernel.component;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.ClassLoaderMisconfigurationException;
-import org.sakaiproject.kernel.api.ClassLoaderService;
 import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.ServiceManager;
 import org.sakaiproject.kernel.api.ServiceManagerException;

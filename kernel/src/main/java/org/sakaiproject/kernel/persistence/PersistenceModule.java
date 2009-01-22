@@ -45,17 +45,9 @@ public class PersistenceModule extends AbstractModule {
   private Properties properties;
 
   public PersistenceModule(Kernel kernel) {
-    // the KernelModule and PersistenceModule classes were performing the same
-    // properties read up. The activator now loads both of these modules into
-    // the same injector so only one of them needs to read it up and
-    // KernelModule does it first.
     this.kernel = kernel;
   }
 
-  public PersistenceModule(Kernel kernel, Properties properties) {
-    this.kernel = kernel;
-    this.properties = properties;
-  }
 
   /**
    * {@inheritDoc}

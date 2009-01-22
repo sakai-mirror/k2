@@ -19,8 +19,6 @@ package org.sakaiproject.kernel.component.model;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.Artifact;
 import org.sakaiproject.kernel.api.DependencyScope;
 import org.sakaiproject.kernel.util.StringUtils;
@@ -30,7 +28,6 @@ import org.sakaiproject.kernel.util.StringUtils;
  */
 @XStreamAlias("dependency")
 public class DependencyImpl implements Artifact {
-  private static final Log LOG = LogFactory.getLog(DependencyImpl.class);
   private String groupId = "";
   private String artifactId = "";
   private String version = "";

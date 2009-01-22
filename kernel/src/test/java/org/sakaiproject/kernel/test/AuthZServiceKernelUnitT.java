@@ -60,6 +60,7 @@ import org.sakaiproject.kernel.webapp.test.InternalUser;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Random;
 
 import javax.jcr.AccessDeniedException;
 import javax.jcr.InvalidItemStateException;
@@ -277,14 +278,16 @@ public class AuthZServiceKernelUnitT extends KernelIntegrationBase {
   private void setupRequest(HttpServletRequest request,
       HttpServletResponse response, HttpSession session, String userName) {
     User u = new InternalUser(userName);
+    long sessionID = new Random().nextLong();
     expect(request.getSession()).andReturn(session).anyTimes();
     expect(request.getSession(true)).andReturn(session).anyTimes();
     expect(request.getSession(false)).andReturn(session).anyTimes();
-    expect(session.getId()).andReturn(userName + "SESSIONID-123").anyTimes();
-    expect(request.getRequestedSessionId()).andReturn(userName + "SESSIONID-123").anyTimes();
-    Cookie cookie = new Cookie("SAKAIID","SESSIONID-123");
+    expect(session.getId()).andReturn(userName + "SESSIONID-123-A"+sessionID).anyTimes();
+    expect(request.getRequestedSessionId()).andReturn(userName + "SESSIONID-123-A"+sessionID).anyTimes();
+    Cookie cookie = new Cookie("SAKAIID","SESSIONID-123-A"+sessionID);
     expect(request.getCookies()).andReturn(new Cookie[]{cookie}).anyTimes();
-
+   
+    expect(session.getAttribute("check-valid")).andReturn(null).anyTimes();
     response.addCookie((Cookie) anyObject());
     expectLastCall().anyTimes();
 

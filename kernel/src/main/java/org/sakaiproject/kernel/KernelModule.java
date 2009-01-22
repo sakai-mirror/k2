@@ -23,8 +23,6 @@ import com.google.inject.name.Names;
 import net.sf.ezmorph.Morpher;
 import net.sf.json.JsonConfig;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.ComponentManager;
 import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.Provider;
@@ -56,7 +54,6 @@ import org.sakaiproject.kernel.serialization.json.ValueProcessor;
 import org.sakaiproject.kernel.site.SiteServiceImpl;
 import org.sakaiproject.kernel.user.AuthenticationResolverServiceImpl;
 import org.sakaiproject.kernel.user.ProviderAuthenticationResolverService;
-import org.sakaiproject.kernel.util.KernelComponentProperties;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -72,7 +69,21 @@ import javax.servlet.http.HttpSession;
  */
 public class KernelModule extends AbstractModule {
 
-  private static final Log LOG = LogFactory.getLog(KernelModule.class);
+  /**
+   * Location of the kernel properties.
+   */
+  public static final String DEFAULT_PROPERTIES = "res://kernel-component.properties";
+
+  /**
+   * the environment variable that contains overrides to kernel properties
+   */
+  public static final String LOCAL_PROPERTIES = "SAKAI_KERNEL_COMPONENT_PROPERTIES";
+
+  /**
+   * The System property name that contains overrides to the kernel properties
+   * resource
+   */
+  public static final String SYS_LOCAL_PROPERTIES = "sakai.kernel.component.properties";
 
   /**
    * The properties for the kernel
@@ -84,20 +95,10 @@ public class KernelModule extends AbstractModule {
    */
   private final Kernel kernel;
 
-  /**
-   * Create a Guice module for the kernel bootstrap.
-   *
-   * @param kernel
-   *          the kernel performing the bootstrap.
-   */
-   public KernelModule(Kernel kernel) {
-    this.kernel = kernel;
-    properties = new KernelComponentProperties().getProperties();
-  }
 
   /**
    * Create the bootstrap module with a kernel and supplied properties.
-   *
+   * 
    * @param kernel
    * @param properties
    */
@@ -108,7 +109,7 @@ public class KernelModule extends AbstractModule {
 
   /**
    * Configure the guice bindings.
-   *
+   * 
    * @see com.google.inject.AbstractModule#configure()
    */
   @Override
@@ -162,11 +163,10 @@ public class KernelModule extends AbstractModule {
     bind(UserEnvironment.class).annotatedWith(
         Names.named(UserEnvironment.NULLUSERENV)).to(NullUserEnvironment.class)
         .in(Scopes.SINGLETON);
-    
-    
-    TypeLiteral<Map<String, HttpSession>> sessionMap = new TypeLiteral<Map<String,HttpSession>>() {};
+
+    TypeLiteral<Map<String, HttpSession>> sessionMap = new TypeLiteral<Map<String, HttpSession>>() {
+    };
     bind(sessionMap).toProvider(SessionMapProvider.class);
-    
 
     TypeLiteral<List<EventRegistration>> eventList = new TypeLiteral<List<EventRegistration>>() {
     };
@@ -213,12 +213,13 @@ public class KernelModule extends AbstractModule {
     bind(restProviderList).toProvider(RestProviderListProvider.class)
         .asEagerSingleton();
 
-    // this is the list of all integrtion parts, annotated to avoid it being used elsewhere by mistake.
+    // this is the list of all integrtion parts, annotated to avoid it being
+    // used elsewhere by mistake.
     TypeLiteral<List<Provider<String>>> integrationProviderList = new TypeLiteral<List<Provider<String>>>() {
     };
-    bind(integrationProviderList).annotatedWith(Names.named("forced-internal-1")).toProvider(IntegrationProviderListProvider.class)
-        .asEagerSingleton();
-    
-    
+    bind(integrationProviderList).annotatedWith(
+        Names.named("forced-internal-1")).toProvider(
+        IntegrationProviderListProvider.class).asEagerSingleton();
+
   }
 }

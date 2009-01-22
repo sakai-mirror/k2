@@ -32,8 +32,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 import org.junit.After;
@@ -41,6 +39,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.sakaiproject.kernel.KernelModule;
 import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.ServiceSpec;
@@ -53,8 +52,7 @@ import org.sakaiproject.kernel.api.memory.CacheScope;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.component.KernelLifecycle;
-import org.sakaiproject.kernel.util.ResourceLoader;
-import org.sakaiproject.kernel.util.KernelProperties;
+import org.sakaiproject.kernel.component.core.KernelBootstrapModule;
 import org.sakaiproject.kernel.webapp.SakaiServletRequest;
 import org.sakaiproject.kernel.webapp.SakaiServletResponse;
 import org.sakaiproject.sdata.tool.ControllerServlet;
@@ -88,35 +86,14 @@ import javax.servlet.http.HttpSession;
  */
 public class IntegrationTest {
 
-  private static final Log LOG = LogFactory.getLog(IntegrationTest.class);
   private static KernelLifecycle kl;
   private static Kernel kernel;
 
   @BeforeClass
   public static void beforeClass() throws IOException {
-    assertNotNull(IntegrationTest.class.getClassLoader().getResourceAsStream(
-        "kernel-component.properties"));
-
-    LOG.info("Got kernel-component.properties using "
-        + ControllerServlet.class.getClassLoader());
-    assertNotNull(IntegrationTest.class.getClassLoader().getResourceAsStream(
-        "integration-kernel.properties"));
-    LOG.info("Got integration-kernel.properties using "
-        + ControllerServlet.class.getClassLoader());
-
-    @SuppressWarnings("unused")
-    String s = ResourceLoader.readResource("res://kernel-component.properties",
-        IntegrationTest.class.getClassLoader());
-    LOG.info("Got res://kernel-component.properties from ResourceLoader using "
-        + ControllerServlet.class.getClassLoader());
-    s = ResourceLoader.readResource("res://integration-kernel.properties",
-        IntegrationTest.class.getClassLoader());
-    LOG
-        .info("Got res://integration-kernel.properties from ResourceLoader using "
-            + ControllerServlet.class.getClassLoader());
     
-    System.setProperty(KernelProperties.SYS_LOCAL_PROPERTIES,
-        "res://integration-kernel.properties");
+    System.setProperty(KernelBootstrapModule.SYS_LOCAL_PROPERTIES,
+        "inline://kernel.classloaderIsolation=true;");
     kl = new KernelLifecycle();
     kl.start();
     
@@ -131,7 +108,7 @@ public class IntegrationTest {
     if (kl != null) {
       kl.stop();
     }
-    System.clearProperty(KernelProperties.SYS_LOCAL_PROPERTIES);
+    System.clearProperty(KernelModule.SYS_LOCAL_PROPERTIES);
   }
 
   private SessionManagerService sessionManagerService;

@@ -17,8 +17,6 @@
  */
 package org.sakaiproject.kernel.util;
 
-import com.thoughtworks.xstream.core.util.Base64Encoder;
-
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

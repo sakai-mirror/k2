@@ -25,12 +25,11 @@ import com.google.inject.name.Names;
 import net.sf.ezmorph.Morpher;
 import net.sf.json.JsonConfig;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.easymock.EasyMock;
 import org.sakaiproject.kernel.BeanProcessorProvider;
 import org.sakaiproject.kernel.JsonClassMapProvider;
 import org.sakaiproject.kernel.JsonMorpherListProvider;
+import org.sakaiproject.kernel.KernelModule;
 import org.sakaiproject.kernel.ValueProcessorsProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
@@ -39,7 +38,7 @@ import org.sakaiproject.kernel.serialization.json.BeanJsonLibConfig;
 import org.sakaiproject.kernel.serialization.json.BeanJsonLibConverter;
 import org.sakaiproject.kernel.serialization.json.BeanProcessor;
 import org.sakaiproject.kernel.serialization.json.ValueProcessor;
-import org.sakaiproject.kernel.util.KernelComponentProperties;
+import org.sakaiproject.kernel.util.PropertiesLoader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,7 +53,6 @@ import javax.persistence.EntityManager;
  */
 public class ModelModule extends AbstractModule {
 
-  private static final Log LOG = LogFactory.getLog(ModelModule.class);
 
   /**
    * The properties for the kernel
@@ -62,24 +60,24 @@ public class ModelModule extends AbstractModule {
   private final Properties properties;
 
   /**
-   * Create a Guice module for testing purposes. Only provides beans necessary to model manipulation.
-   *
+   * Create a Guice module for testing purposes. Only provides beans necessary
+   * to model manipulation.
+   * 
    */
   public ModelModule() {
-    properties = new KernelComponentProperties().getProperties();
+    properties = PropertiesLoader.load(this.getClass().getClassLoader(),
+        KernelModule.DEFAULT_PROPERTIES, KernelModule.LOCAL_PROPERTIES,
+        KernelModule.SYS_LOCAL_PROPERTIES);
   }
-
 
   /**
    * Configure the guice bindings.
-   *
+   * 
    * @see com.google.inject.AbstractModule#configure()
    */
   @Override
   protected void configure() {
     Names.bindProperties(this.binder(), properties);
-
-
 
     bind(BeanConverter.class).annotatedWith(
         Names.named(BeanConverter.REPOSITORY_BEANCONVETER)).to(
@@ -97,7 +95,8 @@ public class ModelModule extends AbstractModule {
         .in(Scopes.SINGLETON);
 
     // create some mocks to fill out the necessary classes
-    bind(EntityManager.class).toInstance(EasyMock.createMock(EntityManager.class));
+    bind(EntityManager.class).toInstance(
+        EasyMock.createMock(EntityManager.class));
 
     TypeLiteral<List<ValueProcessor>> valueProcessors = new TypeLiteral<List<ValueProcessor>>() {
     };
@@ -109,7 +108,9 @@ public class ModelModule extends AbstractModule {
 
     TypeLiteral<Map<String, Object>> jsonClassMap = new TypeLiteral<Map<String, Object>>() {
     };
-    bind(jsonClassMap).annotatedWith(Names.named(BeanJsonLibConfig.JSON_CLASSMAP)).toProvider(JsonClassMapProvider.class);
+    bind(jsonClassMap).annotatedWith(
+        Names.named(BeanJsonLibConfig.JSON_CLASSMAP)).toProvider(
+        JsonClassMapProvider.class);
 
     TypeLiteral<List<Morpher>> jsonMorpherList = new TypeLiteral<List<Morpher>>() {
     };

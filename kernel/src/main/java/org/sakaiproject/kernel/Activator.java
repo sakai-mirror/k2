@@ -46,6 +46,9 @@ import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.internal.api.KernelInitialization;
 import org.sakaiproject.kernel.internal.api.KernelInitializtionException;
 import org.sakaiproject.kernel.persistence.PersistenceModule;
+import org.sakaiproject.kernel.util.PropertiesLoader;
+
+import java.util.Properties;
 
 import javax.persistence.EntityManager;
 
@@ -80,7 +83,10 @@ public class Activator implements ComponentActivator {
 
     this.kernel = kernel;
     this.serviceManager = kernel.getServiceManager();
-    this.injector = Guice.createInjector(new KernelModule(kernel),
+    Properties properties = PropertiesLoader.load(this.getClass().getClassLoader(),
+        KernelModule.DEFAULT_PROPERTIES, KernelModule.LOCAL_PROPERTIES, KernelModule.SYS_LOCAL_PROPERTIES);
+
+    this.injector = Guice.createInjector(new KernelModule(kernel,properties),
         new PersistenceModule(kernel));
 
     // export the services.

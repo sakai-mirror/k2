@@ -91,7 +91,7 @@ public class AclListenerTest extends KernelIntegrationBase {
     Query query = entityManager
         .createNamedQuery(AclIndexBean.Queries.FINDBY_PATH);
     query.setParameter(AclIndexBean.QueryParams.FINDBY_PATH_PATH, path);
-    List<AclIndexBean> results = (List<AclIndexBean>) query.getResultList();
+    List<?> results = query.getResultList();
     assertTrue(results.size() == 0);
 
     ReferencedObject ro = referenceResolverService.resolve(path);

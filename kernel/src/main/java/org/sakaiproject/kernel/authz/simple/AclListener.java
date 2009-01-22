@@ -72,7 +72,7 @@ public class AclListener implements JcrContentListener {
       Query query = entityManager
           .createNamedQuery(AclIndexBean.Queries.FINDBY_PATH);
       query.setParameter(AclIndexBean.QueryParams.FINDBY_PATH_PATH, filePath);
-      List<AclIndexBean> currentIndex = query.getResultList();
+      List<?> currentIndex = query.getResultList();
 
       try {
         Node node = jcrNodeFactoryService.getNode(filePath);
@@ -145,14 +145,15 @@ public class AclListener implements JcrContentListener {
   }
 
   private AclIndexBean inList(AccessControlStatement stmt,
-      List<AclIndexBean> list) {
+      List<?> list) {
     AclIndexBean found = null;
 
     boolean stmtNotNull = stmt != null;
     boolean listNotEmpty = list != null && list.size() > 0;
 
     if (stmtNotNull && listNotEmpty) {
-      for (AclIndexBean listBean : list) {
+      for (Object listBeanO : list) {
+        AclIndexBean listBean = (AclIndexBean) listBeanO;
         boolean same = true;
         same &= stmt.getStatementKey().equals(listBean.getKey());
         same &= stmt.getSubject().getSubjectType().toString().equals(

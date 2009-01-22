@@ -64,7 +64,6 @@ public class ClassLoaderServiceTest {
     URLComponentSpecificationImpl componentSpec = new URLComponentSpecificationImpl(
         null, COMPONENT1);
 
-    @SuppressWarnings("unused")
     ClassLoader cl = cls.getComponentClassLoader(componentSpec);
     
     assertNotNull(cl);

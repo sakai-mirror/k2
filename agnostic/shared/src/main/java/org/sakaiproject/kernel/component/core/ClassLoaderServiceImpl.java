@@ -22,18 +22,17 @@ import com.google.inject.name.Named;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.sakaiproject.kernel.api.Exporter;
-import org.sakaiproject.kernel.api.ClassLoaderService;
 import org.sakaiproject.kernel.api.Artifact;
+import org.sakaiproject.kernel.api.ArtifactResolverService;
+import org.sakaiproject.kernel.api.ClassLoaderService;
 import org.sakaiproject.kernel.api.ComponentSpecification;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
-import org.sakaiproject.kernel.api.ArtifactResolverService;
 import org.sakaiproject.kernel.api.DependencyScope;
+import org.sakaiproject.kernel.api.Exporter;
 import org.sakaiproject.kernel.api.PackageExport;
 import org.sakaiproject.kernel.api.PackageRegistryService;
 
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 

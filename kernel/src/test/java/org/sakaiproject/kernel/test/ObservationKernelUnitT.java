@@ -58,6 +58,7 @@ import org.sakaiproject.kernel.webapp.test.InternalUser;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Random;
 
 import javax.jcr.AccessDeniedException;
 import javax.jcr.InvalidItemStateException;
@@ -79,7 +80,8 @@ import javax.servlet.http.HttpSession;
  */
 public class ObservationKernelUnitT extends KernelIntegrationBase {
 
-  private static final Log LOG = LogFactory.getLog(ObservationKernelUnitT.class);
+  private static final Log LOG = LogFactory
+      .getLog(ObservationKernelUnitT.class);
   private static final String[] USERS = { "admin", "ib236" };
   private static final String TEST_USERENV = "res://org/sakaiproject/kernel/test/sampleuserenv/";
   private static final String TEST_GROUPENV = "res://org/sakaiproject/kernel/test/samplegroup/";
@@ -89,7 +91,7 @@ public class ObservationKernelUnitT extends KernelIntegrationBase {
   @BeforeClass
   public static void beforeThisClass() throws ComponentActivatorException,
       RepositoryException, JCRNodeFactoryServiceException, IOException {
-    shutdown =  KernelIntegrationBase.beforeClass();
+    shutdown = KernelIntegrationBase.beforeClass();
 
     // get some services
 
@@ -166,10 +168,11 @@ public class ObservationKernelUnitT extends KernelIntegrationBase {
     assertNotNull(userEnvironmentResolverService);
     SessionManagerService sessionManagerService = km
         .getService(SessionManagerService.class);
-    UserResolverService userResolverService = km.getService(UserResolverService.class);
+    UserResolverService userResolverService = km
+        .getService(UserResolverService.class);
 
     assertNotNull(sessionManagerService);
-    
+
     HttpServletRequest request = EasyMock.createMock(HttpServletRequest.class);
     HttpServletResponse response = EasyMock
         .createMock(HttpServletResponse.class);
@@ -177,35 +180,35 @@ public class ObservationKernelUnitT extends KernelIntegrationBase {
 
     setupRequest(request, response, session, "ib236");
     replay(request, response, session);
-    startRequest(request, response, "JSESSION",userResolverService);
+    startRequest(request, response, "JSESSION", userResolverService);
 
     UserEnvironment userEnvironment = userEnvironmentResolverService
         .resolve(sessionManagerService.getCurrentSession());
     assertNotNull(userEnvironment);
     assertEquals("ib236", userEnvironment.getUser().getUuid());
     assertFalse(userEnvironment.hasExpired());
-    
+
     UserEnvironmentBean userEnvironmentBean = (UserEnvironmentBean) userEnvironment;
     String[] subjects = userEnvironmentBean.getSubjects();
     assertNotNull(subjects);
     assertEquals(4, subjects.length);
-    
+
     UserSubjects subjectsBean = userEnvironmentBean.getUserSubjects();
-    for ( String subject : subjects ) {
+    for (String subject : subjects) {
       SubjectPermissions sp = subjectsBean.getSubjectPermissions(subject);
-      
-      assertNotNull("Loading "+subject+" gave null",sp);
+
+      assertNotNull("Loading " + subject + " gave null", sp);
       assertEquals(subject, sp.getSubjectToken());
-      
+
       assertFalse(sp.hasPermission("dummypermission"));
-      if ( "group1:maintain".equals(subject) || "group1:access".equals(subject))  {
-        assertTrue(subject+" is missing read",sp.hasPermission("read"));
+      if ("group1:maintain".equals(subject) || "group1:access".equals(subject)) {
+        assertTrue(subject + " is missing read", sp.hasPermission("read"));
       } else {
-        assertFalse(subject+" should not have had read ",sp.hasPermission("read"));
+        assertFalse(subject + " should not have had read ", sp
+            .hasPermission("read"));
       }
     }
-    
-    
+
     endRequest();
     verify(request, response, session);
 
@@ -213,7 +216,7 @@ public class ObservationKernelUnitT extends KernelIntegrationBase {
 
     setupRequest(request, response, session, "admin");
     replay(request, response, session);
-    startRequest(request, response, "JSESSION",userResolverService);
+    startRequest(request, response, "JSESSION", userResolverService);
 
     userEnvironment = userEnvironmentResolverService
         .resolve(sessionManagerService.getCurrentSession());
@@ -239,15 +242,17 @@ public class ObservationKernelUnitT extends KernelIntegrationBase {
    */
   private void setupRequest(HttpServletRequest request,
       HttpServletResponse response, HttpSession session, String userName) {
-
+    long sessionID = new Random().nextLong();
     User u = new InternalUser(userName);
     expect(request.getSession()).andReturn(session).anyTimes();
     expect(request.getSession(true)).andReturn(session).anyTimes();
     expect(request.getSession(false)).andReturn(session).anyTimes();
-    expect(session.getId()).andReturn(userName + "SESSIONID-123").anyTimes();
-    expect(request.getRequestedSessionId()).andReturn(userName + "SESSIONID-123").anyTimes();
-    Cookie cookie = new Cookie("SAKAIID","SESSIONID-123");
-    expect(request.getCookies()).andReturn(new Cookie[]{cookie}).anyTimes();
+    expect(session.getId()).andReturn(userName + "SESSIONID-123" + sessionID)
+        .anyTimes();
+    expect(request.getRequestedSessionId()).andReturn(
+        userName + "SESSIONID-123" + sessionID).anyTimes();
+    Cookie cookie = new Cookie("SAKAIID", "SESSIONID-123" + sessionID);
+    expect(request.getCookies()).andReturn(new Cookie[] { cookie }).anyTimes();
     expect(session.getAttribute(SessionImpl.USER)).andReturn(u).anyTimes();
     response.addCookie((Cookie) anyObject());
     expectLastCall().anyTimes();

@@ -17,9 +17,13 @@
  */
 package org.sakaiproject.kernel.component.core.test;
 
-import static org.junit.Assert.*;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.reset;
+import static org.easymock.EasyMock.verify;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
-import static org.easymock.EasyMock.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
