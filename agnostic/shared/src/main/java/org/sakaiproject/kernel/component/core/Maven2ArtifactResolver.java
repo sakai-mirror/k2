@@ -24,7 +24,9 @@ import org.sakaiproject.kernel.api.ComponentSpecificationException;
 import org.sakaiproject.kernel.api.ArtifactResolverService;
 
 import java.io.File;
-import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 /**
@@ -91,19 +93,29 @@ public class Maven2ArtifactResolver implements ArtifactResolverService {
           "Resource does not exist locally " + classpathDependency
               + " resloved as " + localResource.getAbsolutePath());
     }
-    URL u;
-    try {
-        u = new URL("file", "", localResource.getCanonicalPath());
-    } catch (IOException e) {
-      throw new ComponentSpecificationException("Unable to create URL for  "
-          + classpathDependency, e);
-    }
-    if (urls != null) {
+    
+    URI ui = localResource.toURI();
+    if ((urls != null) && (ui != null)) {
+      URI cui = null;
       for (URL clu : urls) {
-        if (u.equals(clu)) {
+        try {  
+          cui = clu.toURI();  
+        } catch (URISyntaxException e) {
+          throw new ComponentSpecificationException("Unable to create URI for  "    + clu.toString() 
+              + " in urls while resolving " + classpathDependency, e);
+        }
+        if (ui.equals(cui)) {
           return null;
         }
       }
+    }
+    
+    URL u = null;
+    try {
+        u = ui.toURL();
+    } catch (MalformedURLException e) {
+      throw new ComponentSpecificationException("Unable to create URL for  "
+          + classpathDependency, e);        
     }
     return u;
   }

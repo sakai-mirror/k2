@@ -19,12 +19,14 @@ package org.sakaiproject.kernel.component.core.test;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
 import org.sakaiproject.kernel.component.core.Maven2ArtifactResolver;
 import org.sakaiproject.kernel.component.model.DependencyImpl;
 
+import java.net.URISyntaxException;
 import java.net.URL;
 
 /**
@@ -45,6 +47,11 @@ public class Maven2DependencyResolverTest {
     dep.setVersion("1.0");
     URL[] urls = new URL[1];
     urls[0] = m2resolver.resolve(null, dep);
+    try {
+        System.err.println("Resolving "+urls[0]+":"+urls[0].toURI()); 
+    } catch (URISyntaxException e) {
+        fail("URISyntaxException " + e.toString());
+    }
     assertNotNull(urls[0]);
     assertNull(m2resolver.resolve(urls, dep));
     

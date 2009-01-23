@@ -32,6 +32,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
 
 /**
  * 
@@ -97,11 +98,11 @@ public class ResourceLoaderTest {
 */
     File f = new File(baseFile, "testfile1.txt");
     String path = f.getAbsolutePath();
-    in = ResourceLoader.openResource(path,this.getClass().getClassLoader());
+    URI uri = f.toURI();
+    in = ResourceLoader.openResource(uri.toString(),this.getClass().getClassLoader());
     assertNotNull(in);
     in.close();
-
-    in = ResourceLoader.openResource("file:" + path,this.getClass().getClassLoader());
+    in = ResourceLoader.openResource(uri.toString(), this.getClass().getClassLoader());
     assertNotNull(in);
     in.close();
 

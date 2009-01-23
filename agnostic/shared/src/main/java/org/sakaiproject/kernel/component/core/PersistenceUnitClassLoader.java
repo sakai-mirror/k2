@@ -35,6 +35,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -234,9 +235,15 @@ public class PersistenceUnitClassLoader extends ClassLoader {
     final PrintWriter pw = new PrintWriter(new FileWriter(file));
     pw.print(xml);
     pw.close();
-    final URL url = new URL("file://" + file.getAbsolutePath());
+    URL url = null;
+    try {
+        url = file.toURI().toURL();
+    } catch (MalformedURLException e) {
+        LOG.error("cannot convert file to URL " + e.toString());    
+    }
     LOG.debug("URL: " + url);
-    return url;
+    final URL urlout = url;
+    return urlout;
   }
 
   /**

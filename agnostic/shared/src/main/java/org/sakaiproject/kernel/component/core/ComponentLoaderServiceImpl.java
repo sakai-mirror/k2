@@ -35,6 +35,7 @@ import org.sakaiproject.kernel.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -88,9 +89,14 @@ public class ComponentLoaderServiceImpl implements ComponentLoaderService {
             LOG.warn("Jar file " + f.getAbsolutePath()
                 + " does not exist, will be ignored ");
           } else {
-            URL url = new URL("file", "", f.getCanonicalPath());
-            LOG.info("added component:" + url);
-            locations.put(url.toString(),url);
+            URL url = null;
+            try {
+                url = f.toURI().toURL();
+                LOG.info("added component:" + url);
+                locations.put(url.toString(),url);
+            } catch (MalformedURLException e) {
+                LOG.warn("Failed to map file path to URL " + e.getMessage());
+            }
           }
         } else {
           LOG.info("added component:" + location);
