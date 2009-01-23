@@ -37,6 +37,7 @@ import org.sakaiproject.kernel.user.jcr.JcrUserFactoryService;
 import org.sakaiproject.kernel.util.IOUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -84,10 +85,14 @@ public class SubjectPermissionListener implements JcrContentListener {
    *      java.lang.String, java.lang.String, java.lang.String)
    */
   public void onEvent(int type, String userID, String filePath, String fileName) {
+	  System.err.println("testing: " + fileName +"?=" + GROUP_FILE_NAME);
     if (fileName.equals(GROUP_FILE_NAME)) {
+    	System.err.println("yes: "+ type);
+    	InputStream in = null;
       try {
-        String groupBody = IOUtils.readFully(jcrNodeFactoryService
-            .getInputStream(filePath), "UTF-8");
+    	in = jcrNodeFactoryService.getInputStream(filePath);
+        String groupBody = IOUtils.readFully(in, "UTF-8");
+        if ( groupBody != null && groupBody.length() > 0 ) {
         EntityTransaction transaction = entityManager.getTransaction();
 
         // update the index for subjects and groups
@@ -95,7 +100,7 @@ public class SubjectPermissionListener implements JcrContentListener {
 
         // update the index used for searching sites
         updateSiteIndex(groupBody, filePath, transaction);
-
+        }
       } catch (UnsupportedEncodingException e) {
         LOG.error(e);
       } catch (IOException e) {
@@ -110,6 +115,10 @@ public class SubjectPermissionListener implements JcrContentListener {
         LOG.warn("Failed to read userenv for " + filePath + " cause :"
             + e.getMessage());
         LOG.debug(e);
+      } finally {
+    	  try { in.close(); } catch ( Exception ex ) {// not interested in this
+    		  }
+    	  
       }
     }
 
@@ -195,10 +204,19 @@ public class SubjectPermissionListener implements JcrContentListener {
       index.setId(site.getId());
       index.setName(site.getName());
       index.setRef(filePath);
+      
+      // look for an existing index first.
+      Query query = entityManager
+      	.createNamedQuery(SiteIndexBean.Queries.FINDBY_ID);
+      query.setParameter(SiteIndexBean.QueryParams.FINDBY_ID_ID, site.getId());
+      List<?> sitesList = query.getResultList();
 
-      transaction.begin();
-      entityManager.persist(index);
-      transaction.commit();
+      if(sitesList.size()>0) {
+    	  transaction.begin();
+    	  entityManager.persist(index);
+    	  transaction.commit();
+      }
+      
     }
   }
 }
