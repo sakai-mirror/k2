@@ -200,7 +200,7 @@ public class RestUserProvider implements RestProvider {
 
   static {
     DESCRIPTION.setTitle("User Rest Service");
-    DESCRIPTION.setShortDescription("The Logout service logs the user out ");
+    DESCRIPTION.setShortDescription("The User service creates users, and sets the users password ");
     DESCRIPTION.addSection(1, "Create User",
         "Create a new user by POST ing to the /rest/user/new url with the "
             + " following parameters " + FIRST_NAME_PARAM + ","
