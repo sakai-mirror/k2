@@ -39,7 +39,7 @@ public class FileUtilTest {
 
   @Before
   public void before() throws IOException {
-    baseFile = new File("target/fileutiltest");
+    baseFile = new File("target/fileutiltest2");
     touchFile(new File(baseFile,"testfile1.txt"));
     touchFile(new File(baseFile,"testfile2.txt"));
     touchFile(new File(baseFile,"testfile1.jar"));

@@ -129,7 +129,7 @@ public class ComponentLoaderServiceImplTest {
     MockComponentManager cm = new MockComponentManager();
     Maven2ArtifactResolver dependencyResolver = new Maven2ArtifactResolver();
     ComponentLoaderServiceImpl cl = new ComponentLoaderServiceImpl(cm, dependencyResolver);
-    File singleJar = new File(baseFile,"testfile1single.jar");
+    File singleJar = new File(baseFile,"testfile1.jar");
     createComponent(singleJar, COMPONENT1);
 
     cl.load(singleJar.getPath(), false);
