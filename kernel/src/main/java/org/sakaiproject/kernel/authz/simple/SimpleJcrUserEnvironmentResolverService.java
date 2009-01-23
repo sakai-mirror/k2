@@ -80,25 +80,27 @@ public class SimpleJcrUserEnvironmentResolverService implements
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService#resolve(org.sakaiproject.kernel.api.user.User)
    */
   public UserEnvironment resolve(User user) {
-    if (cache.containsKey(user.getUuid())) {
-      UserEnvironment ue = cache.get(user.getUuid());
-      if (ue != null && !ue.hasExpired()) {
+    if (user != null) {
+      if (cache.containsKey(user.getUuid())) {
+        UserEnvironment ue = cache.get(user.getUuid());
+        if (ue != null && !ue.hasExpired()) {
+          return ue;
+        }
+      }
+
+      String userEnv = userFactoryService.getUserEnvPath(user.getUuid());
+      UserEnvironment ue = loadUserEnvironmentBean(userEnv);
+      if (ue != null) {
+        cache.put(user.getUuid(), ue);
         return ue;
       }
     }
-
-    String userEnv = userFactoryService.getUserEnvPath(user.getUuid());
-    UserEnvironment ue = loadUserEnvironmentBean(userEnv);
-    if (ue != null) {
-      cache.put(user.getUuid(), ue);
-      return ue;
-    }
     return nullUserEnv;
   }
-  
 
   /**
    * {@inheritDoc}
@@ -108,10 +110,11 @@ public class SimpleJcrUserEnvironmentResolverService implements
   public UserEnvironment resolve(Session currentSession) {
     return resolve(currentSession.getUser());
   }
-  
+
   public void expire(String userId) {
     cache.remove(userId);
   }
+
   /**
    * @param userEnv2
    * @return
@@ -147,16 +150,14 @@ public class SimpleJcrUserEnvironmentResolverService implements
     }
     return null;
   }
-  
-  
 
-  
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService#getUserEnvironmentBasePath(java.lang.String)
    */
-  public String getUserEnvironmentBasePath(String userId) {   
-    return  userFactoryService.getUserEnvironmentBasePath(userId);
+  public String getUserEnvironmentBasePath(String userId) {
+    return userFactoryService.getUserEnvironmentBasePath(userId);
   }
 
   /**
@@ -191,9 +192,5 @@ public class SimpleJcrUserEnvironmentResolverService implements
     }
     return loc;
   }
-
-
-
-  
 
 }

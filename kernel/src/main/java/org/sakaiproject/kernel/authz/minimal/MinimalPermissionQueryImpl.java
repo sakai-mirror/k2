@@ -58,5 +58,14 @@ public class MinimalPermissionQueryImpl implements PermissionQuery {
   public String getQueryToken(String resourceReference) {
     return resourceReference+"::"+name;
   }
+  
+  /**
+   * {@inheritDoc}
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return name;
+  }
 
 }

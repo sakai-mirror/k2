@@ -117,5 +117,14 @@ public class NullUserEnvironment implements UserEnvironment {
    */
   public UserInfo getUserInfo() {
     return userInfo;
-   }
+  }
+  
+  /**
+   * {@inheritDoc}
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return "User: "+getUser();
+  }
 }

@@ -44,5 +44,14 @@ public class AnonUser implements User {
   public String getUuid() {
     return "anon";
   }
+  
+  /**
+   * {@inheritDoc}
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return "anon";
+  }
 
 }

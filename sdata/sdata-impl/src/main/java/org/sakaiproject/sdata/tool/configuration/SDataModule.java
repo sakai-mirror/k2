@@ -127,9 +127,10 @@ public class SDataModule extends AbstractModule {
     bind(new TypeLiteral<Map<String, Handler>>() {
     }).toProvider(SDataHandlerProvider.class);
 
+    // Security is handled by JCR
     bind(SecurityAssertion.class).annotatedWith(
-        Names.named(JCRHandler.SECURITY_ASSERTION)).toProvider(
-        JCRHandlerSecurityAssertion.class);
+        Names.named(JCRHandler.SECURITY_ASSERTION)).to(
+        NullSecurityAssertion.class);
     bind(SecurityAssertion.class).annotatedWith(
         Names.named(JCRUserStorageHandler.SECURITY_ASSERTION)).to(NullSecurityAssertion.class);
     
