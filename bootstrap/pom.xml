@@ -76,7 +76,13 @@
                       file="${basedir}/target/runtime/bin/setclasspath.sh"
                       perm="775" />
                     <chmod file="${basedir}/start.sh" perm="775" />
-                    <exec dir="${basedir}" executable="${basedir}/start.sh"
+                    <condition property="startscript" value="start.bat">
+                     <os family="windows"/>
+                    </condition>
+                    <condition property="startscript" value="start.sh">
+                     <os family="unix"/>
+                    </condition>
+                    <exec dir="${basedir}" executable="${basedir}/${startscript}"
                       failonerror="true">
                       <arg value="run" />
                     </exec>
