@@ -15,7 +15,7 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.test;
+package org.sakaiproject.kernel.authz.simple;
 
 import org.sakaiproject.kernel.api.authz.QueryStatement;
 

@@ -52,6 +52,7 @@ import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.authz.simple.JcrAccessControlStatementImpl;
 import org.sakaiproject.kernel.authz.simple.JcrSubjectStatement;
 import org.sakaiproject.kernel.authz.simple.SimplePermissionQuery;
+import org.sakaiproject.kernel.authz.simple.SimpleQueryStatement;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
 import org.sakaiproject.kernel.session.SessionImpl;
 import org.sakaiproject.kernel.util.PathUtils;

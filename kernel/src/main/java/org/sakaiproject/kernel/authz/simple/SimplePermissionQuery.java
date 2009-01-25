@@ -56,4 +56,13 @@ public class SimplePermissionQuery implements PermissionQuery {
   public void addQueryStatement(QueryStatement queryStatement) {
     queryStatements.add(queryStatement);
   }
+  
+  /**
+   * {@inheritDoc}
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return name;
+  }
 }

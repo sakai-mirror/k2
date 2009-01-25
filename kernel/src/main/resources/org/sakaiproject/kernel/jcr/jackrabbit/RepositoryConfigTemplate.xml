@@ -157,9 +157,12 @@
             access manager:
             class: FQN of class implementing the AccessManager interface
         -->
-        <AccessManager class="org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiAccessManager">
+        <!-- 
+        The Access manager is pulled from the Guice Injector, this entry is a complete dummy and is not used.
+        -->
+        <AccessManager class="org.sakaiproject.kernel.jcr.jackrabbit.ShouldNotHaveBeenUser.AccessManagerIsGuiceInjected">
         </AccessManager>
-
+     
         <LoginModule class="org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiLoginModule">
         </LoginModule>
     </Security>

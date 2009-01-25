@@ -40,6 +40,7 @@ import org.sakaiproject.kernel.jcr.jackrabbit.persistance.MySqlSharedPersistence
 import org.sakaiproject.kernel.jcr.jackrabbit.persistance.Oracle9SharedPersistenceManager;
 import org.sakaiproject.kernel.jcr.jackrabbit.persistance.OracleSharedPersistenceManager;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
+import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiRepositoryImpl;
 import org.sakaiproject.kernel.util.ResourceLoader;
 
 import java.io.ByteArrayInputStream;
@@ -144,8 +145,6 @@ public class RepositoryBuilder {
   public static final String NAME_NODE_TYPE_CONFIGURATION = "nodeTypeConfiguration"
       + BASE_NAME;
 
-  private static final ThreadLocal<Injector> injectorHolder = new ThreadLocal<Injector>();
-
   private RepositoryImpl repository;
 
   // private String repositoryConfig;
@@ -209,8 +208,8 @@ public class RepositoryBuilder {
       @Named(NAME_REPOSITORY_HOME) String repositoryHome,
       @Named(NAME_REPOSITORY_CONFIG_LOCATION) String repositoryConfigTemplate,
       @Named(NAME_NODE_TYPE_CONFIGURATION) String nodeTypeConfiguration,
-      @Named(NAME_NAMESPACES_MAP) String namespacesConfiguration,
-      Injector injector) throws IOException, RepositoryException {
+      @Named(NAME_NAMESPACES_MAP) String namespacesConfiguration, Injector injector)
+      throws IOException, RepositoryException {
 
     dbURL = dbURL.replaceAll("&", "&amp;");
 
@@ -247,15 +246,12 @@ public class RepositoryBuilder {
     ByteArrayInputStream bais = new ByteArrayInputStream(contentStr.getBytes());
     try {
 
-      injectorHolder.set(injector);
-      
       new File(sharedFSBlobLocation).mkdirs();
       new File(journalLocation).mkdirs();
-      
-      
+
       RepositoryConfig rc = RepositoryConfig.create(bais, repositoryHome);
-      
-      repository = RepositoryImpl.create(rc);
+
+      repository = new SakaiRepositoryImpl(rc,injector);
 
       Runtime.getRuntime().addShutdownHook(new Thread() {
         /**
@@ -270,7 +266,6 @@ public class RepositoryBuilder {
       });
       setup(namespacesConfiguration, nodeTypeConfiguration);
     } finally {
-      injectorHolder.set(null);
       bais.close();
     }
 
@@ -296,6 +291,7 @@ public class RepositoryBuilder {
   private void setup(String namespacesConfiguration,
       String nodeTypeConfiguration) throws RepositoryException, IOException {
     SakaiJCRCredentials ssp = new SakaiJCRCredentials();
+    
     Session s = repository.login(ssp);
     try {
       Workspace w = s.getWorkspace();
@@ -333,7 +329,8 @@ public class RepositoryBuilder {
       }
       try {
         @SuppressWarnings("unused")
-        String nodeTypes = ResourceLoader.readResource(nodeTypeConfiguration, this.getClass().getClassLoader());
+        String nodeTypes = ResourceLoader.readResource(nodeTypeConfiguration,
+            this.getClass().getClassLoader());
         in = ResourceLoader.openResource(nodeTypeConfiguration, this.getClass()
             .getClassLoader());
         NodeTypeManagerImpl ntm = (NodeTypeManagerImpl) w.getNodeTypeManager();
@@ -355,13 +352,6 @@ public class RepositoryBuilder {
       s.logout();
     }
 
-  }
-
-  /**
-   * @return
-   */
-  public static Injector getStartupInjector() {
-    return injectorHolder.get();
   }
 
 }

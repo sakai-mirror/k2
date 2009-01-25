@@ -23,6 +23,7 @@ import com.google.inject.name.Names;
 import net.sf.ezmorph.Morpher;
 import net.sf.json.JsonConfig;
 
+import org.apache.jackrabbit.core.security.AccessManager;
 import org.sakaiproject.kernel.api.ComponentManager;
 import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.Provider;
@@ -45,7 +46,9 @@ import org.sakaiproject.kernel.initialization.InitializationActionProvider;
 import org.sakaiproject.kernel.internal.api.InitializationAction;
 import org.sakaiproject.kernel.jcr.api.JcrContentListener;
 import org.sakaiproject.kernel.jcr.api.internal.StartupAction;
+import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiAccessManager;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
+import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SecureSakaiAccessManager;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.StartupActionProvider;
 import org.sakaiproject.kernel.serialization.json.BeanJsonLibConfig;
 import org.sakaiproject.kernel.serialization.json.BeanJsonLibConverter;
@@ -138,6 +141,9 @@ public class KernelModule extends AbstractModule {
     };
     bind(initializationActionType).toProvider(
         InitializationActionProvider.class);
+    
+    bind(AccessManager.class).to(SakaiAccessManager.class);
+    // Secure bind(AccessManager.class).to(SecureSakaiAccessManager.class);
 
     TypeLiteral<Map<String, ReferenceResolverService>> resolverMap = new TypeLiteral<Map<String, ReferenceResolverService>>() {
     };

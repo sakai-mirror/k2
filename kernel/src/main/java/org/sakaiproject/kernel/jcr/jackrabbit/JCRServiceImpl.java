@@ -22,6 +22,7 @@
 package org.sakaiproject.kernel.jcr.jackrabbit;
 
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 
@@ -66,6 +67,8 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
 
   private CacheManagerService cacheManager;
 
+  private Injector injector;
+
   /**
    * @throws RepositoryException 
    * 
@@ -75,13 +78,13 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
       @Named(JCRService.NAME_CREDENTIALS) Credentials repositoryCredentials,
       CacheManagerService cacheManager,
       @Named(JCRService.NAME_REQUEST_SCOPE) boolean requestScope,
-      List<EventRegistration> registrations) throws RepositoryException {
+      List<EventRegistration> registrations,
+      Injector injector) throws RepositoryException {
     this.repositoryBuilder = repositoryBuilder;
     this.repositoryCredentials = repositoryCredentials;
     this.cacheManager = cacheManager;
     this.requestScope = requestScope;
-    
-
+    this.injector = injector;
   }
 
   /*
@@ -236,5 +239,13 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
     }
     return observationManager;
   }
+  
+  /**
+   * @return the injector
+   */
+  public Injector getInjector() {
+    return injector;
+  }
+
 
 }

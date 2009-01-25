@@ -208,8 +208,11 @@ public class RestUserProvider implements RestProvider {
             + "," + PASSWORD_PARAM + "," + USER_TYPE_PARAM
             + " as described below");
     DESCRIPTION
-        .addURLTemplate("new",
+        .addURLTemplate("/user/new",
             "POST to create a new user, firstname, lastname, email, userid and password).");
+    DESCRIPTION
+    .addURLTemplate("/user/changepassword/<useruuid>",
+        "POST to create a new user, firstname, lastname, email, userid and password).");
     DESCRIPTION.addParameter(FIRST_NAME_PARAM, "The first name of the User");
     DESCRIPTION.addParameter(LAST_NAME_PARAM, "The last name of the User");
     DESCRIPTION.addParameter(EMAIL_PARAM, "The email for the user User");

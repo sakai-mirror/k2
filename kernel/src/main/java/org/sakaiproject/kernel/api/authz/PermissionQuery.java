@@ -23,6 +23,10 @@ package org.sakaiproject.kernel.api.authz;
  */
 public interface PermissionQuery {
 
+  public static final String READ = "read";
+  public static final String WRITE = "write";
+  public static final String REMOVE = "remove";
+
   /**
    * @return a list of statements that should be evaluated in order to represent
    *         this query.

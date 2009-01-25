@@ -31,61 +31,54 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.memory.ThreadBound;
 
-public class SessionHolder implements ThreadBound
-{
-	private static final Log log = LogFactory.getLog(SessionHolder.class);
+public class SessionHolder implements ThreadBound {
+  private static final Log log = LogFactory.getLog(SessionHolder.class);
 
-	private Session session = null;
+  private Session session = null;
 
-	private boolean keepLoggedIn = false;
+  private boolean keepLoggedIn = false;
 
-	@Override
-	protected void finalize() throws Throwable
-	{
-		try
-		{
-			if ( session != null ) {
-				session.logout();
-				session = null;
-			}
-		}
-		catch (Throwable t)
-		{
-			log.warn("Failed to close session ", t);
-		}
-		super.finalize();
-	}
+  @Override
+  protected void finalize() throws Throwable {
+    try {
+      if (session != null) {
+        session.logout();
+        session = null;
+      }
+    } catch (Throwable t) {
+      log.warn("Failed to close session ", t);
+    }
+    super.finalize();
+  }
 
-	public SessionHolder(RepositoryBuilder repositoryBuilder,
-			Credentials repositoryCredentials, String workspace) throws LoginException, RepositoryException
-	{
-		Repository repository = repositoryBuilder.getInstance();
-		session = repository.login(repositoryCredentials); //, workspace);
-	}
+  public SessionHolder(RepositoryBuilder repositoryBuilder,
+      Credentials repositoryCredentials, String workspace)
+      throws LoginException, RepositoryException {
+    Repository repository = repositoryBuilder.getInstance();
+    session = repository.login(repositoryCredentials); // , workspace);
+  }
 
-/**
-	 * @param session2
-	 */
-	public SessionHolder(Session session)
-	{
-		this.session = session;
-	}
+  /**
+   * @param session2
+   */
+  public SessionHolder(Session session) {
+    this.session = session;
+  }
 
-	public Session getSession()
-	{
-		return session;
-	}
+  public Session getSession() {
+    return session;
+  }
 
-	public void unbind()
-	{
-		if ( keepLoggedIn  ) {
-			keepLoggedIn = false;
-		} else if (session != null ) {
-			session.logout();
-			session = null;
-		}
-	}
-	public void keepLoggedIn() {
-		keepLoggedIn = true;
-	}
+  public void unbind() {
+    if (keepLoggedIn) {
+      keepLoggedIn = false;
+    } else if (session != null) {
+      session.logout();
+      session = null;
+    }
+  }
+
+  public void keepLoggedIn() {
+    keepLoggedIn = true;
+  }
 }
