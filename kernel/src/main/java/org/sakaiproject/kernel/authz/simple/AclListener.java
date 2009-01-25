@@ -48,156 +48,158 @@ import javax.persistence.Query;
  */
 public class AclListener implements JcrContentListener {
 
-	private static final Log LOG = LogFactory.getLog(AclListener.class);
-	private final JCRNodeFactoryService jcrNodeFactoryService;
-	private final EntityManager entityManager;
+  private static final Log LOG = LogFactory.getLog(AclListener.class);
+  private final JCRNodeFactoryService jcrNodeFactoryService;
+  private final EntityManager entityManager;
 
-	@Inject
-	public AclListener(JCRNodeFactoryService jcrNodeFactoryService,
-			EntityManager entityManager) {
-		this.jcrNodeFactoryService = jcrNodeFactoryService;
-		this.entityManager = entityManager;
-	}
+  @Inject
+  public AclListener(JCRNodeFactoryService jcrNodeFactoryService,
+      EntityManager entityManager) {
+    this.jcrNodeFactoryService = jcrNodeFactoryService;
+    this.entityManager = entityManager;
+  }
 
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @see org.sakaiproject.kernel.jcr.api.JcrContentListener#onEvent(int,
-	 *      java.lang.String, java.lang.String, java.lang.String)
-	 */
-	public void onEvent(int type, String userID, String filePath,
-			String fileName) {
-		InputStream in = null;
-		if ((type == Event.PROPERTY_ADDED || type == Event.PROPERTY_CHANGED || type == Event.PROPERTY_REMOVED)) {
-			String groupBody = null;
-			boolean noError = true;
-			try {
-				in = jcrNodeFactoryService.getInputStream(filePath);
-				groupBody = IOUtils.readFully(in, "UTF-8");
-			} catch (RepositoryException e1) {
-				noError = false;
-				e1.printStackTrace();
-			} catch (JCRNodeFactoryServiceException e1) {
-				noError = false;
-				e1.printStackTrace();
-			} catch (UnsupportedEncodingException e) {
-				noError = false;
-				e.printStackTrace();
-			} catch (IOException e) {
-				noError = false;
-				e.printStackTrace();
-			} finally {
-				if(in != null) try { in.close(); } catch (IOException e) {} // nothing to see here
-			}
-			
-			if (noError && groupBody != null && groupBody.length() > 0) {
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.kernel.jcr.api.JcrContentListener#onEvent(int,
+   *      java.lang.String, java.lang.String, java.lang.String)
+   */
+  public void onEvent(int type, String userID, String filePath, String fileName) {
+    InputStream in = null;
+    if ((type == Event.PROPERTY_ADDED || type == Event.PROPERTY_CHANGED || type == Event.PROPERTY_REMOVED)) {
+      String groupBody = null;
+      boolean noError = true;
+      try {
+        in = jcrNodeFactoryService.getInputStream(filePath);
+        groupBody = IOUtils.readFully(in, "UTF-8");
+      } catch (RepositoryException e1) {
+        noError = false;
+        e1.printStackTrace();
+      } catch (JCRNodeFactoryServiceException e1) {
+        noError = false;
+        e1.printStackTrace();
+      } catch (UnsupportedEncodingException e) {
+        noError = false;
+        e.printStackTrace();
+      } catch (IOException e) {
+        noError = false;
+        e.printStackTrace();
+      } finally {
+        if (in != null)
+          try {
+            in.close();
+          } catch (IOException e) {
+          } // nothing to see here
+      }
 
-				ArrayList<AclIndexBean> toCreate = new ArrayList<AclIndexBean>();
-				ArrayList<AclIndexBean> toUpdate = new ArrayList<AclIndexBean>();
-				ArrayList<AclIndexBean> toDelete = new ArrayList<AclIndexBean>();
+      if (noError && groupBody != null && groupBody.length() > 0) {
 
-				Query query = entityManager
-						.createNamedQuery(AclIndexBean.Queries.FINDBY_PATH);
-				query.setParameter(AclIndexBean.QueryParams.FINDBY_PATH_PATH,
-						filePath);
-				List<?> currentIndex = query.getResultList();
+        ArrayList<AclIndexBean> toCreate = new ArrayList<AclIndexBean>();
+        ArrayList<AclIndexBean> toUpdate = new ArrayList<AclIndexBean>();
+        ArrayList<AclIndexBean> toDelete = new ArrayList<AclIndexBean>();
 
-				try {
-					Node node = jcrNodeFactoryService.getNode(filePath);
-					Property acl = node.getProperty(JCRConstants.MIX_ACL);
-					for (Value val : acl.getValues()) {
-						AccessControlStatement acs = new JcrAccessControlStatementImpl(
-								val.getString());
+        Query query = entityManager
+            .createNamedQuery(AclIndexBean.Queries.FINDBY_PATH);
+        query.setParameter(AclIndexBean.QueryParams.FINDBY_PATH_PATH, filePath);
+        List<?> currentIndex = query.getResultList();
 
-						switch (type) {
-						case Event.PROPERTY_ADDED:
-							if (inList(acs, currentIndex) == null) {
-								toCreate.add(convert(acs));
-							}
-							break;
-						case Event.PROPERTY_CHANGED:
-							AclIndexBean indexBean = inList(acs, currentIndex);
-							if (indexBean != null) {
-								toUpdate.add(indexBean);
-							}
-							break;
-						case Event.PROPERTY_REMOVED:
-							if (inList(acs, currentIndex) == null) {
-								toDelete.add(convert(acs));
-							}
-							break;
-						}
-					}
+        try {
+          Node node = jcrNodeFactoryService.getNode(filePath);
+          Property acl = node.getProperty(JCRConstants.MIX_ACL);
+          for (Value val : acl.getValues()) {
+            AccessControlStatement acs = new JcrAccessControlStatementImpl(val
+                .getString());
 
-					EntityTransaction trans = entityManager.getTransaction();
-					trans.begin();
-					try {
-						if (!toCreate.isEmpty()) {
-							for (AclIndexBean bean : toCreate) {
-								entityManager.persist(bean);
-							}
-						} else if (!toUpdate.isEmpty()) {
-							for (AclIndexBean bean : toUpdate) {
-								entityManager.persist(bean);
-							}
-						} else if (!toDelete.isEmpty()) {
-							for (AclIndexBean bean : toDelete) {
-								entityManager.remove(bean);
-							}
-						}
-						trans.commit();
-					} catch (Exception e) {
-						LOG.error(
-								"Transaction rolled back due to a problem when updating the ACL index: "
-										+ e.getMessage(), e);
-						trans.rollback();
-					}
-				} catch (PathNotFoundException e) {
-					// nothing to care about. this happens when there is no ACL
-					// on the node
-				} catch (RepositoryException e) {
-					// nothing we can do
-					LOG.error(e.getMessage(), e);
-				} catch (JCRNodeFactoryServiceException e) {
-					// nothing we can do
-					LOG.error(e.getMessage(), e);
-				}
-			}
-		}
-	}
+            switch (type) {
+            case Event.PROPERTY_ADDED:
+              if (inList(acs, currentIndex) == null) {
+                toCreate.add(convert(acs));
+              }
+              break;
+            case Event.PROPERTY_CHANGED:
+              AclIndexBean indexBean = inList(acs, currentIndex);
+              if (indexBean != null) {
+                toUpdate.add(indexBean);
+              }
+              break;
+            case Event.PROPERTY_REMOVED:
+              if (inList(acs, currentIndex) == null) {
+                toDelete.add(convert(acs));
+              }
+              break;
+            }
+          }
 
-	private AclIndexBean convert(AccessControlStatement acs) {
-		AclIndexBean bean = new AclIndexBean();
-		bean.setKey(acs.getStatementKey());
-		bean.setSubject(acs.getSubject());
-		bean.setGranted(acs.isGranted());
-		return bean;
-	}
+          EntityTransaction trans = entityManager.getTransaction();
+          trans.begin();
+          try {
+            if (!toCreate.isEmpty()) {
+              for (AclIndexBean bean : toCreate) {
+                entityManager.persist(bean);
+              }
+            } else if (!toUpdate.isEmpty()) {
+              for (AclIndexBean bean : toUpdate) {
+                entityManager.persist(bean);
+              }
+            } else if (!toDelete.isEmpty()) {
+              for (AclIndexBean bean : toDelete) {
+                entityManager.remove(bean);
+              }
+            }
+            trans.commit();
+          } catch (Exception e) {
+            LOG.error(
+                "Transaction rolled back due to a problem when updating the ACL index: "
+                    + e.getMessage(), e);
+            trans.rollback();
+          }
+        } catch (PathNotFoundException e) {
+          // nothing to care about. this happens when there is no ACL
+          // on the node
+        } catch (RepositoryException e) {
+          // nothing we can do
+          LOG.error(e.getMessage(), e);
+        } catch (JCRNodeFactoryServiceException e) {
+          // nothing we can do
+          LOG.error(e.getMessage(), e);
+        }
+      }
+    }
+  }
 
-	private AclIndexBean inList(AccessControlStatement stmt, List<?> list) {
-		AclIndexBean found = null;
+  private AclIndexBean convert(AccessControlStatement acs) {
+    AclIndexBean bean = new AclIndexBean();
+    bean.setKey(acs.getStatementKey());
+    bean.setSubject(acs.getSubject());
+    bean.setGranted(acs.isGranted());
+    return bean;
+  }
 
-		boolean stmtNotNull = stmt != null;
-		boolean listNotEmpty = list != null && list.size() > 0;
+  private AclIndexBean inList(AccessControlStatement stmt, List<?> list) {
+    AclIndexBean found = null;
 
-		if (stmtNotNull && listNotEmpty) {
-			for (Object listBeanO : list) {
-				AclIndexBean listBean = (AclIndexBean) listBeanO;
-				boolean same = true;
-				same &= stmt.getStatementKey().equals(listBean.getKey());
-				same &= stmt.getSubject().getSubjectType().toString().equals(
-						listBean.getSubjectType());
-				same &= stmt.getSubject().getSubjectToken().equals(
-						listBean.getSubjectToken());
-				same &= stmt.getSubject().getPermissionToken().equals(
-						listBean.getPermissionToken());
-				if (same) {
-					found = listBean;
-					break;
-				}
-			}
-		}
+    boolean stmtNotNull = stmt != null;
+    boolean listNotEmpty = list != null && list.size() > 0;
 
-		return found;
-	}
+    if (stmtNotNull && listNotEmpty) {
+      for (Object listBeanO : list) {
+        AclIndexBean listBean = (AclIndexBean) listBeanO;
+        boolean same = true;
+        same &= stmt.getStatementKey().equals(listBean.getKey());
+        same &= stmt.getSubject().getSubjectType().toString().equals(
+            listBean.getSubjectType());
+        same &= stmt.getSubject().getSubjectToken().equals(
+            listBean.getSubjectToken());
+        same &= stmt.getSubject().getPermissionToken().equals(
+            listBean.getPermissionToken());
+        if (same) {
+          found = listBean;
+          break;
+        }
+      }
+    }
+
+    return found;
+  }
 }
