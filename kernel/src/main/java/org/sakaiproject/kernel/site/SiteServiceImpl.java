@@ -35,6 +35,7 @@ import org.sakaiproject.kernel.util.PathUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
 import javax.jcr.Node;
@@ -70,7 +71,7 @@ public class SiteServiceImpl implements SiteService {
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.api.site.SiteService#createSite(org.sakaiproject.kernel.model.SiteBean)
    */
   public void createSite(SiteBean site) throws SiteCreationException,
@@ -84,7 +85,7 @@ public class SiteServiceImpl implements SiteService {
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.api.site.SiteService#getSite(java.lang.String)
    */
   public SiteBean getSite(String id) throws SiteException {
@@ -117,7 +118,7 @@ public class SiteServiceImpl implements SiteService {
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.api.site.SiteService#siteExists(java.lang.String)
    */
   public boolean siteExists(String id) {
@@ -131,7 +132,7 @@ public class SiteServiceImpl implements SiteService {
   /**
    * Build the full path with file name to the group definition for a given site
    * ID.
-   *
+   * 
    * @param id
    * @return
    */
@@ -145,7 +146,7 @@ public class SiteServiceImpl implements SiteService {
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.api.site.SiteService#deleteSite(java.lang.String)
    */
   public void deleteSite(String id) {
@@ -153,32 +154,51 @@ public class SiteServiceImpl implements SiteService {
 
   /**
    * {@inheritDoc}
-   *
+   * 
+   * @throws UnsupportedEncodingException
+   * 
    * @see org.sakaiproject.kernel.api.site.SiteService#saveSite(org.sakaiproject.kernel.model.SiteBean)
    * @todo Refactor to use synchronous event call which needs to be created.
    */
   public void saveSite(SiteBean site) throws SiteException,
       SiteCreationException {
     EntityTransaction trans = entityManager.getTransaction();
-    trans.begin();
 
     String json = beanConverter.convertToString(site);
     String fileNode = buildFilePath(site.getId());
+    InputStream in = null;
     try {
-      Node node = jcrNodeFactoryService.setInputStream(fileNode,
-          new ByteArrayInputStream(json.getBytes()));
+      in = new ByteArrayInputStream(json.getBytes("UTF-8"));
+      Node node = jcrNodeFactoryService.setInputStream(fileNode, in);
       SiteIndexBean bean = new SiteIndexBean();
       bean.setId(site.getId());
       bean.setName(site.getName());
       bean.setRef(node.getPath());
+      if (!trans.isActive()) {
+        trans.begin();
+      }
       entityManager.persist(bean);
       trans.commit();
-    } catch (RepositoryException e1) {
-      trans.rollback();
-      throw new SiteCreationException(e1.getMessage(), e1);
-    } catch (JCRNodeFactoryServiceException e2) {
-      trans.rollback();
-      throw new SiteCreationException(e2.getMessage(), e2);
+    } catch (RepositoryException e) {
+      if (trans.isActive()) {
+        trans.rollback();
+      }
+      throw new SiteCreationException(e);
+    } catch (JCRNodeFactoryServiceException e) {
+      if (trans.isActive()) {
+        trans.rollback();
+      }
+      throw new SiteCreationException(e);
+    } catch (UnsupportedEncodingException e) {
+      if (trans.isActive()) {
+        trans.rollback();
+      }
+      throw new SiteCreationException(e);
+    } finally {
+      try {
+        in.close();
+      } catch (Exception ex) {
+      }
     }
   }
 }
