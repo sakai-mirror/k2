@@ -188,8 +188,9 @@ public class SubjectPermissionListener implements JcrContentListener {
 
       }
     }
-
-    transaction.begin();
+    if (!transaction.isActive()) {
+      transaction.begin();
+    }
     for (SubjectPermissionBean spb : toRemove) {
       entityManager.remove(spb);
     }
@@ -203,22 +204,28 @@ public class SubjectPermissionListener implements JcrContentListener {
       EntityTransaction transaction) {
     SiteBean site = beanConverter.convertToObject(groupBody, SiteBean.class);
     if (site.getId() != null) {
-      SiteIndexBean index = new SiteIndexBean();
-      index.setId(site.getId());
-      index.setName(site.getName());
-      index.setRef(filePath);
-
       // look for an existing index first.
       Query query = entityManager
           .createNamedQuery(SiteIndexBean.Queries.FINDBY_ID);
       query.setParameter(SiteIndexBean.QueryParams.FINDBY_ID_ID, site.getId());
       List<?> sitesList = query.getResultList();
 
+      SiteIndexBean index = null;
       if (sitesList.size() > 0) {
-        transaction.begin();
-        entityManager.persist(index);
-        transaction.commit();
+        index = (SiteIndexBean) sitesList.get(0);
+        index.setName(site.getName());
+        index.setRef(filePath);
+      } else {
+        index = new SiteIndexBean();
+        index.setId(site.getId());
+        index.setName(site.getName());
+        index.setRef(filePath);
       }
+      if (!transaction.isActive()) {
+        transaction.begin();
+      }
+      entityManager.persist(index);
+      transaction.commit();
 
     }
   }
