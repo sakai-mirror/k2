@@ -26,8 +26,12 @@ import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
+import org.sakaiproject.kernel.api.session.Session;
+import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.user.UserResolverService;
+import org.sakaiproject.kernel.api.userenv.UserEnvironment;
+import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.user.UserFactoryService;
 import org.sakaiproject.kernel.user.jcr.JcrAuthenticationResolverProvider;
 import org.sakaiproject.kernel.util.IOUtils;
@@ -37,11 +41,13 @@ import org.sakaiproject.kernel.util.rest.RestDescription;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -59,12 +65,16 @@ public class RestUserProvider implements RestProvider {
   private static final String EXTERNAL_USERID_PARAM = "eid";
   private static final String PASSWORD_PARAM = "password";
   private static final String USER_TYPE_PARAM = "userType";
+  private static final String PASSWORD_OLD_PARAM = "oldPassword";
   private BeanConverter beanConverter;
   private UserResolverService userResolverService;
   private JCRNodeFactoryService jcrNodeFactoryService;
   private UserFactoryService userFactoryService;
+  private UserEnvironmentResolverService userEnvironmentResolverService;
+  private SessionManagerService sessionManagerService;
 
   /**
+   * @param sessionManager
    * 
    */
   @Inject
@@ -72,8 +82,10 @@ public class RestUserProvider implements RestProvider {
       RegistryService registryService,
       @Named(BeanConverter.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
       UserResolverService userResolverService,
+      UserEnvironmentResolverService userEnvironmentResolverService,
       JCRNodeFactoryService jcrNodeFactoryService,
-      UserFactoryService userFactoryService) {
+      UserFactoryService userFactoryService,
+      SessionManagerService sessionManagerService) {
     Registry<String, RestProvider> restRegistry = registryService
         .getRegistry(RestProvider.REST_REGISTRY);
     restRegistry.add(this);
@@ -81,6 +93,8 @@ public class RestUserProvider implements RestProvider {
     this.userResolverService = userResolverService;
     this.jcrNodeFactoryService = jcrNodeFactoryService;
     this.userFactoryService = userFactoryService;
+    this.userEnvironmentResolverService = userEnvironmentResolverService;
+    this.sessionManagerService = sessionManagerService;
 
   }
 
@@ -94,11 +108,15 @@ public class RestUserProvider implements RestProvider {
   public void dispatch(String[] elements, HttpServletRequest request,
       HttpServletResponse response) throws ServletException, IOException {
     try {
-      if ("POST".equals(request.getMethod())) {
+      if ("POST".equals(request.getMethod())
+          || "1".equals(request.getParameter("forcePost"))) {
         // Security is managed by the JCR
         Map<String, Object> map = null;
         if ("new".equals(elements[1])) {
           map = createUser(request, response);
+        } else if ("changepassword".equals(elements[1])) {
+          map = changePassword(request, response,
+              elements.length > 2 ? elements[2] : null);
         }
 
         if (map != null) {
@@ -116,6 +134,90 @@ public class RestUserProvider implements RestProvider {
     } catch (Exception ex) {
       throw new ServletException(ex);
     }
+  }
+
+  /**
+   * @param request
+   * @param response
+   * @return
+   * @throws IOException
+   * @throws NoSuchAlgorithmException
+   * @throws UnsupportedEncodingException
+   * @throws JCRNodeFactoryServiceException
+   * @throws RepositoryException
+   */
+  private Map<String, Object> changePassword(HttpServletRequest request,
+      HttpServletResponse response, String externalId)
+      throws UnsupportedEncodingException, NoSuchAlgorithmException,
+      IOException, RepositoryException, JCRNodeFactoryServiceException {
+    Session session = sessionManagerService.getCurrentSession();
+    if (session == null) {
+      response.reset();
+      response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+      return null;
+    }
+    UserEnvironment ue = userEnvironmentResolverService.resolve(session);
+    if (ue == null) {
+      response.reset();
+      response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+      return null;
+    }
+    User thisUser = ue.getUser();
+    User user = thisUser;
+
+    boolean superUser = false;
+    if (externalId != null) {
+      if (ue.isSuperUser()) {
+        user = userResolverService.resolve(externalId);
+        if (user == null) {
+          throw new SecurityException("Specified user cant be found ");
+        }
+        superUser = true;
+      } else {
+        throw new SecurityException(
+            "User does not have permission to change others passwords");
+      }
+    }
+    if ( thisUser.getUuid().equals(user.getUuid()) ) {
+      superUser = false;
+    }
+    String password = request.getParameter(PASSWORD_PARAM);
+    String passwordOld = request.getParameter(PASSWORD_OLD_PARAM);
+
+    if (password == null || password.trim().length() < 5) {
+      response.reset();
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+          "Passwords are too short, minimum 5 characters");
+      return null;
+    }
+
+    String userEnvironmentPath = userFactoryService.getUserEnvPath(user
+        .getUuid());
+    Node userEnvNode = jcrNodeFactoryService.getNode(userEnvironmentPath);
+    if (!superUser) {
+      // set the password
+      Property storedPassword = userEnvNode
+          .getProperty(JcrAuthenticationResolverProvider.JCRPASSWORDHASH);
+      if (storedPassword != null) {
+        String storedPasswordString = storedPassword.getString();
+        if (storedPasswordString != null) {
+          if (!StringUtils.sha1Hash(passwordOld).equals(storedPassword)) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                "Old Password does not match ");
+            return null;
+          }
+        }
+      }
+    }
+
+    userEnvNode.setProperty(JcrAuthenticationResolverProvider.JCRPASSWORDHASH,
+        StringUtils.sha1Hash(password));
+
+    Map<String, Object> r = new HashMap<String, Object>();
+    r.put("response", "OK");
+    r.put("uuid", user.getUuid());
+    return r;
+
   }
 
   /**
@@ -170,6 +272,8 @@ public class RestUserProvider implements RestProvider {
 
       // save the template
       String userEnv = beanConverter.convertToString(templateMap);
+      System.err.println("New User at " + userEnvironmentPath + " Is "
+          + userEnv);
       bais = new ByteArrayInputStream(userEnv.getBytes("UTF-8"));
       Node userEnvNode = jcrNodeFactoryService.setInputStream(
           userEnvironmentPath, bais);
@@ -200,7 +304,8 @@ public class RestUserProvider implements RestProvider {
 
   static {
     DESCRIPTION.setTitle("User Rest Service");
-    DESCRIPTION.setShortDescription("The User service creates users, and sets the users password ");
+    DESCRIPTION
+        .setShortDescription("The User service creates users, and sets the users password ");
     DESCRIPTION.addSection(1, "Create User",
         "Create a new user by POST ing to the /rest/user/new url with the "
             + " following parameters " + FIRST_NAME_PARAM + ","
@@ -211,15 +316,21 @@ public class RestUserProvider implements RestProvider {
         .addURLTemplate("/user/new",
             "POST to create a new user, firstname, lastname, email, userid and password).");
     DESCRIPTION
-    .addURLTemplate("/user/changepassword/<useruuid>",
-        "POST to create a new user, firstname, lastname, email, userid and password).");
+        .addURLTemplate(
+            "/user/changepassword/<user eid>",
+            "POST to change the users password, and optionally specify which user. If the user is not specified, the action"
+                + " is applied to the current user, if the user is specified on the path as an EID, and the current user has super "
+                + "user privalages the password will be changed. If an attempt is made to change the current users password, super "
+                + "user or not, the old password must also be supplied.).");
     DESCRIPTION.addParameter(FIRST_NAME_PARAM, "The first name of the User");
     DESCRIPTION.addParameter(LAST_NAME_PARAM, "The last name of the User");
     DESCRIPTION.addParameter(EMAIL_PARAM, "The email for the user User");
     DESCRIPTION.addParameter(EXTERNAL_USERID_PARAM,
         "The external user ID for the user User");
     DESCRIPTION.addParameter(PASSWORD_PARAM,
-        "The initial password for the User");
+        "The initial or replacement password for the User");
+    DESCRIPTION.addParameter(PASSWORD_OLD_PARAM,
+        "the old password for the User");
     DESCRIPTION.addParameter(USER_TYPE_PARAM, "The type of the user User");
 
     DESCRIPTION
