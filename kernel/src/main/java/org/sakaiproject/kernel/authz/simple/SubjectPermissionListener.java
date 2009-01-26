@@ -85,9 +85,7 @@ public class SubjectPermissionListener implements JcrContentListener {
    *      java.lang.String, java.lang.String, java.lang.String)
    */
   public void onEvent(int type, String userID, String filePath, String fileName) {
-    System.err.println("testing: " + fileName + "?=" + GROUP_FILE_NAME);
     if (fileName.equals(GROUP_FILE_NAME)) {
-      System.err.println("yes: " + type);
       InputStream in = null;
       try {
         in = jcrNodeFactoryService.getInputStream(filePath);
