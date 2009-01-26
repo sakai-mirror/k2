@@ -140,6 +140,13 @@ public class SiteServiceT {
     site.setRoles(roles);
 
     siteService.createSite(site);
+    
+    
+    SiteBean siteBean = siteService.getSite(siteId);
+    assertNotNull(siteBean);
+    assertEquals(site.getId(), siteBean.getId());
+    assertEquals(site.getName(), siteBean.getName());
+    assertEquals(site.getDescription(), siteBean.getDescription());
     verify(request, response, session);
   }
 

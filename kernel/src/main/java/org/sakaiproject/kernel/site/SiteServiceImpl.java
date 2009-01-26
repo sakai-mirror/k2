@@ -91,14 +91,16 @@ public class SiteServiceImpl implements SiteService {
   public SiteBean getSite(String id) throws SiteException {
     // convert to a bean, the
     SiteBean bean = null;
+    InputStream in = null;
     try {
       Query query = entityManager
           .createNamedQuery(SiteIndexBean.Queries.FINDBY_ID);
       query.setParameter(SiteIndexBean.QueryParams.FINDBY_ID_ID, id);
       SiteIndexBean index = (SiteIndexBean) query.getSingleResult();
       String fileNode = index.getRef();
-      String siteBody = IOUtils.readFully(jcrNodeFactoryService
-          .getInputStream(fileNode), "UTF-8");
+      in = jcrNodeFactoryService.getInputStream(fileNode);
+      String siteBody = IOUtils.readFully(in, "UTF-8");
+      System.err.println("Get Site for "+id+" got "+siteBody+" from "+fileNode);
       bean = beanConverter.convertToObject(siteBody, SiteBean.class);
     } catch (UnsupportedEncodingException e) {
       new SiteException(e.getMessage(), e);
@@ -112,6 +114,11 @@ public class SiteServiceImpl implements SiteService {
     } catch (JCRNodeFactoryServiceException e) {
       // this happens when the node isn't found
       bean = null;
+    } finally {
+      try {
+        in.close();
+      } catch (Exception ex) {
+      }
     }
     return bean;
   }
@@ -138,7 +145,7 @@ public class SiteServiceImpl implements SiteService {
    */
   private String buildFilePath(String id) {
     User user = sessMgr.getCurrentSession().getUser();
-    if ( user == null || user.getUuid() == null ) {
+    if (user == null || user.getUuid() == null) {
       throw new SecurityException("Permission Denied: Not logged in");
     }
     String userPath = userEnvRes.getUserEnvironmentBasePath(user.getUuid());
@@ -182,6 +189,7 @@ public class SiteServiceImpl implements SiteService {
       }
       entityManager.persist(bean);
       trans.commit();
+      node.save();
     } catch (RepositoryException e) {
       if (trans.isActive()) {
         trans.rollback();

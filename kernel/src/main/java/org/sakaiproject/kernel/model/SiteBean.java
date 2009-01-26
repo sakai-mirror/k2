@@ -58,4 +58,13 @@ public class SiteBean extends GroupBean {
   public void setType(String type) {
     this.type = type;
   }
+  
+  /**
+   * {@inheritDoc}
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return getName()+":"+getId()+":"+getDescription()+":"+getType()+":"+getSubjectTokens();
+  }
 }
