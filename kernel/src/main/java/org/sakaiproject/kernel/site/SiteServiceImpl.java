@@ -138,6 +138,9 @@ public class SiteServiceImpl implements SiteService {
    */
   private String buildFilePath(String id) {
     User user = sessMgr.getCurrentSession().getUser();
+    if ( user == null || user.getUuid() == null ) {
+      throw new SecurityException("Permission Denied: Not logged in");
+    }
     String userPath = userEnvRes.getUserEnvironmentBasePath(user.getUuid());
     String siteNode = userPath + PATH_MYSITES + PathUtils.getUserPrefix(id)
         + FILE_GROUPDEF;
