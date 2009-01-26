@@ -27,7 +27,10 @@ import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
+import org.sakaiproject.kernel.api.site.SiteService;
+import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.user.UserResolverService;
+import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.component.KernelLifecycle;
 import org.sakaiproject.kernel.user.UserFactoryService;
 import org.sakaiproject.kernel.user.jcr.JcrAuthenticationResolverProvider;
@@ -59,12 +62,16 @@ public class KernelIntegrationBase {
   private static final Log LOG = LogFactory.getLog(KernelIntegrationBase.class);
   private static KernelLifecycle kernelLifecycle;
   private static KernelManager kernelManager;
-  private static final String USERBASE = "res://org/sakaiproject/kernel/test/sampleuserenv/";
-  private static final String[] USERS = new String[] { "admin", "ib236", "ieb" };
+  private static UserEnvironmentResolverService userEnvironmentResolverService;
+  protected static final String USERBASE = "res://org/sakaiproject/kernel/test/sampleuserenv/";
+  protected static final String[] USERS = new String[] { "admin", "ib236", "ieb" };
+  protected static final String SITEBASE = "res://org/sakaiproject/kernel/test/samplesite/";
+  protected static final String[] SITES = new String[] { "site1", "site2" };
+
 
   public static boolean beforeClass() throws ComponentActivatorException {
     if (kernelManager == null) {
-      System.err.println("has no kernel has been started ");
+      System.err.println("no kernel has been started ");
       // If there are problems with startup and shutdown, these will prevent the
       // problem
       File jcrBase = new File("target/jcr");
@@ -87,6 +94,7 @@ public class KernelIntegrationBase {
       kernelLifecycle.start();
 
       kernelManager = new KernelManager();
+      userEnvironmentResolverService = kernelManager.getService(UserEnvironmentResolverService.class);
       return true;
     } else {
       System.err.println("Reusing the kernel ");
@@ -109,6 +117,8 @@ public class KernelIntegrationBase {
       System.err.println("Keeping kernel alive ");
     }
   }
+
+
 
   /**
    * 
@@ -167,6 +177,38 @@ public class KernelIntegrationBase {
     Thread.sleep(1000);
 
   }
+  
+  public static void loadTestSites() throws IOException,
+      JCRNodeFactoryServiceException, RepositoryException,
+      NoSuchAlgorithmException, InterruptedException {
+    KernelManager km = new KernelManager();
+    JCRNodeFactoryService jcrNodeFactoryService = km
+        .getService(JCRNodeFactoryService.class);
+    JCRService jcrService = km.getService(JCRService.class);
+    for (String siteName : SITES) {
+      InputStream in = ResourceLoader.openResource(SITEBASE + siteName
+          + "/groupdef.json", KernelIntegrationBase.class.getClassLoader());
+      Node n = jcrNodeFactoryService.setInputStream(KernelIntegrationBase
+          .buildUsersOwnedSitesFilePath("ib236", siteName), in);
+      n.save();
+      in.close();
+      LOG.info("Test site saved: "
+          + KernelIntegrationBase.buildUsersOwnedSitesFilePath("ib236",
+              siteName));
+    }
+    jcrService.getSession().save();
+    Thread.yield();
+    Thread.sleep(1000);
+    LOG.info("test sites loaded.");
+  }
+
+  
+  protected static String buildUsersOwnedSitesFilePath(String userId, String siteIndexId) {
+	    String userPath = userEnvironmentResolverService.getUserEnvironmentBasePath(userId);
+	    String siteNode = userPath + SiteService.PATH_MYSITES + PathUtils.getUserPrefix(siteIndexId)
+	        + SiteService.FILE_GROUPDEF;
+	    return siteNode;
+	  }
 
   /**
    * @return
