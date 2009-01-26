@@ -57,9 +57,39 @@ public class RestSiteProvider implements RestProvider {
     DESC
         .setShortDescription("Creates a site and adds the current user as the owner.");
     DESC.addSection(1, "Introduction", "");
-    DESC.addSection(2, "CHECKID", "");
-    DESC.addSection(3, "CREATE", "");
+    DESC.addSection(2, "Check ID",
+        "Checks to see if the site ID exists, if it does a "
+            + HttpServletResponse.SC_CONFLICT
+            + " is returned if it does not exist a "
+            + HttpServletResponse.SC_OK + " is returned ");
+    DESC
+        .addSection(
+            3,
+            "Create",
+            "Create a Site, returns {response: 'OK'} if the creation worked with a response code of 200. "
+                + "If permission is dentied a 403 will be returned, if there was any other sort of failure a 500 will be returned. The call expects the following parameters"
+                + Params.ID
+                + ","
+                + Params.NAME
+                + ","
+                + Params.DESCRIPTION
+                + "," + Params.TYPE + " the Site ID must not exist");
     DESC.addSection(4, "GET", "");
+    DESC.addParameter(Params.ID, "The Site ID");
+    DESC.addParameter(Params.NAME, "The Site Name");
+    DESC.addParameter(Params.DESCRIPTION, "The Site Description");
+    DESC.addParameter(Params.TYPE, "The Site Type");
+    DESC
+        .addResponse(
+            String.valueOf(HttpServletResponse.SC_OK),
+            "If the action completed Ok, or if the site does not exist on Check ID (ieb: that sounds wrong!)");
+    DESC.addResponse(String.valueOf(HttpServletResponse.SC_CONFLICT),
+        "If a site exists on Check ID");
+    DESC.addResponse(String.valueOf(HttpServletResponse.SC_FORBIDDEN),
+        "If permission to create the site is denied");
+    DESC.addResponse(String
+        .valueOf(HttpServletResponse.SC_INTERNAL_SERVER_ERROR),
+        " Any other error");
   }
 
   @Inject
@@ -73,7 +103,7 @@ public class RestSiteProvider implements RestProvider {
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.api.rest.RestProvider#dispatch(java.lang.String[],
    *      javax.servlet.http.HttpServletRequest,
    *      javax.servlet.http.HttpServletResponse)
@@ -91,7 +121,7 @@ public class RestSiteProvider implements RestProvider {
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.api.rest.RestProvider#getDescription()
    */
   public RestDescription getDescription() {
@@ -100,7 +130,7 @@ public class RestSiteProvider implements RestProvider {
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.api.Provider#getKey()
    */
   public String getKey() {
@@ -109,7 +139,7 @@ public class RestSiteProvider implements RestProvider {
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.api.Provider#getPriority()
    */
   public int getPriority() {
