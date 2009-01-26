@@ -96,7 +96,7 @@ public class SiteServiceImpl implements SiteService {
           .createNamedQuery(SiteIndexBean.Queries.FINDBY_ID);
       query.setParameter(SiteIndexBean.QueryParams.FINDBY_ID_ID, id);
       SiteIndexBean index = (SiteIndexBean) query.getSingleResult();
-      String fileNode = buildFilePath(index.getId());
+      String fileNode = index.getRef();
       String siteBody = IOUtils.readFully(jcrNodeFactoryService
           .getInputStream(fileNode), "UTF-8");
       bean = beanConverter.convertToObject(siteBody, SiteBean.class);
