@@ -137,6 +137,7 @@ public class RestAuthenticationProvider implements RestProvider {
     if ("1".equals(login)) {
       Object o = request.getAttribute(Authentication.REQUESTTOKEN);
       if (o == null) {
+        response.reset();
         // login didnt happen, so it must be a 401
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         return;
