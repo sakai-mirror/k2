@@ -100,7 +100,6 @@ public class SiteServiceImpl implements SiteService {
       String fileNode = index.getRef();
       in = jcrNodeFactoryService.getInputStream(fileNode);
       String siteBody = IOUtils.readFully(in, "UTF-8");
-      System.err.println("Get Site for "+id+" got "+siteBody+" from "+fileNode);
       bean = beanConverter.convertToObject(siteBody, SiteBean.class);
     } catch (UnsupportedEncodingException e) {
       new SiteException(e.getMessage(), e);
