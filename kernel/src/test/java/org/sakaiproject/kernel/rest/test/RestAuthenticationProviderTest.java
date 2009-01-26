@@ -115,8 +115,10 @@ public class RestAuthenticationProviderTest {
 
     expect(request.getParameter("l")).andReturn("1").anyTimes();
     expect(request.getAttribute(Authentication.REQUESTTOKEN)).andReturn(null);
+    response.reset();
+    expectLastCall();
     response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-
+    expectLastCall();
     replay(request, response);
     RestAuthenticationProvider a = new RestAuthenticationProvider(
         registryService);
@@ -188,7 +190,10 @@ public class RestAuthenticationProviderTest {
 
     expect(request.getParameter("l")).andReturn("1").anyTimes();
     expect(request.getAttribute(Authentication.REQUESTTOKEN)).andReturn(null);
+    response.reset();
+    expectLastCall();
     response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+    expectLastCall();
 
     replay(request, response);
     RestAuthenticationProvider a = new RestAuthenticationProvider(
