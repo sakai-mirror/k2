@@ -113,7 +113,7 @@ public class RestSiteProvider implements RestProvider {
   public void dispatch(String[] elements, HttpServletRequest req,
       HttpServletResponse resp) throws ServletException, IOException {
     if (elements.length >= 1) {
-      if (CREATE.equals(elements[1])) {
+      if (CREATE.equals(elements[1]) && "POST".equals(req.getMethod())) {
         doCreate(req, resp);
       } else if (CHECK_ID.equals(elements[1])) {
         doCheckId(req, resp);
