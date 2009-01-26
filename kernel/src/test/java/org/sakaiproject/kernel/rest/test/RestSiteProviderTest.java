@@ -62,6 +62,7 @@ public class RestSiteProviderTest {
     HttpServletRequest request = createMock(HttpServletRequest.class);
     HttpServletResponse response = createMock(HttpServletResponse.class);
     
+    expect(request.getMethod()).andReturn("POST").anyTimes();
     expect(request.getParameter("id")).andReturn("sitethatexists");
     expect(siteService.siteExists("sitethatexists")).andReturn(true);
     response.setStatus(409);
@@ -103,6 +104,7 @@ public class RestSiteProviderTest {
     HttpServletRequest request = createMock(HttpServletRequest.class);
     HttpServletResponse response = createMock(HttpServletResponse.class);
     
+    expect(request.getMethod()).andReturn("POST").anyTimes();
     expect(request.getParameter("id")).andReturn("sitethatdoesnotexist");
     expect(siteService.siteExists("sitethatdoesnotexist")).andReturn(false);
     expect(request.getParameter("name")).andReturn("Name:sitethatdoesnotexist");
