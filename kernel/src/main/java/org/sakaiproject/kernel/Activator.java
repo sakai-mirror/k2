@@ -69,7 +69,7 @@ public class Activator implements ComponentActivator {
   @SuppressWarnings("unused")
   private Kernel kernel;
   private ServiceManager serviceManager;
-  private Injector injector;
+  private static Injector injector;
 
   /*
    * (non-Javadoc)
@@ -86,7 +86,7 @@ public class Activator implements ComponentActivator {
     Properties properties = PropertiesLoader.load(this.getClass().getClassLoader(),
         KernelModule.DEFAULT_PROPERTIES, KernelModule.LOCAL_PROPERTIES, KernelModule.SYS_LOCAL_PROPERTIES);
 
-    this.injector = Guice.createInjector(new KernelModule(kernel,properties),
+    injector = Guice.createInjector(new KernelModule(kernel,properties),
         new PersistenceModule(kernel));
 
     // export the services.
@@ -160,9 +160,9 @@ public class Activator implements ComponentActivator {
   }
 
   /**
-   * @return the injector
+   * @return the injector, only available inside the kernel in test environments.
    */
-  public Injector getInjector() {
+  public static Injector getInjector() {
     return injector;
   }
 
