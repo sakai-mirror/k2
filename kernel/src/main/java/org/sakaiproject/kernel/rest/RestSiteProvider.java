@@ -74,6 +74,8 @@ public class RestSiteProvider implements RestProvider {
                 + ","
                 + Params.DESCRIPTION
                 + "," + Params.TYPE + " the Site ID must not exist");
+    DESC.addURLTemplate("/rest/"+KEY+"/"+CREATE, "Accepts POST to create a site, see the section on Create for details");
+    DESC.addURLTemplate("/rest/"+KEY+"/"+CHECK_ID, "Accepts GET to check if a site exists, see the secion on Check ID");
     DESC.addSection(4, "GET", "");
     DESC.addParameter(Params.ID, "The Site ID");
     DESC.addParameter(Params.NAME, "The Site Name");
@@ -150,13 +152,13 @@ public class RestSiteProvider implements RestProvider {
       throws IOException {
     String id = req.getParameter(Params.ID);
     if (siteService.siteExists(id)) {
-      resp.setStatus(HttpServletResponse.SC_OK);
-      resp.getOutputStream().print(
-          "{response: 'Site ID [" + id + "] is unique}");
-    } else {
       resp.setStatus(HttpServletResponse.SC_CONFLICT);
       resp.getOutputStream()
-          .print("{response: 'Site ID [" + id + "] exists.'}");
+          .print("{\"response\": \"Site ID [" + id + "] exists.\"}");
+    } else {
+      resp.setStatus(HttpServletResponse.SC_OK);
+      resp.getOutputStream().print(
+          "{\"response\": \"Site ID [" + id + "] is unique.\"}");
     }
   }
 
@@ -167,6 +169,10 @@ public class RestSiteProvider implements RestProvider {
 
     // check for an existing site
     if (siteService.siteExists(id)) {
+      resp.setStatus(HttpServletResponse.SC_CONFLICT);
+      resp.getOutputStream()
+          .print("{\"response\": \"Site ID [" + id + "] exists.\"}");
+    } else {
       // get the rest of the site info
       String name = req.getParameter(Params.NAME);
       String description = req.getParameter(Params.DESCRIPTION);
@@ -191,7 +197,7 @@ public class RestSiteProvider implements RestProvider {
 
       // if all goes well
       resp.setStatus(HttpServletResponse.SC_OK);
-      resp.getOutputStream().print("{response: 'OK'}");
+      resp.getOutputStream().print("{\"response\": \"OK\"}");
     }
   }
 }

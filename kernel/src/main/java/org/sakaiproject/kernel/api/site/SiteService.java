@@ -35,7 +35,7 @@ public interface SiteService {
    * Validates if a given id is unique.
    *
    * @param id
-   * @return true if the site
+   * @return true if the site exists
    */
   boolean siteExists(String id);
 
