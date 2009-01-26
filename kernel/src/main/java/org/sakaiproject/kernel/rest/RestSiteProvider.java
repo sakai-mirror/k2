@@ -16,16 +16,20 @@
 package org.sakaiproject.kernel.rest;
 
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.rest.RestProvider;
+import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.site.SiteService;
 import org.sakaiproject.kernel.model.RoleBean;
 import org.sakaiproject.kernel.model.SiteBean;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -46,10 +50,11 @@ public class RestSiteProvider implements RestProvider {
   private static final RestDescription DESC;
 
   private static final String CREATE = "create";
-  private static final String CHECK_ID = "checkId";
+  private static final String GET = "get";
   private static final String[] PERM_FULL = { "read", "write", "delete" };
 
   private final SiteService siteService;
+  private BeanConverter beanConverter;
 
   static {
     DESC = new RestDescription();
@@ -57,11 +62,14 @@ public class RestSiteProvider implements RestProvider {
     DESC
         .setShortDescription("Creates a site and adds the current user as the owner.");
     DESC.addSection(1, "Introduction", "");
-    DESC.addSection(2, "Check ID",
-        "Checks to see if the site ID exists, if it does a "
-            + HttpServletResponse.SC_CONFLICT
-            + " is returned if it does not exist a "
-            + HttpServletResponse.SC_OK + " is returned ");
+    DESC
+        .addSection(
+            2,
+            "Check ID",
+            "Checks to see if the site ID exists, if it does a "
+                + HttpServletResponse.SC_OK
+                + " is returned and the site object as json, if it does not exist a "
+                + HttpServletResponse.SC_NOT_FOUND + " is returned ");
     DESC
         .addSection(
             3,
@@ -74,19 +82,19 @@ public class RestSiteProvider implements RestProvider {
                 + ","
                 + Params.DESCRIPTION
                 + "," + Params.TYPE + " the Site ID must not exist");
-    DESC.addURLTemplate("/rest/"+KEY+"/"+CREATE, "Accepts POST to create a site, see the section on Create for details");
-    DESC.addURLTemplate("/rest/"+KEY+"/"+CHECK_ID, "Accepts GET to check if a site exists, see the secion on Check ID");
+    DESC.addURLTemplate("/rest/" + KEY + "/" + CREATE,
+        "Accepts POST to create a site, see the section on Create for details");
+    DESC.addURLTemplate("/rest/" + KEY + "/" + GET + "/<siteId>",
+        "Accepts GET to check if a site exists, see the secion on Check ID");
     DESC.addSection(4, "GET", "");
     DESC.addParameter(Params.ID, "The Site ID");
     DESC.addParameter(Params.NAME, "The Site Name");
     DESC.addParameter(Params.DESCRIPTION, "The Site Description");
     DESC.addParameter(Params.TYPE, "The Site Type");
-    DESC
-        .addResponse(
-            String.valueOf(HttpServletResponse.SC_OK),
-            "If the action completed Ok, or if the site does not exist on Check ID (ieb: that sounds wrong!)");
+    DESC.addResponse(String.valueOf(HttpServletResponse.SC_OK),
+        "If the action completed Ok, or if the site exits");
     DESC.addResponse(String.valueOf(HttpServletResponse.SC_CONFLICT),
-        "If a site exists on Check ID");
+        "If a site exists when trying to create a site");
     DESC.addResponse(String.valueOf(HttpServletResponse.SC_FORBIDDEN),
         "If permission to create the site is denied");
     DESC.addResponse(String
@@ -96,11 +104,13 @@ public class RestSiteProvider implements RestProvider {
 
   @Inject
   public RestSiteProvider(RegistryService registryService,
-      SiteService siteService) {
+      SiteService siteService,
+      @Named(BeanConverter.REPOSITORY_BEANCONVETER) BeanConverter beanConverter) {
     this.siteService = siteService;
     Registry<String, RestProvider> restRegistry = registryService
         .getRegistry(RestProvider.REST_REGISTRY);
     restRegistry.add(this);
+    this.beanConverter = beanConverter;
   }
 
   /**
@@ -112,12 +122,28 @@ public class RestSiteProvider implements RestProvider {
    */
   public void dispatch(String[] elements, HttpServletRequest req,
       HttpServletResponse resp) throws ServletException, IOException {
-    if (elements.length >= 1) {
-      if (CREATE.equals(elements[1]) && "POST".equals(req.getMethod())) {
-        doCreate(req, resp);
-      } else if (CHECK_ID.equals(elements[1])) {
-        doCheckId(req, resp);
+    try {
+      if (elements.length >= 1) {
+        Map<String, Object> map = null;
+        if (CREATE.equals(elements[1]) && "POST".equals(req.getMethod())) {
+          doCreate(req, resp);
+        } else if (GET.equals(elements[1])) {
+          doGet(req, resp, elements.length > 2 ? elements[2] : null);
+        } else {
+          resp.reset();
+          resp.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+        }
+        if (map != null) {
+          String responseBody = beanConverter.convertToString(map);
+          resp.setContentType(RestProvider.CONTENT_TYPE);
+          resp.getOutputStream().print(responseBody);
+        }
       }
+    } catch (SecurityException ex) {
+      resp.reset();
+      resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+    } catch (Exception ex) {
+      throw new ServletException(ex);
     }
   }
 
@@ -148,30 +174,34 @@ public class RestSiteProvider implements RestProvider {
     return 0;
   }
 
-  private void doCheckId(HttpServletRequest req, HttpServletResponse resp)
-      throws IOException {
-    String id = req.getParameter(Params.ID);
-    if (siteService.siteExists(id)) {
-      resp.setStatus(HttpServletResponse.SC_CONFLICT);
-      resp.getOutputStream()
-          .print("{\"response\": \"Site ID [" + id + "] exists.\"}");
-    } else {
-      resp.setStatus(HttpServletResponse.SC_OK);
-      resp.getOutputStream().print(
-          "{\"response\": \"Site ID [" + id + "] is unique.\"}");
+  private Map<String, Object> doGet(HttpServletRequest req,
+      HttpServletResponse resp, String siteId) throws IOException {
+    if (siteId == null || siteId.trim().length() == 0) {
+      resp.reset();
+      resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
+          " No Site ID specified ");
+      return null;
     }
+    SiteBean siteBean = siteService.getSite(siteId);
+    if (siteBean != null) {
+      resp.getOutputStream().print(beanConverter.convertToString(siteBean));
+    } else {
+      resp.reset();
+      resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+    }
+    return null;
   }
 
-  private void doCreate(HttpServletRequest req, HttpServletResponse resp)
-      throws IOException {
+  private Map<String, Object> doCreate(HttpServletRequest req,
+      HttpServletResponse resp) throws IOException {
     // grab the site id and build the site node path.
     String id = req.getParameter(Params.ID);
 
     // check for an existing site
     if (siteService.siteExists(id)) {
-      resp.setStatus(HttpServletResponse.SC_CONFLICT);
-      resp.getOutputStream()
-          .print("{\"response\": \"Site ID [" + id + "] exists.\"}");
+      resp.reset();
+      resp.sendError(HttpServletResponse.SC_CONFLICT);
+      return null;
     } else {
       // get the rest of the site info
       String name = req.getParameter(Params.NAME);
@@ -195,9 +225,9 @@ public class RestSiteProvider implements RestProvider {
 
       siteService.createSite(site);
 
-      // if all goes well
-      resp.setStatus(HttpServletResponse.SC_OK);
-      resp.getOutputStream().print("{\"response\": \"OK\"}");
+      Map<String , Object> responseMap = new HashMap<String, Object>();
+      responseMap.put("response","OK");
+      return responseMap;
     }
   }
 }
