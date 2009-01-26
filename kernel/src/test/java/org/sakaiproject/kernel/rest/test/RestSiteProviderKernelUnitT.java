@@ -25,10 +25,8 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertEquals;
 
-import com.google.inject.Binding;
 import com.google.inject.Injector;
 import com.google.inject.Key;
-import com.google.inject.Provider;
 import com.google.inject.name.Names;
 
 import org.junit.AfterClass;
@@ -40,6 +38,7 @@ import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.site.SiteService;
+import org.sakaiproject.kernel.model.RoleBean;
 import org.sakaiproject.kernel.model.SiteBean;
 import org.sakaiproject.kernel.registry.RegistryServiceImpl;
 import org.sakaiproject.kernel.rest.RestSiteProvider;
@@ -56,7 +55,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * 
  */
-public class RestSiteProviderTest {
+public class RestSiteProviderKernelUnitT {
 
   private static boolean shutdown;
   private static Injector injector;
@@ -93,8 +92,7 @@ public class RestSiteProviderTest {
     expect(siteService.siteExists("sitethatexists")).andReturn(true);
     response.reset();
     expectLastCall();
-    response.sendError(409,
-        "{\"response\": \"Site ID [sitethatexists] exists.\"}");
+    response.sendError(409);
     expectLastCall();
 
     replay(request, response, siteService);
@@ -124,6 +122,8 @@ public class RestSiteProviderTest {
     expect(request.getParameter("type")).andReturn("Type:sitethatdoesnotexist");
     siteService.createSite((SiteBean) anyObject());
     expectLastCall();
+    response.setContentType("text/plain");
+    expectLastCall();
 
     final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
@@ -147,12 +147,11 @@ public class RestSiteProviderTest {
     rsp.dispatch(elements, request, response);
 
     String body = new String(baos.toByteArray(), "UTF-8");
-    assertEquals("{\"response\": \"OK\"}", body);
+    assertEquals("{\"response\":\"OK\"}", body);
 
     verify(request, response, siteService);
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   public void testCheckIDExists() throws ServletException, IOException {
     RegistryService registryService = new RegistryServiceImpl();
@@ -160,8 +159,14 @@ public class RestSiteProviderTest {
     HttpServletRequest request = createMock(HttpServletRequest.class);
     HttpServletResponse response = createMock(HttpServletResponse.class);
 
-    expect(request.getParameter("id")).andReturn("sitethatexists");
-    expect(siteService.siteExists("sitethatexists")).andReturn(true);
+    SiteBean siteBean = new SiteBean();
+    siteBean.setId("sitethatexists");
+    siteBean.setName("name");
+    siteBean.setType("type");
+    siteBean.setRoles(new RoleBean[] {
+        new RoleBean("maintain", new String[] { "read", "write", "remove" }),
+        new RoleBean("access", new String[] { "read" }) });
+    expect(siteService.getSite("sitethatexists")).andReturn(siteBean);
 
     final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
@@ -177,7 +182,7 @@ public class RestSiteProviderTest {
     expect(response.getOutputStream()).andReturn(out).anyTimes();
 
     replay(request, response, siteService);
-    String[] elements = new String[] { "site", "checkId" };
+    String[] elements = new String[] { "site", "get", "sitethatexists" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
@@ -185,7 +190,12 @@ public class RestSiteProviderTest {
     rsp.dispatch(elements, request, response);
 
     String body = new String(baos.toByteArray(), "UTF-8");
-    assertEquals("{\"response\": \"OK\"}", body);
+    assertEquals(
+        "{\"type\":\"type\",\"subjectTokens\":[\"name:maintain\",\"name:access\"],"
+            + "\"roles\":[{\"permissions\":[\"read\",\"write\",\"remove\"],"
+            + "\"name\":\"maintain\"},{\"permissions\":[\"read\"],"
+            + "\"name\":\"access\"}],\"name\":\"name\",\"id\":\"sitethatexists\"}",
+        body);
 
     verify(request, response, siteService);
   }
@@ -197,15 +207,14 @@ public class RestSiteProviderTest {
     HttpServletRequest request = createMock(HttpServletRequest.class);
     HttpServletResponse response = createMock(HttpServletResponse.class);
 
-    expect(request.getParameter("id")).andReturn("sitethatdoesnotexist");
-    expect(siteService.siteExists("sitethatdoesnotexist")).andReturn(false);
+    expect(siteService.getSite("sitethatdoesnotexist")).andReturn(null);
     response.reset();
     expectLastCall();
     response.sendError(404);
     expectLastCall();
 
     replay(request, response, siteService);
-    String[] elements = new String[] { "site", "checkId" };
+    String[] elements = new String[] { "site", "get" , "sitethatdoesnotexist"};
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names

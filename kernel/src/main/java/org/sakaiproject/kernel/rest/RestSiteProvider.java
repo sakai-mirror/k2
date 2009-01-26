@@ -126,9 +126,9 @@ public class RestSiteProvider implements RestProvider {
       if (elements.length >= 1) {
         Map<String, Object> map = null;
         if (CREATE.equals(elements[1]) && "POST".equals(req.getMethod())) {
-          doCreate(req, resp);
+          map = doCreate(req, resp);
         } else if (GET.equals(elements[1])) {
-          doGet(req, resp, elements.length > 2 ? elements[2] : null);
+          map = doGet(req, resp, elements.length > 2 ? elements[2] : null);
         } else {
           resp.reset();
           resp.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
