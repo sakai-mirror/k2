@@ -32,6 +32,7 @@ import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.site.SiteService;
 import org.sakaiproject.kernel.model.SiteBean;
+import org.sakaiproject.kernel.registry.RegistryServiceImpl;
 import org.sakaiproject.kernel.rest.RestSiteProvider;
 
 import java.io.ByteArrayOutputStream;
@@ -56,15 +57,11 @@ public class RestSiteProviderTest {
   @SuppressWarnings("unchecked")
   @Test 
   public void testCreateAlreadyExists() throws ServletException, IOException {
-    RegistryService registryService = createMock(RegistryService.class);
-    Registry<Object, Provider<Object>> registry = createMock(Registry.class);
+    RegistryService registryService = new RegistryServiceImpl();
     SiteService siteService = createMock(SiteService.class);
     HttpServletRequest request = createMock(HttpServletRequest.class);
     HttpServletResponse response = createMock(HttpServletResponse.class);
     
-    expect(registryService.getRegistry("rest.registry")).andReturn(registry);
-    registry.add((Provider<Object>) anyObject());
-    expectLastCall();
     expect(request.getParameter("id")).andReturn("sitethatexists");
     expect(siteService.siteExists("sitethatexists")).andReturn(true);
     response.setStatus(409);
@@ -84,7 +81,7 @@ public class RestSiteProviderTest {
     expect(response.getOutputStream()).andReturn(out).anyTimes();
     
     
-    replay(request, response, siteService, registryService,registry);
+    replay(request, response, siteService);
     String[] elements = new String[] {"site","create" };
     
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService);
@@ -95,21 +92,17 @@ public class RestSiteProviderTest {
 
 
     
-    verify(request, response, siteService, registryService,registry);
+    verify(request, response, siteService);
   }
   
   @SuppressWarnings("unchecked")
   @Test 
   public void testCreate() throws ServletException, IOException {
-    RegistryService registryService = createMock(RegistryService.class);
-    Registry<Object, Provider<Object>> registry = createMock(Registry.class);
+    RegistryService registryService = new RegistryServiceImpl();
     SiteService siteService = createMock(SiteService.class);
     HttpServletRequest request = createMock(HttpServletRequest.class);
     HttpServletResponse response = createMock(HttpServletResponse.class);
     
-    expect(registryService.getRegistry("rest.registry")).andReturn(registry);
-    registry.add((Provider<Object>) anyObject());
-    expectLastCall();
     expect(request.getParameter("id")).andReturn("sitethatdoesnotexist");
     expect(siteService.siteExists("sitethatdoesnotexist")).andReturn(false);
     expect(request.getParameter("name")).andReturn("Name:sitethatdoesnotexist");
@@ -133,7 +126,7 @@ public class RestSiteProviderTest {
     expect(response.getOutputStream()).andReturn(out).anyTimes();
     
     
-    replay(request, response, siteService, registryService,registry);
+    replay(request, response, siteService);
     String[] elements = new String[] {"site","create" };
     
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService);
@@ -144,21 +137,17 @@ public class RestSiteProviderTest {
 
 
     
-    verify(request, response, siteService, registryService,registry);
+    verify(request, response, siteService);
   }
 
   @SuppressWarnings("unchecked")
   @Test 
   public void testCheckIDExists() throws ServletException, IOException {
-    RegistryService registryService = createMock(RegistryService.class);
-    Registry<Object, Provider<Object>> registry = createMock(Registry.class);
+    RegistryService registryService = new RegistryServiceImpl();
     SiteService siteService = createMock(SiteService.class);
     HttpServletRequest request = createMock(HttpServletRequest.class);
     HttpServletResponse response = createMock(HttpServletResponse.class);
     
-    expect(registryService.getRegistry("rest.registry")).andReturn(registry);
-    registry.add((Provider<Object>) anyObject());
-    expectLastCall();
     expect(request.getParameter("id")).andReturn("sitethatexists");
     expect(siteService.siteExists("sitethatexists")).andReturn(true);
     response.setStatus(409);
@@ -177,7 +166,7 @@ public class RestSiteProviderTest {
     expect(response.getOutputStream()).andReturn(out).anyTimes();
     
     
-    replay(request, response, siteService, registryService,registry);
+    replay(request, response, siteService);
     String[] elements = new String[] {"site","checkId" };
     
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService);
@@ -188,22 +177,18 @@ public class RestSiteProviderTest {
 
 
     
-    verify(request, response, siteService, registryService,registry);
+    verify(request, response, siteService);
   }
 
   
   @SuppressWarnings("unchecked")
   @Test 
   public void testCheckIDDoesNotExists() throws ServletException, IOException {
-    RegistryService registryService = createMock(RegistryService.class);
-    Registry<Object, Provider<Object>> registry = createMock(Registry.class);
+    RegistryService registryService = new RegistryServiceImpl();
     SiteService siteService = createMock(SiteService.class);
     HttpServletRequest request = createMock(HttpServletRequest.class);
     HttpServletResponse response = createMock(HttpServletResponse.class);
     
-    expect(registryService.getRegistry("rest.registry")).andReturn(registry);
-    registry.add((Provider<Object>) anyObject());
-    expectLastCall();
     expect(request.getParameter("id")).andReturn("sitethatdoesnotexist");
     expect(siteService.siteExists("sitethatdoesnotexist")).andReturn(false);
     response.setStatus(200);
@@ -222,7 +207,7 @@ public class RestSiteProviderTest {
     expect(response.getOutputStream()).andReturn(out).anyTimes();
     
     
-    replay(request, response, siteService, registryService,registry);
+    replay(request, response, siteService);
     String[] elements = new String[] {"site","checkId" };
     
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService);
@@ -233,7 +218,7 @@ public class RestSiteProviderTest {
 
 
     
-    verify(request, response, siteService, registryService,registry);
+    verify(request, response, siteService);
   }
 
 }
