@@ -55,7 +55,7 @@ public class RestLogoutProvider implements RestProvider {
    */
   public void dispatch(String[] elements, HttpServletRequest request,
       HttpServletResponse response) throws ServletException, IOException {
-    if ( "POST".equals(request.getMethod()) ) {
+    if ( "POST".equals(request.getMethod())) {
       if ( request.getRemoteUser() != null ) {
         request.setAttribute(Authentication.REQUESTTOKEN,null);
         HttpSession session = request.getSession(false);

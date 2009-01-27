@@ -20,7 +20,6 @@ package org.sakaiproject.kernel.rest;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
@@ -33,8 +32,8 @@ import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
-import org.sakaiproject.kernel.component.core.KernelBootstrapModule;
 import org.sakaiproject.kernel.model.UserEnvironmentBean;
+import org.sakaiproject.kernel.user.AnonUser;
 import org.sakaiproject.kernel.user.UserFactoryService;
 import org.sakaiproject.kernel.user.jcr.JcrAuthenticationResolverProvider;
 import org.sakaiproject.kernel.util.IOUtils;
@@ -48,7 +47,6 @@ import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
@@ -122,8 +120,7 @@ System.err.println("@#@######@########@######### anonymous: " + anonymousAccount
   public void dispatch(String[] elements, HttpServletRequest request,
       HttpServletResponse response) throws ServletException, IOException {
     try {
-      if ("POST".equals(request.getMethod())
-          || "1".equals(request.getParameter("forcePost"))) {
+      if ("POST".equals(request.getMethod())) {
         // Security is managed by the JCR
         Map<String, Object> map = null;
         if ("new".equals(elements[1])) {
@@ -223,6 +220,11 @@ System.err.println("@#@######@########@######### anonymous: " + anonymousAccount
       return null;
     }
     User thisUser = ue.getUser();
+    if ( thisUser == null || thisUser instanceof AnonUser ) {
+      response.reset();
+      response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+      return null;
+    }
     User user = thisUser;
 
     boolean superUser = false;
@@ -242,6 +244,7 @@ System.err.println("@#@######@########@######### anonymous: " + anonymousAccount
       superUser = false;
     }
     String password = request.getParameter(PASSWORD_PARAM);
+    
     String passwordOld = request.getParameter(PASSWORD_OLD_PARAM);
 
     if (password == null || password.trim().length() < 5) {
@@ -254,15 +257,26 @@ System.err.println("@#@######@########@######### anonymous: " + anonymousAccount
     String userEnvironmentPath = userFactoryService.getUserEnvPath(user
         .getUuid());
     Node userEnvNode = jcrNodeFactoryService.getNode(userEnvironmentPath);
+    if ( userEnvNode == null ) {
+      response.reset();
+      response.sendError(HttpServletResponse.SC_NOT_FOUND,"User does not exist");
+    }
     if (!superUser) {
+      if ( passwordOld == null ) {
+        response.reset();
+        response.sendError(HttpServletResponse.SC_FORBIDDEN,
+            "You must specify the old password in order to change the password.");
+        return null;        
+      }
       // set the password
       Property storedPassword = userEnvNode
           .getProperty(JcrAuthenticationResolverProvider.JCRPASSWORDHASH);
       if (storedPassword != null) {
         String storedPasswordString = storedPassword.getString();
+        String oldPasswordHash = StringUtils.sha1Hash(passwordOld); 
         if (storedPasswordString != null) {
-          if (!StringUtils.sha1Hash(passwordOld).equals(storedPassword)) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+          if (!oldPasswordHash.equals(storedPasswordString)) {
+            response.sendError(HttpServletResponse.SC_CONFLICT,
                 "Old Password does not match ");
             return null;
           }
@@ -272,7 +286,7 @@ System.err.println("@#@######@########@######### anonymous: " + anonymousAccount
 
     userEnvNode.setProperty(JcrAuthenticationResolverProvider.JCRPASSWORDHASH,
         StringUtils.sha1Hash(password));
-
+    userEnvNode.save();
     Map<String, Object> r = new HashMap<String, Object>();
     r.put("response", "OK");
     r.put("uuid", user.getUuid());

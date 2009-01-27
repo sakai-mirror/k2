@@ -70,11 +70,11 @@ public class SakaiAuthenticationFilter implements Filter {
       FilterChain chain) throws IOException, ServletException {
     HttpServletRequest hrequest = (HttpServletRequest) request;
     HttpServletResponse hresponse = (HttpServletResponse) response;
-    LOG.info("Authentication Filter runnign ");
     if ("1".equals(hrequest.getParameter("l"))) {
       try {
         AuthenticationType authNType = AuthenticationType.valueOf(request
             .getParameter("a"));
+        LOG.info("Authentication Filter: "+authNType);
         switch (authNType) {
         case BASIC:
           doBasicAuth(hrequest);
@@ -96,9 +96,6 @@ public class SakaiAuthenticationFilter implements Filter {
         LOG.info("Authentication type " + request.getParameter("a")
             + " is not supported by this filter");
       }
-    } else {
-      LOG.info("Authentication Filter: no auth requested ");
-      
     }
 
     chain.doFilter(request, response);
