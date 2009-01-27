@@ -48,7 +48,6 @@ import org.sakaiproject.kernel.jcr.api.JcrContentListener;
 import org.sakaiproject.kernel.jcr.api.internal.StartupAction;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiAccessManager;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
-import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SecureSakaiAccessManager;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.StartupActionProvider;
 import org.sakaiproject.kernel.serialization.json.BeanJsonLibConfig;
 import org.sakaiproject.kernel.serialization.json.BeanJsonLibConverter;
