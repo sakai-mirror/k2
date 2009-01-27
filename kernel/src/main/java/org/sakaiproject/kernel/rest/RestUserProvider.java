@@ -20,6 +20,7 @@ package org.sakaiproject.kernel.rest;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
@@ -32,6 +33,7 @@ import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
+import org.sakaiproject.kernel.component.core.KernelBootstrapModule;
 import org.sakaiproject.kernel.user.UserFactoryService;
 import org.sakaiproject.kernel.user.jcr.JcrAuthenticationResolverProvider;
 import org.sakaiproject.kernel.util.IOUtils;
@@ -45,6 +47,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
@@ -66,12 +69,17 @@ public class RestUserProvider implements RestProvider {
   private static final String PASSWORD_PARAM = "password";
   private static final String USER_TYPE_PARAM = "userType";
   private static final String PASSWORD_OLD_PARAM = "oldPassword";
+  private static final String EXISTS = "exists";
+  public static final String PROP_ANON_ACCOUNTING = "rest.user.anonymous.account.creation";
   private BeanConverter beanConverter;
   private UserResolverService userResolverService;
   private JCRNodeFactoryService jcrNodeFactoryService;
   private UserFactoryService userFactoryService;
   private UserEnvironmentResolverService userEnvironmentResolverService;
   private SessionManagerService sessionManagerService;
+  private boolean anonymousAccounting;
+
+  
 
   /**
    * @param sessionManager
@@ -85,7 +93,8 @@ public class RestUserProvider implements RestProvider {
       UserEnvironmentResolverService userEnvironmentResolverService,
       JCRNodeFactoryService jcrNodeFactoryService,
       UserFactoryService userFactoryService,
-      SessionManagerService sessionManagerService) {
+      SessionManagerService sessionManagerService,
+      @Named(PROP_ANON_ACCOUNTING) String anonymousAccounting) {
     Registry<String, RestProvider> restRegistry = registryService
         .getRegistry(RestProvider.REST_REGISTRY);
     restRegistry.add(this);
@@ -95,7 +104,11 @@ public class RestUserProvider implements RestProvider {
     this.userFactoryService = userFactoryService;
     this.userEnvironmentResolverService = userEnvironmentResolverService;
     this.sessionManagerService = sessionManagerService;
-
+   
+    
+    this.anonymousAccounting = "true".equals(anonymousAccounting);
+    
+System.err.println("@#@######@########@######### anonymous: " + anonymousAccounting);
   }
 
   /**
@@ -126,7 +139,13 @@ public class RestUserProvider implements RestProvider {
         }
 
       } else {
-        response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+        if("GET".equals(request.getMethod()) && elements.length == 3 && getKey().equals(elements[0]) 
+            && EXISTS.equals(elements[2]) && elements[1].trim().length() > 0) {
+          handleUserExists(elements[1].trim(), response);
+        } else {
+          response.reset();
+          response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+        }
       }
     } catch (SecurityException ex) {
       response.reset();
@@ -134,6 +153,46 @@ public class RestUserProvider implements RestProvider {
     } catch (Exception ex) {
       throw new ServletException(ex);
     }
+  }
+
+  private void handleUserExists(String eid, HttpServletResponse response) throws ServletException, IOException {
+    
+    
+    Session session = sessionManagerService.getCurrentSession();
+    User user = session.getUser();
+
+
+
+    if ((user == null || user.getUuid() == null) && !anonymousAccounting) {
+      response.reset();
+      response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+    } else {
+      
+      UserEnvironment env = userEnvironmentResolverService
+      .resolve(user);
+
+      if (!anonymousAccounting && (null == env || !env.isSuperUser())) {
+        response.reset();
+        response.sendError(HttpServletResponse.SC_FORBIDDEN);
+      } else {
+        if(userResolverService.resolve(eid) != null) {
+          response.reset();
+          Map<String, String> body = new HashMap<String, String>();
+          body.put("response", "OK");
+          body.put("eid", eid);
+          body.put("exists", "true");
+          String json = beanConverter.convertToString(body);
+          response.setContentType(RestProvider.CONTENT_TYPE);
+          response.getOutputStream().print(json);
+          response.getOutputStream().flush();
+          response.getOutputStream().close();
+        } else {
+          response.reset();
+          response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        }
+      }
+    }
+    
   }
 
   /**
@@ -332,13 +391,14 @@ public class RestUserProvider implements RestProvider {
     DESCRIPTION.addParameter(PASSWORD_OLD_PARAM,
         "the old password for the User");
     DESCRIPTION.addParameter(USER_TYPE_PARAM, "The type of the user User");
+    DESCRIPTION.addURLTemplate("/user/<user eid>/exists", "GET to test for existence of a user");
 
     DESCRIPTION
         .addResponse(
             String.valueOf(HttpServletResponse.SC_OK),
             "On New { \"response\" : \"OK\", \"uuid\" : \"AAAA\" }, where AAAA is the new user UUID ");
     DESCRIPTION.addResponse(String.valueOf(HttpServletResponse.SC_FORBIDDEN),
-        "If the user does not have permission to create users");
+        "If the user does not have permission to perform the action");
     DESCRIPTION.addResponse(String
         .valueOf(HttpServletResponse.SC_METHOD_NOT_ALLOWED),
         "If the method is used");
