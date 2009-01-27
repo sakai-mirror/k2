@@ -365,7 +365,7 @@ public class RestMySitesProvider implements RestProvider {
    * @param itemMap
    * @throws IOException
    */
-  private void sendOutput(HttpServletResponse response, Map itemMap)
+  private void sendOutput(HttpServletResponse response, Map<String, Object> itemMap)
       throws IOException {
     response.setContentType(RestProvider.CONTENT_TYPE);
     ServletOutputStream outputStream = response.getOutputStream();

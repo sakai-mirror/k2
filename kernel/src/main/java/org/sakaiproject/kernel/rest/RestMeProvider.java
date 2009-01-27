@@ -185,6 +185,7 @@ public class RestMeProvider implements RestProvider {
       in = jcrNodeFactoryService.getInputStream(ueFile);
       String userEnvString = IOUtils.readFully(in, "UTF-8");
       Map<String, Object> safeMap = beanConverter.convertToObject(userEnvString, Map.class);
+      System.err.println("Found "+userEnvString+" became "+safeMap);
       safeMap.remove("eid");
       String json = beanConverter.convertToString(safeMap);
       outputStream.print(json);

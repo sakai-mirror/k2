@@ -20,6 +20,7 @@ package org.sakaiproject.kernel.api.userenv;
 import com.google.inject.ImplementedBy;
 import com.google.inject.Singleton;
 
+import org.sakaiproject.kernel.api.UpdateFailedException;
 import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.authz.simple.SimpleJcrUserEnvironmentResolverService;
@@ -88,5 +89,12 @@ public interface UserEnvironmentResolverService {
    */
   Locale getUserLocale(Locale browserLocale, Session session);
 
+  
+  /**
+   * Saves a user environment after modifying it.
+   * @param userEnvironment
+   * @throws UpdateFailedException if the update failed. 
+   */
+  void save (UserEnvironment userEnvironment) throws UpdateFailedException;
 
 }

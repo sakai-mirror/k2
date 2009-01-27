@@ -22,6 +22,7 @@ import com.google.inject.name.Named;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.api.UpdateFailedException;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.memory.Cache;
@@ -36,10 +37,14 @@ import org.sakaiproject.kernel.user.UserFactoryService;
 import org.sakaiproject.kernel.util.IOUtils;
 import org.sakaiproject.kernel.util.StringUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Locale;
+import java.util.Map;
 
+import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 /**
@@ -88,6 +93,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
       if (cache.containsKey(user.getUuid())) {
         UserEnvironment ue = cache.get(user.getUuid());
         if (ue != null && !ue.hasExpired()) {
+          System.err.println("Loaded from Cache");
           return ue;
         }
       }
@@ -124,14 +130,47 @@ public class SimpleJcrUserEnvironmentResolverService implements
    * @throws UnsupportedEncodingException
    */
   private UserEnvironment loadUserEnvironmentBean(String userEnvPath) {
+    InputStream in = null;
     try {
-      String userEnvBody = IOUtils.readFully(jcrNodeFactoryService
-          .getInputStream(userEnvPath), "UTF-8");
+      in = jcrNodeFactoryService.getInputStream(userEnvPath);
+      String userEnvBody = IOUtils.readFully(in, "UTF-8");
+      System.err.println(" Loaded User Env from JCR as "+userEnvBody);
       // convert to a bean, the
       UserEnvironment ue = beanConverter.convertToObject(userEnvBody,
           UserEnvironment.class);
       // seal the bean to prevent modification.
       ue.seal();
+      return ue;
+    } catch (UnsupportedEncodingException e) {
+      LOG.error(e);
+    } catch (IOException e) {
+      LOG.warn("Failed to read userenv " + userEnvPath + " cause :"
+          + e.getMessage());
+      LOG.debug(e);
+    } catch (RepositoryException e) {
+      LOG.warn("Failed to read userenv for " + userEnvPath + " cause :"
+          + e.getMessage());
+      LOG.debug(e);
+    } catch (JCRNodeFactoryServiceException e) {
+      LOG.warn("Failed to read userenv for " + userEnvPath + " cause :"
+          + e.getMessage());
+      LOG.debug(e);
+    } finally {
+      try {
+        in.close();
+      } catch (Exception ex) {
+      }
+    }
+    return null;
+  }
+
+  private Map<String, Object> loadUserMap(String userEnvPath) {
+    try {
+      String userEnvBody = IOUtils.readFully(jcrNodeFactoryService
+          .getInputStream(userEnvPath), "UTF-8");
+      // convert to a bean, the
+      Map<String, Object> ue = beanConverter.convertToObject(userEnvBody,
+          Map.class);
       return ue;
     } catch (UnsupportedEncodingException e) {
       LOG.error(e);
@@ -193,4 +232,42 @@ public class SimpleJcrUserEnvironmentResolverService implements
     return loc;
   }
 
+  /**
+   * {@inheritDoc}
+   * 
+   * @throws RepositoryException
+   * @throws JCRNodeFactoryServiceException
+   * 
+   * @see org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService#save(org.sakaiproject.kernel.api.userenv.UserEnvironment)
+   */
+  public void save(UserEnvironment userEnvironment)
+      throws UpdateFailedException {
+    InputStream bais = null;
+    try {
+      String userEnvironmentPath = userFactoryService
+          .getUserEnvPath(userEnvironment.getUser().getUuid());
+      Map<String, Object> userMap = loadUserMap(userEnvironmentPath);
+
+      userMap.put("locale", userEnvironment.getLocale());
+      userMap.put("subjects", userEnvironment.getSubjects());
+
+      // save the template
+      String userEnvironmentJson = beanConverter.convertToString(userMap);
+      System.err.println("New User at " + userEnvironmentPath + " Is "
+          + userEnvironmentJson);
+      bais = new ByteArrayInputStream(userEnvironmentJson.getBytes("UTF-8"));
+      Node userEnvNode = jcrNodeFactoryService.setInputStream(
+          userEnvironmentPath, bais);
+      userEnvNode.save();
+      expire(userEnvironment.getUser().getUuid());
+    } catch (Exception ex) {
+      throw new UpdateFailedException(ex.getMessage(), ex);
+    } finally {
+      try {
+        bais.close();
+      } catch (Exception ex) {
+      }
+    }
+
+  }
 }

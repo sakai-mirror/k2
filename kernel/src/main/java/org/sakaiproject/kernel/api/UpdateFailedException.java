@@ -20,7 +20,7 @@ package org.sakaiproject.kernel.api;
 /**
  * 
  */
-public class UpdateFailedException extends Exception {
+public class UpdateFailedException extends RuntimeException {
 
   /**
    * 

@@ -15,10 +15,12 @@
  ******************************************************************************/
 package org.sakaiproject.kernel.api.site;
 
+import org.sakaiproject.kernel.api.UpdateFailedException;
+
 /**
  *
  */
-public class SiteException extends RuntimeException {
+public class SiteException extends UpdateFailedException {
 
   /**
    *

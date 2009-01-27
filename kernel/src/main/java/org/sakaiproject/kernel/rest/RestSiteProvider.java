@@ -20,11 +20,19 @@ import com.google.inject.name.Named;
 
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
+import org.sakaiproject.kernel.api.authz.SubjectPermissionService;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
+import org.sakaiproject.kernel.api.session.Session;
+import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.site.SiteService;
+import org.sakaiproject.kernel.api.user.User;
+import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.model.RoleBean;
 import org.sakaiproject.kernel.model.SiteBean;
+import org.sakaiproject.kernel.model.UserEnvironmentBean;
+import org.sakaiproject.kernel.user.AnonUser;
+import org.sakaiproject.kernel.util.StringUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 
 import java.io.IOException;
@@ -55,6 +63,10 @@ public class RestSiteProvider implements RestProvider {
 
   private final SiteService siteService;
   private BeanConverter beanConverter;
+  private UserEnvironmentResolverService userEnvironmentResolverService;
+  private SessionManagerService sessionManagerService;
+  private SubjectPermissionService subjectPermissionService;
+  private RegistryService registryService;
 
   static {
     DESC = new RestDescription();
@@ -105,12 +117,19 @@ public class RestSiteProvider implements RestProvider {
   @Inject
   public RestSiteProvider(RegistryService registryService,
       SiteService siteService,
-      @Named(BeanConverter.REPOSITORY_BEANCONVETER) BeanConverter beanConverter) {
+      @Named(BeanConverter.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
+      UserEnvironmentResolverService userEnvironmentResolverService,
+      SessionManagerService sessionManagerService,
+      SubjectPermissionService subjectPermissionService) {
     this.siteService = siteService;
+    this.registryService = registryService;
     Registry<String, RestProvider> restRegistry = registryService
         .getRegistry(RestProvider.REST_REGISTRY);
     restRegistry.add(this);
     this.beanConverter = beanConverter;
+    this.userEnvironmentResolverService = userEnvironmentResolverService;
+    this.sessionManagerService = sessionManagerService;
+    this.subjectPermissionService = subjectPermissionService;
   }
 
   /**
@@ -143,7 +162,7 @@ public class RestSiteProvider implements RestProvider {
       resp.reset();
       resp.sendError(HttpServletResponse.SC_FORBIDDEN);
     } catch (Exception ex) {
-      throw new ServletException(ex);
+      throw new ServletException(ex.getMessage(),ex);
     }
   }
 
@@ -203,7 +222,29 @@ public class RestSiteProvider implements RestProvider {
       resp.sendError(HttpServletResponse.SC_CONFLICT);
       return null;
     } else {
-      // get the rest of the site info
+      
+      Session session = sessionManagerService.getCurrentSession();
+      if ( session == null )  {
+        resp.reset();
+        resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        return null;
+      }
+      User user = session.getUser();
+      if ( user == null || user instanceof AnonUser )  {
+        resp.reset();
+        resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        return null;
+      }
+      UserEnvironmentBean userEnv = (UserEnvironmentBean) userEnvironmentResolverService.resolve(session);
+      UserEnvironmentBean newUserEnvironment = new UserEnvironmentBean(subjectPermissionService,0,registryService);
+      newUserEnvironment.copyFrom(userEnv);
+      
+      String newSubject = id+":owner";
+      String[] subjects = newUserEnvironment.getSubjects();
+      subjects = StringUtils.addString(subjects, newSubject);
+      newUserEnvironment.setSubjects(subjects);
+      
+            // get the rest of the site info
       String name = req.getParameter(Params.NAME);
       String description = req.getParameter(Params.DESCRIPTION);
       String type = req.getParameter(Params.TYPE);
@@ -214,7 +255,8 @@ public class RestSiteProvider implements RestProvider {
       site.setName(name);
       site.setDescription(description);
       site.setType(type);
-
+      site.addOwner(userEnv.getUser().getUuid());
+      
       // add the admin role
       RoleBean roles[] = new RoleBean[1];
       roles[0] = new RoleBean();
@@ -224,6 +266,8 @@ public class RestSiteProvider implements RestProvider {
       site.setRoles(roles);
 
       siteService.createSite(site);
+      userEnvironmentResolverService.save(newUserEnvironment);
+      
 
       Map<String , Object> responseMap = new HashMap<String, Object>();
       responseMap.put("response","OK");

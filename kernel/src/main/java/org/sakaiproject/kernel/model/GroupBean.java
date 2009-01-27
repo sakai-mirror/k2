@@ -17,6 +17,8 @@
  */
 package org.sakaiproject.kernel.model;
 
+import org.sakaiproject.kernel.util.StringUtils;
+
 /**
  * A simple bean for serializing group information into an object structure
  * prior to indexing.
@@ -26,6 +28,7 @@ public class GroupBean {
   private String name;
   private String description;
   private RoleBean[] roles = new RoleBean[0];
+  private String[] owners = new String[0];
 
   /**
    * @return the name
@@ -83,5 +86,24 @@ public class GroupBean {
       return s;
     }
   }
+  
+  /**
+   * @return the owners
+   */
+  public String[] getOwners() {
+    return owners;
+  }
+  
+  public void setOwners(String[] owners) {
+   this.owners = owners; 
+  }
 
+
+  public void addOwner(String owner) {
+    owners = StringUtils.addString(owners,owner);
+  }
+  
+  public void removeOwner(String owner) {
+    owners = StringUtils.removeString(owners,owner);
+  }
 }
