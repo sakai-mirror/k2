@@ -38,7 +38,6 @@ import org.sakaiproject.kernel.component.core.PersistenceUnitClassLoader;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.spi.PersistenceUnitTransactionType;
@@ -47,8 +46,8 @@ import javax.persistence.spi.PersistenceUnitTransactionType;
  * Guice provider for {@link javax.persistence.EntityManager} as implemented by
  * Eclipselink.
  */
-public class EntityManagerProvider implements Provider<EntityManager> {
-  private static final Log LOG = LogFactory.getLog(Boolean.class);
+public class EntityManagerFactoryProvider implements Provider<EntityManagerFactory> {
+  private static final Log LOG = LogFactory.getLog(EntityManagerFactoryProvider.class);
 
   private static final String DB_MIN_WRITE = "eclipselink.write.min";
   private static final String DB_MIN_NUM_READ = "eclipselink.read.min";
@@ -58,7 +57,8 @@ public class EntityManagerProvider implements Provider<EntityManager> {
   public static final String JDBC_USERNAME = "jdbc.username";
   public static final String JDBC_PASSWORD = "jdbc.password";
 
-  private final EntityManager entityManager;
+
+  private EntityManagerFactory entityManagerFactory;
 
   /**
    * Construct an EclipseLink entity manager provider.
@@ -69,7 +69,7 @@ public class EntityManagerProvider implements Provider<EntityManager> {
    * @param unitName
    */
   @Inject
-  public EntityManagerProvider(DataSourceService dataSourceService,
+  public EntityManagerFactoryProvider(DataSourceService dataSourceService,
       @Named(DB_MIN_NUM_READ) String minRead,
       @Named(DB_MIN_WRITE) String minWrite,
       @Named(DB_UNITNAME) String unitName,
@@ -123,10 +123,11 @@ public class EntityManagerProvider implements Provider<EntityManager> {
     final ClassLoader saveClassLoader = currentThread.getContextClassLoader();
     PersistenceUnitClassLoader persistenceCL = new PersistenceUnitClassLoader(this.getClass().getClassLoader());
     currentThread.setContextClassLoader(persistenceCL);
-    EntityManagerFactory emFactory = Persistence.createEntityManagerFactory(
+    entityManagerFactory = Persistence.createEntityManagerFactory(
         unitName, properties);
-    entityManager = emFactory.createEntityManager();
     currentThread.setContextClassLoader(saveClassLoader);
+    
+   
   }
 
   /**
@@ -134,8 +135,9 @@ public class EntityManagerProvider implements Provider<EntityManager> {
    *
    * @see com.google.inject.Provider#get()
    */
-  public EntityManager get() {
-    return entityManager;
+  public EntityManagerFactory get() {
+    return entityManagerFactory;
   }
+
 
 }

@@ -92,12 +92,18 @@ public class SubjectPermissionListener implements JcrContentListener {
         String groupBody = IOUtils.readFully(in, "UTF-8");
         if (groupBody != null && groupBody.length() > 0) {
           EntityTransaction transaction = entityManager.getTransaction();
+          System.err.println("SubjectPermissionListern: Thread is "+Thread.currentThread()+" entityManager is "+entityManager+" transaction "+transaction);
 
+          if ( !transaction.isActive()) {
+            transaction.begin();
+          }
           // update the index for subjects and groups
-          updateSubjectPermissionIndex(groupBody, transaction);
+          updateSubjectPermissionIndex(groupBody);
 
           // update the index used for searching sites
-          updateSiteIndex(groupBody, filePath, transaction);
+          updateSiteIndex(groupBody, filePath);
+          
+          transaction.commit();
         }
       } catch (UnsupportedEncodingException e) {
         LOG.error(e);
@@ -124,8 +130,7 @@ public class SubjectPermissionListener implements JcrContentListener {
 
   }
 
-  private void updateSubjectPermissionIndex(String groupBody,
-      EntityTransaction transaction) {
+  private void updateSubjectPermissionIndex(String groupBody) {
     GroupBean groupBean = beanConverter.convertToObject(groupBody,
         GroupBean.class);
 
@@ -186,20 +191,16 @@ public class SubjectPermissionListener implements JcrContentListener {
 
       }
     }
-    if (!transaction.isActive()) {
-      transaction.begin();
-    }
     for (SubjectPermissionBean spb : toRemove) {
       entityManager.remove(spb);
     }
     for (SubjectPermissionBean spb : toAdd) {
+      
       entityManager.persist(spb);
     }
-    transaction.commit();
   }
 
-  private void updateSiteIndex(String groupBody, String filePath,
-      EntityTransaction transaction) {
+  private void updateSiteIndex(String groupBody, String filePath) {
     SiteBean site = beanConverter.convertToObject(groupBody, SiteBean.class);
     if (site.getId() != null) {
       // look for an existing index first.
@@ -219,11 +220,7 @@ public class SubjectPermissionListener implements JcrContentListener {
         index.setName(site.getName());
         index.setRef(filePath);
       }
-      if (!transaction.isActive()) {
-        transaction.begin();
-      }
       entityManager.persist(index);
-      transaction.commit();
 
     }
   }

@@ -96,6 +96,7 @@ public class SiteServiceImpl implements SiteService {
       Query query = entityManager
           .createNamedQuery(SiteIndexBean.Queries.FINDBY_ID);
       query.setParameter(SiteIndexBean.QueryParams.FINDBY_ID_ID, id);
+      
       SiteIndexBean index = (SiteIndexBean) query.getSingleResult();
       String fileNode = index.getRef();
       in = jcrNodeFactoryService.getInputStream(fileNode);
@@ -177,18 +178,22 @@ public class SiteServiceImpl implements SiteService {
     String fileNode = buildFilePath(site.getId());
     InputStream in = null;
     try {
-      in = new ByteArrayInputStream(json.getBytes("UTF-8"));
+      
+      in = new ByteArrayInputStream(json.getBytes("UTF-8"));      
       Node node = jcrNodeFactoryService.setInputStream(fileNode, in);
+      
+      
       SiteIndexBean bean = new SiteIndexBean();
       bean.setId(site.getId());
       bean.setName(site.getName());
-      bean.setRef(node.getPath());
+      bean.setRef(fileNode);
       if (!trans.isActive()) {
         trans.begin();
       }
       entityManager.persist(bean);
       trans.commit();
       node.save();
+
     } catch (RepositoryException e) {
       if (trans.isActive()) {
         trans.rollback();

@@ -26,12 +26,13 @@ import org.sakaiproject.kernel.api.persistence.DataSourceService;
 import org.sakaiproject.kernel.component.core.SharedClassLoader;
 import org.sakaiproject.kernel.component.core.SharedClassLoaderContainer;
 import org.sakaiproject.kernel.persistence.dbcp.DataSourceServiceImpl;
-import org.sakaiproject.kernel.persistence.eclipselink.EntityManagerProvider;
+import org.sakaiproject.kernel.persistence.eclipselink.EntityManagerFactoryProvider;
 import org.sakaiproject.kernel.persistence.geronimo.TransactionManagerProvider;
 
 import java.util.Properties;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import javax.transaction.TransactionManager;
 
@@ -48,10 +49,9 @@ public class PersistenceModule extends AbstractModule {
     this.kernel = kernel;
   }
 
-
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see com.google.inject.AbstractModule#configure()
    */
   @Override
@@ -61,15 +61,21 @@ public class PersistenceModule extends AbstractModule {
       Names.bindProperties(this.binder(), properties);
     }
 
-    SharedClassLoaderContainer container =
-      kernel.getService(SharedClassLoaderContainer.class);
+    SharedClassLoaderContainer container = kernel
+        .getService(SharedClassLoaderContainer.class);
 
     bind(SharedClassLoader.class).toInstance(
         (SharedClassLoader) container.getManagedObject());
-    bind(EntityManager.class).toProvider(EntityManagerProvider.class).in(
-        Scopes.SINGLETON);
+    // bind the EntityManagerFactory to EclipseLink
+    bind(EntityManagerFactory.class).toProvider(
+        EntityManagerFactoryProvider.class).in(Scopes.SINGLETON);
+    // bind the EntityManager to a ScopedEntityManger
+    bind(EntityManager.class).to(ScopedEntityManager.class)
+        .in(Scopes.SINGLETON);
+    // Bind in the datasource
     bind(DataSource.class).toProvider(DataSourceServiceImpl.class).in(
         Scopes.SINGLETON);
+    // and the transaction manager via a probider.
     bind(TransactionManager.class).toProvider(TransactionManagerProvider.class)
         .in(Scopes.SINGLETON);
 
