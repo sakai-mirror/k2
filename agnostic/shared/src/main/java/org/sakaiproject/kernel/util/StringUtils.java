@@ -124,4 +124,48 @@ public class StringUtils {
     return new String(c);
   }
 
+  /**
+   * @param owners
+   * @param owner
+   * @return
+   */
+  public static String[] addString(String[] a, String v) {
+    for ( String o : a ) {
+      if ( v.equals(o) ) {
+        return a;
+      }
+    }
+    String[] na = new String[a.length+1];
+    for ( int i = 0; i < a.length; i++) {
+      na[i] = a[i];
+    }
+    na[na.length-1] = v;
+    return na;
+   }
+
+  /**
+   * @param owners
+   * @param owner
+   * @return
+   */
+  public static String[] removeString(String[] a, String v) {
+    int i = 0;
+    for ( String o : a ) {
+      if ( !v.equals(o) ) {
+        i++;
+      }
+    }
+    if ( i == a.length ) {
+      return a;
+    }
+    String[] na = new String[i];
+    i = 0;
+    for ( String o : a ) {
+      if (!v.equals(o)) {
+        na[i++] = o;
+      }
+    }
+    return na;
+  }
+
 }
