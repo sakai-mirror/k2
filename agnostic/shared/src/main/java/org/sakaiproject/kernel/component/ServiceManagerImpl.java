@@ -92,7 +92,6 @@ public class ServiceManagerImpl implements ServiceManager {
         }
       }
     }
-    LOG.info("Got "+serviceSpec+" as "+service);
     return service;
   }
 
