@@ -50,7 +50,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
- *
+ * Unit test for SiteServiceImpl
  */
 public class SiteServiceT {
 
@@ -109,18 +109,17 @@ public class SiteServiceT {
     expect(session.getId()).andReturn("TEST-12222").anyTimes();
     expect(request.getAttribute("_uuid")).andReturn(null).anyTimes();
     expect(session.getAttribute("check-valid")).andReturn(null).anyTimes();
-    
+
     response.addCookie((Cookie) anyObject());
     expectLastCall().anyTimes();
-    /*   
-
-    expect(request.getRemoteUser()).andReturn("").anyTimes();
-    expect(request.getAttribute("_uuid")).andReturn(null).anyTimes();
-    */
+    /*
+     *
+     * expect(request.getRemoteUser()).andReturn("").anyTimes();
+     * expect(request.getAttribute("_uuid")).andReturn(null).anyTimes();
+     */
     SakaiServletRequest req = new SakaiServletRequest(request, response,
         userRes, sessMgr);
     sessMgr.bindRequest(req);
-
   }
 
   @Test
@@ -141,8 +140,7 @@ public class SiteServiceT {
     site.setRoles(roles);
 
     siteService.createSite(site);
-    
-    
+
     SiteBean siteBean = siteService.getSite(siteId);
     assertNotNull(siteBean);
     assertEquals(site.getId(), siteBean.getId());
@@ -173,7 +171,6 @@ public class SiteServiceT {
   }
 
   @Test
-  // ignoring until synchronous index updating is available
   public void createDuplicateSite() {
     setupUser("testUser1");
     replay(request, response, session);
@@ -202,7 +199,6 @@ public class SiteServiceT {
   }
 
   @Test
-  // ignoring until synchronous index updating is available
   public void getSite() {
     setupUser("testUser1");
     replay(request, response, session);
@@ -221,9 +217,41 @@ public class SiteServiceT {
 
     siteService.createSite(site);
     SiteBean siteGet = siteService.getSite(siteId);
-    assertNotNull(siteGet);
+    assertNotNull("Site not found when searching.", siteGet);
     assertEquals(siteGet.getId(), site.getId());
     assertEquals(siteGet.getName(), site.getName());
+    verify(request, response, session);
+  }
+
+  @Test
+  public void updateSite() {
+    setupUser("testUser1");
+    replay(request, response, session);
+    String siteId = generateSiteId();
+    SiteBean site = new SiteBean();
+    site.setId(siteId);
+    site.setName("Test Site");
+    site.setDescription("Site for unit testing");
+    site.setType("project");
+
+    RoleBean[] roles = new RoleBean[1];
+    roles[0] = new RoleBean();
+    roles[0].setName("admin");
+    roles[0].setPermissions(new String[] { "read", "write", "delete" });
+    site.setRoles(roles);
+
+    siteService.createSite(site);
+
+    site.setName("Tester Siter");
+    site.setDescription("Siter forer uniter testinger");
+    siteService.saveSite(site);
+
+    SiteBean siteBean = siteService.getSite(siteId);
+    assertNotNull(siteBean);
+    assertEquals(site.getId(), siteBean.getId());
+    assertEquals(site.getName(), siteBean.getName());
+    assertEquals(site.getDescription(), siteBean.getDescription());
+
     verify(request, response, session);
   }
 

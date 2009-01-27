@@ -18,6 +18,8 @@ package org.sakaiproject.kernel.site;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
@@ -50,6 +52,8 @@ import javax.persistence.Query;
  */
 public class SiteServiceImpl implements SiteService {
 
+  private static final Log log = LogFactory.getLog(SiteServiceImpl.class);
+
   private final EntityManager entityManager;
   private final JCRNodeFactoryService jcrNodeFactoryService;
   private final BeanConverter beanConverter;
@@ -71,7 +75,7 @@ public class SiteServiceImpl implements SiteService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.site.SiteService#createSite(org.sakaiproject.kernel.model.SiteBean)
    */
   public void createSite(SiteBean site) throws SiteCreationException,
@@ -85,7 +89,7 @@ public class SiteServiceImpl implements SiteService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.site.SiteService#getSite(java.lang.String)
    */
   public SiteBean getSite(String id) throws SiteException {
@@ -96,7 +100,7 @@ public class SiteServiceImpl implements SiteService {
       Query query = entityManager
           .createNamedQuery(SiteIndexBean.Queries.FINDBY_ID);
       query.setParameter(SiteIndexBean.QueryParams.FINDBY_ID_ID, id);
-      
+
       SiteIndexBean index = (SiteIndexBean) query.getSingleResult();
       String fileNode = index.getRef();
       in = jcrNodeFactoryService.getInputStream(fileNode);
@@ -125,7 +129,7 @@ public class SiteServiceImpl implements SiteService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.site.SiteService#siteExists(java.lang.String)
    */
   public boolean siteExists(String id) {
@@ -139,7 +143,7 @@ public class SiteServiceImpl implements SiteService {
   /**
    * Build the full path with file name to the group definition for a given site
    * ID.
-   * 
+   *
    * @param id
    * @return
    */
@@ -156,7 +160,7 @@ public class SiteServiceImpl implements SiteService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.site.SiteService#deleteSite(java.lang.String)
    */
   public void deleteSite(String id) {
@@ -164,33 +168,57 @@ public class SiteServiceImpl implements SiteService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @throws UnsupportedEncodingException
-   * 
+   *
    * @see org.sakaiproject.kernel.api.site.SiteService#saveSite(org.sakaiproject.kernel.model.SiteBean)
-   * @todo Refactor to use synchronous event call which needs to be created.
    */
   public void saveSite(SiteBean site) throws SiteException,
       SiteCreationException {
     EntityTransaction trans = entityManager.getTransaction();
 
     String json = beanConverter.convertToString(site);
-    String fileNode = buildFilePath(site.getId());
+
+    // check the index for a pre-existing record with the same ID
+    Query query = entityManager
+        .createNamedQuery(SiteIndexBean.Queries.FINDBY_ID);
+    query.setParameter(SiteIndexBean.QueryParams.FINDBY_ID_ID, site.getId());
+    SiteIndexBean index = null;
+    try {
+      index = (SiteIndexBean) query.getSingleResult();
+    } catch (NoResultException e) {
+      // acceptable exception
+      log.info("Didn't find a site with ID=[" + site.getId()
+          + "].  Creating a new site.");
+    }
+
+    // the location of the JCR node
+    String fileNode = null;
+
+    // if site exists, update it
+    if (index != null) {
+      fileNode = index.getRef();
+    }
+    // create a new node if not found
+    else {
+      fileNode = buildFilePath(site.getId());
+    }
+
     InputStream in = null;
     try {
-      
-      in = new ByteArrayInputStream(json.getBytes("UTF-8"));      
+      in = new ByteArrayInputStream(json.getBytes("UTF-8"));
       Node node = jcrNodeFactoryService.setInputStream(fileNode, in);
-      
-      
-      SiteIndexBean bean = new SiteIndexBean();
-      bean.setId(site.getId());
-      bean.setName(site.getName());
-      bean.setRef(fileNode);
+
+      if (index == null) {
+        index = new SiteIndexBean();
+      }
+      index.setId(site.getId());
+      index.setName(site.getName());
+      index.setRef(fileNode);
       if (!trans.isActive()) {
         trans.begin();
       }
-      entityManager.persist(bean);
+      entityManager.persist(index);
       trans.commit();
       node.save();
 
@@ -213,6 +241,7 @@ public class SiteServiceImpl implements SiteService {
       try {
         in.close();
       } catch (Exception ex) {
+        // nothing we can do
       }
     }
   }
