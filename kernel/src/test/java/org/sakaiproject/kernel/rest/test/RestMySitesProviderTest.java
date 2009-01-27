@@ -151,7 +151,7 @@ public class RestMySitesProviderTest extends KernelIntegrationBase {
     LOG.info("Getting RestMySitesProvider using key \"mysites\"...");
     RegistryService registryService = km.getService(RegistryService.class);
     Registry<String, RestProvider> registry = registryService.getRegistry(RestProvider.REST_REGISTRY);
-    RestMySitesProvider rmsp = (RestMySitesProvider) registry.getMap().get("mysites");
+    RestMySitesProvider rmsp = (RestMySitesProvider) registry.getMap().get("sites");
     for(String key:registry.getMap().keySet()){
     	LOG.info(key + "--->" +registry.getMap().get(key));
     }

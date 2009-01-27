@@ -138,7 +138,9 @@ public class RestMySitesProvider implements RestProvider {
     DESCRIPTION.addSection(2, "Response: Authenticated User",
         "Where the user is an authenticaated user the response will contain a list of "
             + "sites associated wit the user including the role(s) in each.");
-    DESCRIPTION.addParameter("none", "The service accepts no parameters ");
+    DESCRIPTION.addParameter("count (optional) - TODO", "Number of items to return for paging");//TODO
+    DESCRIPTION.addParameter("startIndex (optional) - TODO ", "Index (integer) of item starting page");//TODO
+    DESCRIPTION.addParameter("itemsPerPage (optional) - TODO", "The number of items to display");//TODO
     DESCRIPTION
         .addHeader("none",
             "The service neither looks for headers nor sets any non standatd headers");
@@ -150,12 +152,96 @@ public class RestMySitesProvider implements RestProvider {
         .addResponse(
             "200",
             "The service returns a JSON body with a list of N 'items' structures. eg "
-                + " {\"items\":[{\"type\":\"course\",\"title\":\"Test 1\",\"owner\":\"Nicolaas Matthijs (no email)\""
-                + ",\"members\":1,\"description\":\"My Workspace Site\",\"creationDate\":\"06-10-2008\""
-                + ",\"id\":\"178c5241-3c4d-4fb7-b501-fe47ce831934\"}\""
-                + " ,{\"items\":[{\"type\":\"course\",\"title\":\"Test 2\",\"owner\":\"Nicolaas Matthijs (no email)\""
-                + ",\"members\":325,\"description\":\"Another test\",\"creationDate\":\"06-10-2008\""
-                + ",\"id\":\"21546c21-b501-b74f-3c4d-fe48319347ce\"}}");
+                
+            + "    {"
+            + "      \"entry\": ["
+            + "          {"
+            + "              \"type\": \"course\","
+            + "              \"description\": \"An Example site definition. This is just the required fields that we might see inside a object that defines a site \","
+            + "              \"roles\": ["
+            + "                  {"
+            + "                      \"permissions\": ["
+            + "                          \"read\","
+            + "                          \"write\","
+            + "                          \"delete\""
+            + "                      ],"
+            + "                      \"name\": \"access\""
+            + "                  },"
+            + "                  {"
+            + "                      \"permissions\": ["
+            + "                          \"read\","
+            + "                          \"write\","
+            + "                          \"delete\""
+            + "                      ],"
+            + "                      \"name\": \"maintain\""
+            + "                  }"
+            + "              ],"
+            + "              \"subjectTokens\": ["
+            + "                  \"Site 2:access\","
+            + "                  \"Site 2:maintain\""
+            + "              ],"
+            + "              \"name\": \"Site 2\","
+            + "              \"id\": \"group2\""
+            + "          },"
+            + "          {"
+            + "              \"type\": \"course\","
+            + "              \"description\": \"An Example site definition. This is just the required fields that we might see inside a object that defines a site \","
+            + "              \"roles\": ["
+            + "                  {"
+            + "                      \"permissions\": ["
+            + "                          \"read\","
+            + "                          \"write\","
+            + "                          \"delete\""
+            + "                      ],"
+            + "                      \"name\": \"access\""
+            + "                  },"
+            + "                  {"
+            + "                      \"permissions\": ["
+            + "                          \"read\","
+            + "                          \"write\","
+            + "                          \"delete\""
+            + "                      ],"
+            + "                      \"name\": \"maintain\""
+            + "                  }"
+            + "              ],"
+            + "              \"subjectTokens\": ["
+            + "                  \"Site 1:access\","
+            + "                  \"Site 1:maintain\""
+            + "              ],"
+            + "              \"name\": \"Site 1\","
+            + "              \"id\": \"group1\""
+            + "          },"
+            + "          {"
+            + "              \"type\": \"course\","
+            + "              \"description\": \"An Example site definition. This is just the required fields that we might see inside a object that defines a site \","
+            + "              \"roles\": ["
+            + "                  {"
+            + "                      \"permissions\": ["
+            + "                          \"read\","
+            + "                          \"write\","
+            + "                          \"delete\""
+            + "                      ],"
+            + "                      \"name\": \"access\""
+            + "                  },"
+            + "                  {"
+            + "                      \"permissions\": ["
+            + "                          \"read\","
+            + "                          \"write\","
+            + "                          \"delete\""
+            + "                      ],"
+            + "                      \"name\": \"maintain\""
+            + "                  }"
+            + "              ],"
+            + "              \"subjectTokens\": ["
+            + "                  \"Site 2:access\","
+            + "                  \"Site 2:maintain\""
+            + "              ],"
+            + "              \"name\": \"Site 2\","
+            + "              \"id\": \"group2\""
+            + "          }"
+            + "      ],"
+            + "      \"totalResults\": 3"
+            + "  }");
 
   }
 
@@ -285,6 +371,9 @@ public class RestMySitesProvider implements RestProvider {
     ServletOutputStream outputStream = response.getOutputStream();
 
     outputStream.print(beanConverter.convertToString(itemMap));
+    
+    outputStream.flush();
+    outputStream.close();
 
   }
 
@@ -303,7 +392,7 @@ public class RestMySitesProvider implements RestProvider {
    * @see org.sakaiproject.kernel.api.Provider#getKey()
    */
   public String getKey() {
-    return "mysites";
+    return "sites";
   }
 
   /**
