@@ -69,7 +69,7 @@ public class SessionImpl implements Session {
     User user = (User) getAttribute(USER);
     if (user == null) {
       String uid = (String) getAttribute(UNRESOLVED_UID);
-      user = userResolverService.resolve(uid);
+      user = userResolverService.resolveWithUUID(uid);
       if (user != null) {
         baseSession.setAttribute(USER, user);
       }

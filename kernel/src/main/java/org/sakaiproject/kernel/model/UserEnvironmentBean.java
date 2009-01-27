@@ -31,6 +31,7 @@ import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.user.UserInfo;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +46,7 @@ public class UserEnvironmentBean implements UserEnvironment {
   private transient User user;
   private boolean superUser = false;
   private String[] subjects = new String[0];
-  private Map<String, String> properties;
+  private Map<String, String> properties = new HashMap<String, String>();
   private String uuid;
   private String eid;
   private SubjectPermissionService subjectPermissionService;
@@ -284,16 +285,33 @@ public class UserEnvironmentBean implements UserEnvironment {
       }
 
       public User getUser() {
-        return null;
+        return user;
       }
 
       public void setProperty(String name, String value) {
         // TODO Auto-generated method stub
-
       }
 
     };
   }
+  
+  /**
+   * @param properties the properties to set
+   */
+  public void setProperties(Map<String, String> properties) {
+    if ( sealed ) {
+      throw new RuntimeException(
+      "Attempt to unseal a sealed UserEnvironmentBean ");
+    }
+    this.properties = properties;
+  }
+  /**
+   * @return the properties
+   */
+  public Map<String, String> getProperties() {
+    return new HashMap<String, String>(properties);
+  }
+  
 
   /**
    * @param userEnv
@@ -304,7 +322,7 @@ public class UserEnvironmentBean implements UserEnvironment {
     user = userEnv.getUser();
     superUser = userEnv.isSuperUser();
     subjects = userEnv.getSubjects();
-    locale = userEnv.getLocale();
+    locale = userEnv.getLocale(); 
   }
 
   /**

@@ -34,6 +34,7 @@ import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.component.core.KernelBootstrapModule;
+import org.sakaiproject.kernel.model.UserEnvironmentBean;
 import org.sakaiproject.kernel.user.UserFactoryService;
 import org.sakaiproject.kernel.user.jcr.JcrAuthenticationResolverProvider;
 import org.sakaiproject.kernel.util.IOUtils;
@@ -319,18 +320,22 @@ System.err.println("@#@######@########@######### anonymous: " + anonymousAccount
       templateInputStream = jcrNodeFactoryService
           .getInputStream(userEnvironmentTemplate);
       String template = IOUtils.readFully(templateInputStream, "UTF-8");
-      Map<String, Object> templateMap = beanConverter.convertToObject(template,
-          Map.class);
+      UserEnvironmentBean userEnvironmentBean = beanConverter.convertToObject(template,
+          UserEnvironmentBean.class);
 
       // make the template this user
-      templateMap.put("uuid", u.getUuid());
-      templateMap.put("firstName", firstName);
-      templateMap.put("lastName", lastName);
-      templateMap.put("email", email);
-      templateMap.put("userType", userType);
+      userEnvironmentBean.setEid(externalId);
+      userEnvironmentBean.setUuid(u.getUuid());
+      Map<String, String> p = new HashMap<String, String>();
+      p.put("firstName", firstName);
+      p.put("lastName", lastName);
+      p.put("email", email);
+      p.put("userType", userType);
+      
+      userEnvironmentBean.setProperties(p);
 
       // save the template
-      String userEnv = beanConverter.convertToString(templateMap);
+      String userEnv = beanConverter.convertToString(userEnvironmentBean);
       System.err.println("New User at " + userEnvironmentPath + " Is "
           + userEnv);
       bais = new ByteArrayInputStream(userEnv.getBytes("UTF-8"));
