@@ -166,7 +166,7 @@ public class KernelIntegrationBase {
     for (String user : USERS) {
       InputStream in = ResourceLoader.openResource(USERBASE + user + ".json",
           SakaiAuthenticationFilter.class.getClassLoader());
-      Node n = jcrNodeFactoryService.setInputStream(getUserEnvPath("ieb"), in);
+      Node n = jcrNodeFactoryService.setInputStream(getUserEnvPath(user), in);
       n.setProperty(JcrAuthenticationResolverProvider.JCRPASSWORDHASH,
           StringUtils.sha1Hash("password"));
       n.save();
