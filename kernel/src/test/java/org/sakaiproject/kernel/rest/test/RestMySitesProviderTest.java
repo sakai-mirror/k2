@@ -134,24 +134,24 @@ public class RestMySitesProviderTest extends KernelIntegrationBase {
     jcrService.setSession(jsession);
 
     // setup the user environment for the admin user.
-    for (String userName : USERS) {
+  /*  for (String userName : USERS) {
       String prefix = PathUtils.getUserPrefix(userName);
       String userEnvironmentPath = "/userenv" + prefix + "userenv";
 
       LOG.info("Saving "+userEnvironmentPath);
       jcrNodeFactoryService.createFile(userEnvironmentPath);
       InputStream in = ResourceLoader.openResource(USERBASE + userName
-          + ".json", AuthZServiceKernelUnitT.class.getClassLoader());
+          + ".json", RestMySitesProviderTest.class.getClassLoader());
       jcrNodeFactoryService.setInputStream(userEnvironmentPath, in);
       jsession.save();
       in.close();
-    }
+    }*/
 
     
-    LOG.info("Getting RestMySitesProvider using key \"mysites\"...");
+    LOG.info("Getting RestMySitesProvider using key: " + RestMySitesProvider.SITES_ELEMENT);
     RegistryService registryService = km.getService(RegistryService.class);
     Registry<String, RestProvider> registry = registryService.getRegistry(RestProvider.REST_REGISTRY);
-    RestMySitesProvider rmsp = (RestMySitesProvider) registry.getMap().get("sites");
+    RestMySitesProvider rmsp = (RestMySitesProvider) registry.getMap().get(RestMySitesProvider.SITES_ELEMENT);
     for(String key:registry.getMap().keySet()){
     	LOG.info(key + "--->" +registry.getMap().get(key));
     }
