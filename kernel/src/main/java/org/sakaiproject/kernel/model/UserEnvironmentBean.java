@@ -52,6 +52,7 @@ public class UserEnvironmentBean implements UserEnvironment {
   private boolean sealed = false;
   private Registry<String, SubjectTokenProvider<String>> registry;
   private String locale;
+  private boolean protect = false;
 
   @Inject
   public UserEnvironmentBean(SubjectPermissionService subjectPermissionService,
@@ -143,18 +144,25 @@ public class UserEnvironmentBean implements UserEnvironment {
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#getUserid()
    */
   public User getUser() {
+    if ( protect ) {
+      return null;
+    }
     if (user == null) {
       user = new UserBean(uuid, eid);
     }
     return user;
+    
   }
-  
-  
+
   /**
    * @return
    */
   public UserBean getUserBean() {
-    return (UserBean) getUser();
+    if (protect) {
+      return null;
+    } else {
+      return (UserBean) getUser();
+    }
   }
 
   /**
@@ -197,7 +205,11 @@ public class UserEnvironmentBean implements UserEnvironment {
    * @return the eid
    */
   public String getEid() {
-    return eid;
+    if (protect) {
+      return null;
+    } else {
+      return eid;
+    }
   }
 
   /**
@@ -293,6 +305,15 @@ public class UserEnvironmentBean implements UserEnvironment {
     superUser = userEnv.isSuperUser();
     subjects = userEnv.getSubjects();
     locale = userEnv.getLocale();
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#setProtected(boolean)
+   */
+  public void setProtected(boolean protect) {
+    this.protect = protect;
   }
 
 }

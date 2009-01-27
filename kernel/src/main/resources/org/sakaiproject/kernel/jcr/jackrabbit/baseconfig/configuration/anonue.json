@@ -1,6 +1,5 @@
 {
-  "uuid" : null,
-  "eid":null,
+  "anon" : true,
   "superUser" : false,
   "subjects" : []
 }

@@ -29,8 +29,9 @@ import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.user.User;
+import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
-import org.sakaiproject.kernel.user.UserFactoryService;
+import org.sakaiproject.kernel.authz.simple.NullUserEnvironment;
 import org.sakaiproject.kernel.util.IOUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 
@@ -40,7 +41,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -132,29 +132,29 @@ public class RestMeProvider implements RestProvider {
    * 
    * @see org.sakaiproject.kernel.api.rest.RestProvider#dispatch(java.lang.String[],
    *      javax.servlet.http.HttpServletRequest,
-   *      javax.servlet.http.HttpServletResponse)
-   *      /x/y/z?searchOrder=1231231
+   *      javax.servlet.http.HttpServletResponse) /x/y/z?searchOrder=1231231
    */
   public void dispatch(String[] elements, HttpServletRequest request,
       HttpServletResponse response) throws ServletException, IOException {
     try {
       Session session = sessionManagerService.getCurrentSession();
       User user = session.getUser();
-      
-      System.err.println("Got user as "+user);
 
-      Locale locale = userEnvironmentResolverService.getUserLocale(request.getLocale(), session);
+      System.err.println("Got user as " + user);
+
+      Locale locale = userEnvironmentResolverService.getUserLocale(request
+          .getLocale(), session);
       if (user == null || user.getUuid() == null
           || "anon".equals(user.getUuid())) {
         sendOutput(response, locale, ANON_UE_FILE);
       } else {
-        String mePath = userEnvironmentResolverService.getUserEnvironmentBasePath(user.getUuid())+UserFactoryService.USERENV;
-        System.err.println("Loading " + mePath + " for Rest Provider");
-        Node n = jcrNodeFactoryService.getNode(mePath);
-        if (n != null) {
-          sendOutput(response, locale, mePath);
-        } else {
+        UserEnvironment userEnvironment = userEnvironmentResolverService
+            .resolve(user);
+        if (userEnvironment == null
+            || userEnvironment instanceof NullUserEnvironment) {
           sendDefaultUserOutput(response, locale, user.getUuid());
+        } else {
+          sendOutput(response, locale, userEnvironment);
         }
       }
     } catch (RepositoryException re) {
@@ -172,23 +172,42 @@ public class RestMeProvider implements RestProvider {
    * @throws IOException
    */
   private void sendOutput(HttpServletResponse response, Locale locale,
-      String ueFile) throws RepositoryException,
+      UserEnvironment userEnvironment) throws RepositoryException,
       JCRNodeFactoryServiceException, IOException {
-    InputStream in = null;
     response.setContentType(RestProvider.CONTENT_TYPE);
     ServletOutputStream outputStream = response.getOutputStream();
     outputStream.print("{ \"locale\" :");
     outputStream.print(beanConverter.convertToString(userLocale
         .localeToMap(locale)));
     outputStream.print(", \"preferences\" :");
+    userEnvironment.setProtected(true);
+    String json = beanConverter.convertToString(userEnvironment);
+    userEnvironment.setProtected(false);
+    outputStream.print(json);
+    outputStream.print("}");
+  }
+
+  /**
+   * @param response
+   * @param anonMeFile
+   * @throws JCRNodeFactoryServiceException
+   * @throws RepositoryException
+   * @throws IOException
+   */
+  private void sendOutput(HttpServletResponse response, Locale locale,
+      String path) throws RepositoryException, JCRNodeFactoryServiceException,
+      IOException {
+    response.setContentType(RestProvider.CONTENT_TYPE);
+    ServletOutputStream outputStream = response.getOutputStream();
+    outputStream.print("{ \"locale\" :");
+    outputStream.print(beanConverter.convertToString(userLocale
+        .localeToMap(locale)));
+    outputStream.print(", \"preferences\" :");
+
+    InputStream in = null;
     try {
-      in = jcrNodeFactoryService.getInputStream(ueFile);
-      String userEnvString = IOUtils.readFully(in, "UTF-8");
-      Map<String, Object> safeMap = beanConverter.convertToObject(userEnvString, Map.class);
-      System.err.println("Found "+userEnvString+" became "+safeMap);
-      safeMap.remove("eid");
-      String json = beanConverter.convertToString(safeMap);
-      outputStream.print(json);
+      in = jcrNodeFactoryService.getInputStream(path);
+      IOUtils.stream(in, outputStream);
     } finally {
       try {
         in.close();

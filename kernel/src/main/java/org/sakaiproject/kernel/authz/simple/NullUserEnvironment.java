@@ -127,4 +127,11 @@ public class NullUserEnvironment implements UserEnvironment {
   public String toString() {
     return "User: "+getUser();
   }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#setProtected(boolean)
+   */
+  public void setProtected(boolean b) {    
+  }
 }

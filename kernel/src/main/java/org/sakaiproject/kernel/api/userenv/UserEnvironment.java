@@ -91,4 +91,10 @@ public interface UserEnvironment extends Sealable {
    */
   UserInfo getUserInfo();
 
+  /**
+   * Protects the userEnvironment for privacy purposes.
+   * @param b
+   */
+  void setProtected(boolean b);
+
 }
