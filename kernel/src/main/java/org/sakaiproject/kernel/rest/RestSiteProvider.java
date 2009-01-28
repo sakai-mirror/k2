@@ -59,6 +59,8 @@ public class RestSiteProvider implements RestProvider {
 
   private static final String CREATE = "create";
   private static final String GET = "get";
+  private static final String ADD_OWNER = "addOwner";
+  private static final String REMOVE_OWNER = "removeOwner";
   private static final String[] PERM_FULL = { "read", "write", "delete" };
 
   private final SiteService siteService;
@@ -98,6 +100,13 @@ public class RestSiteProvider implements RestProvider {
         "Accepts POST to create a site, see the section on Create for details");
     DESC.addURLTemplate("/rest/" + KEY + "/" + GET + "/<siteId>",
         "Accepts GET to check if a site exists, see the secion on Check ID");
+    DESC.addURLTemplate("/rest/" + KEY + "/" + ADD_OWNER + "/<siteId>/<userID>",
+    "Accepts POST to add the specified user id as an owner to the site id, " +
+    "the current user must be a owner of the site.");
+    DESC.addURLTemplate("/rest/" + KEY + "/" + REMOVE_OWNER + "/<siteId>/<userID>",
+        "Accepts POST to remove the specified user id as an owner to the site id, " +
+        "the current user must be a owner of the site, and there must be at least 1 owner after the specified user" +
+        "is removed from the list of owners.");
     DESC.addSection(4, "GET", "");
     DESC.addParameter(Params.ID, "The Site ID");
     DESC.addParameter(Params.NAME, "The Site Name");
@@ -148,6 +157,10 @@ public class RestSiteProvider implements RestProvider {
           map = doCreate(req, resp);
         } else if (GET.equals(elements[1])) {
           map = doGet(req, resp, elements.length > 2 ? elements[2] : null);
+        } else if (ADD_OWNER.equals(elements[1])) {
+          map = doAddOwner(req, resp, elements.length > 2 ? elements[2] : null,elements.length > 3 ? elements[3] : null);
+        } else if (REMOVE_OWNER.equals(elements[1])) {
+          map = doRemoveOwner(req, resp, elements.length > 2 ? elements[2] : null,elements.length > 3 ? elements[3] : null);
         } else {
           resp.reset();
           resp.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
@@ -165,6 +178,7 @@ public class RestSiteProvider implements RestProvider {
       throw new ServletException(ex.getMessage(),ex);
     }
   }
+
 
   /**
    * {@inheritDoc}
@@ -274,4 +288,156 @@ public class RestSiteProvider implements RestProvider {
       return responseMap;
     }
   }
+  
+  /**
+   * @param req
+   * @param resp
+   * @param string
+   * @param string2
+   * @return
+   * @throws IOException 
+   */
+  private Map<String, Object> doRemoveOwner(HttpServletRequest request,
+      HttpServletResponse response, String siteId, String userId) throws IOException {
+    Session session = sessionManagerService.getCurrentSession();
+    if ( session == null )  {
+      response.reset();
+      response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+      return null;
+    }
+    User user = session.getUser();
+    if ( user == null || user instanceof AnonUser )  {
+      response.reset();
+      response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+      return null;
+    }
+    if ( siteId == null || siteId.trim().length() == 0 ) {
+      response.reset();
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Site ID Must be specified");
+      return null;
+    }
+    if ( userId == null || userId.trim().length() == 0 ) {
+      response.reset();
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, "User ID Must be specified");
+      return null;
+    }
+    
+    SiteBean siteBean = siteService.getSite(siteId);
+    if ( siteBean == null ) {
+      response.reset();
+      response.sendError(HttpServletResponse.SC_NOT_FOUND, "Site "+siteId+" not found");
+      return null;
+    }
+    
+    String[] owners = siteBean.getOwners();
+    String userUuid = user.getUuid();
+    boolean isOwner = false;
+    int i = 0;
+    for ( String owner : owners ) {
+      if ( userUuid.equals(owner) ) {
+        isOwner = true;
+      }
+      if ( !userId.equals(owner) ) {
+        i++;
+      }
+    }
+    if ( !isOwner ) {
+      throw new SecurityException("Not an owner of this site "+siteId);
+    }
+    if ( i < 1 ) {
+      throw new SecurityException("A site must have at least one owner ");
+    }
+    if ( i == owners.length ) {
+      response.reset();
+      response.sendError(HttpServletResponse.SC_NOT_FOUND, "User "+userId+" is not an owner of "+siteId);
+      return null;
+    }
+    owners = StringUtils.removeString(owners, userId);
+    siteBean.setOwners(owners);
+    
+    siteService.saveSite(siteBean);
+    
+    
+    Map<String , Object> responseMap = new HashMap<String, Object>();
+    responseMap.put("response","OK");
+    return responseMap;
+  }
+
+  /**
+   * @param req
+   * @param resp
+   * @param string
+   * @param string2
+   * @return
+   * @throws IOException 
+   */
+  private Map<String, Object> doAddOwner(HttpServletRequest request,
+      HttpServletResponse response, String siteId, String userId) throws IOException {
+    Session session = sessionManagerService.getCurrentSession();
+    if ( session == null )  {
+      response.reset();
+      response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+      return null;
+    }
+    User user = session.getUser();
+    if ( user == null || user instanceof AnonUser )  {
+      response.reset();
+      response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+      return null;
+    }
+    if ( siteId == null || siteId.trim().length() == 0 ) {
+      response.reset();
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Site ID Must be specified");
+      return null;
+    }
+    if ( userId == null || userId.trim().length() == 0 ) {
+      response.reset();
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, "User ID Must be specified");
+      return null;
+    }
+    
+    SiteBean siteBean = siteService.getSite(siteId);
+    if ( siteBean == null ) {
+      response.reset();
+      response.sendError(HttpServletResponse.SC_NOT_FOUND, "Site "+siteId+" not found");
+      return null;
+    }
+    
+    String[] owners = siteBean.getOwners();
+    String userUuid = user.getUuid();
+    boolean isOwner = false;
+    int i = 0;
+    for ( String owner : owners ) {
+      if ( userUuid.equals(owner) ) {
+        isOwner = true;
+      }
+      if (!userId.equals(owner) ) {
+        i++;
+      }
+    }
+    if ( !isOwner ) {
+      throw new SecurityException("Not an owner of this site "+siteId);
+    }
+    if ( i < 1 ) {
+      throw new SecurityException("A site must have at least one owner ");
+    }
+    if ( i != owners.length ) {
+      response.reset();
+      response.sendError(HttpServletResponse.SC_CONFLICT, "User "+userId+" is already an owner of "+siteId);
+      return null;
+    }
+    owners = StringUtils.addString(owners, userId);
+    siteBean.setOwners(owners);
+    
+    // need to add the site to the userenv object for the user in question
+    
+    siteService.saveSite(siteBean);
+    
+    
+    Map<String , Object> responseMap = new HashMap<String, Object>();
+    responseMap.put("response","OK");
+    return responseMap;
+  }
+
+  
 }
