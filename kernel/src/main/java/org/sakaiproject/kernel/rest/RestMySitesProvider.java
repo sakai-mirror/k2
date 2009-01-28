@@ -26,11 +26,6 @@ import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
-import org.sakaiproject.kernel.api.authz.SubjectPermissions;
-import org.sakaiproject.kernel.api.authz.SubjectStatement;
-import org.sakaiproject.kernel.api.authz.UserSubjects;
-import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
-import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.session.Session;
@@ -39,29 +34,15 @@ import org.sakaiproject.kernel.api.site.SiteService;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.authz.simple.SimpleJcrUserEnvironmentResolverService;
-import org.sakaiproject.kernel.model.GroupMembershipBean;
 import org.sakaiproject.kernel.model.SiteBean;
-import org.sakaiproject.kernel.model.SiteIndexBean;
-import org.sakaiproject.kernel.model.SubjectPermissionBean;
-import org.sakaiproject.kernel.util.IOUtils;
-import org.sakaiproject.kernel.util.PathUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -81,7 +62,6 @@ public class RestMySitesProvider implements RestProvider {
   private static final Log LOG = LogFactory.getLog(RestMySitesProvider.class);
   private SessionManagerService sessionManagerService;
   private BeanConverter beanConverter;
-  private String userEnvironmentBase;
 
   public static final String JCR_USERENV_BASE = "jcruserenv.base"; // / add to
   // shared api
@@ -96,14 +76,12 @@ public class RestMySitesProvider implements RestProvider {
   private static final String OUTPUT_SITES_KEY = "entry";
 
   private SimpleJcrUserEnvironmentResolverService simpleJcrUserEnvironmentResolverService;
-  private EntityManager entityManager;
   private SiteService siteService;
 
   @Inject
   public RestMySitesProvider(
       RegistryService registryService,
       SessionManagerService sessionManagerService,
-      EntityManager entityManager,
       SimpleJcrUserEnvironmentResolverService simpleJcrUserEnvironmentResolverService,
       @Named(BeanConverter.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
       @Named(JCR_USERENV_BASE) String userEnvironmentBase,
@@ -113,9 +91,7 @@ public class RestMySitesProvider implements RestProvider {
     registry.add(this);
     this.sessionManagerService = sessionManagerService;
     this.beanConverter = beanConverter;
-    this.userEnvironmentBase = userEnvironmentBase;
     this.simpleJcrUserEnvironmentResolverService = simpleJcrUserEnvironmentResolverService;
-    this.entityManager = entityManager;
     this.siteService = siteService;
   }
 
@@ -322,7 +298,6 @@ public class RestMySitesProvider implements RestProvider {
         LOG.debug("getting subjects as sites....");
       }
 
-      String id = null;
       SiteBean memSite = null;
       Set<SiteBean> sites = new HashSet<SiteBean>();
 
