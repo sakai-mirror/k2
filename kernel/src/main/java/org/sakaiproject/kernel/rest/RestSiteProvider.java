@@ -157,9 +157,9 @@ public class RestSiteProvider implements RestProvider {
           map = doCreate(req, resp);
         } else if (GET.equals(elements[1])) {
           map = doGet(req, resp, elements.length > 2 ? elements[2] : null);
-        } else if (ADD_OWNER.equals(elements[1])) {
+        } else if (ADD_OWNER.equals(elements[1]) && "POST".equals(req.getMethod())) {
           map = doAddOwner(req, resp, elements.length > 2 ? elements[2] : null,elements.length > 3 ? elements[3] : null);
-        } else if (REMOVE_OWNER.equals(elements[1])) {
+        } else if (REMOVE_OWNER.equals(elements[1]) && "POST".equals(req.getMethod())) {
           map = doRemoveOwner(req, resp, elements.length > 2 ? elements[2] : null,elements.length > 3 ? elements[3] : null);
         } else {
           resp.reset();
@@ -212,7 +212,7 @@ public class RestSiteProvider implements RestProvider {
     if (siteId == null || siteId.trim().length() == 0) {
       resp.reset();
       resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
-          " No Site ID specified ");
+          "No Site ID specified");
       return null;
     }
     SiteBean siteBean = siteService.getSite(siteId);
@@ -225,30 +225,23 @@ public class RestSiteProvider implements RestProvider {
     return null;
   }
 
-  private Map<String, Object> doCreate(HttpServletRequest req,
-      HttpServletResponse resp) throws IOException {
+  private Map<String, Object> doCreate(HttpServletRequest request,
+      HttpServletResponse response) throws IOException {
     // grab the site id and build the site node path.
-    String id = req.getParameter(Params.ID);
+    User user = getAuthenticatedUser(request,response);
+    if ( user == null ) {
+      return null;
+    }
+   String id = request.getParameter(Params.ID);
+   
 
     // check for an existing site
     if (siteService.siteExists(id)) {
-      resp.reset();
-      resp.sendError(HttpServletResponse.SC_CONFLICT);
+      response.reset();
+      response.sendError(HttpServletResponse.SC_CONFLICT);
       return null;
     } else {
-      
       Session session = sessionManagerService.getCurrentSession();
-      if ( session == null )  {
-        resp.reset();
-        resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-        return null;
-      }
-      User user = session.getUser();
-      if ( user == null || user instanceof AnonUser )  {
-        resp.reset();
-        resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-        return null;
-      }
       UserEnvironmentBean userEnv = (UserEnvironmentBean) userEnvironmentResolverService.resolve(session);
       UserEnvironmentBean newUserEnvironment = new UserEnvironmentBean(subjectPermissionService,0,registryService);
       newUserEnvironment.copyFrom(userEnv);
@@ -259,9 +252,9 @@ public class RestSiteProvider implements RestProvider {
       newUserEnvironment.setSubjects(subjects);
       
             // get the rest of the site info
-      String name = req.getParameter(Params.NAME);
-      String description = req.getParameter(Params.DESCRIPTION);
-      String type = req.getParameter(Params.TYPE);
+      String name = request.getParameter(Params.NAME);
+      String description = request.getParameter(Params.DESCRIPTION);
+      String type = request.getParameter(Params.TYPE);
 
       // create the site
       SiteBean site = new SiteBean();
@@ -299,16 +292,8 @@ public class RestSiteProvider implements RestProvider {
    */
   private Map<String, Object> doRemoveOwner(HttpServletRequest request,
       HttpServletResponse response, String siteId, final String userId) throws IOException {
-    Session session = sessionManagerService.getCurrentSession();
-    if ( session == null )  {
-      response.reset();
-      response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-      return null;
-    }
-    User user = session.getUser();
-    if ( user == null || user instanceof AnonUser )  {
-      response.reset();
-      response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+    User user = getAuthenticatedUser(request,response);
+    if ( user == null ) {
       return null;
     }
     if ( siteId == null || siteId.trim().length() == 0 ) {
@@ -394,16 +379,8 @@ public class RestSiteProvider implements RestProvider {
    */
   private Map<String, Object> doAddOwner(HttpServletRequest request,
       HttpServletResponse response, String siteId, final String userId) throws IOException {
-    Session session = sessionManagerService.getCurrentSession();
-    if ( session == null )  {
-      response.reset();
-      response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-      return null;
-    }
-    User user = session.getUser();
-    if ( user == null || user instanceof AnonUser )  {
-      response.reset();
-      response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+    User user = getAuthenticatedUser(request,response);
+    if ( user == null ) {
       return null;
     }
     if ( siteId == null || siteId.trim().length() == 0 ) {
@@ -477,6 +454,32 @@ public class RestSiteProvider implements RestProvider {
     Map<String , Object> responseMap = new HashMap<String, Object>();
     responseMap.put("response","OK");
     return responseMap;
+  }
+
+  /**
+   * @param request
+   * @param response
+   * @return
+   * @throws IOException 
+   */
+  private User getAuthenticatedUser(HttpServletRequest request,
+      HttpServletResponse response) throws IOException {
+    Session session = sessionManagerService.getCurrentSession();
+    System.err.println("Session is "+session);
+    if ( session == null )  {
+      response.reset();
+      response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+      return null;
+    }
+    User user = session.getUser();
+    System.err.println("User "+user);
+    if ( user == null || user instanceof AnonUser || user.getUuid() == null)  {
+      response.reset();
+      response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+      return null;
+    }
+    System.err.println("User ID = "+user.getUuid());
+    return user;
   }
 
   
