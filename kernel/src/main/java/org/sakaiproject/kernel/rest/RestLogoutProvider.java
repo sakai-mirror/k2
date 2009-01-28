@@ -84,11 +84,17 @@ public class RestLogoutProvider implements RestProvider {
         .setShortDescription("The Logout service logs the user out ");
     DESCRIPTION
         .addURLTemplate("*",
-            "The service is selected by /rest/me any training path will be ignored");
+            "The service is selected by /rest/logout any training path will be ignored. " +
+            "On POST the user will be logged out if the user is logged in, if they are not logged in a 200 will " +
+            "still be returned, but there will be a Not Logged In in the response rather than OK ");
     DESCRIPTION
         .addResponse(
             "200",
             "If the user is logged out, there is a  { \"response\" : \"OK\" } with a status code of 200 ");
+    DESCRIPTION
+    .addResponse(
+        "405",
+        "If the service is invoked with a GET ");
 
   }
 

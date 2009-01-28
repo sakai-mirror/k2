@@ -107,7 +107,6 @@ public class RestUserProvider implements RestProvider {
     
     this.anonymousAccounting = "true".equals(anonymousAccounting);
     
-System.err.println("@#@######@########@######### anonymous: " + anonymousAccounting);
   }
 
   /**
@@ -350,8 +349,6 @@ System.err.println("@#@######@########@######### anonymous: " + anonymousAccount
 
       // save the template
       String userEnv = beanConverter.convertToString(userEnvironmentBean);
-      System.err.println("New User at " + userEnvironmentPath + " Is "
-          + userEnv);
       bais = new ByteArrayInputStream(userEnv.getBytes("UTF-8"));
       Node userEnvNode = jcrNodeFactoryService.setInputStream(
           userEnvironmentPath, bais);
