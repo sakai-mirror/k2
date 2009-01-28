@@ -1,23 +1,20 @@
-/**********************************************************************************
- * $URL$
- * $Id$
- ***********************************************************************************
+/*
+ * Licensed to the Sakai Foundation (SF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The SF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
  *
- * Copyright (c) 2007, 2008 Sakai Foundation
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.osedu.org/licenses/ECL-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- **********************************************************************************/
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 
 package org.sakaiproject.kernel.api.jcr;
 
@@ -34,7 +31,8 @@ import javax.jcr.Session;
 import javax.jcr.observation.ObservationManager;
 
 /**
- * @author ieb
+ * The base JCR Service, containing the methods necessary to interact with a JCR
+ * implementation.
  */
 @ImplementedBy(JCRServiceImpl.class)
 @Singleton
@@ -66,6 +64,7 @@ public interface JCRService {
   public static final String NAME_CREDENTIALS = "credentials@org.sakaiproject.kernel.api.jcr.JCRService";
 
   /**
+   * Get a session, shout return the same one in the same request scope.
    * @return
    * @throws LoginException
    * @throws RepositoryException
@@ -73,6 +72,7 @@ public interface JCRService {
   Session getSession() throws LoginException, RepositoryException;
 
   /**
+   * Login to the JCR and return a session.
    * @return
    * @throws LoginException
    * @throws RepositoryException
@@ -80,6 +80,7 @@ public interface JCRService {
   Session login() throws LoginException, RepositoryException;
 
   /**
+   * Logout of the JCR, expire the session and unbind from the current thread.
    * @return
    * @throws LoginException
    * @throws RepositoryException
@@ -87,17 +88,16 @@ public interface JCRService {
   void logout() throws LoginException, RepositoryException;
 
   /**
-   * Get the repository
-   * 
+   * Get the repository.
    * @return
    */
   Repository getRepository();
 
   /**
    * Set the current thread session and returns the previous one, setting to
-   * null will clear the current session
+   * null will clear the current session.
    * 
-   * @param session
+   * @param session the session replace the current session with.
    * @return
    */
   Session setSession(Session session);
@@ -115,21 +115,23 @@ public interface JCRService {
   boolean needsMixin(Node n, String mixin) throws RepositoryException;
 
   /**
-   * Return true of the session is active
+   * Return true of the session is active.
    * 
    * @return
    */
   boolean hasActiveSession();
 
   /**
-   * The name of the default JCR workspace
+   * The name of the default JCR workspace.
    * 
    * @return
    */
   String getDefaultWorkspace();
 
   /**
-   * Get the ObservationManager from the JCR, this can be used to register events.
+   * Get the ObservationManager from the JCR, this can be used to register
+   * events.
+   * 
    * @return
    */
   ObservationManager getObservationManager();

@@ -1,8 +1,8 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one
+ * Licensed to the Sakai Foundation (SF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
+ * regarding copyright ownership. The SF licenses this file
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
@@ -43,6 +43,7 @@ public interface SubjectPermissionService {
       Map<String, SubjectPermissions> subjectPermissionMap, String subjectToken);
 
   /**
+   * Expire a subject permission from any caches.
    * @param subjectToken
    */
   void expire(String subjectToken);

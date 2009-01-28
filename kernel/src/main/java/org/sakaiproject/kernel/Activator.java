@@ -1,8 +1,8 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one
+ * Licensed to the Sakai Foundation (SF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
+ * regarding copyright ownership. The SF licenses this file
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
@@ -53,7 +53,7 @@ import java.util.Properties;
 import javax.persistence.EntityManager;
 
 /**
- *
+ * Activates the Kernel Component.
  */
 public class Activator implements ComponentActivator {
 
@@ -71,9 +71,8 @@ public class Activator implements ComponentActivator {
   private ServiceManager serviceManager;
   private static Injector injector;
 
-  /*
-   * (non-Javadoc)
-   * 
+  /**
+   * Start the Kernel component, invoke the Guice injector and export services. 
    * @see
    * org.sakaiproject.kernel.api.ComponentActivator#activate(org.sakaiproject
    * .kernel.api.Kernel)
@@ -114,10 +113,11 @@ public class Activator implements ComponentActivator {
   }
 
   /**
-   * @param injector
-   * @param serviceManager
-   * @param serviceClass
-   * @throws ServiceManagerException
+   * Export a service from the injector to the Service manager.
+   * @param injector the kernel component injector.
+   * @param serviceManager the service manager form the bootstrap.
+   * @param serviceClass the class to export.
+   * @throws ServiceManagerException 
    */
   private void exportService(Class<?> serviceClass)
       throws ServiceManagerException {
@@ -135,9 +135,8 @@ public class Activator implements ComponentActivator {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * 
+  /**
+   * Deactivate the component.
    * @see org.sakaiproject.kernel.api.ComponentActivator#deactivate()
    */
   public void deactivate() {
@@ -148,6 +147,7 @@ public class Activator implements ComponentActivator {
   }
 
   /**
+   * Remove a service from the service manager.
    * @param serviceClass
    */
   private void retractService(Class<?> serviceClass) {

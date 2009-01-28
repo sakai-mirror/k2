@@ -1,8 +1,8 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one
+ * Licensed to the Sakai Foundation (SF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
+ * regarding copyright ownership. The SF licenses this file
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
@@ -21,11 +21,27 @@ package org.sakaiproject.kernel.api.memory;
  * Defines the scope of the cache
  */
 public enum CacheScope {
+  /**
+   * Bind the Cache to the request scope. 
+   */
   REQUEST(),
   /**
+   * Bind a cache to the Thread, forever.
    * WARNING: use with extreme caution, as any classes referenced in this type
    * of cache will keep classloaders open and result in memory leaks
    */
-  THREAD(), INSTANCE(), CLUSTERINVALIDATED(), CLUSTERREPLICATED();
+  THREAD(), 
+  /**
+   * Bind the cache to the instance, one per instance.
+   */
+  INSTANCE(), 
+  /**
+   * Make the cache bound to the instance, but accept cluster wide invalidations.
+   */
+  CLUSTERINVALIDATED(), 
+  /**
+   * Replicate the cache over the whole cluster. 
+   */
+  CLUSTERREPLICATED();
 
 }

@@ -1,8 +1,8 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one
+ * Licensed to the Sakai Foundation (SF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
+ * regarding copyright ownership. The SF licenses this file
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
@@ -53,14 +53,16 @@ public interface ReferencedObject {
   String getKey();
 
   /**
-   * @param removeAcs
+   * Remove an access control statement to the ACL on this node.
+   * @param removeAcs the ACS to remove.
    * @throws UpdateFailedException
    */
   void removeAccessControlStatement(AccessControlStatement removeAcs)
       throws UpdateFailedException;
 
   /**
-   * @param newAcs
+   * Add an access control statement to the objects ACL.
+   * @param newAcs the ACS to add.
    * @throws UpdateFailedException
    */
   void addAccessControlStatement(AccessControlStatement newAcs)

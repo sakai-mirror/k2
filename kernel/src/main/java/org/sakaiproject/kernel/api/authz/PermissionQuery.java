@@ -1,8 +1,8 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one
+ * Licensed to the Sakai Foundation (SF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
+ * regarding copyright ownership. The SF licenses this file
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
@@ -23,8 +23,17 @@ package org.sakaiproject.kernel.api.authz;
  */
 public interface PermissionQuery {
 
+  /**
+   * Standard read statement key. (there can be more than read,write,remove)
+   */
   public static final String READ = "read";
+  /**
+   * Standard write statement key. (there can be more than read,write,remove)
+   */
   public static final String WRITE = "write";
+  /**
+   * Standard remove statement key. (there can be more than read,write,remove)
+   */
   public static final String REMOVE = "remove";
 
   /**

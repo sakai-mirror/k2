@@ -1,8 +1,8 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one
+ * Licensed to the Sakai Foundation (SF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
+ * regarding copyright ownership. The SF licenses this file
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
@@ -36,7 +36,6 @@ import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.JCRIdPwEvidence;
 import org.sakaiproject.kernel.model.UserEnvironmentBean;
 import org.sakaiproject.kernel.user.AnonUser;
-import org.sakaiproject.kernel.user.AuthenticationResolverServiceImpl;
 import org.sakaiproject.kernel.user.UserFactoryService;
 import org.sakaiproject.kernel.user.jcr.JcrAuthenticationResolverProvider;
 import org.sakaiproject.kernel.util.IOUtils;
