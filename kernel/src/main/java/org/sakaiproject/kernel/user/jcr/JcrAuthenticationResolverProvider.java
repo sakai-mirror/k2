@@ -23,12 +23,18 @@ import com.google.inject.name.Named;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
+import org.sakaiproject.kernel.api.session.Session;
+import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.user.Authentication;
 import org.sakaiproject.kernel.api.user.AuthenticationManagerProvider;
 import org.sakaiproject.kernel.api.user.AuthenticationResolverProvider;
 import org.sakaiproject.kernel.api.user.IdPwPrincipal;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.user.UserResolverService;
+import org.sakaiproject.kernel.api.userenv.UserEnvironment;
+import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
+import org.sakaiproject.kernel.jcr.jackrabbit.sakai.JCRIdPwEvidence;
+import org.sakaiproject.kernel.user.AnonUser;
 import org.sakaiproject.kernel.user.AuthenticationImpl;
 import org.sakaiproject.kernel.user.AuthenticationResolverServiceImpl;
 import org.sakaiproject.kernel.user.UserFactoryService;
@@ -51,6 +57,8 @@ public class JcrAuthenticationResolverProvider implements
   private String userEnvironmentBase;
   private JCRNodeFactoryService jcrNodeFactoryService;
   private UserResolverService userResolverService;
+  private SessionManagerService sessionManagerService;
+  private UserEnvironmentResolverService userEnvironmentResolverService;
 
   /**
    * @param userResolverService
@@ -60,11 +68,14 @@ public class JcrAuthenticationResolverProvider implements
   public JcrAuthenticationResolverProvider(
       JCRNodeFactoryService jcrNodeFactoryService,
       @Named(JcrUserFactoryService.JCR_USERENV_BASE) String userEnvironmentBase,
-      UserResolverService userResolverService, RegistryService registryService) {
+      UserResolverService userResolverService, RegistryService registryService,
+      SessionManagerService sessionManagerService,
+      UserEnvironmentResolverService userEnvironmentResolverService) {
     this.jcrNodeFactoryService = jcrNodeFactoryService;
     this.userEnvironmentBase = userEnvironmentBase;
     this.userResolverService = userResolverService;
-
+    this.sessionManagerService = sessionManagerService;
+    this.userEnvironmentResolverService = userEnvironmentResolverService;
     // register as a resolver and a manager
     Registry<String, AuthenticationResolverProvider> authResolverRegistry = registryService
         .getRegistry(AuthenticationResolverServiceImpl.PROVIDER_REGISTRY);
@@ -86,8 +97,7 @@ public class JcrAuthenticationResolverProvider implements
       // resolve the location of the users security file, which is the Userenv
       // file
       IdPwPrincipal idPwPrincipal = (IdPwPrincipal) principal;
-      System.err.println("Authenticating "+idPwPrincipal.getIdentifier()+":"+idPwPrincipal.getPassword());
-       User user = userResolverService.resolve(idPwPrincipal.getIdentifier());
+      User user = userResolverService.resolve(idPwPrincipal.getIdentifier());
       if (user != null) {
         try {
           String userEnvPath = getUserEnvPath(user.getUuid());
@@ -106,7 +116,7 @@ public class JcrAuthenticationResolverProvider implements
         }
       }
       throw new SecurityException("Authentication Failed for user "
-          + idPwPrincipal.getIdentifier()+": not known to the system ");
+          + idPwPrincipal.getIdentifier() + ": not known to the system ");
     }
     throw new SecurityException("Authentication Principal " + principal
         + " not suitable for " + this.getClass().getName());
@@ -118,16 +128,40 @@ public class JcrAuthenticationResolverProvider implements
    * @see org.sakaiproject.kernel.api.user.AuthenticationManagerProvider#setAuthentication(java.security.Principal,
    *      java.security.Principal)
    */
-  public void setAuthentication(Principal oldPrincipal, Principal newPrincipal)
-      throws SecurityException {
-    if (oldPrincipal instanceof IdPwPrincipal
-        && newPrincipal instanceof IdPwPrincipal) {
+  public boolean setAuthentication(Principal oldPrincipal,
+      Principal newPrincipal) throws SecurityException {
+    if (oldPrincipal instanceof JCRIdPwEvidence
+        && newPrincipal instanceof JCRIdPwEvidence) {
+
+      Session session = sessionManagerService.getCurrentSession();
+      if (session == null) {
+        throw new SecurityException("User Has Not been logged in");
+      }
+      UserEnvironment ue = userEnvironmentResolverService.resolve(session);
+      if (ue == null) {
+        throw new SecurityException("User Has Not been logged in");
+      }
+      User thisUser = ue.getUser();
+      if (thisUser == null || thisUser instanceof AnonUser) {
+        throw new SecurityException("User Has Not been logged in");
+      }
+      boolean superUser = ue.isSuperUser();
+
       IdPwPrincipal oldIdPwPrincipal = (IdPwPrincipal) oldPrincipal;
       IdPwPrincipal newIdPwPrincipal = (IdPwPrincipal) newPrincipal;
       if (oldIdPwPrincipal.getIdentifier().equals(
           newIdPwPrincipal.getIdentifier())) {
         User user = userResolverService.resolve(oldIdPwPrincipal
             .getIdentifier());
+        if (thisUser.getUuid().equals(user.getUuid())) {
+          // even the super user must specify the old password to change their
+          // own.
+          superUser = false;
+        } else if (!superUser) {
+          throw new SecurityException(
+              "Only a super user can change others passwords");
+        }
+
         String userEnvPath = getUserEnvPath(user.getUuid());
         try {
           Node n = jcrNodeFactoryService.getNode(userEnvPath);
@@ -138,11 +172,11 @@ public class JcrAuthenticationResolverProvider implements
             Property p = n.getProperty(JCRPASSWORDHASH);
             String hash = p.getString();
             String nonce = StringUtils.sha1Hash(oldIdPwPrincipal.getPassword());
-            if (nonce.equals(hash)) {
+            if (superUser || nonce.equals(hash)) {
               nonce = StringUtils.sha1Hash(newIdPwPrincipal.getPassword());
               n.setProperty(JCRPASSWORDHASH, nonce);
               n.save();
-              return; // success
+              return true; // success
             } else {
               throw new SecurityException(
                   "Old Passwords do not match, password was not changed ");
@@ -157,8 +191,7 @@ public class JcrAuthenticationResolverProvider implements
             "Princiapls do not reference the same user, password not changed ");
       }
     }
-    throw new SecurityException("Principals not of correct type for "
-        + JcrAuthenticationResolverProvider.class.getName());
+    return false;
   }
 
   /**
@@ -184,7 +217,6 @@ public class JcrAuthenticationResolverProvider implements
    */
   public String getUserEnvPath(String userId) {
     String prefix = PathUtils.getUserPrefix(userId);
-    return userEnvironmentBase + prefix
-        + UserFactoryService.USERENV;
+    return userEnvironmentBase + prefix + UserFactoryService.USERENV;
   }
 }

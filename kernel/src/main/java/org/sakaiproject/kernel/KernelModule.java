@@ -207,6 +207,10 @@ public class KernelModule extends AbstractModule {
     bind(AuthenticationResolverService.class).to(
         AuthenticationResolverServiceImpl.class).in(Scopes.SINGLETON);
 
+    // bind in the authn manager
+    bind(AuthenticationManagerService.class).to(
+        AuthenticationResolverServiceImpl.class).in(Scopes.SINGLETON);
+
     // then bind the provider container to the head
     bind(AuthenticationResolverService.class).annotatedWith(
         Names.named(AuthenticationResolverServiceImpl.RESOLVER_CHAIN_HEAD)).to(

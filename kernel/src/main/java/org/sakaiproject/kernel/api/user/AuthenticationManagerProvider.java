@@ -36,7 +36,9 @@ public interface AuthenticationManagerProvider extends Provider<String>{
    *           is the principals are not of the right type, or the user does not
    *           exist, or the old principal does not authenticate the user
    *           correctly.
+   * @return true if the authentication provider performed the action, false
+   *         otherwise.
    */
-  void setAuthentication(Principal oldPrincipal, Principal newPrincipal)
+  boolean setAuthentication(Principal oldPrincipal, Principal newPrincipal)
       throws SecurityException;
 }

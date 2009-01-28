@@ -71,8 +71,9 @@ public class NullAuthenticationResolverServiceImpl implements
    * {@inheritDoc}
    * @see org.sakaiproject.kernel.api.user.AuthenticationManagerService#setAuthentication(java.security.Principal, java.security.Principal)
    */
-  public void setAuthentication(Principal oldPrincipal, Principal newPrincipal)
+  public boolean setAuthentication(Principal oldPrincipal, Principal newPrincipal)
       throws SecurityException {
+    return true;
   }
 
 }

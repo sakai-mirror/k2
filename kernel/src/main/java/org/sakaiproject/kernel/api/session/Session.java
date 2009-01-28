@@ -27,16 +27,6 @@ import javax.servlet.http.HttpSession;
  */
 public interface Session extends HttpSession {
 
-  /**
-   * The attribute name of the resolved user object
-   */
-  public static final String USER = "_u";
-  
-  /**
-   * The attribute name of the unresolved internal user id, from the
-   * authentication object.
-   */
-  public static final String UNRESOLVED_UID = "_uu";
 
   /**
    * @return the current user, or null if there is none.

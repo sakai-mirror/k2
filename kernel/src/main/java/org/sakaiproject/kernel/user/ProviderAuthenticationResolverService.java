@@ -62,6 +62,7 @@ public class ProviderAuthenticationResolverService implements
    */
   public Authentication authenticate(Principal principal)
       throws SecurityException {
+
     List<AuthenticationResolverProvider> providers = registry.getList();
     if (providers.size() == 0) {
       return nullService.authenticate(principal);
@@ -69,7 +70,6 @@ public class ProviderAuthenticationResolverService implements
     StringBuilder messages = new StringBuilder();
     for (AuthenticationResolverProvider authN : providers) {
       try {
-        System.err.println("Trying to authenticate");
         return authN.authenticate(principal);
       } catch (SecurityException se) {
         se.printStackTrace();
@@ -87,7 +87,7 @@ public class ProviderAuthenticationResolverService implements
    * {@inheritDoc}
    * @see org.sakaiproject.kernel.api.user.AuthenticationManagerService#setAuthentication(java.security.Principal, java.security.Principal)
    */
-  public void setAuthentication(Principal oldPrincipal, Principal newPrincipal)
+  public boolean setAuthentication(Principal oldPrincipal, Principal newPrincipal)
       throws SecurityException {
     List<AuthenticationManagerProvider> providers = managerRegistry.getList();
     if (providers.size() == 0) {
@@ -96,7 +96,9 @@ public class ProviderAuthenticationResolverService implements
     StringBuilder messages = new StringBuilder();
     for (AuthenticationManagerProvider authN : providers) {
       try {
-        authN.setAuthentication(oldPrincipal, newPrincipal);
+        if ( authN.setAuthentication(oldPrincipal, newPrincipal) ) {
+          return true;
+        }
       } catch (SecurityException se) {
         if (messages.length() == 0) {
           messages.append("Faield to set authentication:\n");
@@ -104,6 +106,9 @@ public class ProviderAuthenticationResolverService implements
         messages.append("\t").append(authN).append(" said ").append(
             se.getMessage()).append("\n");
       }
+    }
+    if ( messages.length() == 0 ) {
+      return false;
     }
     throw new SecurityException(messages.toString());
   }

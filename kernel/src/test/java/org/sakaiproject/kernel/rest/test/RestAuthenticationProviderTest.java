@@ -57,12 +57,10 @@ public class RestAuthenticationProviderTest {
     HttpServletRequest request = createMock(HttpServletRequest.class);
     expect(request.getMethod()).andReturn("GET").anyTimes();
     expect(request.getParameter("l")).andReturn("0").anyTimes();
-    expect(request.getRemoteUser()).andReturn(null).anyTimes();
-    StringWriter sw = new StringWriter();
-    PrintWriter pw = new PrintWriter(sw);
-    expect(response.getWriter()).andReturn(pw).anyTimes();
-    response.setContentType(RestProvider.CONTENT_TYPE);
-    expectLastCall().anyTimes();
+    response.reset();
+    expectLastCall();
+    response.sendError(405);
+    expectLastCall();
 
     replay(request, response);
 
@@ -70,7 +68,6 @@ public class RestAuthenticationProviderTest {
         registryService);
     a.dispatch(new String[0], request, response);
 
-    assertEquals("{response: \"OK\"}", sw.toString());
 
     verify(request, response);
   }
@@ -84,26 +81,20 @@ public class RestAuthenticationProviderTest {
     expect(request.getMethod()).andReturn("GET").anyTimes();
 
     expect(request.getParameter("l")).andReturn("1").anyTimes();
-    expect(request.getSession()).andReturn(session).anyTimes();
-    AuthenticationImpl authN = new AuthenticationImpl(new InternalUser("ieb"));
-    expect(request.getAttribute(Authentication.REQUESTTOKEN)).andReturn(authN);
-
-    expect(request.getRemoteUser()).andReturn(null).anyTimes();
-    StringWriter sw = new StringWriter();
-    PrintWriter pw = new PrintWriter(sw);
-    expect(response.getWriter()).andReturn(pw).anyTimes();
-
-    response.setContentType(RestProvider.CONTENT_TYPE);
-    expectLastCall().anyTimes();
-
-    replay(request, response);
+    
+    response.reset();
+    expectLastCall();
+    response.sendError(405);
+    expectLastCall();
+    
+    replay(request, response,session);
     RestAuthenticationProvider a = new RestAuthenticationProvider(
         registryService);
     a.dispatch(new String[0], request, response);
 
-    assertEquals("{response: \"OK\"}", sw.toString());
+//    assertEquals("{\"response\": \"OK\"}", sw.toString());
 
-    verify(request, response);
+    verify(request, response,session);
   }
 
   @Test
@@ -114,11 +105,11 @@ public class RestAuthenticationProviderTest {
     expect(request.getMethod()).andReturn("GET").anyTimes();
 
     expect(request.getParameter("l")).andReturn("1").anyTimes();
-    expect(request.getAttribute(Authentication.REQUESTTOKEN)).andReturn(null);
     response.reset();
     expectLastCall();
-    response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+    response.sendError(405);
     expectLastCall();
+    
     replay(request, response);
     RestAuthenticationProvider a = new RestAuthenticationProvider(
         registryService);
@@ -134,19 +125,16 @@ public class RestAuthenticationProviderTest {
     HttpServletRequest request = createMock(HttpServletRequest.class);
     expect(request.getMethod()).andReturn("POST").anyTimes();
     expect(request.getParameter("l")).andReturn("0").anyTimes();
-    expect(request.getRemoteUser()).andReturn(null).anyTimes();
-    StringWriter sw = new StringWriter();
-    PrintWriter pw = new PrintWriter(sw);
-    expect(response.getWriter()).andReturn(pw).anyTimes();
-    response.setContentType(RestProvider.CONTENT_TYPE);
-    expectLastCall().anyTimes();
+    
+    response.reset();
+    expectLastCall();
+    response.sendError(400,"Please set the parameter l=1 to activate login");
+    expectLastCall();
 
     replay(request, response);
     RestAuthenticationProvider a = new RestAuthenticationProvider(
         registryService);
     a.dispatch(new String[0], request, response);
-
-    assertEquals("{response: \"OK\"}", sw.toString());
 
     verify(request, response);
   }
@@ -163,6 +151,14 @@ public class RestAuthenticationProviderTest {
     expect(request.getParameter("l")).andReturn("1").anyTimes();
     AuthenticationImpl authN = new AuthenticationImpl(new InternalUser("ieb"));
     expect(request.getAttribute(Authentication.REQUESTTOKEN)).andReturn(authN);
+    
+    session.setAttribute("_uu","ieb");
+    expectLastCall();
+    session.removeAttribute("_u");
+    expectLastCall();
+    
+    request.setAttribute("_uuid", null);
+    expectLastCall();
 
     expect(request.getRemoteUser()).andReturn(null).anyTimes();
     StringWriter sw = new StringWriter();
@@ -171,14 +167,14 @@ public class RestAuthenticationProviderTest {
     response.setContentType(RestProvider.CONTENT_TYPE);
     expectLastCall().anyTimes();
 
-    replay(request, response);
+    replay(request, response,session);
     RestAuthenticationProvider a = new RestAuthenticationProvider(
         registryService);
     a.dispatch(new String[0], request, response);
 
-    assertEquals("{response: \"OK\"}", sw.toString());
+    assertEquals("{\"response\": \"OK\"}", sw.toString());
 
-    verify(request, response);
+    verify(request, response,session);
   }
 
   @Test

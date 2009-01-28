@@ -29,8 +29,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
 
 /**
- * An implementation of the Session, where the user is recorded as an
- * attribute.
+ * An implementation of the Session, where the user is recorded as an attribute.
  */
 // TODO: not tested with an authorization
 @SuppressWarnings("deprecation")
@@ -52,7 +51,8 @@ public class SessionImpl implements Session {
    * @param httpRequest
    * @param rsession
    */
-  public SessionImpl(HttpSession baseSession, Authentication authentication, UserResolverService userResolverService) {
+  public SessionImpl(HttpSession baseSession, Authentication authentication,
+      UserResolverService userResolverService) {
     this.userResolverService = userResolverService;
     this.baseSession = baseSession;
     if (authentication != null) {
@@ -69,7 +69,10 @@ public class SessionImpl implements Session {
     User user = (User) getAttribute(USER);
     if (user == null) {
       String uid = (String) getAttribute(UNRESOLVED_UID);
-      user = userResolverService.resolveWithUUID(uid);
+      if (uid != null) {
+        user = userResolverService.resolveWithUUID(uid);
+        removeAttribute(UNRESOLVED_UID);
+      }
       if (user != null) {
         baseSession.setAttribute(USER, user);
       }
@@ -233,6 +236,10 @@ public class SessionImpl implements Session {
     }
     baseSession.setAttribute(name, value);
   }
+  
+  public void setBaseAttribute(String name, Object value ) {
+    baseSession.setAttribute(name, value);
+  }
 
   /**
    * {@inheritDoc}
@@ -245,6 +252,7 @@ public class SessionImpl implements Session {
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.session.Session#removeUser()
    */
   public void removeUser() {

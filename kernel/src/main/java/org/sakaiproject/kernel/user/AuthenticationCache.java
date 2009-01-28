@@ -33,6 +33,7 @@ import org.sakaiproject.kernel.api.user.IdPwPrincipal;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.Principal;
 
 /**
  * Because DAV clients do not understand the concept of secure sessions, a DAV
@@ -65,6 +66,7 @@ public class AuthenticationCache {
     try {
       AuthenticationRecord record = authCache.get(idPrincipal.getIdentifier());
       if (record.withpassword) {
+
         if (idPrincipal instanceof IdPwPrincipal) {
           IdPwPrincipal idPwPrincipal = (IdPwPrincipal) idPrincipal;
           if (MessageDigest.isEqual(record.encodedPassword,
@@ -91,7 +93,7 @@ public class AuthenticationCache {
                   + idPrincipal.getIdentifier() + " failed password check");
             authCache.remove(idPrincipal.getIdentifier());
           }
-        } 
+        }
       }
     } catch (NullPointerException e) {
       // this is ok and generally expected to indicate the value is not in the
@@ -108,6 +110,12 @@ public class AuthenticationCache {
 
   public void putAuthenticationFailure(IdPrincipal principal) {
     putAuthenticationRecord(principal, null);
+  }
+
+  public void expireCache(Principal principal) {
+    if (principal instanceof IdPrincipal) {
+      authCache.remove(((IdPrincipal) principal).getIdentifier()); 
+    }
   }
 
   protected void putAuthenticationRecord(IdPrincipal principal,
@@ -145,7 +153,8 @@ public class AuthenticationCache {
     protected long createTimeInMs;
     protected boolean withpassword;
 
-    public AuthenticationRecord(Authentication authentication, long createTimeInMs) {
+    public AuthenticationRecord(Authentication authentication,
+        long createTimeInMs) {
       this.withpassword = false;
       this.authentication = authentication;
       this.createTimeInMs = createTimeInMs;

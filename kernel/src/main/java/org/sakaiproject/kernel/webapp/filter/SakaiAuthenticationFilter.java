@@ -88,6 +88,7 @@ public class SakaiAuthenticationFilter implements Filter {
         }
       } catch ( SecurityException se ) {
         // catch any Security exceptions and send a 401
+        LOG.info("Login Failed "+se.getMessage());
         hresponse.reset();
         hresponse
             .sendError(HttpServletResponse.SC_UNAUTHORIZED, se.getMessage());
@@ -154,7 +155,10 @@ public class SakaiAuthenticationFilter implements Filter {
         Authentication a = authenticationResolverService
             .authenticate(principal);
         if (a != null) {
+          LOG.info("Sucess for "+eid+" with "+a);
           hrequest.setAttribute(Authentication.REQUESTTOKEN, a);
+        } else {
+          throw new SecurityException("Failed to perform Form login for "+eid);
         }
 
       }
@@ -195,6 +199,8 @@ public class SakaiAuthenticationFilter implements Filter {
               .authenticate(principal);
           if (a != null) {
             hrequest.setAttribute(Authentication.REQUESTTOKEN, a);
+          } else {
+            throw new SecurityException("Failed to perform Form login for "+unpw[0]);
           }
         }
       }

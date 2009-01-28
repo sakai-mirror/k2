@@ -35,8 +35,10 @@ public interface AuthenticationManagerService {
    *           is the principals are not of the right type, or the user does not
    *           exist, or the old principal does not authenticate the user
    *           correctly.
+   * @return true if the authentication provider performs the authentication,
+   *         false otherwise.
    */
-  void setAuthentication(Principal oldPrincipal, Principal newPrincipal)
+  boolean setAuthentication(Principal oldPrincipal, Principal newPrincipal)
       throws SecurityException;
 
 }

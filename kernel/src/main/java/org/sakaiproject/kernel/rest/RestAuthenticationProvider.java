@@ -23,6 +23,7 @@ import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.user.Authentication;
+import org.sakaiproject.kernel.session.SessionImpl;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 
 import java.io.IOException;
@@ -30,6 +31,7 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  * 
@@ -95,10 +97,10 @@ public class RestAuthenticationProvider implements RestProvider {
     DESCRIPTION
         .addParameter(
             "a",
-            "May be set to BASIC, FORM or TRUSTED. BASIC indicates the request contains " +
-            "Basic Authentication request headers as specified by RFC 1945. FORM indicates that the " +
-            "request contains form based authentication and TRUSTED indicates the authentication " +
-            "process should look in the trusted headers for the user id.");
+            "May be set to BASIC, FORM or TRUSTED. BASIC indicates the request contains "
+                + "Basic Authentication request headers as specified by RFC 1945. FORM indicates that the "
+                + "request contains form based authentication and TRUSTED indicates the authentication "
+                + "process should look in the trusted headers for the user id.");
     DESCRIPTION.addParameter("u",
         "Where FORM based authentication is requests, u contains the username");
     DESCRIPTION.addParameter("p",
@@ -115,7 +117,7 @@ public class RestAuthenticationProvider implements RestProvider {
         .addResponse(
             "200",
             " a response of {response: \"OK\"} will be sent at all times except where a 401 is sent");
- 
+
   }
 
   /**
@@ -123,7 +125,8 @@ public class RestAuthenticationProvider implements RestProvider {
    */
   @Inject
   public RestAuthenticationProvider(RegistryService registryService) {
-    Registry<String, RestProvider> restRegistry = registryService.getRegistry(RestProvider.REST_REGISTRY);
+    Registry<String, RestProvider> restRegistry = registryService
+        .getRegistry(RestProvider.REST_REGISTRY);
     restRegistry.add(this);
   }
 
@@ -141,14 +144,34 @@ public class RestAuthenticationProvider implements RestProvider {
         // login didnt happen, so it must be a 401
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         return;
-      } 
-      // ensure there is a session, if the filter is setup to provide sessions
-      request.getSession();
+      }
+
+      // clear and previous logins
+      HttpSession session = request.getSession();
+      session.removeAttribute(SessionImpl.USER);
+      if (session instanceof SessionImpl) {
+        // this is protected, we have to bind to the impl and it will only work
+        // inside the kernel classloader.
+        ((SessionImpl) session).setBaseAttribute(SessionImpl.UNRESOLVED_UID,
+            ((Authentication) o).getUid());
+      } else {
+        session.setAttribute(SessionImpl.UNRESOLVED_UID,
+            ((Authentication) o).getUid());
+        
+      }
+
+      // pull the authentication token trough to the user
+      request.getRemoteUser();
+      response.setContentType(RestProvider.CONTENT_TYPE);
+      response.getWriter().write("{\"response\": \"OK\"}");
+
+      // clean out any authentication tokens
+      request.setAttribute(Authentication.REQUESTTOKEN, null);
+    } else {
+      response.reset();
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+          "Please set the parameter l=1 to activate login");
     }
-    // pull the user to get it in the session and send a 200
-    request.getRemoteUser();
-    response.setContentType(RestProvider.CONTENT_TYPE);
-    response.getWriter().write("{response: \"OK\"}");
   }
 
   /**
@@ -161,7 +184,12 @@ public class RestAuthenticationProvider implements RestProvider {
    */
   public void dispatch(String[] elements, HttpServletRequest request,
       HttpServletResponse response) throws ServletException, IOException {
-    doCheckLogin(request, response);
+    if ("POST".equals(request.getMethod())) {
+      doCheckLogin(request, response);
+    } else {
+      response.reset();
+      response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+    }
   }
 
   /**
@@ -184,12 +212,11 @@ public class RestAuthenticationProvider implements RestProvider {
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.rest.RestProvider#getDescription()
    */
   public RestDescription getDescription() {
     return DESCRIPTION;
   }
-  
-  
 
 }

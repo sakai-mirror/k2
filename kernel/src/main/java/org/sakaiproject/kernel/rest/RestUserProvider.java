@@ -28,12 +28,15 @@ import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
+import org.sakaiproject.kernel.api.user.AuthenticationManagerService;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
+import org.sakaiproject.kernel.jcr.jackrabbit.sakai.JCRIdPwEvidence;
 import org.sakaiproject.kernel.model.UserEnvironmentBean;
 import org.sakaiproject.kernel.user.AnonUser;
+import org.sakaiproject.kernel.user.AuthenticationResolverServiceImpl;
 import org.sakaiproject.kernel.user.UserFactoryService;
 import org.sakaiproject.kernel.user.jcr.JcrAuthenticationResolverProvider;
 import org.sakaiproject.kernel.util.IOUtils;
@@ -77,6 +80,7 @@ public class RestUserProvider implements RestProvider {
   private UserEnvironmentResolverService userEnvironmentResolverService;
   private SessionManagerService sessionManagerService;
   private boolean anonymousAccounting;
+  private AuthenticationManagerService authenticationManagerService;
 
   
 
@@ -93,6 +97,7 @@ public class RestUserProvider implements RestProvider {
       JCRNodeFactoryService jcrNodeFactoryService,
       UserFactoryService userFactoryService,
       SessionManagerService sessionManagerService,
+      AuthenticationManagerService authenticationManagerService,
       @Named(PROP_ANON_ACCOUNTING) String anonymousAccounting) {
     Registry<String, RestProvider> restRegistry = registryService
         .getRegistry(RestProvider.REST_REGISTRY);
@@ -103,7 +108,7 @@ public class RestUserProvider implements RestProvider {
     this.userFactoryService = userFactoryService;
     this.userEnvironmentResolverService = userEnvironmentResolverService;
     this.sessionManagerService = sessionManagerService;
-   
+    this.authenticationManagerService = authenticationManagerService;
     
     this.anonymousAccounting = "true".equals(anonymousAccounting);
     
@@ -224,6 +229,8 @@ public class RestUserProvider implements RestProvider {
       response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
       return null;
     }
+    
+    
     User user = thisUser;
 
     boolean superUser = false;
@@ -238,6 +245,8 @@ public class RestUserProvider implements RestProvider {
         throw new SecurityException(
             "User does not have permission to change others passwords");
       }
+    } else {
+      externalId = ((UserEnvironmentBean)ue).getEid();
     }
     if ( thisUser.getUuid().equals(user.getUuid()) ) {
       superUser = false;
@@ -252,7 +261,6 @@ public class RestUserProvider implements RestProvider {
           "Passwords are too short, minimum 5 characters");
       return null;
     }
-
     String userEnvironmentPath = userFactoryService.getUserEnvPath(user
         .getUuid());
     Node userEnvNode = jcrNodeFactoryService.getNode(userEnvironmentPath);
@@ -283,9 +291,13 @@ public class RestUserProvider implements RestProvider {
       }
     }
 
-    userEnvNode.setProperty(JcrAuthenticationResolverProvider.JCRPASSWORDHASH,
-        StringUtils.sha1Hash(password));
-    userEnvNode.save();
+    JCRIdPwEvidence oldPrincipal = new JCRIdPwEvidence(externalId,passwordOld);
+    JCRIdPwEvidence newPrincipal = new JCRIdPwEvidence(externalId,password);
+
+    // Although the authentication manager service does perform the above tests, 
+    // providers could be outside the kernel, and so they may not be so strict. 
+    authenticationManagerService.setAuthentication(oldPrincipal, newPrincipal);
+
     Map<String, Object> r = new HashMap<String, Object>();
     r.put("response", "OK");
     r.put("uuid", user.getUuid());

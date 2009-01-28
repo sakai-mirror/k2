@@ -24,6 +24,7 @@ import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.user.Authentication;
+import org.sakaiproject.kernel.session.SessionImpl;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 
 import java.io.IOException;
@@ -63,8 +64,8 @@ public class RestLogoutProvider implements RestProvider {
           Session ss = (Session) session;
           ss.removeUser();
         } else if ( session != null ) {
-          session.removeAttribute(Session.UNRESOLVED_UID);
-          session.removeAttribute(Session.USER);
+          session.removeAttribute(SessionImpl.UNRESOLVED_UID);
+          session.removeAttribute(SessionImpl.USER);
         }
         response.setContentType(RestProvider.CONTENT_TYPE);
         response.getOutputStream().print("{ \"response\" : \"OK\" }");

@@ -118,8 +118,10 @@ public class AuthenticationResolverServiceImpl implements
    * @see org.sakaiproject.kernel.api.user.AuthenticationManagerService#setAuthentication(java.security.Principal,
    *      java.security.Principal)
    */
-  public void setAuthentication(Principal oldPrincipal, Principal newPrincipal)
+  public boolean setAuthentication(Principal oldPrincipal, Principal newPrincipal)
       throws SecurityException {
     authenticationManager.setAuthentication(oldPrincipal, newPrincipal);
+    authenticationCache.expireCache(newPrincipal);
+    return true;
   }
 }
