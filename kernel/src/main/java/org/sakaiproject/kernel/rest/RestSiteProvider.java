@@ -298,7 +298,7 @@ public class RestSiteProvider implements RestProvider {
    * @throws IOException 
    */
   private Map<String, Object> doRemoveOwner(HttpServletRequest request,
-      HttpServletResponse response, String siteId, String userId) throws IOException {
+      HttpServletResponse response, String siteId, final String userId) throws IOException {
     Session session = sessionManagerService.getCurrentSession();
     if ( session == null )  {
       response.reset();
@@ -355,8 +355,29 @@ public class RestSiteProvider implements RestProvider {
     owners = StringUtils.removeString(owners, userId);
     siteBean.setOwners(owners);
     
-    siteService.saveSite(siteBean);
+    User userToRemove = new User(){
+      /**
+       * 
+       */
+      private static final long serialVersionUID = -2534511143943948665L;
+
+      public String getUuid() {
+        return userId;
+      }
+      
+    };
+    UserEnvironmentBean userEnv = (UserEnvironmentBean) userEnvironmentResolverService.resolve(userToRemove);
+    UserEnvironmentBean newUserEnvironment = new UserEnvironmentBean(subjectPermissionService,0,registryService);
+    newUserEnvironment.copyFrom(userEnv);
     
+    String newSubject = siteId+":owner";
+    String[] subjects = newUserEnvironment.getSubjects();
+    subjects = StringUtils.removeString(subjects, newSubject);
+    newUserEnvironment.setSubjects(subjects);
+
+    
+    siteService.saveSite(siteBean);
+    userEnvironmentResolverService.save(newUserEnvironment);
     
     Map<String , Object> responseMap = new HashMap<String, Object>();
     responseMap.put("response","OK");
@@ -372,7 +393,7 @@ public class RestSiteProvider implements RestProvider {
    * @throws IOException 
    */
   private Map<String, Object> doAddOwner(HttpServletRequest request,
-      HttpServletResponse response, String siteId, String userId) throws IOException {
+      HttpServletResponse response, String siteId, final String userId) throws IOException {
     Session session = sessionManagerService.getCurrentSession();
     if ( session == null )  {
       response.reset();
@@ -429,10 +450,29 @@ public class RestSiteProvider implements RestProvider {
     owners = StringUtils.addString(owners, userId);
     siteBean.setOwners(owners);
     
-    // need to add the site to the userenv object for the user in question
+    User userToAdd = new User(){
+  
+      /**
+       * 
+       */
+      private static final long serialVersionUID = -4174582835523436488L;
+
+      public String getUuid() {
+        return userId;
+      }
+      
+    };
+    UserEnvironmentBean userEnv = (UserEnvironmentBean) userEnvironmentResolverService.resolve(userToAdd);
+    UserEnvironmentBean newUserEnvironment = new UserEnvironmentBean(subjectPermissionService,0,registryService);
+    newUserEnvironment.copyFrom(userEnv);
+    
+    String newSubject = siteId+":owner";
+    String[] subjects = newUserEnvironment.getSubjects();
+    subjects = StringUtils.addString(subjects, newSubject);
+    newUserEnvironment.setSubjects(subjects);
     
     siteService.saveSite(siteBean);
-    
+    userEnvironmentResolverService.save(newUserEnvironment);
     
     Map<String , Object> responseMap = new HashMap<String, Object>();
     responseMap.put("response","OK");
