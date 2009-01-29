@@ -23,10 +23,10 @@ import com.google.inject.Inject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.authz.AccessControlStatement;
+import org.sakaiproject.kernel.api.jcr.EventRegistration;
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
-import org.sakaiproject.kernel.jcr.api.JcrContentListener;
 import org.sakaiproject.kernel.model.AclIndexBean;
 import org.sakaiproject.kernel.util.IOUtils;
 
@@ -42,6 +42,9 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 import javax.jcr.observation.Event;
+import javax.jcr.observation.EventIterator;
+import javax.jcr.observation.EventListener;
+import javax.jcr.observation.ObservationManager;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
@@ -49,12 +52,20 @@ import javax.persistence.Query;
 /**
  *
  */
-public class AclListener implements JcrContentListener {
+public class AclListener implements EventListener, EventRegistration {
 
   private static final Log LOG = LogFactory.getLog(AclListener.class);
   private final JCRNodeFactoryService jcrNodeFactoryService;
   private final EntityManager entityManager;
 
+  public void register(ObservationManager observationManager)
+  throws RepositoryException {
+    observationManager.addEventListener(this, Event.PROPERTY_ADDED
+        | Event.PROPERTY_CHANGED | Event.PROPERTY_REMOVED,  
+        "/", true, null, new String [] {JCRConstants.NT_FILE, JCRConstants.NT_FOLDER}, false);
+
+}
+  
   @Inject
   public AclListener(JCRNodeFactoryService jcrNodeFactoryService,
       EntityManager entityManager) {
@@ -68,7 +79,7 @@ public class AclListener implements JcrContentListener {
    * @see org.sakaiproject.kernel.jcr.api.JcrContentListener#onEvent(int,
    *      java.lang.String, java.lang.String, java.lang.String)
    */
-  public void onEvent(int type, String userID, String filePath, String fileName) {
+  public void handleEvent(int type, String userID, String filePath) {
     InputStream in = null;
     if ((type == Event.PROPERTY_ADDED || type == Event.PROPERTY_CHANGED || type == Event.PROPERTY_REMOVED)) {
       String groupBody = null;
@@ -205,4 +216,23 @@ public class AclListener implements JcrContentListener {
 
     return found;
   }
+
+  public void onEvent(EventIterator events) {
+    for (; events.hasNext();) {
+      Event e = events.nextEvent();
+      
+      try {
+        String path = e.getPath();
+        if (path.endsWith(JCRConstants.MIX_ACL)) {
+          handleEvent(e.getType(), e.getUserID(), path);
+        }
+      } catch (Exception e1) {
+        // TODO Auto-generated catch block
+        e1.printStackTrace();
+      }
+    }
+    
+  }
+
+
 }

@@ -21,6 +21,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 import org.sakaiproject.kernel.api.jcr.EventRegistration;
+import org.sakaiproject.kernel.authz.simple.AclListener;
 import org.sakaiproject.kernel.jcr.jackrabbit.JcrContentListenerAdapter;
 
 import java.util.ArrayList;
@@ -39,8 +40,10 @@ public class EventRegistrationProvider implements
    */
   @Inject
   public EventRegistrationProvider(
-      JcrContentListenerAdapter jcrContentListenerAdapter) {
+      JcrContentListenerAdapter jcrContentListenerAdapter, 
+      AclListener aclListener) {
     eventRegistrations.add(jcrContentListenerAdapter);
+    eventRegistrations.add(aclListener);
   }
 
   /**

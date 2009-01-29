@@ -46,7 +46,6 @@ public class JcrContentListenerProviders implements
       AclListener aclListener) {
     list.add(userEnvironmentListener);
     list.add(subjectPermissionListener);
-    list.add(aclListener);
   }
 
   /**
