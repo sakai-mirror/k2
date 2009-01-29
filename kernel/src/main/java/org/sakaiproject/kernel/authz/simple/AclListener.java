@@ -59,13 +59,13 @@ public class AclListener implements EventListener, EventRegistration {
   private final EntityManager entityManager;
 
   public void register(ObservationManager observationManager)
-  throws RepositoryException {
+      throws RepositoryException {
     observationManager.addEventListener(this, Event.PROPERTY_ADDED
-        | Event.PROPERTY_CHANGED | Event.PROPERTY_REMOVED,  
-        "/", true, null, new String [] {JCRConstants.NT_FILE, JCRConstants.NT_FOLDER}, false);
+        | Event.PROPERTY_CHANGED | Event.PROPERTY_REMOVED, "/", false, null,
+        new String[] { JCRConstants.NT_FILE, JCRConstants.NT_FOLDER }, false);
 
-}
-  
+  }
+
   @Inject
   public AclListener(JCRNodeFactoryService jcrNodeFactoryService,
       EntityManager entityManager) {
@@ -220,7 +220,7 @@ public class AclListener implements EventListener, EventRegistration {
   public void onEvent(EventIterator events) {
     for (; events.hasNext();) {
       Event e = events.nextEvent();
-      
+
       try {
         String path = e.getPath();
         if (path.endsWith(JCRConstants.MIX_ACL)) {
@@ -231,8 +231,7 @@ public class AclListener implements EventListener, EventRegistration {
         e1.printStackTrace();
       }
     }
-    
-  }
 
+  }
 
 }
