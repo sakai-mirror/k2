@@ -66,7 +66,7 @@ public class JcrContentListenerAdapter implements EventListener,
       throws RepositoryException {
     observationManager.addEventListener(this, Event.PROPERTY_ADDED
         | Event.PROPERTY_CHANGED | Event.PROPERTY_REMOVED, "/", true, null,
-        new String[] { JCRConstants.NT_RESOURCE }, false);
+        new String[] { JCRConstants.NT_RESOURCE, JCRConstants.NT_UNSTRUCTURED }, false);
     LOG.info("Registerd JcrContentListener ");
   }
 
