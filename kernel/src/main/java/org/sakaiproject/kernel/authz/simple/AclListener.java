@@ -82,102 +82,75 @@ public class AclListener implements EventListener, EventRegistration {
   public void handleEvent(int type, String userID, String filePath) {
     InputStream in = null;
     if ((type == Event.PROPERTY_ADDED || type == Event.PROPERTY_CHANGED || type == Event.PROPERTY_REMOVED)) {
-      String groupBody = null;
-      boolean noError = true;
+
+      ArrayList<AclIndexBean> toCreate = new ArrayList<AclIndexBean>();
+      ArrayList<AclIndexBean> toUpdate = new ArrayList<AclIndexBean>();
+      ArrayList<AclIndexBean> toDelete = new ArrayList<AclIndexBean>();
+
+      Query query = entityManager
+          .createNamedQuery(AclIndexBean.Queries.FINDBY_PATH);
+      query.setParameter(AclIndexBean.QueryParams.FINDBY_PATH_PATH, filePath);
+      List<?> currentIndex = query.getResultList();
+
       try {
-        in = jcrNodeFactoryService.getInputStream(filePath);
-        groupBody = IOUtils.readFully(in, "UTF-8");
-      } catch (RepositoryException e1) {
-        noError = false;
-        e1.printStackTrace();
-      } catch (JCRNodeFactoryServiceException e1) {
-        noError = false;
-        e1.printStackTrace();
-      } catch (UnsupportedEncodingException e) {
-        noError = false;
-        e.printStackTrace();
-      } catch (IOException e) {
-        noError = false;
-        e.printStackTrace();
-      } finally {
-        if (in != null)
-          try {
-            in.close();
-          } catch (IOException e) {
-          } // nothing to see here
-      }
+        Node node = jcrNodeFactoryService.getNode(filePath);
+        Property acl = node.getProperty(JCRConstants.MIX_ACL);
+        for (Value val : acl.getValues()) {
+          AccessControlStatement acs = new JcrAccessControlStatementImpl(val
+              .getString());
 
-      if (noError && groupBody != null && groupBody.length() > 0) {
-
-        ArrayList<AclIndexBean> toCreate = new ArrayList<AclIndexBean>();
-        ArrayList<AclIndexBean> toUpdate = new ArrayList<AclIndexBean>();
-        ArrayList<AclIndexBean> toDelete = new ArrayList<AclIndexBean>();
-
-        Query query = entityManager
-            .createNamedQuery(AclIndexBean.Queries.FINDBY_PATH);
-        query.setParameter(AclIndexBean.QueryParams.FINDBY_PATH_PATH, filePath);
-        List<?> currentIndex = query.getResultList();
-
-        try {
-          Node node = jcrNodeFactoryService.getNode(filePath);
-          Property acl = node.getProperty(JCRConstants.MIX_ACL);
-          for (Value val : acl.getValues()) {
-            AccessControlStatement acs = new JcrAccessControlStatementImpl(val
-                .getString());
-
-            switch (type) {
-            case Event.PROPERTY_ADDED:
-              if (inList(acs, currentIndex) == null) {
-                toCreate.add(convert(acs));
-              }
-              break;
-            case Event.PROPERTY_CHANGED:
-              AclIndexBean indexBean = inList(acs, currentIndex);
-              if (indexBean != null) {
-                toUpdate.add(indexBean);
-              }
-              break;
-            case Event.PROPERTY_REMOVED:
-              if (inList(acs, currentIndex) == null) {
-                toDelete.add(convert(acs));
-              }
-              break;
+          switch (type) {
+          case Event.PROPERTY_ADDED:
+            if (inList(acs, currentIndex) == null) {
+              toCreate.add(convert(acs));
             }
-          }
-
-          EntityTransaction trans = entityManager.getTransaction();
-          trans.begin();
-          try {
-            if (!toCreate.isEmpty()) {
-              for (AclIndexBean bean : toCreate) {
-                entityManager.persist(bean);
-              }
-            } else if (!toUpdate.isEmpty()) {
-              for (AclIndexBean bean : toUpdate) {
-                entityManager.persist(bean);
-              }
-            } else if (!toDelete.isEmpty()) {
-              for (AclIndexBean bean : toDelete) {
-                entityManager.remove(bean);
-              }
+            break;
+          case Event.PROPERTY_CHANGED:
+            AclIndexBean indexBean = inList(acs, currentIndex);
+            if (indexBean != null) {
+              toUpdate.add(indexBean);
             }
-            trans.commit();
-          } catch (Exception e) {
-            LOG.error(
-                "Transaction rolled back due to a problem when updating the ACL index: "
-                    + e.getMessage(), e);
-            trans.rollback();
+            break;
+          case Event.PROPERTY_REMOVED:
+            if (inList(acs, currentIndex) == null) {
+              toDelete.add(convert(acs));
+            }
+            break;
           }
-        } catch (PathNotFoundException e) {
-          // nothing to care about. this happens when there is no ACL
-          // on the node
-        } catch (RepositoryException e) {
-          // nothing we can do
-          LOG.error(e.getMessage(), e);
-        } catch (JCRNodeFactoryServiceException e) {
-          // nothing we can do
-          LOG.error(e.getMessage(), e);
         }
+
+        EntityTransaction trans = entityManager.getTransaction();
+        trans.begin();
+        try {
+          if (!toCreate.isEmpty()) {
+            for (AclIndexBean bean : toCreate) {
+              entityManager.persist(bean);
+            }
+          } else if (!toUpdate.isEmpty()) {
+            for (AclIndexBean bean : toUpdate) {
+              entityManager.persist(bean);
+            }
+          } else if (!toDelete.isEmpty()) {
+            for (AclIndexBean bean : toDelete) {
+              entityManager.remove(bean);
+            }
+          }
+          trans.commit();
+        } catch (Exception e) {
+          LOG.error(
+              "Transaction rolled back due to a problem when updating the ACL index: "
+                  + e.getMessage(), e);
+          trans.rollback();
+        }
+      } catch (PathNotFoundException e) {
+        // nothing to care about. this happens when there is no ACL
+        // on the node
+      } catch (RepositoryException e) {
+        // nothing we can do
+        LOG.error(e.getMessage(), e);
+      } catch (JCRNodeFactoryServiceException e) {
+        // nothing we can do
+        LOG.error(e.getMessage(), e);
       }
     }
   }
