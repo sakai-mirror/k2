@@ -27,6 +27,7 @@ import java.security.NoSuchAlgorithmException;
 public class StringUtils {
 
   private static final char[] TOHEX = "0123456789abcdef".toCharArray();
+  public static final String UTF8 = "UTF8";
 
   /**
    * @param packageName
@@ -175,6 +176,24 @@ public class StringUtils {
    */
   public static boolean isEmpty(String firstName) {
     return (firstName == null || firstName.trim().length()==0);
+  }
+
+  /**
+   * Builds a string based on the elements the the array
+   * @param elements the elements to build the string from
+   * @param i the staring index.
+   * @param c the seperator character
+   * @return a joined string starting with the seperator.
+   */
+  public static String join(String[] elements, int i, char c) {
+    StringBuilder sb = new StringBuilder();
+    for ( int j = i; j < elements.length; j++ ) {
+      sb.append(c).append(elements[j]);
+    }
+    if ( sb.length() == 0 ) {
+      sb.append("/");
+    }
+    return sb.toString();
   }
 
 }

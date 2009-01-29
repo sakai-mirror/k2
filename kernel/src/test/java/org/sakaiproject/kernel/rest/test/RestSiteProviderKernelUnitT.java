@@ -17,13 +17,9 @@
  */
 package org.sakaiproject.kernel.rest.test;
 
-import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.capture;
-import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -40,38 +36,21 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sakaiproject.kernel.Activator;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
-import org.sakaiproject.kernel.api.KernelManager;
-import org.sakaiproject.kernel.api.RegistryService;
-import org.sakaiproject.kernel.api.authz.SubjectPermissionService;
-import org.sakaiproject.kernel.api.memory.CacheManagerService;
-import org.sakaiproject.kernel.api.memory.CacheScope;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
-import org.sakaiproject.kernel.api.session.SessionManagerService;
-import org.sakaiproject.kernel.api.site.SiteService;
-import org.sakaiproject.kernel.api.user.User;
-import org.sakaiproject.kernel.api.user.UserResolverService;
-import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.model.RoleBean;
 import org.sakaiproject.kernel.model.SiteBean;
 import org.sakaiproject.kernel.rest.RestSiteProvider;
 import org.sakaiproject.kernel.test.KernelIntegrationBase;
-import org.sakaiproject.kernel.webapp.SakaiServletRequest;
-import org.sakaiproject.kernel.webapp.test.InternalUser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 /**
  * Unit tests for the RestSiteProvider
  */
-public class RestSiteProviderKernelUnitT {
+public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
   private static boolean shutdown;
   private static Injector injector;
@@ -87,16 +66,6 @@ public class RestSiteProviderKernelUnitT {
     KernelIntegrationBase.afterClass(shutdown);
   }
 
-  private RegistryService registryService;
-  private UserEnvironmentResolverService userEnvironmentResolverService;
-  private SessionManagerService sessionManagerService;
-  private SubjectPermissionService subjectPermissionService;
-  private SiteService siteService;
-  private UserResolverService userResolverService;
-  private HttpServletRequest request;
-  private HttpServletResponse response;
-  private HttpSession session;
-  private CacheManagerService cacheManagerService;
 
   @Test
   public void testCheckId() {
@@ -189,91 +158,6 @@ public class RestSiteProviderKernelUnitT {
     assertEquals(1, siteBean.getOwners().length);
     assertArrayEquals(new String[] { "user1" }, siteBean.getOwners());
     verifyMocks();
-  }
-
-  /**
-   * Setup mocks for any time execution.
-   * 
-   * @param baos
-   * @throws IOException
-   * 
-   */
-  private void setupAnyTimes(String username, String sessionID,
-      final ByteArrayOutputStream baos) throws IOException {
-    User user = new InternalUser(username); // this is a pre-loaded user.
-
-    expect(request.getAttribute("_no_session")).andReturn(null).anyTimes();
-    expect(request.getSession(true)).andReturn(session).anyTimes();
-    expect(request.getAttribute("_uuid")).andReturn(null).anyTimes();
-    expect(session.getAttribute("_u")).andReturn(user).anyTimes();
-    expect(session.getAttribute("_uu")).andReturn(user).anyTimes();
-
-    expect(request.getRequestedSessionId()).andReturn(sessionID).anyTimes();
-    expect(session.getId()).andReturn(sessionID).anyTimes();
-    expect(session.getAttribute("check-valid")).andReturn(null).anyTimes(); // indicates
-    // that
-    // the
-    // session
-    // is
-    // in
-    // the
-    // session
-    // map
-    // .
-    Cookie cookie = new Cookie("SAKAIID", sessionID);
-    expect(request.getCookies()).andReturn(new Cookie[] { cookie }).anyTimes();
-    response.addCookie((Cookie) anyObject());
-    expectLastCall().anyTimes();
-
-    ServletOutputStream out = new ServletOutputStream() {
-
-      @Override
-      public void write(int b) throws IOException {
-        baos.write(b);
-      }
-
-    };
-
-    expect(response.getOutputStream()).andReturn(out).anyTimes();
-
-  }
-
-  /**
-   * Set up the services and mocks.
-   */
-  private void setupServices() {
-    KernelManager km = new KernelManager();
-    registryService = km.getService(RegistryService.class);
-    userEnvironmentResolverService = km
-        .getService(UserEnvironmentResolverService.class);
-    sessionManagerService = km.getService(SessionManagerService.class);
-    subjectPermissionService = km.getService(SubjectPermissionService.class);
-    cacheManagerService = km.getService(CacheManagerService.class);
-
-    siteService = createMock(SiteService.class);
-    userResolverService = createMock(UserResolverService.class);
-    request = createMock(HttpServletRequest.class);
-    response = createMock(HttpServletResponse.class);
-    session = createMock(HttpSession.class);
-  }
-
-  /**
-   * Replay mocks at the end of setup, and bind the request to the thread.
-   */
-  private void replayMocks() {
-    replay(request, response, session, siteService, userResolverService);
-    SakaiServletRequest sakaiServletRequest = new SakaiServletRequest(request,
-        response, userResolverService, sessionManagerService);
-    sessionManagerService.bindRequest(sakaiServletRequest);
-
-  }
-
-  /**
-   * Reset mocks to have another go with the same setup.
-   */
-  @SuppressWarnings("unused")
-  private void resetMocks() {
-    replay(request, response, session, siteService, userResolverService);
   }
 
   /**
@@ -382,11 +266,6 @@ public class RestSiteProviderKernelUnitT {
     verifyMocks();
   }
 
-  private void verifyMocks() {
-    verify(request, response, session, siteService, userResolverService);
-    cacheManagerService.unbind(CacheScope.REQUEST);
-    cacheManagerService.unbind(CacheScope.THREAD);
-  }
 
   /**
    * Checks that for 400 on no site id
