@@ -28,6 +28,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import com.google.inject.Injector;
 import com.google.inject.Key;
@@ -103,6 +104,7 @@ public class RestSiteProviderKernelUnitT {
 
   /**
    * Check 409 on already exists
+   * 
    * @throws ServletException
    * @throws IOException
    */
@@ -137,6 +139,7 @@ public class RestSiteProviderKernelUnitT {
 
   /**
    * Check create works.
+   * 
    * @throws ServletException
    * @throws IOException
    */
@@ -184,12 +187,13 @@ public class RestSiteProviderKernelUnitT {
     assertEquals("Type:sitethatdoesnotexist", siteBean.getType());
     assertNotNull(siteBean.getOwners());
     assertEquals(1, siteBean.getOwners().length);
-    assertArrayEquals(new String[]{"user1"}, siteBean.getOwners());
+    assertArrayEquals(new String[] { "user1" }, siteBean.getOwners());
     verifyMocks();
   }
 
   /**
    * Setup mocks for any time execution.
+   * 
    * @param baos
    * @throws IOException
    * 
@@ -207,15 +211,15 @@ public class RestSiteProviderKernelUnitT {
     expect(request.getRequestedSessionId()).andReturn(sessionID).anyTimes();
     expect(session.getId()).andReturn(sessionID).anyTimes();
     expect(session.getAttribute("check-valid")).andReturn(null).anyTimes(); // indicates
-                                                                            // that
-                                                                            // the
-                                                                            // session
-                                                                            // is
-                                                                            // in
-                                                                            // the
-                                                                            // session
-                                                                            // map
-                                                                            // .
+    // that
+    // the
+    // session
+    // is
+    // in
+    // the
+    // session
+    // map
+    // .
     Cookie cookie = new Cookie("SAKAIID", sessionID);
     expect(request.getCookies()).andReturn(new Cookie[] { cookie }).anyTimes();
     response.addCookie((Cookie) anyObject());
@@ -274,6 +278,7 @@ public class RestSiteProviderKernelUnitT {
 
   /**
    * Check for existence of a site by ID
+   * 
    * @throws ServletException
    * @throws IOException
    */
@@ -316,6 +321,7 @@ public class RestSiteProviderKernelUnitT {
 
   /**
    * Check for non existance of a site.
+   * 
    * @throws ServletException
    * @throws IOException
    */
@@ -347,6 +353,7 @@ public class RestSiteProviderKernelUnitT {
 
   /**
    * Check for 400 if site id not specific on check.
+   * 
    * @throws ServletException
    * @throws IOException
    */
@@ -383,6 +390,7 @@ public class RestSiteProviderKernelUnitT {
 
   /**
    * Checks that for 400 on no site id
+   * 
    * @throws ServletException
    * @throws IOException
    */
@@ -417,6 +425,7 @@ public class RestSiteProviderKernelUnitT {
 
   /**
    * Check for 400 o no site id specified for remove.
+   * 
    * @throws ServletException
    * @throws IOException
    */
@@ -451,6 +460,7 @@ public class RestSiteProviderKernelUnitT {
 
   /**
    * Check for no user id specified on addOwner.
+   * 
    * @throws ServletException
    * @throws IOException
    */
@@ -486,6 +496,7 @@ public class RestSiteProviderKernelUnitT {
 
   /**
    * Check for remove owner with no user ID, should be 400.
+   * 
    * @throws ServletException
    * @throws IOException
    */
@@ -521,6 +532,7 @@ public class RestSiteProviderKernelUnitT {
 
   /**
    * Check for a 401 on anon add owner.
+   * 
    * @throws ServletException
    * @throws IOException
    */
@@ -556,6 +568,7 @@ public class RestSiteProviderKernelUnitT {
 
   /**
    * Check for a 401 on anon create site.
+   * 
    * @throws ServletException
    * @throws IOException
    */
@@ -590,6 +603,7 @@ public class RestSiteProviderKernelUnitT {
 
   /**
    * check for a bad method on create. (should be POST only)
+   * 
    * @throws ServletException
    * @throws IOException
    */
@@ -623,7 +637,8 @@ public class RestSiteProviderKernelUnitT {
   }
 
   /**
-   * Check for a bad method on addOwner should be POST only. 
+   * Check for a bad method on addOwner should be POST only.
+   * 
    * @throws ServletException
    * @throws IOException
    */
@@ -658,6 +673,7 @@ public class RestSiteProviderKernelUnitT {
 
   /**
    * Check for a bad method on remove Owner should be POST only.
+   * 
    * @throws ServletException
    * @throws IOException
    */
@@ -692,6 +708,7 @@ public class RestSiteProviderKernelUnitT {
 
   /**
    * Test for 401 on anon remove owner.
+   * 
    * @throws ServletException
    * @throws IOException
    */
@@ -725,6 +742,7 @@ public class RestSiteProviderKernelUnitT {
 
   /**
    * Test for remove owner OK from list of 2.
+   * 
    * @throws ServletException
    * @throws IOException
    */
@@ -747,10 +765,10 @@ public class RestSiteProviderKernelUnitT {
     expect(siteService.getSite("testSiteA")).andReturn(siteBean);
     Capture<SiteBean> siteBeanCapture = new Capture<SiteBean>();
     siteService.saveSite(capture(siteBeanCapture));
-    
+
     response.setContentType("text/plain");
     expectLastCall();
-    
+
     replayMocks();
 
     String[] elements = new String[] { "site", "removeOwner", "testSiteA",
@@ -766,13 +784,14 @@ public class RestSiteProviderKernelUnitT {
     assertTrue(siteBeanCapture.hasCaptured());
     SiteBean finalSiteBean = siteBeanCapture.getValue();
     assertNotNull(finalSiteBean.getOwners());
-    assertArrayEquals(new String[] {"user1"},finalSiteBean.getOwners());
-    
+    assertArrayEquals(new String[] { "user1" }, finalSiteBean.getOwners());
+
     verifyMocks();
   }
 
   /**
    * Test fore remove owner from a list of 3 middle one removed.
+   * 
    * @throws ServletException
    * @throws IOException
    */
@@ -795,10 +814,10 @@ public class RestSiteProviderKernelUnitT {
     expect(siteService.getSite("testSiteA")).andReturn(siteBean);
     Capture<SiteBean> siteBeanCapture = new Capture<SiteBean>();
     siteService.saveSite(capture(siteBeanCapture));
-    
+
     response.setContentType("text/plain");
     expectLastCall();
-    
+
     replayMocks();
 
     String[] elements = new String[] { "site", "removeOwner", "testSiteA",
@@ -814,13 +833,15 @@ public class RestSiteProviderKernelUnitT {
     assertTrue(siteBeanCapture.hasCaptured());
     SiteBean finalSiteBean = siteBeanCapture.getValue();
     assertNotNull(finalSiteBean.getOwners());
-    assertArrayEquals(new String[] {"user1","user5"},finalSiteBean.getOwners());
-    
+    assertArrayEquals(new String[] { "user1", "user5" }, finalSiteBean
+        .getOwners());
+
     verifyMocks();
   }
 
   /**
    * test for remove owner no change.
+   * 
    * @throws ServletException
    * @throws IOException
    */
@@ -841,13 +862,12 @@ public class RestSiteProviderKernelUnitT {
         new RoleBean("access", new String[] { "read" }) });
     siteBean.setOwners(new String[] { "user1", "user2", "user5" });
     expect(siteService.getSite("testSiteA")).andReturn(siteBean);
-    
-    
+
     response.reset();
     expectLastCall();
-    response.sendError(404,"User user8 is not an owner of testSiteA");
+    response.sendError(404, "User user8 is not an owner of testSiteA");
     expectLastCall();
-    
+
     replayMocks();
 
     String[] elements = new String[] { "site", "removeOwner", "testSiteA",
@@ -860,11 +880,12 @@ public class RestSiteProviderKernelUnitT {
         subjectPermissionService);
     rsp.dispatch(elements, request, response);
 
-    
     verifyMocks();
   }
+
   /**
    * test for 404 on remove with non existant site.
+   * 
    * @throws ServletException
    * @throws IOException
    */
@@ -877,13 +898,12 @@ public class RestSiteProviderKernelUnitT {
 
     expect(request.getMethod()).andReturn("POST").anyTimes();
     expect(siteService.getSite("testSiteA")).andReturn(null);
-    
-    
+
     response.reset();
     expectLastCall();
-    response.sendError(404,"Site testSiteA not found");
+    response.sendError(404, "Site testSiteA not found");
     expectLastCall();
-    
+
     replayMocks();
 
     String[] elements = new String[] { "site", "removeOwner", "testSiteA",
@@ -896,12 +916,12 @@ public class RestSiteProviderKernelUnitT {
         subjectPermissionService);
     rsp.dispatch(elements, request, response);
 
-    
     verifyMocks();
   }
 
   /**
    * Test for 403 on non owner remove site attempt.
+   * 
    * @throws ServletException
    * @throws IOException
    */
@@ -922,13 +942,7 @@ public class RestSiteProviderKernelUnitT {
         new RoleBean("access", new String[] { "read" }) });
     siteBean.setOwners(new String[] { "user1notowner", "user2", "user5" });
     expect(siteService.getSite("testSiteA")).andReturn(siteBean);
-    
-    
-    response.reset();
-    expectLastCall();
-    response.sendError(403);
-    expectLastCall();
-    
+
     replayMocks();
 
     String[] elements = new String[] { "site", "removeOwner", "testSiteA",
@@ -939,13 +953,19 @@ public class RestSiteProviderKernelUnitT {
             .named(BeanConverter.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService);
-    rsp.dispatch(elements, request, response);
+    try {
+      rsp.dispatch(elements, request, response);
+      fail();
+    } catch (SecurityException ex) {
+      assertEquals("Not an owner of this site testSiteA", ex.getMessage());
+    }
 
-    
     verifyMocks();
   }
+
   /**
    * Test for 403 on remove last owner.
+   * 
    * @throws ServletException
    * @throws IOException
    */
@@ -966,13 +986,7 @@ public class RestSiteProviderKernelUnitT {
         new RoleBean("access", new String[] { "read" }) });
     siteBean.setOwners(new String[] { "user1" });
     expect(siteService.getSite("testSiteA")).andReturn(siteBean);
-    
-    
-    response.reset();
-    expectLastCall();
-    response.sendError(403);
-    expectLastCall();
-    
+
     replayMocks();
 
     String[] elements = new String[] { "site", "removeOwner", "testSiteA",
@@ -983,13 +997,19 @@ public class RestSiteProviderKernelUnitT {
             .named(BeanConverter.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService);
-    rsp.dispatch(elements, request, response);
+    try {
+      rsp.dispatch(elements, request, response);
+      fail();
+    } catch (SecurityException ex) {
+      assertEquals("A site must have at least one owner ", ex.getMessage());
+    }
 
-    
     verifyMocks();
   }
+
   /**
    * Test for add when not owner 403
+   * 
    * @throws ServletException
    * @throws IOException
    */
@@ -1010,29 +1030,25 @@ public class RestSiteProviderKernelUnitT {
         new RoleBean("access", new String[] { "read" }) });
     siteBean.setOwners(new String[] { "user1notowner", "user2", "user5" });
     expect(siteService.getSite("testSiteA")).andReturn(siteBean);
-    
-    
-    response.reset();
-    expectLastCall();
-    response.sendError(403);
-    expectLastCall();
-    
+
     replayMocks();
 
-    String[] elements = new String[] { "site", "addOwner", "testSiteA",
-        "user2" };
+    String[] elements = new String[] { "site", "addOwner", "testSiteA", "user2" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
             .named(BeanConverter.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService);
-    rsp.dispatch(elements, request, response);
-
-    
+    try {
+      rsp.dispatch(elements, request, response);
+      fail();
+    } catch (SecurityException ex) {
+      assertEquals("Not an owner of this site testSiteA", ex.getMessage());
+    }
     verifyMocks();
   }
-  
+
   @Test
   public void testAddOwnerOK() throws ServletException, IOException {
     setupServices();
@@ -1052,14 +1068,13 @@ public class RestSiteProviderKernelUnitT {
     expect(siteService.getSite("testSiteA")).andReturn(siteBean);
     Capture<SiteBean> siteBeanCapture = new Capture<SiteBean>();
     siteService.saveSite(capture(siteBeanCapture));
-    
+
     response.setContentType("text/plain");
     expectLastCall();
-    
+
     replayMocks();
 
-    String[] elements = new String[] { "site", "addOwner", "testSiteA",
-        "user2" };
+    String[] elements = new String[] { "site", "addOwner", "testSiteA", "user2" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
@@ -1071,10 +1086,12 @@ public class RestSiteProviderKernelUnitT {
     assertTrue(siteBeanCapture.hasCaptured());
     SiteBean finalSiteBean = siteBeanCapture.getValue();
     assertNotNull(finalSiteBean.getOwners());
-    assertArrayEquals(new String[] {"user1","user2"},finalSiteBean.getOwners());
-    
+    assertArrayEquals(new String[] { "user1", "user2" }, finalSiteBean
+        .getOwners());
+
     verifyMocks();
   }
+
   @Test
   public void testAddOwnerOK2() throws ServletException, IOException {
     setupServices();
@@ -1090,18 +1107,17 @@ public class RestSiteProviderKernelUnitT {
     siteBean.setRoles(new RoleBean[] {
         new RoleBean("maintain", new String[] { "read", "write", "remove" }),
         new RoleBean("access", new String[] { "read" }) });
-    siteBean.setOwners(new String[] { "user1","user5" });
+    siteBean.setOwners(new String[] { "user1", "user5" });
     expect(siteService.getSite("testSiteA")).andReturn(siteBean);
     Capture<SiteBean> siteBeanCapture = new Capture<SiteBean>();
     siteService.saveSite(capture(siteBeanCapture));
-    
+
     response.setContentType("text/plain");
     expectLastCall();
-    
+
     replayMocks();
 
-    String[] elements = new String[] { "site", "addOwner", "testSiteA",
-        "user2" };
+    String[] elements = new String[] { "site", "addOwner", "testSiteA", "user2" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
@@ -1113,10 +1129,12 @@ public class RestSiteProviderKernelUnitT {
     assertTrue(siteBeanCapture.hasCaptured());
     SiteBean finalSiteBean = siteBeanCapture.getValue();
     assertNotNull(finalSiteBean.getOwners());
-    assertArrayEquals(new String[] {"user1","user5","user2"},finalSiteBean.getOwners());
-    
+    assertArrayEquals(new String[] { "user1", "user5", "user2" }, finalSiteBean
+        .getOwners());
+
     verifyMocks();
   }
+
   @Test
   public void testAddOwnerNoChange() throws ServletException, IOException {
     setupServices();
@@ -1134,17 +1152,15 @@ public class RestSiteProviderKernelUnitT {
         new RoleBean("access", new String[] { "read" }) });
     siteBean.setOwners(new String[] { "user1", "user2", "user5" });
     expect(siteService.getSite("testSiteA")).andReturn(siteBean);
-    
-    
+
     response.reset();
     expectLastCall();
-    response.sendError(409,"User user2 is already an owner of testSiteA");
+    response.sendError(409, "User user2 is already an owner of testSiteA");
     expectLastCall();
-    
+
     replayMocks();
 
-    String[] elements = new String[] { "site", "addOwner", "testSiteA",
-        "user2" };
+    String[] elements = new String[] { "site", "addOwner", "testSiteA", "user2" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
@@ -1153,9 +1169,9 @@ public class RestSiteProviderKernelUnitT {
         subjectPermissionService);
     rsp.dispatch(elements, request, response);
 
-    
     verifyMocks();
   }
+
   @Test
   public void testaddOwnerNoSite() throws ServletException, IOException {
     setupServices();
@@ -1165,17 +1181,15 @@ public class RestSiteProviderKernelUnitT {
 
     expect(request.getMethod()).andReturn("POST").anyTimes();
     expect(siteService.getSite("testSiteA")).andReturn(null);
-    
-    
+
     response.reset();
     expectLastCall();
-    response.sendError(404,"Site testSiteA not found");
+    response.sendError(404, "Site testSiteA not found");
     expectLastCall();
-    
+
     replayMocks();
 
-    String[] elements = new String[] { "site", "addOwner", "testSiteA",
-        "user8" };
+    String[] elements = new String[] { "site", "addOwner", "testSiteA", "user8" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
@@ -1184,9 +1198,9 @@ public class RestSiteProviderKernelUnitT {
         subjectPermissionService);
     rsp.dispatch(elements, request, response);
 
-    
     verifyMocks();
   }
+
   @Test
   public void testAddOwnerNotOwner() throws ServletException, IOException {
     setupServices();
@@ -1204,26 +1218,21 @@ public class RestSiteProviderKernelUnitT {
         new RoleBean("access", new String[] { "read" }) });
     siteBean.setOwners(new String[] { "user1notowner", "user2", "user5" });
     expect(siteService.getSite("testSiteA")).andReturn(siteBean);
-    
-    
-    response.reset();
-    expectLastCall();
-    response.sendError(403);
-    expectLastCall();
-    
+
     replayMocks();
 
-    String[] elements = new String[] { "site", "addOwner", "testSiteA",
-        "user2" };
+    String[] elements = new String[] { "site", "addOwner", "testSiteA", "user2" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
             .named(BeanConverter.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService);
-    rsp.dispatch(elements, request, response);
-
-    
+    try {
+      rsp.dispatch(elements, request, response);
+    } catch (SecurityException ex) {
+      assertEquals("Not an owner of this site testSiteA", ex.getMessage());
+    }
     verifyMocks();
   }
 }

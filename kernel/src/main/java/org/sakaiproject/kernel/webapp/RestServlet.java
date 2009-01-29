@@ -104,7 +104,11 @@ public class RestServlet extends HttpServlet {
           restProvider.dispatch(elements, request, response);
         }
       } catch (SecurityException ex) {
+        response.reset();
         response.sendError(HttpServletResponse.SC_FORBIDDEN, ex.getMessage());
+      } catch ( RestServiceFaultException ex ) {
+        response.reset();
+        response.sendError(ex.getStatusCode(),ex.getMessage());
       }
     }
   }

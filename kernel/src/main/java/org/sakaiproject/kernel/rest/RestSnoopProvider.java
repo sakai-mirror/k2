@@ -25,13 +25,12 @@ import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.util.rest.RestDescription;
+import org.sakaiproject.kernel.webapp.RestServiceFaultException;
 
-import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -90,54 +89,59 @@ public class RestSnoopProvider implements RestProvider {
    *      javax.servlet.http.HttpServletResponse)
    */
   public void dispatch(String[] elements, HttpServletRequest request,
-      HttpServletResponse response) throws ServletException, IOException {
-    Map<String, Object> snoop = new HashMap<String, Object>();
+      HttpServletResponse response) {
+    try {
+      Map<String, Object> snoop = new HashMap<String, Object>();
 
-    Map<String, Object> session = new HashMap<String, Object>();
-    snoop.put("session", session);
-    Map<String, Object> req = new HashMap<String, Object>();
-    snoop.put("request", req);
-    Map<String, Object> sessionAttributes = new HashMap<String, Object>();
-    session.put("attributes", sessionAttributes);
-    HttpSession hs = request.getSession();
-    for (Enumeration<?> e = hs.getAttributeNames(); e.hasMoreElements();) {
-      String n = (String) e.nextElement();
-      sessionAttributes.put(n, hs.getAttribute(n));
-    }
-
-    Map<String, Object> requestAttributes = new HashMap<String, Object>();
-    req.put("attributes", requestAttributes);
-    for (Enumeration<?> e = request.getAttributeNames(); e
-        .hasMoreElements();) {
-      String n = (String) e.nextElement();
-      requestAttributes.put(n, request.getAttribute(n));
-    }
-
-    Map<String, Object> requestParamiters = new HashMap<String, Object>();
-    req.put("parameters", requestParamiters);
-    for (Enumeration<?> e = request.getParameterNames(); e
-        .hasMoreElements();) {
-      String n = (String) e.nextElement();
-      requestParamiters.put(n, request.getParameter(n));
-    }
-
-    
-    Map<String, Object> cookies = new HashMap<String, Object>();
-    snoop.put("cookies", cookies);
-    if (request.getCookies() != null) {
-      for (Cookie c : request.getCookies()) {
-        Map<String, Object> keys = new HashMap<String, Object>();
-        cookies.put(c.getName(), keys);
-        keys.put("path", c.getPath());
-        keys.put("value", c.getValue());
+      Map<String, Object> session = new HashMap<String, Object>();
+      snoop.put("session", session);
+      Map<String, Object> req = new HashMap<String, Object>();
+      snoop.put("request", req);
+      Map<String, Object> sessionAttributes = new HashMap<String, Object>();
+      session.put("attributes", sessionAttributes);
+      HttpSession hs = request.getSession();
+      for (Enumeration<?> e = hs.getAttributeNames(); e.hasMoreElements();) {
+        String n = (String) e.nextElement();
+        sessionAttributes.put(n, hs.getAttribute(n));
       }
+
+      Map<String, Object> requestAttributes = new HashMap<String, Object>();
+      req.put("attributes", requestAttributes);
+      for (Enumeration<?> e = request.getAttributeNames(); e.hasMoreElements();) {
+        String n = (String) e.nextElement();
+        requestAttributes.put(n, request.getAttribute(n));
+      }
+
+      Map<String, Object> requestParamiters = new HashMap<String, Object>();
+      req.put("parameters", requestParamiters);
+      for (Enumeration<?> e = request.getParameterNames(); e.hasMoreElements();) {
+        String n = (String) e.nextElement();
+        requestParamiters.put(n, request.getParameter(n));
+      }
+
+      Map<String, Object> cookies = new HashMap<String, Object>();
+      snoop.put("cookies", cookies);
+      if (request.getCookies() != null) {
+        for (Cookie c : request.getCookies()) {
+          Map<String, Object> keys = new HashMap<String, Object>();
+          cookies.put(c.getName(), keys);
+          keys.put("path", c.getPath());
+          keys.put("value", c.getValue());
+        }
+      }
+
+      snoop.put("user", "Remote User " + request.getRemoteUser());
+
+      response.setContentType(RestProvider.CONTENT_TYPE);
+      ServletOutputStream outputStream = response.getOutputStream();
+      outputStream.print(beanConverter.convertToString(snoop));
+    } catch (SecurityException ex) {
+      throw ex;
+    } catch (RestServiceFaultException ex) {
+      throw ex;
+    } catch (Exception ex) {
+      throw new RestServiceFaultException(ex.getMessage(), ex);
     }
-
-    snoop.put("user", "Remote User "+request.getRemoteUser());
-
-    response.setContentType(RestProvider.CONTENT_TYPE);
-    ServletOutputStream outputStream = response.getOutputStream();
-    outputStream.print(beanConverter.convertToString(snoop));
 
   }
 

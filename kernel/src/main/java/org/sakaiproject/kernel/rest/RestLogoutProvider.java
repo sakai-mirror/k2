@@ -26,20 +26,17 @@ import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.user.Authentication;
 import org.sakaiproject.kernel.session.SessionImpl;
 import org.sakaiproject.kernel.util.rest.RestDescription;
+import org.sakaiproject.kernel.webapp.RestServiceFaultException;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
- * Logout Rest Provider 
+ * Logout Rest Provider
  */
 public class RestLogoutProvider implements RestProvider {
 
-  
   private static final RestDescription DESCRIPTION = new RestDescription();
 
   /**
@@ -47,60 +44,72 @@ public class RestLogoutProvider implements RestProvider {
    */
   @Inject
   public RestLogoutProvider(RegistryService registryService) {
-    Registry<String, RestProvider> restRegistry = registryService.getRegistry(RestProvider.REST_REGISTRY);
+    Registry<String, RestProvider> restRegistry = registryService
+        .getRegistry(RestProvider.REST_REGISTRY);
     restRegistry.add(this);
   }
+
   /**
    * {@inheritDoc}
-   * @see org.sakaiproject.kernel.api.rest.RestProvider#dispatch(java.lang.String[], javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+   * 
+   * @see org.sakaiproject.kernel.api.rest.RestProvider#dispatch(java.lang.String[],
+   *      javax.servlet.http.HttpServletRequest,
+   *      javax.servlet.http.HttpServletResponse)
    */
   public void dispatch(String[] elements, HttpServletRequest request,
-      HttpServletResponse response) throws ServletException, IOException {
-    if ( "POST".equals(request.getMethod())) {
-      if ( request.getRemoteUser() != null ) {
-        request.setAttribute(Authentication.REQUESTTOKEN,null);
-        HttpSession session = request.getSession(false);
-        if ( session instanceof Session ) {
-          Session ss = (Session) session;
-          ss.removeUser();
-        } else if ( session != null ) {
-          session.removeAttribute(SessionImpl.UNRESOLVED_UID);
-          session.removeAttribute(SessionImpl.USER);
+      HttpServletResponse response) {
+    try {
+      if ("POST".equals(request.getMethod())) {
+        if (request.getRemoteUser() != null) {
+          request.setAttribute(Authentication.REQUESTTOKEN, null);
+          HttpSession session = request.getSession(false);
+          if (session instanceof Session) {
+            Session ss = (Session) session;
+            ss.removeUser();
+          } else if (session != null) {
+            session.removeAttribute(SessionImpl.UNRESOLVED_UID);
+            session.removeAttribute(SessionImpl.USER);
+          }
+          response.setContentType(RestProvider.CONTENT_TYPE);
+          response.getOutputStream().print("{ \"response\" : \"OK\" }");
+        } else {
+          response.setContentType(RestProvider.CONTENT_TYPE);
+          response.getOutputStream().print(
+              "{ \"response\" : \"Not Logged In\" }");
         }
-        response.setContentType(RestProvider.CONTENT_TYPE);
-        response.getOutputStream().print("{ \"response\" : \"OK\" }");
       } else {
-        response.setContentType(RestProvider.CONTENT_TYPE);
-        response.getOutputStream().print("{ \"response\" : \"Not Logged In\" }");      
+        throw new RestServiceFaultException(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
       }
-    } else {
-      response.setContentType(RestProvider.CONTENT_TYPE);
-      response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
-    }    
+    } catch ( SecurityException ex ) {
+      throw ex;
+    } catch (RestServiceFaultException ex) {
+      throw ex;
+    } catch (Exception ex) {
+      throw new RestServiceFaultException(ex.getMessage(), ex);
+    }
+
   }
 
   static {
     DESCRIPTION.setTitle("Logout Service");
+    DESCRIPTION.setShortDescription("The Logout service logs the user out ");
     DESCRIPTION
-        .setShortDescription("The Logout service logs the user out ");
-    DESCRIPTION
-        .addURLTemplate("*",
-            "The service is selected by /rest/logout any training path will be ignored. " +
-            "On POST the user will be logged out if the user is logged in, if they are not logged in a 200 will " +
-            "still be returned, but there will be a Not Logged In in the response rather than OK ");
+        .addURLTemplate(
+            "*",
+            "The service is selected by /rest/logout any training path will be ignored. "
+                + "On POST the user will be logged out if the user is logged in, if they are not logged in a 200 will "
+                + "still be returned, but there will be a Not Logged In in the response rather than OK ");
     DESCRIPTION
         .addResponse(
             "200",
             "If the user is logged out, there is a  { \"response\" : \"OK\" } with a status code of 200 ");
-    DESCRIPTION
-    .addResponse(
-        "405",
-        "If the service is invoked with a GET ");
+    DESCRIPTION.addResponse("405", "If the service is invoked with a GET ");
 
   }
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.rest.RestProvider#getDescription()
    */
   public RestDescription getDescription() {
@@ -109,6 +118,7 @@ public class RestLogoutProvider implements RestProvider {
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.Provider#getKey()
    */
   public String getKey() {
@@ -117,6 +127,7 @@ public class RestLogoutProvider implements RestProvider {
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.Provider#getPriority()
    */
   public int getPriority() {

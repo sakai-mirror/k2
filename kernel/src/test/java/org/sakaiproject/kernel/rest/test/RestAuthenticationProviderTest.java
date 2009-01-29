@@ -23,6 +23,7 @@ import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import net.sf.json.JSONObject;
 
@@ -34,6 +35,7 @@ import org.sakaiproject.kernel.registry.RegistryServiceImpl;
 import org.sakaiproject.kernel.rest.RestAuthenticationProvider;
 import org.sakaiproject.kernel.user.AuthenticationImpl;
 import org.sakaiproject.kernel.util.rest.RestDescription;
+import org.sakaiproject.kernel.webapp.RestServiceFaultException;
 import org.sakaiproject.kernel.webapp.test.InternalUser;
 
 import java.io.IOException;
@@ -57,17 +59,17 @@ public class RestAuthenticationProviderTest {
     HttpServletRequest request = createMock(HttpServletRequest.class);
     expect(request.getMethod()).andReturn("GET").anyTimes();
     expect(request.getParameter("l")).andReturn("0").anyTimes();
-    response.reset();
-    expectLastCall();
-    response.sendError(405);
-    expectLastCall();
 
     replay(request, response);
 
     RestAuthenticationProvider a = new RestAuthenticationProvider(
         registryService);
-    a.dispatch(new String[0], request, response);
-
+    try {
+      a.dispatch(new String[0], request, response);
+      fail();
+    } catch (RestServiceFaultException ex) {
+      assertEquals(405, ex.getStatusCode());
+    }
 
     verify(request, response);
   }
@@ -81,20 +83,20 @@ public class RestAuthenticationProviderTest {
     expect(request.getMethod()).andReturn("GET").anyTimes();
 
     expect(request.getParameter("l")).andReturn("1").anyTimes();
-    
-    response.reset();
-    expectLastCall();
-    response.sendError(405);
-    expectLastCall();
-    
-    replay(request, response,session);
+
+    replay(request, response, session);
     RestAuthenticationProvider a = new RestAuthenticationProvider(
         registryService);
-    a.dispatch(new String[0], request, response);
+    try {
+      a.dispatch(new String[0], request, response);
+      fail();
+    } catch (RestServiceFaultException ex) {
+      assertEquals(405, ex.getStatusCode());
+    }
 
-//    assertEquals("{\"response\": \"OK\"}", sw.toString());
+    // assertEquals("{\"response\": \"OK\"}", sw.toString());
 
-    verify(request, response,session);
+    verify(request, response, session);
   }
 
   @Test
@@ -105,15 +107,16 @@ public class RestAuthenticationProviderTest {
     expect(request.getMethod()).andReturn("GET").anyTimes();
 
     expect(request.getParameter("l")).andReturn("1").anyTimes();
-    response.reset();
-    expectLastCall();
-    response.sendError(405);
-    expectLastCall();
-    
+
     replay(request, response);
     RestAuthenticationProvider a = new RestAuthenticationProvider(
         registryService);
-    a.dispatch(new String[0], request, response);
+    try {
+      a.dispatch(new String[0], request, response);
+      fail();
+    } catch (RestServiceFaultException ex) {
+      assertEquals(405, ex.getStatusCode());
+    }
 
     verify(request, response);
   }
@@ -125,10 +128,10 @@ public class RestAuthenticationProviderTest {
     HttpServletRequest request = createMock(HttpServletRequest.class);
     expect(request.getMethod()).andReturn("POST").anyTimes();
     expect(request.getParameter("l")).andReturn("0").anyTimes();
-    
+
     response.reset();
     expectLastCall();
-    response.sendError(400,"Please set the parameter l=1 to activate login");
+    response.sendError(400, "Please set the parameter l=1 to activate login");
     expectLastCall();
 
     replay(request, response);
@@ -151,12 +154,12 @@ public class RestAuthenticationProviderTest {
     expect(request.getParameter("l")).andReturn("1").anyTimes();
     AuthenticationImpl authN = new AuthenticationImpl(new InternalUser("ieb"));
     expect(request.getAttribute(Authentication.REQUESTTOKEN)).andReturn(authN);
-    
-    session.setAttribute("_uu","ieb");
+
+    session.setAttribute("_uu", "ieb");
     expectLastCall();
     session.removeAttribute("_u");
     expectLastCall();
-    
+
     request.setAttribute("_uuid", null);
     expectLastCall();
 
@@ -167,14 +170,14 @@ public class RestAuthenticationProviderTest {
     response.setContentType(RestProvider.CONTENT_TYPE);
     expectLastCall().anyTimes();
 
-    replay(request, response,session);
+    replay(request, response, session);
     RestAuthenticationProvider a = new RestAuthenticationProvider(
         registryService);
     a.dispatch(new String[0], request, response);
 
     assertEquals("{\"response\": \"OK\"}", sw.toString());
 
-    verify(request, response,session);
+    verify(request, response, session);
   }
 
   @Test

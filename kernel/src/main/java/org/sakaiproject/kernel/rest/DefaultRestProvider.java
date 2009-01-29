@@ -23,12 +23,11 @@ import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.util.rest.RestDescription;
+import org.sakaiproject.kernel.webapp.RestServiceFaultException;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -56,10 +55,18 @@ public class DefaultRestProvider implements RestProvider {
    *      javax.servlet.http.HttpServletResponse)
    */
   public void dispatch(String[] elements, HttpServletRequest request,
-      HttpServletResponse response) throws ServletException, IOException {
-    RestDescription restDescription = getDescription();
-    response.setContentType(CONTENT_TYPE);
-    response.getWriter().print(restDescription.toJson());
+      HttpServletResponse response) {
+    try {
+      RestDescription restDescription = getDescription();
+      response.setContentType(CONTENT_TYPE);
+      response.getWriter().print(restDescription.toJson());
+    } catch ( SecurityException ex ) {
+      throw ex;
+    } catch (RestServiceFaultException ex) {
+      throw ex;
+    } catch (Exception ex) {
+      throw new RestServiceFaultException(ex.getMessage(), ex);
+    }
   }
 
   /**

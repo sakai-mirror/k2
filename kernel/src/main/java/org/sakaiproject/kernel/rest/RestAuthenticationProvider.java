@@ -25,10 +25,10 @@ import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.user.Authentication;
 import org.sakaiproject.kernel.session.SessionImpl;
 import org.sakaiproject.kernel.util.rest.RestDescription;
+import org.sakaiproject.kernel.webapp.RestServiceFaultException;
 
 import java.io.IOException;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -155,9 +155,9 @@ public class RestAuthenticationProvider implements RestProvider {
         ((SessionImpl) session).setBaseAttribute(SessionImpl.UNRESOLVED_UID,
             ((Authentication) o).getUid());
       } else {
-        session.setAttribute(SessionImpl.UNRESOLVED_UID,
-            ((Authentication) o).getUid());
-        
+        session.setAttribute(SessionImpl.UNRESOLVED_UID, ((Authentication) o)
+            .getUid());
+
       }
 
       // pull the authentication token trough to the user
@@ -177,19 +177,26 @@ public class RestAuthenticationProvider implements RestProvider {
   /**
    * {@inheritDoc}
    * 
-   * @throws IOException
    * @see org.sakaiproject.kernel.api.rest.RestProvider#dispatch(java.lang.String[],
    *      javax.servlet.http.HttpServletRequest,
    *      javax.servlet.http.HttpServletResponse)
    */
   public void dispatch(String[] elements, HttpServletRequest request,
-      HttpServletResponse response) throws ServletException, IOException {
-    if ("POST".equals(request.getMethod())) {
-      doCheckLogin(request, response);
-    } else {
-      response.reset();
-      response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+      HttpServletResponse response) {
+    try {
+      if ("POST".equals(request.getMethod())) {
+        doCheckLogin(request, response);
+      } else {
+        throw new RestServiceFaultException(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+      }
+    } catch ( SecurityException ex ) {
+      throw ex;
+    } catch (RestServiceFaultException ex) {
+      throw ex;
+    } catch (Exception ex) {
+      throw new RestServiceFaultException(ex.getMessage(), ex);
     }
+
   }
 
   /**

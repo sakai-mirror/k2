@@ -168,4 +168,13 @@ public class StringUtils {
     return na;
   }
 
+  /**
+   * Checks to see if the value is empty
+   * @param firstName
+   * @return
+   */
+  public static boolean isEmpty(String firstName) {
+    return (firstName == null || firstName.trim().length()==0);
+  }
+
 }

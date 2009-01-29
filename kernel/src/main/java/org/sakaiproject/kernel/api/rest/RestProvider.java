@@ -19,10 +19,8 @@ package org.sakaiproject.kernel.api.rest;
 
 import org.sakaiproject.kernel.api.Provider;
 import org.sakaiproject.kernel.util.rest.RestDescription;
+import org.sakaiproject.kernel.webapp.RestServiceFaultException;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -35,23 +33,43 @@ public interface RestProvider extends Provider<String> {
   public static final String CONTENT_TYPE = "text/plain";
 
   /**
-   * Produces the output for the rest request, as json 
+   * Produces the output for the rest request, as json.
+   * 
+   * <p>
+   * If Implementing this method the patter that is normally used is to wrap the
+   * dispatch implementation in a try catch that forwards SecurityExceptions and
+   * RestServiceFaults and encapsulates any other exceptions.
+   * </p>
+   * <pre>
+   *     try {
+   *     ...
+   *     } catch (SecurityException ex) {
+   *       throw ex;
+   *     } catch (RestServiceFaultException ex) {
+   *       throw ex;
+   *     } catch (Exception ex) {
+   *       throw new RestServiceFaultException(ex.getMessage(),ex);
+   *     }
+   * 
+   * </pre>
+   * 
    * @param elements
    *          the path elements of the request
    * @param request
    *          the request
    * @param response
    *          the response
-   * @throws IOException 
-   * @throws ServletException 
+   * @throws SecurityException
+   *           if there is a security exception on the dispatch.
+   * @throws RestServiceFaultException
+   *           if there is an fault on the dispatch.
    */
   void dispatch(String[] elements, HttpServletRequest request,
-      HttpServletResponse response) throws ServletException, IOException;
+      HttpServletResponse response);
 
   /**
    * @return get the description of the service.
    */
   RestDescription getDescription();
-
 
 }

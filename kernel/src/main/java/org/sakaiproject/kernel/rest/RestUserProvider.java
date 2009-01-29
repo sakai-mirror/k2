@@ -41,6 +41,7 @@ import org.sakaiproject.kernel.user.jcr.JcrAuthenticationResolverProvider;
 import org.sakaiproject.kernel.util.IOUtils;
 import org.sakaiproject.kernel.util.StringUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
+import org.sakaiproject.kernel.webapp.RestServiceFaultException;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -81,8 +82,6 @@ public class RestUserProvider implements RestProvider {
   private boolean anonymousAccounting;
   private AuthenticationManagerService authenticationManagerService;
 
-  
-
   /**
    * @param sessionManager
    * 
@@ -108,9 +107,9 @@ public class RestUserProvider implements RestProvider {
     this.userEnvironmentResolverService = userEnvironmentResolverService;
     this.sessionManagerService = sessionManagerService;
     this.authenticationManagerService = authenticationManagerService;
-    
+
     this.anonymousAccounting = "true".equals(anonymousAccounting);
-    
+
   }
 
   /**
@@ -121,7 +120,7 @@ public class RestUserProvider implements RestProvider {
    *      javax.servlet.http.HttpServletResponse)
    */
   public void dispatch(String[] elements, HttpServletRequest request,
-      HttpServletResponse response) throws ServletException, IOException {
+      HttpServletResponse response) {
     try {
       if ("POST".equals(request.getMethod())) {
         // Security is managed by the JCR
@@ -140,43 +139,39 @@ public class RestUserProvider implements RestProvider {
         }
 
       } else {
-        if("GET".equals(request.getMethod()) && elements.length == 3 && getKey().equals(elements[0]) 
-            && EXISTS.equals(elements[2]) && elements[1].trim().length() > 0) {
+        if ("GET".equals(request.getMethod()) && elements.length == 3
+            && getKey().equals(elements[0]) && EXISTS.equals(elements[2])
+            && elements[1].trim().length() > 0) {
           handleUserExists(elements[1].trim(), response);
         } else {
-          response.reset();
-          response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+          throw new RestServiceFaultException(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
         }
       }
     } catch (SecurityException ex) {
-      response.reset();
-      response.sendError(HttpServletResponse.SC_FORBIDDEN);
+      throw ex;
+    } catch (RestServiceFaultException ex) {
+      throw ex;
     } catch (Exception ex) {
-      throw new ServletException(ex);
+      throw new RestServiceFaultException(ex.getMessage(),ex);
     }
   }
 
-  private void handleUserExists(String eid, HttpServletResponse response) throws ServletException, IOException {
-    
-    
+  private void handleUserExists(String eid, HttpServletResponse response)
+      throws ServletException, IOException {
+
     Session session = sessionManagerService.getCurrentSession();
     User user = session.getUser();
 
-
-
     if ((user == null || user.getUuid() == null) && !anonymousAccounting) {
-      response.reset();
-      response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+      throw new RestServiceFaultException(HttpServletResponse.SC_UNAUTHORIZED);
     } else {
-      
-      UserEnvironment env = userEnvironmentResolverService
-      .resolve(user);
+
+      UserEnvironment env = userEnvironmentResolverService.resolve(user);
 
       if (!anonymousAccounting && (null == env || !env.isSuperUser())) {
-        response.reset();
-        response.sendError(HttpServletResponse.SC_FORBIDDEN);
+        throw new RestServiceFaultException(HttpServletResponse.SC_FORBIDDEN);
       } else {
-        if(userResolverService.resolve(eid) != null) {
+        if (userResolverService.resolve(eid) != null) {
           response.reset();
           Map<String, String> body = new HashMap<String, String>();
           body.put("response", "OK");
@@ -188,12 +183,11 @@ public class RestUserProvider implements RestProvider {
           response.getOutputStream().flush();
           response.getOutputStream().close();
         } else {
-          response.reset();
-          response.sendError(HttpServletResponse.SC_NOT_FOUND);
+          throw new RestServiceFaultException(HttpServletResponse.SC_NOT_FOUND);
         }
       }
     }
-    
+
   }
 
   /**
@@ -212,24 +206,17 @@ public class RestUserProvider implements RestProvider {
       IOException, RepositoryException, JCRNodeFactoryServiceException {
     Session session = sessionManagerService.getCurrentSession();
     if (session == null) {
-      response.reset();
-      response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-      return null;
+      throw new RestServiceFaultException(HttpServletResponse.SC_UNAUTHORIZED);
     }
     UserEnvironment ue = userEnvironmentResolverService.resolve(session);
     if (ue == null) {
-      response.reset();
-      response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-      return null;
+      throw new RestServiceFaultException(HttpServletResponse.SC_UNAUTHORIZED);
     }
     User thisUser = ue.getUser();
-    if ( thisUser == null || thisUser instanceof AnonUser ) {
-      response.reset();
-      response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-      return null;
+    if (thisUser == null || thisUser instanceof AnonUser) {
+      throw new RestServiceFaultException(HttpServletResponse.SC_UNAUTHORIZED);
     }
-    
-    
+
     User user = thisUser;
 
     boolean superUser = false;
@@ -245,56 +232,51 @@ public class RestUserProvider implements RestProvider {
             "User does not have permission to change others passwords");
       }
     } else {
-      externalId = ((UserEnvironmentBean)ue).getEid();
+      externalId = ((UserEnvironmentBean) ue).getEid();
     }
-    if ( thisUser.getUuid().equals(user.getUuid()) ) {
+    if (thisUser.getUuid().equals(user.getUuid())) {
       superUser = false;
     }
     String password = request.getParameter(PASSWORD_PARAM);
-    
+
     String passwordOld = request.getParameter(PASSWORD_OLD_PARAM);
 
     if (password == null || password.trim().length() < 5) {
-      response.reset();
-      response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+      throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
           "Passwords are too short, minimum 5 characters");
-      return null;
     }
     String userEnvironmentPath = userFactoryService.getUserEnvPath(user
         .getUuid());
     Node userEnvNode = jcrNodeFactoryService.getNode(userEnvironmentPath);
-    if ( userEnvNode == null ) {
-      response.reset();
-      response.sendError(HttpServletResponse.SC_NOT_FOUND,"User does not exist");
+    if (userEnvNode == null) {
+      throw new RestServiceFaultException(HttpServletResponse.SC_NOT_FOUND,
+          "User does not exist");
     }
     if (!superUser) {
-      if ( passwordOld == null ) {
-        response.reset();
-        response.sendError(HttpServletResponse.SC_FORBIDDEN,
-            "You must specify the old password in order to change the password.");
-        return null;        
+      if (passwordOld == null) {
+        throw new RestServiceFaultException(HttpServletResponse.SC_FORBIDDEN,
+                "You must specify the old password in order to change the password.");
       }
       // set the password
       Property storedPassword = userEnvNode
           .getProperty(JcrAuthenticationResolverProvider.JCRPASSWORDHASH);
       if (storedPassword != null) {
         String storedPasswordString = storedPassword.getString();
-        String oldPasswordHash = StringUtils.sha1Hash(passwordOld); 
+        String oldPasswordHash = StringUtils.sha1Hash(passwordOld);
         if (storedPasswordString != null) {
           if (!oldPasswordHash.equals(storedPasswordString)) {
-            response.sendError(HttpServletResponse.SC_CONFLICT,
+            throw new RestServiceFaultException(HttpServletResponse.SC_CONFLICT,
                 "Old Password does not match ");
-            return null;
           }
         }
       }
     }
 
-    JCRIdPwEvidence oldPrincipal = new JCRIdPwEvidence(externalId,passwordOld);
-    JCRIdPwEvidence newPrincipal = new JCRIdPwEvidence(externalId,password);
+    JCRIdPwEvidence oldPrincipal = new JCRIdPwEvidence(externalId, passwordOld);
+    JCRIdPwEvidence newPrincipal = new JCRIdPwEvidence(externalId, password);
 
-    // Although the authentication manager service does perform the above tests, 
-    // providers could be outside the kernel, and so they may not be so strict. 
+    // Although the authentication manager service does perform the above tests,
+    // providers could be outside the kernel, and so they may not be so strict.
     authenticationManagerService.setAuthentication(oldPrincipal, newPrincipal);
 
     Map<String, Object> r = new HashMap<String, Object>();
@@ -325,11 +307,35 @@ public class RestUserProvider implements RestProvider {
       String password = request.getParameter(PASSWORD_PARAM);
       String userType = request.getParameter(USER_TYPE_PARAM);
 
+      if (StringUtils.isEmpty(firstName)) {
+        throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
+            FIRST_NAME_PARAM + " is empty");
+      }
+      if (StringUtils.isEmpty(lastName)) {
+        throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
+            LAST_NAME_PARAM + " is empty");
+      }
+      if (StringUtils.isEmpty(email)) {
+        throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
+            EMAIL_PARAM + " is empty");
+      }
+      if (StringUtils.isEmpty(externalId)) {
+        throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
+            EXTERNAL_USERID_PARAM + " is empty");
+      }
+      if (StringUtils.isEmpty(password)) {
+        throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
+            PASSWORD_PARAM + " is empty");
+      }
+      if (StringUtils.isEmpty(userType)) {
+        throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
+            USER_TYPE_PARAM + " is empty");
+      }
+
       User u = userResolverService.resolve(externalId);
       if (u != null) {
-        response.reset();
-        response.sendError(HttpServletResponse.SC_CONFLICT);
-        return null;
+        throw new RestServiceFaultException(HttpServletResponse.SC_CONFLICT,
+            USER_TYPE_PARAM + " is empty");
       }
 
       u = userFactoryService.createNewUser(externalId);
@@ -344,8 +350,8 @@ public class RestUserProvider implements RestProvider {
       templateInputStream = jcrNodeFactoryService
           .getInputStream(userEnvironmentTemplate);
       String template = IOUtils.readFully(templateInputStream, "UTF-8");
-      UserEnvironmentBean userEnvironmentBean = beanConverter.convertToObject(template,
-          UserEnvironmentBean.class);
+      UserEnvironmentBean userEnvironmentBean = beanConverter.convertToObject(
+          template, UserEnvironmentBean.class);
 
       // make the template this user
       userEnvironmentBean.setEid(externalId);
@@ -355,7 +361,7 @@ public class RestUserProvider implements RestProvider {
       p.put("lastName", lastName);
       p.put("email", email);
       p.put("userType", userType);
-      
+
       userEnvironmentBean.setProperties(p);
 
       // save the template
@@ -418,7 +424,8 @@ public class RestUserProvider implements RestProvider {
     DESCRIPTION.addParameter(PASSWORD_OLD_PARAM,
         "the old password for the User");
     DESCRIPTION.addParameter(USER_TYPE_PARAM, "The type of the user User");
-    DESCRIPTION.addURLTemplate("/user/<user eid>/exists", "GET to test for existence of a user");
+    DESCRIPTION.addURLTemplate("/user/<user eid>/exists",
+        "GET to test for existence of a user");
 
     DESCRIPTION
         .addResponse(

@@ -34,6 +34,7 @@ import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.authz.simple.NullUserEnvironment;
 import org.sakaiproject.kernel.util.IOUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
+import org.sakaiproject.kernel.webapp.RestServiceFaultException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,7 +43,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.jcr.RepositoryException;
-import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -135,7 +135,7 @@ public class RestMeProvider implements RestProvider {
    *      javax.servlet.http.HttpServletResponse) /x/y/z?searchOrder=1231231
    */
   public void dispatch(String[] elements, HttpServletRequest request,
-      HttpServletResponse response) throws ServletException, IOException {
+      HttpServletResponse response) {
     try {
       Session session = sessionManagerService.getCurrentSession();
       User user = session.getUser();
@@ -157,10 +157,12 @@ public class RestMeProvider implements RestProvider {
           sendOutput(response, locale, userEnvironment);
         }
       }
-    } catch (RepositoryException re) {
-      throw new ServletException(re.getMessage(), re);
-    } catch (JCRNodeFactoryServiceException e) {
-      throw new ServletException(e.getMessage(), e);
+    } catch ( SecurityException ex ) {
+      throw ex;
+    } catch (RestServiceFaultException ex) {
+      throw ex;
+    } catch (Exception ex) {
+      throw new RestServiceFaultException(ex.getMessage(), ex);
     }
   }
 

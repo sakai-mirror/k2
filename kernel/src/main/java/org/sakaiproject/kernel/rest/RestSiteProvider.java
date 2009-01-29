@@ -37,12 +37,12 @@ import org.sakaiproject.kernel.model.UserEnvironmentBean;
 import org.sakaiproject.kernel.user.AnonUser;
 import org.sakaiproject.kernel.util.StringUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
+import org.sakaiproject.kernel.webapp.RestServiceFaultException;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -152,7 +152,7 @@ public class RestSiteProvider implements RestProvider {
    *      javax.servlet.http.HttpServletResponse)
    */
   public void dispatch(String[] elements, HttpServletRequest req,
-      HttpServletResponse resp) throws ServletException, IOException {
+      HttpServletResponse resp)  {
     try {
       if (elements.length >= 1) {
         Map<String, Object> map = null;
@@ -174,11 +174,12 @@ public class RestSiteProvider implements RestProvider {
           resp.getOutputStream().print(responseBody);
         }
       }
-    } catch (SecurityException ex) {
-      resp.reset();
-      resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+    } catch ( SecurityException ex ) {
+      throw ex;
+    } catch (RestServiceFaultException ex) {
+      throw ex;
     } catch (Exception ex) {
-      throw new ServletException(ex.getMessage(),ex);
+      throw new RestServiceFaultException(ex.getMessage(), ex);
     }
   }
 

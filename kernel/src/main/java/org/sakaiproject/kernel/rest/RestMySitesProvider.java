@@ -36,6 +36,7 @@ import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.authz.simple.SimpleJcrUserEnvironmentResolverService;
 import org.sakaiproject.kernel.model.SiteBean;
 import org.sakaiproject.kernel.util.rest.RestDescription;
+import org.sakaiproject.kernel.webapp.RestServiceFaultException;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -43,7 +44,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -52,7 +52,8 @@ import javax.servlet.http.HttpServletResponse;
  * Implements the MySites service.
  * 
  * This is coded according to OpenSocial API v.8.1
- * http://www.opensocial.org/Technical-Resources/opensocial-spec-v081/restful-protocol#TOC-2.1-Responses
+ * http://www.opensocial.org/Technical
+ * -Resources/opensocial-spec-v081/restful-protocol#TOC-2.1-Responses
  * 
  */
 public class RestMySitesProvider implements RestProvider {
@@ -114,9 +115,12 @@ public class RestMySitesProvider implements RestProvider {
     DESCRIPTION.addSection(2, "Response: Authenticated User",
         "Where the user is an authenticaated user the response will contain a list of "
             + "sites associated wit the user including the role(s) in each.");
-    DESCRIPTION.addParameter("count (optional) - TODO", "Number of items to return for paging");//TODO
-    DESCRIPTION.addParameter("startIndex (optional) - TODO ", "Index (integer) of item starting page");//TODO
-    DESCRIPTION.addParameter("itemsPerPage (optional) - TODO", "The number of items to display");//TODO
+    DESCRIPTION.addParameter("count (optional) - TODO",
+        "Number of items to return for paging");// TODO
+    DESCRIPTION.addParameter("startIndex (optional) - TODO ",
+        "Index (integer) of item starting page");// TODO
+    DESCRIPTION.addParameter("itemsPerPage (optional) - TODO",
+        "The number of items to display");// TODO
     DESCRIPTION
         .addHeader("none",
             "The service neither looks for headers nor sets any non standatd headers");
@@ -128,96 +132,89 @@ public class RestMySitesProvider implements RestProvider {
         .addResponse(
             "200",
             "The service returns a JSON body with a list of N 'items' structures. eg "
-                
-            + "    {"
-            + "      \"entry\": ["
-            + "          {"
-            + "              \"type\": \"course\","
-            + "              \"description\": \"An Example site definition. This is just the required fields that we might see inside a object that defines a site \","
-            + "              \"roles\": ["
-            + "                  {"
-            + "                      \"permissions\": ["
-            + "                          \"read\","
-            + "                          \"write\","
-            + "                          \"delete\""
-            + "                      ],"
-            + "                      \"name\": \"access\""
-            + "                  },"
-            + "                  {"
-            + "                      \"permissions\": ["
-            + "                          \"read\","
-            + "                          \"write\","
-            + "                          \"delete\""
-            + "                      ],"
-            + "                      \"name\": \"maintain\""
-            + "                  }"
-            + "              ],"
-            + "              \"subjectTokens\": ["
-            + "                  \"Site 2:access\","
-            + "                  \"Site 2:maintain\""
-            + "              ],"
-            + "              \"name\": \"Site 2\","
-            + "              \"id\": \"group2\""
-            + "          },"
-            + "          {"
-            + "              \"type\": \"course\","
-            + "              \"description\": \"An Example site definition. This is just the required fields that we might see inside a object that defines a site \","
-            + "              \"roles\": ["
-            + "                  {"
-            + "                      \"permissions\": ["
-            + "                          \"read\","
-            + "                          \"write\","
-            + "                          \"delete\""
-            + "                      ],"
-            + "                      \"name\": \"access\""
-            + "                  },"
-            + "                  {"
-            + "                      \"permissions\": ["
-            + "                          \"read\","
-            + "                          \"write\","
-            + "                          \"delete\""
-            + "                      ],"
-            + "                      \"name\": \"maintain\""
-            + "                  }"
-            + "              ],"
-            + "              \"subjectTokens\": ["
-            + "                  \"Site 1:access\","
-            + "                  \"Site 1:maintain\""
-            + "              ],"
-            + "              \"name\": \"Site 1\","
-            + "              \"id\": \"group1\""
-            + "          },"
-            + "          {"
-            + "              \"type\": \"course\","
-            + "              \"description\": \"An Example site definition. This is just the required fields that we might see inside a object that defines a site \","
-            + "              \"roles\": ["
-            + "                  {"
-            + "                      \"permissions\": ["
-            + "                          \"read\","
-            + "                          \"write\","
-            + "                          \"delete\""
-            + "                      ],"
-            + "                      \"name\": \"access\""
-            + "                  },"
-            + "                  {"
-            + "                      \"permissions\": ["
-            + "                          \"read\","
-            + "                          \"write\","
-            + "                          \"delete\""
-            + "                      ],"
-            + "                      \"name\": \"maintain\""
-            + "                  }"
-            + "              ],"
-            + "              \"subjectTokens\": ["
-            + "                  \"Site 2:access\","
-            + "                  \"Site 2:maintain\""
-            + "              ],"
-            + "              \"name\": \"Site 2\","
-            + "              \"id\": \"group2\""
-            + "          }"
-            + "      ],"
-            + "      \"totalResults\": 3"
-            + "  }");
+
+                + "    {"
+                + "      \"entry\": ["
+                + "          {"
+                + "              \"type\": \"course\","
+                + "              \"description\": \"An Example site definition. This is just the required fields that we might see inside a object that defines a site \","
+                + "              \"roles\": ["
+                + "                  {"
+                + "                      \"permissions\": ["
+                + "                          \"read\","
+                + "                          \"write\","
+                + "                          \"delete\""
+                + "                      ],"
+                + "                      \"name\": \"access\""
+                + "                  },"
+                + "                  {"
+                + "                      \"permissions\": ["
+                + "                          \"read\","
+                + "                          \"write\","
+                + "                          \"delete\""
+                + "                      ],"
+                + "                      \"name\": \"maintain\""
+                + "                  }"
+                + "              ],"
+                + "              \"subjectTokens\": ["
+                + "                  \"Site 2:access\","
+                + "                  \"Site 2:maintain\""
+                + "              ],"
+                + "              \"name\": \"Site 2\","
+                + "              \"id\": \"group2\""
+                + "          },"
+                + "          {"
+                + "              \"type\": \"course\","
+                + "              \"description\": \"An Example site definition. This is just the required fields that we might see inside a object that defines a site \","
+                + "              \"roles\": ["
+                + "                  {"
+                + "                      \"permissions\": ["
+                + "                          \"read\","
+                + "                          \"write\","
+                + "                          \"delete\""
+                + "                      ],"
+                + "                      \"name\": \"access\""
+                + "                  },"
+                + "                  {"
+                + "                      \"permissions\": ["
+                + "                          \"read\","
+                + "                          \"write\","
+                + "                          \"delete\""
+                + "                      ],"
+                + "                      \"name\": \"maintain\""
+                + "                  }"
+                + "              ],"
+                + "              \"subjectTokens\": ["
+                + "                  \"Site 1:access\","
+                + "                  \"Site 1:maintain\""
+                + "              ],"
+                + "              \"name\": \"Site 1\","
+                + "              \"id\": \"group1\""
+                + "          },"
+                + "          {"
+                + "              \"type\": \"course\","
+                + "              \"description\": \"An Example site definition. This is just the required fields that we might see inside a object that defines a site \","
+                + "              \"roles\": [" + "                  {"
+                + "                      \"permissions\": ["
+                + "                          \"read\","
+                + "                          \"write\","
+                + "                          \"delete\""
+                + "                      ],"
+                + "                      \"name\": \"access\""
+                + "                  }," + "                  {"
+                + "                      \"permissions\": ["
+                + "                          \"read\","
+                + "                          \"write\","
+                + "                          \"delete\""
+                + "                      ],"
+                + "                      \"name\": \"maintain\""
+                + "                  }" + "              ],"
+                + "              \"subjectTokens\": ["
+                + "                  \"Site 2:access\","
+                + "                  \"Site 2:maintain\"" + "              ],"
+                + "              \"name\": \"Site 2\","
+                + "              \"id\": \"group2\"" + "          }"
+                + "      ]," + "      \"totalResults\": 3" + "  }");
 
   }
 
@@ -229,108 +226,118 @@ public class RestMySitesProvider implements RestProvider {
    *      javax.servlet.http.HttpServletResponse)
    */
   public void dispatch(String[] elements, HttpServletRequest request,
-      HttpServletResponse response) throws ServletException, IOException {
-    if (elements.length == 1 && SITES_ELEMENT.equals(elements[0])) {
+      HttpServletResponse response) {
+    try {
+      if (elements.length == 1 && SITES_ELEMENT.equals(elements[0])) {
 
-      KernelManager kernelManager = new KernelManager();
-      Kernel kernel = kernelManager.getKernel();
+        KernelManager kernelManager = new KernelManager();
+        Kernel kernel = kernelManager.getKernel();
 
-      if (null == sessionManagerService) {
-        sessionManagerService = kernel.getService(SessionManagerService.class);
-      }
-
-      Session session = sessionManagerService.getCurrentSession();
-      User user = session.getUser();
-
-      String uuid = null;
-
-      if (user == null || user.getUuid() == null) {
-        uuid = "anon";
-      } else {
-        uuid = user.getUuid();
-      }
-      UserEnvironment env = simpleJcrUserEnvironmentResolverService
-          .resolve(user);
-
-      LOG.info("getting subjects....");
-      String[] subjects = env.getSubjects();
-      if (LOG.isInfoEnabled()) {
-        LOG.info("list of subjects for user (" + uuid + ", " + subjects.length
-            + " total):");
-        for (int i = 0; i < subjects.length; ++i) {
-          LOG.info("--> " + subjects[i]);
+        if (null == sessionManagerService) {
+          sessionManagerService = kernel
+              .getService(SessionManagerService.class);
         }
-      }
 
-      LOG.info("Parsing for startindex param from request ....." + request);
+        Session session = sessionManagerService.getCurrentSession();
+        User user = session.getUser();
 
-      /*
-       * parse and handle the paging This is coded according to OpenSocial API
-       * v.8.1
-       * http://www.opensocial.org/Technical-Resources/opensocial-spec-v081
-       * /restful -protocol#TOC-2.1-Responses
-       */
-      Map<String, Object> pagingEnvelope = new HashMap<String, Object>();
+        String uuid = null;
 
-      // check for startIndex param
-      try {
-        String param = request.getParameter(INPUT_PARAM_NAME_STARTINDEX);
-        int startIndex = Integer.parseInt(param);
-        pagingEnvelope.put(OUTPUT_PARAM_NAME_STARTINDEX, startIndex);
-      } catch (NumberFormatException e) {// just skip it
-      } catch (Exception e) {
-        LOG.error("General Exception thrown parsing request for startIndex");
-      }
+        if (user == null || user.getUuid() == null) {
+          uuid = "anon";
+        } else {
+          uuid = user.getUuid();
+        }
+        UserEnvironment env = simpleJcrUserEnvironmentResolverService
+            .resolve(user);
 
-      /// check for 'count' param
-      try {
-        // /set to 'count' until we know how many values we have left to display
-        int itemsPerPage = Integer.parseInt(request
-            .getParameter(INPUT_PARAM_NAME_COUNT));
-        pagingEnvelope.put(OUTPUT_PARAM_NAME_ITEMSPERPAGE, itemsPerPage);
-      } catch (NumberFormatException e) {
-        // just skip it
-      } catch (Exception e) {
-        LOG.error("General Exception thrown parsing request for itemsPerPage");
-      }
+        LOG.info("getting subjects....");
+        String[] subjects = env.getSubjects();
+        if (LOG.isInfoEnabled()) {
+          LOG.info("list of subjects for user (" + uuid + ", "
+              + subjects.length + " total):");
+          for (int i = 0; i < subjects.length; ++i) {
+            LOG.info("--> " + subjects[i]);
+          }
+        }
 
-      if (LOG.isDebugEnabled()) {
-        LOG.debug("getting subjects as sites....");
-      }
+        LOG.info("Parsing for startindex param from request ....." + request);
 
-      SiteBean memSite = null;
-      Set<SiteBean> sites = new HashSet<SiteBean>();
+        /*
+         * parse and handle the paging This is coded according to OpenSocial API
+         * v.8.1
+         * http://www.opensocial.org/Technical-Resources/opensocial-spec-v081
+         * /restful -protocol#TOC-2.1-Responses
+         */
+        Map<String, Object> pagingEnvelope = new HashMap<String, Object>();
 
-      for (String s : subjects) {
-        if (s != null) {
-          String[] parts = s.split(":");
-          if (parts.length == 2) {
-            memSite = siteService.getSite(parts[0]);
+        // check for startIndex param
+        try {
+          String param = request.getParameter(INPUT_PARAM_NAME_STARTINDEX);
+          int startIndex = Integer.parseInt(param);
+          pagingEnvelope.put(OUTPUT_PARAM_NAME_STARTINDEX, startIndex);
+        } catch (NumberFormatException e) {// just skip it
+        } catch (Exception e) {
+          LOG.error("General Exception thrown parsing request for startIndex");
+        }
 
-            if (null == memSite) {
-              LOG
-                  .warn("group id not found as a site id... subject token: "
-                      + s);
+        // / check for 'count' param
+        try {
+          // /set to 'count' until we know how many values we have left to
+          // display
+          int itemsPerPage = Integer.parseInt(request
+              .getParameter(INPUT_PARAM_NAME_COUNT));
+          pagingEnvelope.put(OUTPUT_PARAM_NAME_ITEMSPERPAGE, itemsPerPage);
+        } catch (NumberFormatException e) {
+          // just skip it
+        } catch (Exception e) {
+          LOG
+              .error("General Exception thrown parsing request for itemsPerPage");
+        }
+
+        if (LOG.isDebugEnabled()) {
+          LOG.debug("getting subjects as sites....");
+        }
+
+        SiteBean memSite = null;
+        Set<SiteBean> sites = new HashSet<SiteBean>();
+
+        for (String s : subjects) {
+          if (s != null) {
+            String[] parts = s.split(":");
+            if (parts.length == 2) {
+              memSite = siteService.getSite(parts[0]);
+
+              if (null == memSite) {
+                LOG.warn("group id not found as a site id... subject token: "
+                    + s);
+              } else {
+                if (LOG.isDebugEnabled()) {
+                  LOG.debug("Site found: " + memSite.getName());
+                }
+                if (!sites.contains(memSite)) {
+                  sites.add(memSite);
+                }
+              }
             } else {
-              if (LOG.isDebugEnabled()) {
-                LOG.debug("Site found: " + memSite.getName());
-              }
-              if (!sites.contains(memSite)) {
-                sites.add(memSite);
-              }
+              LOG.error("malformed subject in userenvronment (user: " + uuid
+                  + ")");
             }
           } else {
-            LOG.error("malformed subject in userenvronment (user: " + uuid
+            LOG.error("null subject found in userenvironment (user: " + uuid
                 + ")");
           }
-        } else {
-          LOG.error("null subject found in userenvironment (user: " + uuid
-              + ")");
         }
+        pagingEnvelope.put(OUTPUT_PARAM_NAME_TOTALRESULTS, sites.size());
+        pagingEnvelope.put(OUTPUT_SITES_KEY, sites.toArray());
+        sendOutput(response, pagingEnvelope);
       }
-      pagingEnvelope.put(OUTPUT_PARAM_NAME_TOTALRESULTS, sites.size());
-      pagingEnvelope.put(OUTPUT_SITES_KEY, sites.toArray());
-      sendOutput(response, pagingEnvelope);
+    } catch ( SecurityException ex ) {
+      throw ex;
+    } catch (RestServiceFaultException ex) {
+      throw ex;
+    } catch (Exception ex) {
+      throw new RestServiceFaultException(ex.getMessage(), ex);
     }
 
   }
@@ -340,13 +347,13 @@ public class RestMySitesProvider implements RestProvider {
    * @param itemMap
    * @throws IOException
    */
-  private void sendOutput(HttpServletResponse response, Map<String, Object> itemMap)
-      throws IOException {
+  private void sendOutput(HttpServletResponse response,
+      Map<String, Object> itemMap) throws IOException {
     response.setContentType(RestProvider.CONTENT_TYPE);
     ServletOutputStream outputStream = response.getOutputStream();
 
     outputStream.print(beanConverter.convertToString(itemMap));
-    
+
     outputStream.flush();
     outputStream.close();
 
