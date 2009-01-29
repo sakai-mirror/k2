@@ -44,7 +44,7 @@ public class SakaiResourceLocator implements DavResourceLocator {
     this.resourcePath = resourcePath;
     this.factory = factory;
 
-    StringBuffer buf = new StringBuffer(prefix);
+    StringBuilder buf = new StringBuilder(prefix);
     buf.append(Text.escapePath(resourcePath));
     int length = buf.length();
     if (length > 0 && buf.charAt(length - 1) != '/') {
