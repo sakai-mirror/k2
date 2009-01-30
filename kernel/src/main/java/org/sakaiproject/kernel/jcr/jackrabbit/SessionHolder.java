@@ -40,7 +40,6 @@ public class SessionHolder implements ThreadBound {
     try {
       if (session != null) {
         session.logout();
-        session = null;
       }
     } catch (Throwable t) {
       log.warn("Failed to close session ", t);

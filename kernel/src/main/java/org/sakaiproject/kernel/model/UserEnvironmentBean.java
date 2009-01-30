@@ -30,6 +30,7 @@ import org.sakaiproject.kernel.api.authz.UserSubjects;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.user.UserInfo;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
+import org.sakaiproject.kernel.util.ArrayUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -136,7 +137,7 @@ public class UserEnvironmentBean implements UserEnvironment {
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#getSubjects()
    */
   public String[] getSubjects() {
-    return subjects;
+    return ArrayUtils.copy(subjects, new String[subjects.length]);
   }
 
   /**
@@ -230,7 +231,7 @@ public class UserEnvironmentBean implements UserEnvironment {
           "Attempt to unseal a sealed UserEnvironmentBean ");
     }
     subjectsBean = null;
-    this.subjects = subjects;
+    this.subjects = ArrayUtils.copy(subjects, new String[subjects.length]);
   }
 
   /**

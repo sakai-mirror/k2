@@ -94,35 +94,65 @@ public class DataSourceServiceTest {
 
   private void validateConnection(Connection conn) throws Exception {
     assertNull(conn.getWarnings());
-    PreparedStatement ps = conn.prepareStatement("values(1)");
-    ResultSet rs = ps.executeQuery();
-    assertTrue(rs.next());
-    assertEquals(1, rs.getInt(1));
+    PreparedStatement ps = null;
+    ResultSet rs = null;
+    try {
+      ps = conn.prepareStatement("values(1)");
+      rs = ps.executeQuery();
+      assertTrue(rs.next());
+      assertEquals(1, rs.getInt(1));
+    } finally {
+      try {
+        rs.close();
+      } catch (Exception ex) {
+        // not interested;
+      }
+      try {
+        ps.close();
+      } catch (Exception ex) {
+        // not interested in this
+      }
+    }
   }
 
   private void testCRUD(Connection conn) throws Exception {
     // create table
-    Statement stmt = conn.createStatement();
-    stmt
-        .executeUpdate("create table Employees (Employee_ID INTEGER, Name VARCHAR(30))");
-    stmt.close();
+    Statement stmt = null;
+    ResultSet rs = null;
+    try {
+      stmt = conn.createStatement();
+      stmt
+          .executeUpdate("create table Employees (Employee_ID INTEGER, Name VARCHAR(30))");
+      stmt.close();
 
-    // insert data
-    stmt = conn.createStatement();
-    stmt
-        .executeUpdate("insert into Employees (Employee_ID, Name) values (1, 'Bob')");
-    stmt.close();
+      // insert data
+      stmt = conn.createStatement();
+      stmt
+          .executeUpdate("insert into Employees (Employee_ID, Name) values (1, 'Bob')");
+      stmt.close();
 
-    // look up that data
-    stmt = conn.createStatement();
-    ResultSet rs = stmt.executeQuery("select count(*) from Employees");
-    assertTrue(rs.next());
-    assertEquals(1, rs.getInt(1));
-    stmt.close();
+      // look up that data
+      stmt = conn.createStatement();
+      rs = stmt.executeQuery("select count(*) from Employees");
+      assertTrue(rs.next());
+      assertEquals(1, rs.getInt(1));
+      stmt.close();
 
-    // delete the data
-    stmt = conn.createStatement();
-    stmt.executeUpdate("delete from Employees");
-    stmt.close();
+      // delete the data
+      stmt = conn.createStatement();
+      stmt.executeUpdate("delete from Employees");
+      stmt.close();
+    } finally {
+      try {
+        rs.close();
+      } catch (Exception ex) {
+        // dont care about this
+      }
+      try {
+        stmt.close();
+      } catch (Exception ex) {
+        // dont care about this
+      }
+    }
   }
 }

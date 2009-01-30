@@ -55,12 +55,6 @@ public class SakaiLoginModule implements LoginModule {
 
   private AuthenticationResolverService authenticationResolver;
 
-  @SuppressWarnings("unused")
-  private Map<String, ?> sharedState;
-
-  @SuppressWarnings("unused")
-  private Map<String, ?> options;
-
   private SessionManagerService sessionManagerService;
 
   /**
@@ -82,8 +76,6 @@ public class SakaiLoginModule implements LoginModule {
       Map<String, ?> sharedState, Map<String, ?> options) {
     this.subject = subject;
     this.callbackHandler = callbackHandler;
-    this.sharedState = sharedState;
-    this.options = options;
   }
 
   /**

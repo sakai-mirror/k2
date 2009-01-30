@@ -110,11 +110,11 @@ public class SiteServiceImpl implements SiteService {
       String siteBody = IOUtils.readFully(in, "UTF-8");
       bean = beanConverter.convertToObject(siteBody, SiteBean.class);
     } catch (UnsupportedEncodingException e) {
-      new SiteException(e.getMessage(), e);
+      throw new SiteException(e.getMessage(), e);
     } catch (IOException e) {
-      new SiteException(e.getMessage(), e);
+      throw new SiteException(e.getMessage(), e);
     } catch (RepositoryException e) {
-      new SiteException(e.getMessage(), e);
+      throw new SiteException(e.getMessage(), e);
     } catch (NoResultException e) {
       // this happens when the query doesn't find anything
       bean = null;

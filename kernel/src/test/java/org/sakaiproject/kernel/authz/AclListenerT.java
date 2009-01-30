@@ -55,7 +55,7 @@ public class AclListenerT {
   private static JCRNodeFactoryService jcrService;
   private static EntityManager entityManager;
   private static ReferenceResolverService referenceResolverService;
-  private final String TEST_FILE = "testFile.txt";
+  private static final String TEST_FILE = "testFile.txt";
 
   private static boolean shutdown;
 

@@ -46,6 +46,7 @@ import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.internal.api.KernelInitialization;
 import org.sakaiproject.kernel.internal.api.KernelInitializtionException;
 import org.sakaiproject.kernel.persistence.PersistenceModule;
+import org.sakaiproject.kernel.util.ArrayUtils;
 import org.sakaiproject.kernel.util.PropertiesLoader;
 
 import java.util.Properties;
@@ -57,7 +58,7 @@ import javax.persistence.EntityManager;
  */
 public class Activator implements ComponentActivator {
 
-  public static final Class<?>[] SERVICE_CLASSES = { JCRService.class,
+  private static final Class<?>[] SERVICE_CLASSES = { JCRService.class,
       JCRRegistrationService.class, JCRNodeFactoryService.class,
       UserResolverService.class, AuthenticationResolverService.class,
       CacheManagerService.class, SessionManagerService.class,
@@ -84,9 +85,8 @@ public class Activator implements ComponentActivator {
     this.serviceManager = kernel.getServiceManager();
     Properties properties = PropertiesLoader.load(this.getClass().getClassLoader(),
         KernelModule.DEFAULT_PROPERTIES, KernelModule.LOCAL_PROPERTIES, KernelModule.SYS_LOCAL_PROPERTIES);
-
-    injector = Guice.createInjector(new KernelModule(kernel,properties),
-        new PersistenceModule(kernel));
+    Activator.setInjector(Guice.createInjector(new KernelModule(kernel,properties),
+        new PersistenceModule(kernel)));
 
     // export the services.
     try {
@@ -164,6 +164,20 @@ public class Activator implements ComponentActivator {
    */
   public static Injector getInjector() {
     return injector;
+  }
+  
+  /**
+   * @param injector the injector to set
+   */
+  public static void setInjector(Injector injector) {
+    Activator.injector = injector;
+  }
+
+  /**
+   * @return
+   */
+  public static Class<?>[] getServiceClasses() {
+    return ArrayUtils.copy(SERVICE_CLASSES, new Class<?>[SERVICE_CLASSES.length]);
   }
 
 }

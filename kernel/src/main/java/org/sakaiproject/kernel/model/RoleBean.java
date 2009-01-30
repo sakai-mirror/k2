@@ -17,6 +17,8 @@
  */
 package org.sakaiproject.kernel.model;
 
+import org.sakaiproject.kernel.util.ArrayUtils;
+
 /**
  * 
  */
@@ -37,7 +39,7 @@ public class RoleBean {
    */
   public RoleBean(String name, String[] permissions) {
     this.name = name;
-    this.permissions = permissions;
+    this.permissions = ArrayUtils.copy(permissions, new String[permissions.length]);
   }
 
   /**
@@ -58,14 +60,14 @@ public class RoleBean {
    * @return the permissions
    */
   public String[] getPermissions() {
-    return permissions;
+    return ArrayUtils.copy(permissions, new String[permissions.length]);
   }
   
   /**
    * @param permissions the permissions to set
    */
   public void setPermissions(String[] permissions) {
-    this.permissions = permissions;
+    this.permissions = ArrayUtils.copy(permissions, new String[permissions.length]);
   }
 
   /**

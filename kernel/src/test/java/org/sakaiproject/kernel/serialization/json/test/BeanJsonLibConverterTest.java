@@ -18,7 +18,10 @@
 package org.sakaiproject.kernel.serialization.json.test;
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
@@ -118,8 +121,8 @@ public class BeanJsonLibConverterTest {
   }
   @Test
   public void testConvertArrayToString() {
-    @SuppressWarnings("unused")
     String json = converter.convertToString(new String[] { "element1", "element2" });
+    System.err.println(json);
     
   }
 

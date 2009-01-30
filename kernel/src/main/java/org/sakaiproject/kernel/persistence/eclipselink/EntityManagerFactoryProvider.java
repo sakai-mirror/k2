@@ -28,6 +28,8 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.name.Named;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
@@ -69,6 +71,7 @@ public class EntityManagerFactoryProvider implements Provider<EntityManagerFacto
    * @param unitName
    */
   @Inject
+  @SuppressWarnings(value={"DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED"}, justification="Expected to only ever be executed from a privalaged environment")
   public EntityManagerFactoryProvider(DataSourceService dataSourceService,
       @Named(DB_MIN_NUM_READ) String minRead,
       @Named(DB_MIN_WRITE) String minWrite,
@@ -121,6 +124,7 @@ public class EntityManagerFactoryProvider implements Provider<EntityManagerFacto
     LOG.info("Starting connection manager with properties " + properties);
     final Thread currentThread = Thread.currentThread();
     final ClassLoader saveClassLoader = currentThread.getContextClassLoader();
+   
     PersistenceUnitClassLoader persistenceCL = new PersistenceUnitClassLoader(this.getClass().getClassLoader());
     currentThread.setContextClassLoader(persistenceCL);
     entityManagerFactory = Persistence.createEntityManagerFactory(

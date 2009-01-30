@@ -18,6 +18,8 @@
 
 package org.sakaiproject.kernel.loader.common.stats;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
@@ -47,6 +49,7 @@ public abstract class AbstractStats implements MemoryStats {
   /**
    * @return a measurement
    */
+  @SuppressWarnings(value={"DM_GC","REC_CATCH_EXCEPTION"},justification="Requried to get memory stats")
   public String measure() {
     if (!active) {
       return "";
@@ -84,6 +87,7 @@ public abstract class AbstractStats implements MemoryStats {
   /**
    * generate the baseline measurement.
    */
+  @SuppressWarnings(value={"DM_GC","REC_CATCH_EXCEPTION", "ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"},justification="Requried to get memory stats")
   public void baseLine() {
     try {
       MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();

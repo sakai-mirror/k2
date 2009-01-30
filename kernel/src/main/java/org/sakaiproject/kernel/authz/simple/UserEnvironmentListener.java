@@ -96,7 +96,7 @@ public class UserEnvironmentListener implements JcrContentListener {
         try {
           userEnvBody = IOUtils.readFully(jcrNodeFactoryService
               .getInputStream(filePath), "UTF-8");
-          if (userEnvBody != null & userEnvBody.length() > 0) {
+          if (userEnvBody != null && userEnvBody.length() > 0) {
             System.err.println("Converting "+userEnvBody+" to Bean");
             UserEnvironmentBean ue = beanConverter.convertToObject(userEnvBody,
                 UserEnvironmentBean.class);

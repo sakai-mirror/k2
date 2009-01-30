@@ -62,13 +62,13 @@ public class KernelIntegrationBase {
   private static KernelLifecycle kernelLifecycle;
   private static KernelManager kernelManager;
   private static UserEnvironmentResolverService userEnvironmentResolverService;
-  protected static final String USERBASE = "res://org/sakaiproject/kernel/test/sampleuserenv/";
-  protected static final String[] USERS = new String[] { "admin", "ib236", "ieb" };
-  protected static final String SITEBASE = "res://org/sakaiproject/kernel/test/samplesite/";
-  protected static final String[] SITES = new String[] { "site1", "site2" };
+  private static final String USERBASE = "res://org/sakaiproject/kernel/test/sampleuserenv/";
+  private static final String[] USERS = new String[] { "admin", "ib236", "ieb" };
+  private static final String SITEBASE = "res://org/sakaiproject/kernel/test/samplesite/";
+  private static final String[] SITES = new String[] { "site1", "site2" };
 
 
-  public static boolean beforeClass() throws ComponentActivatorException {
+  public static synchronized boolean beforeClass() throws ComponentActivatorException {
     if (kernelManager == null) {
       System.err.println("no kernel has been started ");
       // If there are problems with startup and shutdown, these will prevent the

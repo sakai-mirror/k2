@@ -17,6 +17,7 @@
  */
 package org.sakaiproject.kernel.model;
 
+import org.sakaiproject.kernel.util.ArrayUtils;
 import org.sakaiproject.kernel.util.StringUtils;
 
 /**
@@ -65,14 +66,14 @@ public class GroupBean {
    *          the roles to set
    */
   public void setRoles(RoleBean[] roles) {
-    this.roles = roles;
+    this.roles = ArrayUtils.copy(roles, new RoleBean[roles.length]);
   }
 
   /**
    * @return the roles
    */
   public RoleBean[] getRoles() {
-    return roles;
+    return ArrayUtils.copy(roles, new RoleBean[roles.length]);
   }
 
   public String[] getSubjectTokens() {
@@ -91,11 +92,11 @@ public class GroupBean {
    * @return the owners
    */
   public String[] getOwners() {
-    return owners;
+    return ArrayUtils.copy(owners, new String[owners.length]);
   }
   
   public void setOwners(String[] owners) {
-   this.owners = owners; 
+   this.owners = ArrayUtils.copy(owners, new String[owners.length]); 
   }
 
 

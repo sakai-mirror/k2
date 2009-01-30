@@ -24,9 +24,6 @@ import java.util.Map;
 public class UserLocale {
 
 
-  /** Preferences key for user's regional language locale */
-  String LOCALE_KEY = "locale";
-
 
   /**
    * @param locale

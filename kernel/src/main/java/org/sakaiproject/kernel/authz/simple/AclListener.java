@@ -28,11 +28,7 @@ import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.model.AclIndexBean;
-import org.sakaiproject.kernel.util.IOUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,7 +76,6 @@ public class AclListener implements EventListener, EventRegistration {
    *      java.lang.String, java.lang.String, java.lang.String)
    */
   public void handleEvent(int type, String userID, String filePath) {
-    InputStream in = null;
     if ((type == Event.PROPERTY_ADDED || type == Event.PROPERTY_CHANGED || type == Event.PROPERTY_REMOVED)) {
 
       ArrayList<AclIndexBean> toCreate = new ArrayList<AclIndexBean>();

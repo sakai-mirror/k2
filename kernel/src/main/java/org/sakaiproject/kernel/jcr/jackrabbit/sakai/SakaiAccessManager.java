@@ -76,6 +76,7 @@ public class SakaiAccessManager implements AccessManager {
    * org.apache.jackrabbit.core.security.AccessManager#init(org.apache.jackrabbit
    * .core.security.AMContext)
    */
+  @edu.umd.cs.findbugs.annotations.SuppressWarnings(value={"BC_VACUOUS_INSTANCEOF"},justification="The type safety in only at compile time.")
   public void init(AMContext context) throws AccessDeniedException, Exception {
     if (initialized) {
       throw new IllegalStateException("already initialized");

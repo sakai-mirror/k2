@@ -385,10 +385,12 @@ public class RestUserProvider implements RestProvider {
       try {
         bais.close();
       } catch (Exception ex) {
+        // not interested
       }
       try {
         templateInputStream.close();
       } catch (Exception ex) {
+        // not interested
       }
     }
 

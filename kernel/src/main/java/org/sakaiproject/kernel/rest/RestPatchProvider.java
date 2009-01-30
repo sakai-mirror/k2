@@ -54,7 +54,7 @@ public class RestPatchProvider implements RestProvider {
   /**
    * 
    */
-  public class MapParams {
+  public static class MapParams {
     public String[] names;
     public String[] values;
     public String[] actions;

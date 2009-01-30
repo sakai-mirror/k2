@@ -18,6 +18,8 @@
 
 package org.sakaiproject.kernel.model;
 
+import edu.emory.mathcs.backport.java.util.Arrays;
+
 /**
  * Bean for holding information about a Site.
  */
@@ -68,6 +70,6 @@ public class SiteBean extends GroupBean {
    */
   @Override
   public String toString() {
-    return getName()+":"+getId()+":"+getDescription()+":"+getType()+":"+getSubjectTokens();
+    return getName()+":"+getId()+":"+getDescription()+":"+getType()+":"+Arrays.toString(getSubjectTokens());
   }
 }

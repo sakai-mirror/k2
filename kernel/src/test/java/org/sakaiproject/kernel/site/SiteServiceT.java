@@ -57,8 +57,8 @@ import javax.servlet.http.HttpSession;
  */
 public class SiteServiceT {
 
-  protected static Kernel kernel;
-  protected static SiteService siteService;
+  private static Kernel kernel;
+  private static SiteService siteService;
 
   private static boolean shutdown;
   private static Random rand;

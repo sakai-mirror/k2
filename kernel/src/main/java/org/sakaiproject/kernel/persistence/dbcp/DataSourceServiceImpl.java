@@ -40,16 +40,15 @@ import javax.sql.DataSource;
  * Service to provide a data source for database connections.
  * </p>
  * The implementation is based on the javadoc from DBCP which reads like the
- * following:<br/>
- * The {@link org.apache.commons.dbcp.PoolingDataSource} uses an underlying
- * {@link org.apache.commons.pool.ObjectPool} to create and store its
- * java.sql.Connection.<br/>
- * To create a {@link org.apache.commons.pool.ObjectPool}, you'll need a
+ * following:<br/> The {@link org.apache.commons.dbcp.PoolingDataSource} uses an
+ * underlying {@link org.apache.commons.pool.ObjectPool} to create and store its
+ * java.sql.Connection.<br/> To create a
+ * {@link org.apache.commons.pool.ObjectPool}, you'll need a
  * {@link org.apache.commons.pool.PoolableObjectFactory} that creates the actual
  * {@link java.sql.Connection}s. That's what
- * {@link org.apache.commons.dbcp.PoolableConnectionFactory} is for.<br/>
- * To create the {@link org.apache.commons.dbcp.PoolableConnectionFactory} ,
- * you'll need at least two things:
+ * {@link org.apache.commons.dbcp.PoolableConnectionFactory} is for.<br/> To
+ * create the {@link org.apache.commons.dbcp.PoolableConnectionFactory} , you'll
+ * need at least two things:
  * <ol>
  * <li>A {@link org.apache.commons.dbcp.ConnectionFactory} from which the actual
  * database {@link java.sql.Connection}s will be obtained.</li>
@@ -59,15 +58,18 @@ import javax.sql.DataSource;
  * When you pass an {@link org.apache.commons.pool.ObjectPool} into the
  * {@link org.apache.commons.dbcp.PoolableConnectionFactory} , it will
  * automatically register itself as the
- * {@link org.apache.commons.pool.PoolableObjectFactory} for that pool.<br/>
- * You can optionally provide a
+ * {@link org.apache.commons.pool.PoolableObjectFactory} for that pool.<br/> You
+ * can optionally provide a
  * {@link org.apache.commons.pool.KeyedObjectPoolFactory} that will be used to
  * create {@link org.apache.commons.pool.KeyedObjectPool}s for pooling
  * {@link java.sql.PreparedStatement}s for each {@link java.sql.Connection}.
  */
-public class DataSourceServiceImpl implements DataSourceService, Provider<DataSource> {
+public class DataSourceServiceImpl implements DataSourceService,
+    Provider<DataSource> {
 
   private DataSource dataSource;
+  @SuppressWarnings("unused")
+  private PoolableConnectionFactory poolableConnectionFactory;
 
   /**
    * Construct a DBCP data source service.
@@ -84,6 +86,7 @@ public class DataSourceServiceImpl implements DataSourceService, Provider<DataSo
    * @throws SQLException
    */
   @Inject
+  @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = { "URF_UNREAD_FIELD" }, justification = "The conection factory must be initialized before use")
   public DataSourceServiceImpl(@Named(JDBC_DRIVER_NAME) String driverClassName,
       @Named(JDBC_URL) String url, @Named(JDBC_USERNAME) String username,
       @Named(JDBC_PASSWORD) String password,
@@ -111,8 +114,7 @@ public class DataSourceServiceImpl implements DataSourceService, Provider<DataSo
           maxOpenPreparedStatements);
     }
 
-    @SuppressWarnings("unused")
-    PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(
+    poolableConnectionFactory = new PoolableConnectionFactory(
         connectionFactory, connectionPool, statementPoolFactory,
         validationQuery, defaultReadOnly, defaultAutoCommit);
     dataSource = new PoolingDataSource(connectionPool);

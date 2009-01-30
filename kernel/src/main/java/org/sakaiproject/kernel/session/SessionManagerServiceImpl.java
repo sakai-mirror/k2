@@ -151,7 +151,7 @@ public class SessionManagerServiceImpl implements SessionManagerService {
           sessionMap.put(session.getId(), session);
         } else {
           System.err.println("SessionManager (failed to created): Sesssion "
-              + sessionID + " as " + session + " from " + sessionMap);
+              + sessionID + " as null from " + sessionMap);
         }
       }
     }

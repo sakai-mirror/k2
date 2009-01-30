@@ -160,7 +160,7 @@ public class CacheManagerServiceImpl implements CacheManagerService,
   @SuppressWarnings("unchecked")
   private <V> Cache<V> getInstanceCache(String name) {
     if (name == null) {
-      return new CacheImpl<V>(cacheManager, name);
+      return new CacheImpl<V>(cacheManager, null);
     } else {
       Cache<V> c = (Cache<V>) caches.get(name);
       if (c == null) {

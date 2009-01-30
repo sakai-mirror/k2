@@ -88,7 +88,7 @@ public class SubjectsBean extends HashMap<String,String> implements UserSubjects
   /**
    * @param subjectService
    */
-  public void setSubjectPermissionService(SubjectPermissionService subjectPermissionService) {
+  public synchronized void setSubjectPermissionService(SubjectPermissionService subjectPermissionService) {
     this.subjectPermissionService = subjectPermissionService;
   }
   

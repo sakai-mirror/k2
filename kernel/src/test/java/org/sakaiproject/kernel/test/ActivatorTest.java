@@ -90,7 +90,7 @@ public class ActivatorTest {
   public void testActivate() throws ComponentActivatorException {
     Activator activator = new Activator();
     activator.activate(kernel);
-    for (Class<?> c : Activator.SERVICE_CLASSES) {
+    for (Class<?> c : Activator.getServiceClasses()) {
 
       ShutdownService ss = kernel.getServiceManager().getService(
           new ServiceSpec(ShutdownService.class));

@@ -19,6 +19,8 @@ package org.sakaiproject.kernel.authz.simple;
 
 import com.google.inject.Inject;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.authz.AccessControlStatement;
@@ -79,6 +81,7 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
    * @see org.sakaiproject.kernel.api.authz.AuthzResolverService#check(java.lang.String,
    *      org.sakaiproject.kernel.api.authz.PermissionQuery)
    */
+  @SuppressWarnings(value = { "WMI_WRONG_MAP_ITERATOR" }, justification = " Invalid, the acl get is not from an Entry set")
   public void check(String resourceReference, PermissionQuery permissionQuery)
       throws PermissionDeniedException {
 
@@ -105,8 +108,9 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
 
     UserEnvironment userEnvironment = userEnvironmentResolverService
         .resolve(sessionManager.getCurrentSession());
-    if ( userEnvironment.isSuperUser() ) {
-      LOG.warn("SECURITY: SuperUser permission granted on:"+permissionQueryToken);
+    if (userEnvironment.isSuperUser()) {
+      LOG.warn("SECURITY: SuperUser permission granted on:"
+          + permissionQueryToken);
       return;
     }
     ReferencedObject referencedObject = referenceResolverService
@@ -159,7 +163,7 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
 
       ReferencedObject parent = referencedObject.getParent();
 
-      while (parent != null ) {
+      while (parent != null) {
         Map<String, List<AccessControlStatement>> parentAcl = cachedAcl
             .get(parent.getKey());
         if (parentAcl != null) {
@@ -204,7 +208,7 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
             }
           }
           // if this was the root element, stop resolution
-          if ( parent.isRoot() ) {
+          if (parent.isRoot()) {
             break;
           }
           parent = parent.getParent();
@@ -216,7 +220,7 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
     }
 
     if (acl.size() == 0) {
-      LOG.info("WARNING ------------------Empty ACL" );
+      LOG.info("WARNING ------------------Empty ACL");
     } else {
       for (String k : acl.keySet()) {
         LOG.info("Loaded ACL for " + k);
@@ -261,7 +265,7 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
     Cache<Boolean> grants = cacheManagerService.getCache("authz",
         CacheScope.REQUEST);
     grants.put("request-granted" + secureKey, true);
-    LOG.warn("Request Fully Granted :"+reason);
+    LOG.warn("Request Fully Granted :" + reason);
   }
 
   public void clearRequestGrant() {

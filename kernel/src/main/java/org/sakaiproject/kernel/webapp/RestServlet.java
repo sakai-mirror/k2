@@ -42,7 +42,7 @@ public class RestServlet extends HttpServlet {
    * 
    */
   private static final long serialVersionUID = -172232497404083238L;
-  private Registry<String, RestProvider> registry;
+  private transient Registry<String, RestProvider> registry;
 
   /**
    * {@inheritDoc}

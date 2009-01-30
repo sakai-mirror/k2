@@ -58,8 +58,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class RestMySitesProvider implements RestProvider {
 
-  public static String SITES_ELEMENT = "sites";
-  private static RestDescription DESCRIPTION = new RestDescription();
+  public static final String SITES_ELEMENT = "sites";
+  private static final RestDescription DESCRIPTION = new RestDescription();
   private static final Log LOG = LogFactory.getLog(RestMySitesProvider.class);
   private SessionManagerService sessionManagerService;
   private BeanConverter beanConverter;

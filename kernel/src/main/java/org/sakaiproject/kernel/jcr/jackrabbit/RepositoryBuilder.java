@@ -205,8 +205,8 @@ public class RepositoryBuilder {
       @Named(NAME_REPOSITORY_HOME) String repositoryHome,
       @Named(NAME_REPOSITORY_CONFIG_LOCATION) String repositoryConfigTemplate,
       @Named(NAME_NODE_TYPE_CONFIGURATION) String nodeTypeConfiguration,
-      @Named(NAME_NAMESPACES_MAP) String namespacesConfiguration, Injector injector)
-      throws IOException, RepositoryException {
+      @Named(NAME_NAMESPACES_MAP) String namespacesConfiguration,
+      Injector injector) throws IOException, RepositoryException {
 
     dbURL = dbURL.replaceAll("&", "&amp;");
 
@@ -243,12 +243,18 @@ public class RepositoryBuilder {
     ByteArrayInputStream bais = new ByteArrayInputStream(contentStr.getBytes());
     try {
 
-      new File(sharedFSBlobLocation).mkdirs();
-      new File(journalLocation).mkdirs();
+      File shared = new File(sharedFSBlobLocation);
+      if (shared.mkdirs()) {
+        log.info("Created " + sharedFSBlobLocation);
+      }
+      File journal = new File(journalLocation);
+      if (journal.mkdirs()) {
+        log.info("Created " + journalLocation);
+      }
 
       RepositoryConfig rc = RepositoryConfig.create(bais, repositoryHome);
 
-      repository = new SakaiRepositoryImpl(rc,injector);
+      repository = new SakaiRepositoryImpl(rc, injector);
 
       Runtime.getRuntime().addShutdownHook(new Thread() {
         /**
@@ -288,7 +294,7 @@ public class RepositoryBuilder {
   private void setup(String namespacesConfiguration,
       String nodeTypeConfiguration) throws RepositoryException, IOException {
     SakaiJCRCredentials ssp = new SakaiJCRCredentials();
-    
+
     Session s = repository.login(ssp);
     try {
       Workspace w = s.getWorkspace();

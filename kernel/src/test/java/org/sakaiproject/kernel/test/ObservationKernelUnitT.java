@@ -242,7 +242,8 @@ public class ObservationKernelUnitT extends KernelIntegrationBase {
    */
   private void setupRequest(HttpServletRequest request,
       HttpServletResponse response, HttpSession session, String userName) {
-    long sessionID = new Random().nextLong();
+    Random r = new Random();
+    long sessionID = r.nextLong();
     User u = new InternalUser(userName);
     expect(request.getSession()).andReturn(session).anyTimes();
     expect(request.getSession(true)).andReturn(session).anyTimes();

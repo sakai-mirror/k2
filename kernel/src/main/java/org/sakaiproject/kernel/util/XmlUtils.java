@@ -180,6 +180,7 @@ public class XmlUtils {
 
       validator.validate(new StreamSource(xml));
     } catch (IOException e) {
+      errors.append(e.getMessage()).append("\n");
     } catch (SAXException e) {
       errors.append(e.getMessage()).append("\n");
     }
