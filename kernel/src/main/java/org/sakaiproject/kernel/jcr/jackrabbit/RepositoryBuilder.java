@@ -208,7 +208,7 @@ public class RepositoryBuilder {
       @Named(NAME_NAMESPACES_MAP) String namespacesConfiguration,
       Injector injector) throws IOException, RepositoryException {
 
-    dbURL = dbURL.replaceAll("&", "&amp;");
+    dbURL = dbURL.replaceAll("&(?!amp;)", "&amp;");
 
     String persistanceManagerClass = persistanceManagers.get(dbDialect);
     log.info(MessageFormat.format("\nJCR Repository Config is \n"
