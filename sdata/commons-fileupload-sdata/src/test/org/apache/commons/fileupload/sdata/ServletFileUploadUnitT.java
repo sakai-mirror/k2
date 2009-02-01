@@ -31,7 +31,8 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class ServletFileUploadUnitT extends FileUploadTestCase
 {
-	public void testWithInvalidRequest()
+	@SuppressWarnings("deprecation")
+  public void testWithInvalidRequest()
     {
     	FileUploadBase fu = null;
 
@@ -53,7 +54,8 @@ public class ServletFileUploadUnitT extends FileUploadTestCase
     }
 
 
-	public void testWithNullContentType()
+	@SuppressWarnings("deprecation")
+  public void testWithNullContentType()
     {
     	FileUploadBase fu = new DiskFileUpload();
 
@@ -79,7 +81,7 @@ public class ServletFileUploadUnitT extends FileUploadTestCase
     public void testFileUpload()
             throws IOException, FileUploadException
     {
-        List fileItems = parseUpload("-----1234\r\n" +
+        List<FileItem> fileItems = parseUpload("-----1234\r\n" +
                         "Content-Disposition: form-data; name=\"file\"; filename=\"foo.tab\"\r\n" +
                         "Content-Type: text/whatever\r\n" +
                         "\r\n" +
@@ -126,7 +128,7 @@ public class ServletFileUploadUnitT extends FileUploadTestCase
     public void testFilenameCaseSensitivity() 
             throws IOException, FileUploadException
     {
-        List fileItems = parseUpload("-----1234\r\n" +
+        List<FileItem> fileItems = parseUpload("-----1234\r\n" +
                         "Content-Disposition: form-data; name=\"FiLe\"; filename=\"FOO.tab\"\r\n" +
                         "Content-Type: text/whatever\r\n" +
                         "\r\n" +
@@ -146,7 +148,7 @@ public class ServletFileUploadUnitT extends FileUploadTestCase
     public void testEmptyFile()
             throws UnsupportedEncodingException, FileUploadException
     {
-        List fileItems = parseUpload ("-----1234\r\n" +
+        List<FileItem> fileItems = parseUpload ("-----1234\r\n" +
                 "Content-Disposition: form-data; name=\"file\"; filename=\"\"\r\n" +
                 "\r\n" +
                 "\r\n" +
@@ -167,7 +169,7 @@ public class ServletFileUploadUnitT extends FileUploadTestCase
     public void testIE5MacBug()
             throws UnsupportedEncodingException, FileUploadException
     {
-        List fileItems = parseUpload("-----1234\r\n" +
+        List<FileItem> fileItems = parseUpload("-----1234\r\n" +
                 "Content-Disposition: form-data; name=\"field1\"\r\n" +
                 "\r\n" +
                 "fieldValue\r\n" +
@@ -235,7 +237,7 @@ public class ServletFileUploadUnitT extends FileUploadTestCase
     		"...contents of file2.gif...\r\n" +
     		"--BbC04y--\r\n" +
     		"--AaB03x--";
-    	List fileItems = parseUpload(request.getBytes("US-ASCII"), contentType);
+    	List<FileItem> fileItems = parseUpload(request.getBytes("US-ASCII"), contentType);
         assertEquals(3, fileItems.size());
         FileItem item0 = (FileItem) fileItems.get(0);
         assertEquals("field1", item0.getFieldName());
@@ -253,7 +255,7 @@ public class ServletFileUploadUnitT extends FileUploadTestCase
 
     public void testFoldedHeaders()
     		throws IOException, FileUploadException {
-    	List fileItems = parseUpload("-----1234\r\n" +
+    	List<FileItem> fileItems = parseUpload("-----1234\r\n" +
     			"Content-Disposition: form-data; name=\"file\"; filename=\"foo.tab\"\r\n" +
     			"Content-Type: text/whatever\r\n" +
     			"\r\n" +

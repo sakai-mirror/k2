@@ -31,7 +31,7 @@ import javax.portlet.PortletSession;
  */
 public class MockPortletSession implements PortletSession {
   // Hashtable (not HashMap) makes enumerations easier to work with
-  Hashtable attributes = new Hashtable();
+  Hashtable<String, Object> attributes = new Hashtable<String, Object>();
 
   public MockPortletSession() {
   }
@@ -59,6 +59,7 @@ public class MockPortletSession implements PortletSession {
    * 
    * @see javax.portlet.PortletSession#getAttributeNames(int)
    */
+  @SuppressWarnings("unchecked")
   public Enumeration getAttributeNames(int scope) {
     return attributes.keys();
   }
@@ -150,6 +151,7 @@ public class MockPortletSession implements PortletSession {
     attributes.put(name, value);
   }
 
+  @SuppressWarnings("unchecked")
   public Enumeration getAttributeNames() {
     return this.getAttributeNames(PortletSession.PORTLET_SCOPE);
   }

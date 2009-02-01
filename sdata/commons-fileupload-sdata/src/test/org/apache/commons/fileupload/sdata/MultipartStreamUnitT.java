@@ -16,44 +16,38 @@
  */
 package org.apache.commons.fileupload.sdata;
 
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import junit.framework.TestCase;
 
-
 /**
  * Unit tests {@link org.apache.commons.fileupload.sdata.MultipartStream}.
- *
+ * 
  * @author Sean C. Sullivan
  * 
  */
-public class MultipartStreamUnitT extends TestCase
-{
-	static private final String BOUNDARY_TEXT = "myboundary";
+public class MultipartStreamUnitT extends TestCase {
+  static private final String BOUNDARY_TEXT = "myboundary";
 
-    public void testThreeParamConstructor() throws Exception {
-		final String strData = "foobar";
-		final byte[] contents = strData.getBytes();
-		InputStream input = new ByteArrayInputStream(contents);
-    	byte[] boundary = BOUNDARY_TEXT.getBytes();
-    	int iBufSize = boundary.length;
-    	MultipartStream ms = new MultipartStream(
-    			input,
-    			boundary,
-    			iBufSize,
-    			new MultipartStream.ProgressNotifier(null, contents.length));
-    }
+  public void testThreeParamConstructor() throws Exception {
+    final String strData = "foobar";
+    final byte[] contents = strData.getBytes();
+    InputStream input = new ByteArrayInputStream(contents);
+    byte[] boundary = BOUNDARY_TEXT.getBytes();
+    int iBufSize = boundary.length;
+    MultipartStream ms = new MultipartStream(input, boundary, iBufSize,
+        new MultipartStream.ProgressNotifier(null, contents.length));
+    System.err.println(ms.toString());
+  }
 
-	public void testTwoParamConstructor() throws Exception {
-		final String strData = "foobar";
-		final byte[] contents = strData.getBytes();
-		InputStream input = new ByteArrayInputStream(contents);
-		byte[] boundary = BOUNDARY_TEXT.getBytes();
-		MultipartStream ms = new MultipartStream(
-				input,
-				boundary,
-				new MultipartStream.ProgressNotifier(null, contents.length));
-	}
+  public void testTwoParamConstructor() throws Exception {
+    final String strData = "foobar";
+    final byte[] contents = strData.getBytes();
+    InputStream input = new ByteArrayInputStream(contents);
+    byte[] boundary = BOUNDARY_TEXT.getBytes();
+    MultipartStream ms = new MultipartStream(input, boundary,
+        new MultipartStream.ProgressNotifier(null, contents.length));
+    assertNotNull(ms);
+  }
 }

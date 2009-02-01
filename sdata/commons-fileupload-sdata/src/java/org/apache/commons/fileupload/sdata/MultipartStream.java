@@ -285,9 +285,9 @@ public class MultipartStream {
      * or {@link #MultipartStream(InputStream, byte[], int,
      * org.apache.commons.fileupload.sdata.MultipartStream.ProgressNotifier)}
      */
-    public MultipartStream() {
-        this(null, null, null);
-    }
+    //public MultipartStream() {
+    //    this(null, null, null);
+    //}
 
     /**
      * <p> Constructs a <code>MultipartStream</code> with a custom size buffer
@@ -735,6 +735,11 @@ public class MultipartStream {
     public static class MalformedStreamException
     extends IOException {
         /**
+       * 
+       */
+      private static final long serialVersionUID = 8166586208405841630L;
+
+        /**
          * Constructs a <code>MalformedStreamException</code> with no
          * detail message.
          */
@@ -759,6 +764,13 @@ public class MultipartStream {
      */
     public static class IllegalBoundaryException
             extends IOException {
+   
+
+        /**
+       * 
+       */
+      private static final long serialVersionUID = -9466990373641734L;
+
         /**
          * Constructs an <code>IllegalBoundaryException</code> with no
          * detail message.

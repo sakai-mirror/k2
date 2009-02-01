@@ -79,6 +79,12 @@ public class DiskFileItem
 
 
     /**
+   * 
+   */
+  private static final long serialVersionUID = -4700978527625181556L;
+
+
+    /**
      * Default content charset to be used when no explicit charset
      * parameter is provided by the sender. Media subtypes of the
      * "text" type are defined to have a default charset value of
@@ -244,7 +250,7 @@ public class DiskFileItem
         ParameterParser parser = new ParameterParser();
         parser.setLowerCaseNames(true);
         // Parameter parser can handle null input
-        Map params = parser.parse(getContentType(), ';');
+        Map<String, String> params = parser.parse(getContentType(), ';');
         return (String) params.get("charset");
     }
 

@@ -46,8 +46,8 @@ public class StreamingUnitT extends TestCase
             throws IOException, FileUploadException
     {
     	byte[] request = newRequest();
-        List fileItems = parseUpload(request);
-        Iterator fileIter = fileItems.iterator();
+        List<FileItem> fileItems = parseUpload(request);
+        Iterator<FileItem> fileIter = fileItems.iterator();
         int add = 16;
         int num = 0;
         for (int i = 0;  i < 16384;  i += add) {
@@ -117,11 +117,11 @@ public class StreamingUnitT extends TestCase
     	}
     }
 
-    private List parseUpload(byte[] bytes) throws FileUploadException {
+    private List<FileItem> parseUpload(byte[] bytes) throws FileUploadException {
     	return parseUpload(new ByteArrayInputStream(bytes), bytes.length);
     }
 
-    private List parseUpload(InputStream pStream, int pLength)
+    private List<FileItem> parseUpload(InputStream pStream, int pLength)
     		throws FileUploadException {
         String contentType = "multipart/form-data; boundary=---1234";
 
@@ -130,7 +130,7 @@ public class StreamingUnitT extends TestCase
         HttpServletRequest request = new MockHttpServletRequest(pStream,
         		pLength, contentType);
 
-        List fileItems = upload.parseRequest(new ServletRequestContext(request));
+        List<FileItem> fileItems = upload.parseRequest(new ServletRequestContext(request));
         return fileItems;
     }
 

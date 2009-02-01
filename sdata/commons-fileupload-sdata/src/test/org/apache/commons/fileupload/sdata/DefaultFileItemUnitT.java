@@ -166,6 +166,7 @@ public class DefaultFileItemUnitT extends TestCase
      * @param repository The directory within which temporary files will be
      *                   created.
      */
+    @SuppressWarnings("deprecation")
     public void doTestAboveThreshold(File repository)
     {
         FileItemFactory factory = createFactory(repository);
@@ -220,6 +221,7 @@ public class DefaultFileItemUnitT extends TestCase
      *                   created.
      * @return the new <code>FileItemFactory</code> instance.
      */
+    @SuppressWarnings("deprecation")
     protected FileItemFactory createFactory(File repository)
     {
         return new DefaultFileItemFactory(threshold, repository);

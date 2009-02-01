@@ -24,84 +24,76 @@ import junit.framework.TestSuite;
 
 /**
  * Unit tests for {@link ParameterParser}.
- *
+ * 
  * @author <a href="mailto:oleg@ural.ru">Oleg Kalnichevski</a>
  */
-public class ParameterParserUnitT extends TestCase
-{
+public class ParameterParserUnitT extends TestCase {
 
-    // ------------------------------------------------------------ Constructor
-    public ParameterParserUnitT(String testName)
-    {
-        super(testName);
-    }
+  // ------------------------------------------------------------ Constructor
+  public ParameterParserUnitT(String testName) {
+    super(testName);
+  }
 
-    // ------------------------------------------------------------------- Main
-    public static void main(String args[])
-    {
-        String[] testCaseName = { ParameterParserUnitT.class.getName()};
-        junit.textui.TestRunner.main(testCaseName);
-    }
+  // ------------------------------------------------------------------- Main
+  public static void main(String args[]) {
+    String[] testCaseName = { ParameterParserUnitT.class.getName() };
+    junit.textui.TestRunner.main(testCaseName);
+  }
 
-    // ------------------------------------------------------- TestCase Methods
+  // ------------------------------------------------------- TestCase Methods
 
-    public static Test suite()
-    {
-        return new TestSuite(ParameterParserUnitT.class);
-    }
+  public static Test suite() {
+    return new TestSuite(ParameterParserUnitT.class);
+  }
 
-    public void testParsing()
-    {
-        String s =
-            "test; test1 =  stuff   ; test2 =  \"stuff; stuff\"; test3=\"stuff";
-        ParameterParser parser = new ParameterParser();
-        Map params = parser.parse(s, ';');
-        assertEquals(null, params.get("test"));
-        assertEquals("stuff", params.get("test1"));
-        assertEquals("stuff; stuff", params.get("test2"));
-        assertEquals("\"stuff", params.get("test3"));
+  public void testParsing() {
+    String s = "test; test1 =  stuff   ; test2 =  \"stuff; stuff\"; test3=\"stuff";
+    ParameterParser parser = new ParameterParser();
+    Map<String, String> params = parser.parse(s, ';');
+    assertEquals(null, params.get("test"));
+    assertEquals("stuff", params.get("test1"));
+    assertEquals("stuff; stuff", params.get("test2"));
+    assertEquals("\"stuff", params.get("test3"));
 
-        s = "  test  , test1=stuff   ,  , test2=, test3, ";
-        params = parser.parse(s, ',');
-        assertEquals(null, params.get("test"));
-        assertEquals("stuff", params.get("test1"));
-        assertEquals(null, params.get("test2"));
-        assertEquals(null, params.get("test3"));
+    s = "  test  , test1=stuff   ,  , test2=, test3, ";
+    params = parser.parse(s, ',');
+    assertEquals(null, params.get("test"));
+    assertEquals("stuff", params.get("test1"));
+    assertEquals(null, params.get("test2"));
+    assertEquals(null, params.get("test3"));
 
-        s = "  test";
-        params = parser.parse(s, ';');
-        assertEquals(null, params.get("test"));
+    s = "  test";
+    params = parser.parse(s, ';');
+    assertEquals(null, params.get("test"));
 
-        s = "  ";
-        params = parser.parse(s, ';');
-        assertEquals(0, params.size());
+    s = "  ";
+    params = parser.parse(s, ';');
+    assertEquals(0, params.size());
 
-        s = " = stuff ";
-        params = parser.parse(s, ';');
-        assertEquals(0, params.size());
-    }
+    s = " = stuff ";
+    params = parser.parse(s, ';');
+    assertEquals(0, params.size());
+  }
 
-    public void testContentTypeParsing()
-    {
-        String s = "text/plain; Charset=UTF-8";
-        ParameterParser parser = new ParameterParser();
-        parser.setLowerCaseNames(true);
-        Map params = parser.parse(s, ';');
-        assertEquals("UTF-8", params.get("charset"));
-    }
+  public void testContentTypeParsing() {
+    String s = "text/plain; Charset=UTF-8";
+    ParameterParser parser = new ParameterParser();
+    parser.setLowerCaseNames(true);
+    Map<String, String> params = parser.parse(s, ';');
+    assertEquals("UTF-8", params.get("charset"));
+  }
 
-    public void testParsingEscapedChars()
-    {
-        String s = "param = \"stuff\\\"; more stuff\"";
-        ParameterParser parser = new ParameterParser();
-        Map params = parser.parse(s, ';');
-        assertEquals(1, params.size());
-        assertEquals("stuff\\\"; more stuff", params.get("param"));
+  public void testParsingEscapedChars() {
+    String s = "param = \"stuff\\\"; more stuff\"";
+    ParameterParser parser = new ParameterParser();
+    Map<String, String> params = parser.parse(s, ';');
+    assertEquals(1, params.size());
+    assertEquals("stuff\\\"; more stuff", params.get("param"));
 
-        s = "param = \"stuff\\\\\"; anotherparam";
-        params = parser.parse(s, ';');
-        assertEquals(2, params.size());
-        assertEquals("stuff\\\\", params.get("param"));
-        assertNull(params.get("anotherparam"));
-    }
+    s = "param = \"stuff\\\\\"; anotherparam";
+    params = parser.parse(s, ';');
+    assertEquals(2, params.size());
+    assertEquals("stuff\\\\", params.get("param"));
+    assertNull(params.get("anotherparam"));
+  }
 }

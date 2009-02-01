@@ -21,6 +21,7 @@ import java.util.List;
 
 import javax.portlet.ActionRequest;
 
+import org.apache.commons.fileupload.sdata.FileItem;
 import org.apache.commons.fileupload.sdata.FileItemFactory;
 import org.apache.commons.fileupload.sdata.FileItemIterator;
 import org.apache.commons.fileupload.sdata.FileUpload;
@@ -114,7 +115,7 @@ public class PortletFileUpload extends FileUpload {
      * @throws FileUploadException if there are problems reading/parsing
      *                             the request or storing files.
      */
-    public List /* FileItem */ parseRequest(ActionRequest request)
+    public List<FileItem> /* FileItem */ parseRequest(ActionRequest request)
             throws FileUploadException {
         return parseRequest(new PortletRequestContext(request));
     }

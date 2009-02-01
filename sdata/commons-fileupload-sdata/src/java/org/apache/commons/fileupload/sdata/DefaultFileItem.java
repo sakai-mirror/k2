@@ -52,6 +52,11 @@ public class DefaultFileItem
 
 
     /**
+   * 
+   */
+  private static final long serialVersionUID = 3119958043172991695L;
+
+    /**
      * Constructs a new <code>DefaultFileItem</code> instance.
      *
      * @param fieldName     The name of the form field.

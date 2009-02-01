@@ -130,6 +130,7 @@ public class MockPortletRequest implements PortletRequest {
    * 
    * @see javax.portlet.PortletRequest#getProperties(java.lang.String)
    */
+  @SuppressWarnings("unchecked")
   public Enumeration getProperties(String name) {
 
     return null;
@@ -140,6 +141,7 @@ public class MockPortletRequest implements PortletRequest {
    * 
    * @see javax.portlet.PortletRequest#getPropertyNames()
    */
+  @SuppressWarnings("unchecked")
   public Enumeration getPropertyNames() {
 
     return null;
@@ -220,6 +222,7 @@ public class MockPortletRequest implements PortletRequest {
    * 
    * @see javax.portlet.PortletRequest#getAttributeNames()
    */
+  @SuppressWarnings("unchecked")
   public Enumeration getAttributeNames() {
 
     return null;
@@ -240,6 +243,7 @@ public class MockPortletRequest implements PortletRequest {
    * 
    * @see javax.portlet.PortletRequest#getParameterNames()
    */
+  @SuppressWarnings("unchecked")
   public Enumeration getParameterNames() {
 
     return null;
@@ -260,6 +264,7 @@ public class MockPortletRequest implements PortletRequest {
    * 
    * @see javax.portlet.PortletRequest#getParameterMap()
    */
+  @SuppressWarnings("unchecked")
   public Map getParameterMap() {
 
     return null;
@@ -329,6 +334,7 @@ public class MockPortletRequest implements PortletRequest {
    * 
    * @see javax.portlet.PortletRequest#getResponseContentTypes()
    */
+  @SuppressWarnings("unchecked")
   public Enumeration getResponseContentTypes() {
 
     return null;
@@ -374,6 +380,7 @@ public class MockPortletRequest implements PortletRequest {
     return 0;
   }
 
+  @SuppressWarnings("unchecked")
   public Enumeration getLocales() {
     return null;
   }

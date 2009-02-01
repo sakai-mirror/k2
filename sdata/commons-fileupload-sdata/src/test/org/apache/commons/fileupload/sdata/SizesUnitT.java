@@ -55,8 +55,8 @@ public class SizesUnitT extends FileUploadTestCase
         }
         baos.write("-----1234--\r\n".getBytes("US-ASCII"));
 
-        List fileItems = parseUpload(baos.toByteArray());
-        Iterator fileIter = fileItems.iterator();
+        List<FileItem> fileItems = parseUpload(baos.toByteArray());
+        Iterator<FileItem> fileIter = fileItems.iterator();
         add = 16;
         num = 0;
         for (int i = 0;  i < 16384;  i += add) {
@@ -91,7 +91,7 @@ public class SizesUnitT extends FileUploadTestCase
 		ServletFileUpload upload = new ServletFileUpload(new DiskFileItemFactory());
 		upload.setFileSizeMax(-1);
         HttpServletRequest req = new MockHttpServletRequest(request.getBytes("US-ASCII"), CONTENT_TYPE);
-        List fileItems = upload.parseRequest(req);
+        List<FileItem> fileItems = upload.parseRequest(req);
         assertEquals(1, fileItems.size());
         FileItem item = (FileItem) fileItems.get(0);
         assertEquals("This is the content of the file\n", new String(item.get()));
