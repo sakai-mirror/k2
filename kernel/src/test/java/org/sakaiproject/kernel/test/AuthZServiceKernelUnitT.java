@@ -47,6 +47,7 @@ import org.sakaiproject.kernel.api.authz.SubjectStatement.SubjectType;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
+import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.authz.simple.JcrAccessControlStatementImpl;
@@ -84,7 +85,8 @@ import javax.servlet.http.HttpSession;
  */
 public class AuthZServiceKernelUnitT extends KernelIntegrationBase {
 
-  private static final Log LOG = LogFactory.getLog(AuthZServiceKernelUnitT.class);
+  private static final Log LOG = LogFactory
+      .getLog(AuthZServiceKernelUnitT.class);
   private static final String[] USERS = { "admin", "ib236" };
   private static final String TEST_USERENV = "res://org/sakaiproject/kernel/test/sampleuserenv/";
   private static final String TEST_GROUPENV = "res://org/sakaiproject/kernel/test/samplegroup/";
@@ -119,10 +121,11 @@ public class AuthZServiceKernelUnitT extends KernelIntegrationBase {
       String userEnvironmentPath = "/userenv" + prefix + "userenv";
 
       LOG.info("Saving " + userEnvironmentPath);
-      jcrNodeFactoryService.createFile(userEnvironmentPath);
       InputStream in = ResourceLoader.openResource(TEST_USERENV + userName
           + ".json", AuthZServiceKernelUnitT.class.getClassLoader());
-      jcrNodeFactoryService.setInputStream(userEnvironmentPath, in);
+      Node n = jcrNodeFactoryService.setInputStream(userEnvironmentPath, in,
+          RestProvider.CONTENT_TYPE);
+      n.save();
       session.save();
       in.close();
     }
@@ -135,11 +138,12 @@ public class AuthZServiceKernelUnitT extends KernelIntegrationBase {
       // items related to the group
       String groupPath = "/somepath" + prefix + "groupdef.json";
 
-      jcrNodeFactoryService.createFile(groupPath);
       LOG.info("Saving " + groupPath);
       InputStream in = ResourceLoader.openResource(TEST_GROUPENV + group
           + ".json", AuthZServiceKernelUnitT.class.getClassLoader());
-      jcrNodeFactoryService.setInputStream(groupPath, in);
+      Node n = jcrNodeFactoryService.setInputStream(groupPath, in,
+          RestProvider.CONTENT_TYPE);
+      n.save();
       session.save();
       in.close();
     }
@@ -203,7 +207,8 @@ public class AuthZServiceKernelUnitT extends KernelIntegrationBase {
 
     JCRNodeFactoryService jcrNodeFactory = km
         .getService(JCRNodeFactoryService.class);
-    Node n = jcrNodeFactory.createFile("/test/a/b/c/d.txt");
+    Node n = jcrNodeFactory.createFile("/test/a/b/c/d.txt",
+        RestProvider.CONTENT_TYPE);
     n.save();
     n.getSession().save();
 
@@ -284,11 +289,13 @@ public class AuthZServiceKernelUnitT extends KernelIntegrationBase {
     expect(request.getSession()).andReturn(session).anyTimes();
     expect(request.getSession(true)).andReturn(session).anyTimes();
     expect(request.getSession(false)).andReturn(session).anyTimes();
-    expect(session.getId()).andReturn(userName + "SESSIONID-123-A"+sessionID).anyTimes();
-    expect(request.getRequestedSessionId()).andReturn(userName + "SESSIONID-123-A"+sessionID).anyTimes();
-    Cookie cookie = new Cookie("SAKAIID","SESSIONID-123-A"+sessionID);
-    expect(request.getCookies()).andReturn(new Cookie[]{cookie}).anyTimes();
-   
+    expect(session.getId()).andReturn(userName + "SESSIONID-123-A" + sessionID)
+        .anyTimes();
+    expect(request.getRequestedSessionId()).andReturn(
+        userName + "SESSIONID-123-A" + sessionID).anyTimes();
+    Cookie cookie = new Cookie("SAKAIID", "SESSIONID-123-A" + sessionID);
+    expect(request.getCookies()).andReturn(new Cookie[] { cookie }).anyTimes();
+
     expect(session.getAttribute("check-valid")).andReturn(null).anyTimes();
     response.addCookie((Cookie) anyObject());
     expectLastCall().anyTimes();

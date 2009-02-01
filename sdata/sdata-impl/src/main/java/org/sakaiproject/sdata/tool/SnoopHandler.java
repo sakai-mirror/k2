@@ -37,6 +37,10 @@ import org.sakaiproject.sdata.tool.api.Handler;
  */
 public class SnoopHandler implements Handler {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -936439457646310920L;
   private static final Log log = LogFactory.getLog(SnoopHandler.class);
 
   /*

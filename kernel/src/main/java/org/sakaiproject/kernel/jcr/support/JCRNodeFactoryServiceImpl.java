@@ -58,7 +58,7 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
     this.jcrService = jcrService;
   }
 
-  private void populateFile(Node node) throws RepositoryException {
+  private void populateFile(Node node, String mimeType) throws RepositoryException {
     // JCR Types
     if (jcrService.needsMixin(node, JCRConstants.MIX_REFERENCEABLE)) {
       node.addMixin(JCRConstants.MIX_REFERENCEABLE);
@@ -76,7 +76,7 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
         JCRConstants.NT_RESOURCE);
     resource
         .setProperty(JCRConstants.JCR_LASTMODIFIED, new GregorianCalendar());
-    resource.setProperty(JCRConstants.JCR_MIMETYPE, "application/octet-stream");
+    resource.setProperty(JCRConstants.JCR_MIMETYPE, mimeType==null?"application/octet-stream":mimeType);
     resource.setProperty(JCRConstants.JCR_DATA, "");
     resource.setProperty(JCRConstants.JCR_ENCODING, "UTF-8");
 
@@ -109,8 +109,8 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
    * org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService#createFile
    * (java.lang.String)
    */
-  public Node createFile(String filePath) throws JCRNodeFactoryServiceException {
-    return createNode(filePath, JCRConstants.NT_FILE);
+  public Node createFile(String filePath, String mimeType) throws JCRNodeFactoryServiceException {
+    return createNode(filePath, mimeType, JCRConstants.NT_FILE);
   }
 
   /*
@@ -122,7 +122,7 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
    */
   public Node createFolder(String folderPath)
       throws JCRNodeFactoryServiceException {
-    return createNode(folderPath, JCRConstants.NT_FOLDER);
+    return createNode(folderPath, null, JCRConstants.NT_FOLDER);
   }
 
   /**
@@ -131,12 +131,13 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
    * have properties nt:files have a nt:resource subnode
    * 
    * @param id
+   * @param string 
    * @param collection
    * @return
    * @throws NodeFactoryServiceException
    * @throws TypeException
    */
-  private Node createNode(String id, String type)
+  private Node createNode(String id, String mimeType, String type)
       throws JCRNodeFactoryServiceException {
     Node node = null;
     try {
@@ -204,7 +205,7 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
                   + " to " + currentNode.getPath());
             Node newNode = currentNode.addNode(pathElements[i],
                 JCRConstants.NT_FILE);
-            populateFile(newNode);
+            populateFile(newNode,mimeType);
             currentNode.save();
             currentNode = newNode;
             if (log.isDebugEnabled())
@@ -282,9 +283,9 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
     return "/";
   }
 
-  public Node setInputStream(String id, InputStream in)
+  public Node setInputStream(String id, InputStream in, String mimeType)
       throws JCRNodeFactoryServiceException, RepositoryException {
-    Node newNode = createNode(id, JCRConstants.NT_FILE);
+    Node newNode = createNode(id, mimeType, JCRConstants.NT_FILE);
     Session s = newNode.getSession();
     ValueFactory vf = s.getValueFactory();
     Value v = vf.createValue(in);
@@ -311,5 +312,6 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
     Session session = jcrService.getSession();
     return getNodeFromSession(session, id);
   }
+
 
 }

@@ -29,6 +29,7 @@ import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
+import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.util.IOUtils;
 
 import java.io.ByteArrayInputStream;
@@ -65,14 +66,18 @@ public class RepositoryKernelUnitT extends KernelIntegrationBase {
         .getService(JCRNodeFactoryService.class);
     JCRService jcrService = kernel.getService(JCRService.class);
     Session session = jcrService.login();
-    jcrNodeFactoryService.createFile("/test/test.txt");
+    jcrNodeFactoryService.createFile("/test/test.txt",
+        RestProvider.CONTENT_TYPE);
     session.save();
     jcrNodeFactoryService.createFolder("/test/newfolder");
     session.save();
-    ByteArrayInputStream bais = new ByteArrayInputStream("testvalue".getBytes("UTF-8"));
-    jcrNodeFactoryService.setInputStream("/test/test.txt", bais);
+    ByteArrayInputStream bais = new ByteArrayInputStream("testvalue"
+        .getBytes("UTF-8"));
+    jcrNodeFactoryService.setInputStream("/test/test.txt", bais,
+        RestProvider.CONTENT_TYPE);
     session.save();
-    String result = IOUtils.readFully(jcrNodeFactoryService.getInputStream("/test/test.txt"),"UTF-8");
+    String result = IOUtils.readFully(jcrNodeFactoryService
+        .getInputStream("/test/test.txt"), "UTF-8");
     assertEquals("testvalue", result);
     Node n = jcrNodeFactoryService.getNode("/test/test.txt");
     assertNotNull(n);

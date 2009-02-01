@@ -44,10 +44,11 @@ public interface JCRNodeFactoryService {
    * 
    * @param filePath
    *          the path to the file
+   * @param mimeType the mime types to use.
    * @return the jcr node representing the file
    * @throws NodeFactoryServiceException
    */
-  Node createFile(String filePath) throws JCRNodeFactoryServiceException;
+  Node createFile(String filePath, String mimeType) throws JCRNodeFactoryServiceException;
 
   /**
    * Create a Folder with the supplied name. If the path to the folder does not
@@ -68,12 +69,13 @@ public interface JCRNodeFactoryService {
    * streamed into the content of the file inside the JCR. If the node does not
    * exist it will be created.
    * 
-   * @param filePath
-   * @param inputStream
+   * @param filePath the path to the file.
+   * @param inputStream the input stream that is the content of the file.
+   * @param mimeType the mimeType to use if the file does not exist.
    * @throws NodeFactoryServiceException
    * @throws RepositoryException
    */
-  Node setInputStream(String filePath, InputStream inputStream)
+  Node setInputStream(String filePath, InputStream inputStream, String mimeType)
       throws JCRNodeFactoryServiceException, RepositoryException;
 
   /**

@@ -70,6 +70,10 @@ public class ControllerServlet extends HttpServlet {
    */
   private Handler nullHandler = new Handler() {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -225447966882182992L;
     private Random r = new Random(System.currentTimeMillis());
 
     /*

@@ -28,6 +28,7 @@ import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.memory.Cache;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
+import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.user.User;
@@ -257,7 +258,8 @@ public class SimpleJcrUserEnvironmentResolverService implements
           + userEnvironmentJson);
       bais = new ByteArrayInputStream(userEnvironmentJson.getBytes("UTF-8"));
       Node userEnvNode = jcrNodeFactoryService.setInputStream(
-          userEnvironmentPath, bais);
+          userEnvironmentPath, bais, RestProvider.CONTENT_TYPE);
+
       userEnvNode.save();
       expire(userEnvironment.getUser().getUuid());
     } catch (Exception ex) {

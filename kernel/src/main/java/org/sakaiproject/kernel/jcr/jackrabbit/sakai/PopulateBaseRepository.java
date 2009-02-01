@@ -17,11 +17,14 @@
  */
 package org.sakaiproject.kernel.jcr.jackrabbit.sakai;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.jcr.api.internal.RepositoryStartupException;
@@ -35,6 +38,8 @@ import org.sakaiproject.kernel.util.StringUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Map.Entry;
 
@@ -57,8 +62,7 @@ public class PopulateBaseRepository implements StartupAction {
    * Construct the populate action, injecting the {@link JCRNodeFactoryService}
    */
   @Inject
-  public PopulateBaseRepository(
-      JCRNodeFactoryService jFactoryService,
+  public PopulateBaseRepository(JCRNodeFactoryService jFactoryService,
       @Named(JcrUserFactoryService.JCR_USERENV_BASE) String userEnvironmentBase) {
     this.jcrNodeFactoryService = jFactoryService;
     this.userEnvironmentBase = userEnvironmentBase;
@@ -109,33 +113,58 @@ public class PopulateBaseRepository implements StartupAction {
         } else {
           path = pathSpec[0];
         }
+        
 
         Node n = jcrNodeFactoryService.getNode(path);
         if (n == null) {
           String[] content = StringUtils.split((String) r.getValue(), ';');
+          // create a map of the parameters
+          Map<String, List<String[]>> map = Maps.newHashMap();
           for (String c : content) {
             String[] b = StringUtils.split(c, '=');
-            if ("body".equals(b[0])) {
-              LOG.info("Creating startup repository node " + path);
-              n = jcrNodeFactoryService.createFile(path);
-              InputStream resoruceStream = ResourceLoader.openResource(b[1],
+            if (b.length > 0) {
+              List<String[]> l = map.get(b[0]);
+              if (l == null) {
+                l = Lists.newArrayList();
+                map.put(b[0], l);
+              }
+              l.add(b);
+            }
+          }
+          List<String[]> l = map.get("mimeType");
+          String mimeType = JCRConstants.JCR_CONTENT;
+          if (l != null) {
+            for (String[] lv : l) {
+              mimeType = lv[1];
+            }
+          }
+          // process the parameters
+          n = jcrNodeFactoryService.createFile(path, mimeType);
+          l = map.get("property");
+          if (l != null) {
+            for (String[] lv : l) {
+              n.setProperty(lv[1], lv[2]);
+            }
+          }
+          l = map.get("property-sha1");
+          if (l != null) {
+            for (String[] lv : l) {
+              n.setProperty(lv[1], StringUtils.sha1Hash(lv[2]));
+            }
+          }
+          l = map.get("body");
+          if (l != null) {
+            for (String[] lv : l) {
+              InputStream resoruceStream = ResourceLoader.openResource(lv[1],
                   this.getClass().getClassLoader());
               try {
-                jcrNodeFactoryService.setInputStream(path, resoruceStream);
-                n.save();
+                jcrNodeFactoryService.setInputStream(path, resoruceStream, mimeType);
               } finally {
                 resoruceStream.close();
               }
-            } else if ("property".equals(b[0])) {
-              n = jcrNodeFactoryService.createFile(path);
-              n.setProperty(b[1], b[2]);
-              n.save();
-            } else if ("property-sha1".equals(b[0])) {
-              n = jcrNodeFactoryService.createFile(path);
-              n.setProperty(b[1], StringUtils.sha1Hash(b[2]));
-              n.save();
             }
           }
+          n.save();
         } else {
           LOG.info("Starting Node already exists " + path);
         }
@@ -158,8 +187,7 @@ public class PopulateBaseRepository implements StartupAction {
    */
   public String getUserEnvPath(String userId) {
     String prefix = PathUtils.getUserPrefix(userId);
-    return userEnvironmentBase + prefix
-        + UserFactoryService.USERENV;
+    return userEnvironmentBase + prefix + UserFactoryService.USERENV;
   }
 
 }

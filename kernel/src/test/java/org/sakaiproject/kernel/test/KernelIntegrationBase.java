@@ -26,6 +26,7 @@ import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
+import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.site.SiteService;
 import org.sakaiproject.kernel.api.user.UserResolverService;
@@ -67,8 +68,8 @@ public class KernelIntegrationBase {
   private static final String SITEBASE = "res://org/sakaiproject/kernel/test/samplesite/";
   private static final String[] SITES = new String[] { "site1", "site2" };
 
-
-  public static synchronized boolean beforeClass() throws ComponentActivatorException {
+  public static synchronized boolean beforeClass()
+      throws ComponentActivatorException {
     if (kernelManager == null) {
       System.err.println("no kernel has been started ");
       // If there are problems with startup and shutdown, these will prevent the
@@ -93,7 +94,8 @@ public class KernelIntegrationBase {
       kernelLifecycle.start();
 
       kernelManager = new KernelManager();
-      userEnvironmentResolverService = kernelManager.getService(UserEnvironmentResolverService.class);
+      userEnvironmentResolverService = kernelManager
+          .getService(UserEnvironmentResolverService.class);
       return true;
     } else {
       System.err.println("Reusing the kernel ");
@@ -102,7 +104,7 @@ public class KernelIntegrationBase {
   }
 
   public static void afterClass(boolean shutdown) {
-    
+
     if (false) {
       try {
         kernelLifecycle.stop();
@@ -110,14 +112,12 @@ public class KernelIntegrationBase {
         LOG.info("Failed to stop kernel ", ex);
       }
       kernelManager = null;
-      kernelLifecycle= null;
+      kernelLifecycle = null;
       KernelIntegrationBase.enableKernelStartup();
     } else {
       System.err.println("Keeping kernel alive ");
     }
   }
-
-
 
   /**
    * 
@@ -138,9 +138,9 @@ public class KernelIntegrationBase {
       HttpServletResponse response, String cookieName,
       UserResolverService userResolverService) {
     SessionManagerService sessionManagerService = kernelManager
-    .getService(SessionManagerService.class);
+        .getService(SessionManagerService.class);
     SakaiServletRequest wrequest = new SakaiServletRequest(request, response,
-         userResolverService, sessionManagerService);
+        userResolverService, sessionManagerService);
     SakaiServletResponse wresponse = new SakaiServletResponse(response);
     sessionManagerService.bindRequest(wrequest);
     return wresponse;
@@ -165,7 +165,9 @@ public class KernelIntegrationBase {
     for (String user : USERS) {
       InputStream in = ResourceLoader.openResource(USERBASE + user + ".json",
           SakaiAuthenticationFilter.class.getClassLoader());
-      Node n = jcrNodeFactoryService.setInputStream(getUserEnvPath(user), in);
+      Node n = jcrNodeFactoryService.setInputStream(getUserEnvPath(user), in,
+          RestProvider.CONTENT_TYPE);
+
       n.setProperty(JcrAuthenticationResolverProvider.JCRPASSWORDHASH,
           StringUtils.sha1Hash("password"));
       n.save();
@@ -176,7 +178,7 @@ public class KernelIntegrationBase {
     Thread.sleep(1000);
 
   }
-  
+
   public static void loadTestSites() throws IOException,
       JCRNodeFactoryServiceException, RepositoryException,
       NoSuchAlgorithmException, InterruptedException {
@@ -188,7 +190,9 @@ public class KernelIntegrationBase {
       InputStream in = ResourceLoader.openResource(SITEBASE + siteName
           + "/groupdef.json", KernelIntegrationBase.class.getClassLoader());
       Node n = jcrNodeFactoryService.setInputStream(KernelIntegrationBase
-          .buildUsersOwnedSitesFilePath("ib236", siteName), in);
+          .buildUsersOwnedSitesFilePath("ib236", siteName), in,
+          RestProvider.CONTENT_TYPE);
+
       n.save();
       in.close();
       LOG.info("Test site saved: "
@@ -201,21 +205,21 @@ public class KernelIntegrationBase {
     LOG.info("test sites loaded.");
   }
 
-  
-  protected static String buildUsersOwnedSitesFilePath(String userId, String siteIndexId) {
-	    String userPath = userEnvironmentResolverService.getUserEnvironmentBasePath(userId);
-	    String siteNode = userPath + SiteService.PATH_MYSITES + PathUtils.getUserPrefix(siteIndexId)
-	        + SiteService.FILE_GROUPDEF;
-	    return siteNode;
-	  }
+  protected static String buildUsersOwnedSitesFilePath(String userId,
+      String siteIndexId) {
+    String userPath = userEnvironmentResolverService
+        .getUserEnvironmentBasePath(userId);
+    String siteNode = userPath + SiteService.PATH_MYSITES
+        + PathUtils.getUserPrefix(siteIndexId) + SiteService.FILE_GROUPDEF;
+    return siteNode;
+  }
 
   /**
    * @return
    */
   public static String getUserEnvPath(String userId) {
     String prefix = PathUtils.getUserPrefix(userId);
-    return "/userenv" + prefix
-        + UserFactoryService.USERENV;
+    return "/userenv" + prefix + UserFactoryService.USERENV;
   }
 
   /**

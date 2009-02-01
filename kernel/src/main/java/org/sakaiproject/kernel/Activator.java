@@ -73,20 +73,21 @@ public class Activator implements ComponentActivator {
   private static Injector injector;
 
   /**
-   * Start the Kernel component, invoke the Guice injector and export services. 
-   * @see
-   * org.sakaiproject.kernel.api.ComponentActivator#activate(org.sakaiproject
-   * .kernel.api.Kernel)
+   * Start the Kernel component, invoke the Guice injector and export services.
+   * 
+   * @see org.sakaiproject.kernel.api.ComponentActivator#activate(org.sakaiproject
+   *      .kernel.api.Kernel)
    */
   public void activate(Kernel kernel) throws ComponentActivatorException {
     // Start the injector for the kernel
 
     this.kernel = kernel;
     this.serviceManager = kernel.getServiceManager();
-    Properties properties = PropertiesLoader.load(this.getClass().getClassLoader(),
-        KernelModule.DEFAULT_PROPERTIES, KernelModule.LOCAL_PROPERTIES, KernelModule.SYS_LOCAL_PROPERTIES);
-    Activator.setInjector(Guice.createInjector(new KernelModule(kernel,properties),
-        new PersistenceModule(kernel)));
+    Properties properties = PropertiesLoader.load(this.getClass()
+        .getClassLoader(), KernelModule.DEFAULT_PROPERTIES,
+        KernelModule.LOCAL_PROPERTIES, KernelModule.SYS_LOCAL_PROPERTIES);
+    Activator.setInjector(Guice.createInjector(new KernelModule(kernel,
+        properties), new PersistenceModule(kernel)));
 
     // export the services.
     try {
@@ -114,15 +115,19 @@ public class Activator implements ComponentActivator {
 
   /**
    * Export a service from the injector to the Service manager.
-   * @param injector the kernel component injector.
-   * @param serviceManager the service manager form the bootstrap.
-   * @param serviceClass the class to export.
-   * @throws ServiceManagerException 
+   * 
+   * @param injector
+   *          the kernel component injector.
+   * @param serviceManager
+   *          the service manager form the bootstrap.
+   * @param serviceClass
+   *          the class to export.
+   * @throws ServiceManagerException
    */
   private void exportService(Class<?> serviceClass)
       throws ServiceManagerException {
     Object service = injector.getInstance(serviceClass);
-    LOG.info("Exporting " + serviceClass+" as "+service);
+    LOG.info("Exporting " + serviceClass + " as " + service);
     if (service == null) {
       LOG
           .fatal("____________________________________________________________________________________");
@@ -137,6 +142,7 @@ public class Activator implements ComponentActivator {
 
   /**
    * Deactivate the component.
+   * 
    * @see org.sakaiproject.kernel.api.ComponentActivator#deactivate()
    */
   public void deactivate() {
@@ -148,6 +154,7 @@ public class Activator implements ComponentActivator {
 
   /**
    * Remove a service from the service manager.
+   * 
    * @param serviceClass
    */
   private void retractService(Class<?> serviceClass) {
@@ -160,14 +167,16 @@ public class Activator implements ComponentActivator {
   }
 
   /**
-   * @return the injector, only available inside the kernel in test environments.
+   * @return the injector, only available inside the kernel in test
+   *         environments.
    */
   public static Injector getInjector() {
     return injector;
   }
-  
+
   /**
-   * @param injector the injector to set
+   * @param injector
+   *          the injector to set
    */
   public static void setInjector(Injector injector) {
     Activator.injector = injector;
@@ -177,7 +186,8 @@ public class Activator implements ComponentActivator {
    * @return
    */
   public static Class<?>[] getServiceClasses() {
-    return ArrayUtils.copy(SERVICE_CLASSES, new Class<?>[SERVICE_CLASSES.length]);
+    return ArrayUtils.copy(SERVICE_CLASSES,
+        new Class<?>[SERVICE_CLASSES.length]);
   }
 
 }

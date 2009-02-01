@@ -244,10 +244,10 @@ public class RestMeProviderKernelUnitT extends KernelIntegrationBase {
       String userEnvironmentPath = "/userenv" + prefix + "userenv";
 
       LOG.info("Saving " + userEnvironmentPath);
-      jcrNodeFactoryService.createFile(userEnvironmentPath);
+      jcrNodeFactoryService.createFile(userEnvironmentPath, RestProvider.CONTENT_TYPE);
       InputStream in = ResourceLoader.openResource(TEST_USERENV + userName
           + ".json", AuthZServiceKernelUnitT.class.getClassLoader());
-      jcrNodeFactoryService.setInputStream(userEnvironmentPath, in);
+      jcrNodeFactoryService.setInputStream(userEnvironmentPath, in, RestProvider.CONTENT_TYPE);
       jsession.save();
       in.close();
     }

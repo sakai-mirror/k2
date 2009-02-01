@@ -31,7 +31,11 @@ import org.sakaiproject.sdata.tool.api.SDataException;
 
 public abstract class AbstractHandler implements Handler {
 
-	protected HandlerSerialzer serializer;
+	/**
+   * 
+   */
+  private static final long serialVersionUID = -8914648460468510102L;
+  protected HandlerSerialzer serializer;
 
   public void sendMap(HttpServletRequest request,
 			HttpServletResponse response, Map<String, Object> contetMap)

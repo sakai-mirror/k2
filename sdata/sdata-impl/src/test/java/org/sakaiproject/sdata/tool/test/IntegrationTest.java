@@ -49,6 +49,7 @@ import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
+import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.component.KernelLifecycle;
@@ -413,8 +414,12 @@ public class IntegrationTest {
 
     response.setHeader("x-sdata-handler",
         "org.sakaiproject.sdata.tool.JCRHandler");
+    expectLastCall().anyTimes();
     response.setHeader("x-sdata-url", "/f/test/testfile.txt");
-    response.setContentType("application/octet-stream");
+    expectLastCall().anyTimes();
+    response.setContentType("text/plain");
+    expectLastCall().anyTimes();    
+    response.setCharacterEncoding("UTF-8");
     response.setDateHeader((String) anyObject(), anyLong());
     expectLastCall().anyTimes();
     response.addHeader((String) anyObject(), (String) anyObject());
@@ -465,11 +470,11 @@ public class IntegrationTest {
     // create a node and populate it with some content
     JCRNodeFactoryService jcrNodeFactoryService = kernel.getServiceManager()
         .getService(new ServiceSpec(JCRNodeFactoryService.class));
-    jcrNodeFactoryService.createFile("/test/testfile.txt");
+    jcrNodeFactoryService.createFile("/test/testfile.txt",RestProvider.CONTENT_TYPE);
     String content = "some content";
     ByteArrayInputStream bais = new ByteArrayInputStream(content
         .getBytes("UTF-8"));
-    jcrNodeFactoryService.setInputStream("/test/testfile.txt", bais).save();
+    jcrNodeFactoryService.setInputStream("/test/testfile.txt", bais,RestProvider.CONTENT_TYPE).save();
 
     // get the node back
     controllerServlet.service(srequest, sresponse);
@@ -552,11 +557,11 @@ public class IntegrationTest {
     // create a node and populate it with some content
     JCRNodeFactoryService jcrNodeFactoryService = kernel.getServiceManager()
         .getService(new ServiceSpec(JCRNodeFactoryService.class));
-    jcrNodeFactoryService.createFile("/test/testfile.txt");
+    jcrNodeFactoryService.createFile("/test/testfile.txt",RestProvider.CONTENT_TYPE);
     String content = "some content";
     ByteArrayInputStream bais = new ByteArrayInputStream(content
         .getBytes("UTF-8"));
-    jcrNodeFactoryService.setInputStream("/test/testfile.txt", bais).save();
+    jcrNodeFactoryService.setInputStream("/test/testfile.txt", bais,RestProvider.CONTENT_TYPE).save();
 
     // get the node back
     controllerServlet.service(srequest, sresponse);
@@ -579,11 +584,11 @@ public class IntegrationTest {
     // create a node and populate it with some content
     JCRNodeFactoryService jcrNodeFactoryService = kernel.getServiceManager()
         .getService(new ServiceSpec(JCRNodeFactoryService.class));
-    jcrNodeFactoryService.createFile("/test/testfile.txt");
+    jcrNodeFactoryService.createFile("/test/testfile.txt",RestProvider.CONTENT_TYPE);
     String content = "some content";
     ByteArrayInputStream bais = new ByteArrayInputStream(content
         .getBytes("UTF-8"));
-    jcrNodeFactoryService.setInputStream("/test/testfile.txt", bais).save();
+    jcrNodeFactoryService.setInputStream("/test/testfile.txt", bais, RestProvider.CONTENT_TYPE).save();
 
     JCRService jcrService = kernel.getServiceManager().getService(
         new ServiceSpec(JCRService.class));

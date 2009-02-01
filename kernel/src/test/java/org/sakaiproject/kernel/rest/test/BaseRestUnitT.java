@@ -22,11 +22,13 @@ import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.reset;
 import static org.easymock.EasyMock.verify;
 
 import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.authz.SubjectPermissionService;
+import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
@@ -63,6 +65,7 @@ public class BaseRestUnitT {
   protected HttpSession session;
   protected CacheManagerService cacheManagerService;
   protected JCRNodeFactoryService jcrNodeFactoryService;
+  protected JCRService jcrService;
 
   /**
    * Set up the services and mocks.
@@ -76,6 +79,7 @@ public class BaseRestUnitT {
     subjectPermissionService = km.getService(SubjectPermissionService.class);
     cacheManagerService = km.getService(CacheManagerService.class);
     jcrNodeFactoryService = km.getService(JCRNodeFactoryService.class);
+    jcrService = km.getService(JCRService.class);
 
     siteService = createMock(SiteService.class);
     userResolverService = createMock(UserResolverService.class);
@@ -88,7 +92,7 @@ public class BaseRestUnitT {
    * Reset mocks to have another go with the same setup.
    */
   public void resetMocks() {
-    replay(request, response, session, siteService, userResolverService);
+    reset(request, response, session, siteService, userResolverService);
   }
 
 

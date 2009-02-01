@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
+import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.site.NonUniqueIdException;
@@ -210,7 +211,7 @@ public class SiteServiceImpl implements SiteService {
     InputStream in = null;
     try {
       in = new ByteArrayInputStream(json.getBytes("UTF-8"));
-      Node node = jcrNodeFactoryService.setInputStream(fileNode, in);
+      Node node = jcrNodeFactoryService.setInputStream(fileNode, in, RestProvider.CONTENT_TYPE);
 
       if (index == null) {
         index = new SiteIndexBean();

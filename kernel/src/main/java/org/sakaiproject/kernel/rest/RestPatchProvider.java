@@ -274,7 +274,8 @@ public class RestPatchProvider implements RestProvider {
       }
       String result = beanConverter.convertToString(map);
       in = new ByteArrayInputStream(result.getBytes(StringUtils.UTF8));
-      n = jcrNodeFactoryService.setInputStream(path, in);
+      n = jcrNodeFactoryService.setInputStream(path, in, RestProvider.CONTENT_TYPE);
+
       n.save();
       Map<String, Object> outputMap = new HashMap<String, Object>();
       outputMap.put("response", "OK");

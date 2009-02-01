@@ -21,13 +21,18 @@ import com.google.inject.Inject;
 
 import org.sakaiproject.sdata.tool.api.Handler;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
  * 
  */
-public class SDataConfiguration {
+public class SDataConfiguration implements Serializable {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -3068003645762594357L;
   private Map<String, Handler> handlers;
   /**
    * @param handlers 

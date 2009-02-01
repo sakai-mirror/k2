@@ -44,6 +44,7 @@ import org.sakaiproject.kernel.api.authz.UserSubjects;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
+import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.user.UserResolverService;
@@ -63,6 +64,7 @@ import java.util.Random;
 import javax.jcr.AccessDeniedException;
 import javax.jcr.InvalidItemStateException;
 import javax.jcr.ItemExistsException;
+import javax.jcr.Node;
 import javax.jcr.ReferentialIntegrityException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -117,10 +119,11 @@ public class ObservationKernelUnitT extends KernelIntegrationBase {
       String userEnvironmentPath = "/userenv" + prefix + "userenv";
 
       LOG.info("Saving " + userEnvironmentPath);
-      jcrNodeFactoryService.createFile(userEnvironmentPath);
       InputStream in = ResourceLoader.openResource(TEST_USERENV + userName
           + ".json", ObservationKernelUnitT.class.getClassLoader());
-      jcrNodeFactoryService.setInputStream(userEnvironmentPath, in);
+      Node n = jcrNodeFactoryService.setInputStream(userEnvironmentPath, in,
+          RestProvider.CONTENT_TYPE);
+      n.save();
       session.save();
       in.close();
     }
@@ -133,11 +136,12 @@ public class ObservationKernelUnitT extends KernelIntegrationBase {
       // items related to the group
       String groupPath = "/somepath" + prefix + "groupdef.json";
 
-      jcrNodeFactoryService.createFile(groupPath);
       LOG.info("Saving " + groupPath);
       InputStream in = ResourceLoader.openResource(TEST_GROUPENV + group
           + ".json", ObservationKernelUnitT.class.getClassLoader());
-      jcrNodeFactoryService.setInputStream(groupPath, in);
+      Node n = jcrNodeFactoryService.setInputStream(groupPath, in,
+          RestProvider.CONTENT_TYPE);
+      n.save();
       session.save();
       in.close();
     }

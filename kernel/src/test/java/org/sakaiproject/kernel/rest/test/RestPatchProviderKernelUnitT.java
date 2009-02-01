@@ -154,7 +154,7 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
     ByteArrayInputStream in = new ByteArrayInputStream(
         "{\"a\":\"a1\",\"b\":\"b1\",\"c\":\"c3\",\"d\":\"d1\"}"
             .getBytes(StringUtils.UTF8));
-    Node n = jcrNodeFactoryService.setInputStream("/a/test/file2", in);
+    Node n = jcrNodeFactoryService.setInputStream("/a/test/file2", in, RestProvider.CONTENT_TYPE);
     n.save();
 
     String[] elements = new String[] { "patch", "f", "a", "test", "file2" };
@@ -262,7 +262,7 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
     ByteArrayInputStream in = new ByteArrayInputStream(
         "{\"a\":\"a1\",\"b\":\"b1\",\"c\":\"c3\",\"d\":\"d1\"}"
             .getBytes(StringUtils.UTF8));
-    Node n = jcrNodeFactoryService.setInputStream("/a/test/file2", in);
+    Node n = jcrNodeFactoryService.setInputStream("/a/test/file2", in, RestProvider.CONTENT_TYPE);
     n.save();
 
     String[] elements = new String[] { "patch", "f", "a", "test", "file2" };

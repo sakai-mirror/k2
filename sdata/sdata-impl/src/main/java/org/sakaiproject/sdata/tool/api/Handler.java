@@ -20,6 +20,7 @@
 package org.sakaiproject.sdata.tool.api;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -34,7 +35,7 @@ import javax.servlet.http.HttpServletResponse;
  * 
  * @author ieb
  */
-public interface Handler
+public interface Handler extends Serializable
 {
 
 	/**

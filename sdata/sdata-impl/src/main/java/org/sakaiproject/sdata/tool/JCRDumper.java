@@ -42,8 +42,12 @@ import javax.servlet.http.HttpServletResponse;
 public class JCRDumper implements Handler
 {
 
-	private static final Log log = LogFactory.getLog(JCRDumper.class);
-  private JCRService jcrService;
+	/**
+   * 
+   */
+  private static final long serialVersionUID = 1318034804063535506L;
+  private static final Log log = LogFactory.getLog(JCRDumper.class);
+  private transient JCRService jcrService;
 
 	
 	/**

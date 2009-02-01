@@ -137,9 +137,9 @@ public class JCRHandler extends AbstractHandler {
 
   public static final String BASE_SECURED_PATH = BASE_NAME + ".securedPath";
 
-  private JCRNodeFactoryService jcrNodeFactory;
+  private transient JCRNodeFactoryService jcrNodeFactory;
 
-  private ResourceDefinitionFactory resourceDefinitionFactory;
+  private transient ResourceDefinitionFactory resourceDefinitionFactory;
 
   private Map<String, SDataFunction> resourceFunctionFactory;
 
@@ -301,11 +301,18 @@ public class JCRHandler extends AbstractHandler {
     try {
       snoopRequest(request);
 
+
       ResourceDefinition rp = resourceDefinitionFactory.getSpec(request);
+      String mimeType = ContentTypes.getContentType(rp.getRepositoryPath(), request
+          .getContentType());
+      String charEncoding = null;
+      if (mimeType.startsWith("text")) {
+        charEncoding = request.getCharacterEncoding();
+      }
       Node n = jcrNodeFactory.getNode(rp.getRepositoryPath());
       boolean created = false;
       if (n == null) {
-        n = jcrNodeFactory.createFile(rp.getRepositoryPath());
+        n = jcrNodeFactory.createFile(rp.getRepositoryPath(),mimeType);
         created = true;
         if (n == null) {
           throw new RuntimeException("Failed to create node at "
@@ -328,12 +335,6 @@ public class JCRHandler extends AbstractHandler {
         gc.setTimeInMillis(lastMod);
       } else {
         gc.setTime(new Date());
-      }
-      String mimeType = ContentTypes.getContentType(n.getName(), request
-          .getContentType());
-      String charEncoding = null;
-      if (mimeType.startsWith("text")) {
-        charEncoding = request.getCharacterEncoding();
       }
 
       InputStream in = request.getInputStream();
@@ -816,7 +817,7 @@ public class JCRHandler extends AbstractHandler {
               String mimeType = ContentTypes.getContentType(finalName, item
                   .getContentType());
               Node target = jcrNodeFactory.createFile(rp
-                  .convertToAbsoluteRepositoryPath(finalName));
+                  .convertToAbsoluteRepositoryPath(finalName),mimeType);
               GregorianCalendar lastModified = new GregorianCalendar();
               lastModified.setTime(new Date());
               long size = saveStream(target, stream, mimeType, "UTF-8",

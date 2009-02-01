@@ -40,6 +40,11 @@ import java.util.Map;
  */
 public class JCRUserStorageHandler extends JCRHandler {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -7527973143563221845L;
+
   private static final String BASE_NAME = "jcruserhandler";
 
   public static final String BASE_REPOSITORY_PATH = BASE_NAME

@@ -34,6 +34,7 @@ import org.sakaiproject.kernel.api.authz.ReferencedObject;
 import org.sakaiproject.kernel.api.authz.SubjectStatement;
 import org.sakaiproject.kernel.api.authz.SubjectStatement.SubjectType;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
+import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.authz.simple.JcrAccessControlStatementImpl;
 import org.sakaiproject.kernel.authz.simple.JcrSubjectStatement;
 import org.sakaiproject.kernel.model.AclIndexBean;
@@ -87,7 +88,7 @@ public class AclListenerT {
   // ignoring until synchronous index updates are possible
   public void createAcl() throws Exception {
     String path = PathUtils.getUserPrefix("testUser1") + TEST_FILE;
-    Node node = jcrService.createFile(path);
+    Node node = jcrService.createFile(path, RestProvider.CONTENT_TYPE);
     node.save();
     node.getSession().save();
 

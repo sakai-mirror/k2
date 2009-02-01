@@ -368,7 +368,7 @@ public class RestUserProvider implements RestProvider {
       String userEnv = beanConverter.convertToString(userEnvironmentBean);
       bais = new ByteArrayInputStream(userEnv.getBytes("UTF-8"));
       Node userEnvNode = jcrNodeFactoryService.setInputStream(
-          userEnvironmentPath, bais);
+          userEnvironmentPath, bais, RestProvider.CONTENT_TYPE);
 
       // set the password
       userEnvNode.setProperty(
