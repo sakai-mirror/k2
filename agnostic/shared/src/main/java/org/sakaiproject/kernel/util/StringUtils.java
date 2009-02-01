@@ -105,7 +105,8 @@ public class StringUtils {
     return e;
   }
 
-  public static String sha1Hash(String tohash) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+  public static String sha1Hash(String tohash)
+      throws UnsupportedEncodingException, NoSuchAlgorithmException {
     byte[] b = tohash.getBytes("UTF-8");
     MessageDigest sha1 = MessageDigest.getInstance("SHA");
     b = sha1.digest(b);
@@ -113,14 +114,14 @@ public class StringUtils {
   }
 
   public static String byteToHex(byte[] base) {
-    char[] c = new char[base.length*2];
+    char[] c = new char[base.length * 2];
     int i = 0;
-    
+
     for (byte b : base) {
       int j = b;
-      j = j+128;
-      c[i++] = TOHEX[j/0x10];      
-      c[i++] = TOHEX[j%0x10];
+      j = j + 128;
+      c[i++] = TOHEX[j / 0x10];
+      c[i++] = TOHEX[j % 0x10];
     }
     return new String(c);
   }
@@ -131,18 +132,18 @@ public class StringUtils {
    * @return
    */
   public static String[] addString(String[] a, String v) {
-    for ( String o : a ) {
-      if ( v.equals(o) ) {
+    for (String o : a) {
+      if (v.equals(o)) {
         return a;
       }
     }
-    String[] na = new String[a.length+1];
-    for ( int i = 0; i < a.length; i++) {
+    String[] na = new String[a.length + 1];
+    for (int i = 0; i < a.length; i++) {
       na[i] = a[i];
     }
-    na[na.length-1] = v;
+    na[na.length - 1] = v;
     return na;
-   }
+  }
 
   /**
    * @param owners
@@ -151,17 +152,17 @@ public class StringUtils {
    */
   public static String[] removeString(String[] a, String v) {
     int i = 0;
-    for ( String o : a ) {
-      if ( !v.equals(o) ) {
+    for (String o : a) {
+      if (!v.equals(o)) {
         i++;
       }
     }
-    if ( i == a.length ) {
+    if (i == a.length) {
       return a;
     }
     String[] na = new String[i];
     i = 0;
-    for ( String o : a ) {
+    for (String o : a) {
       if (!v.equals(o)) {
         na[i++] = o;
       }
@@ -171,27 +172,58 @@ public class StringUtils {
 
   /**
    * Checks to see if the value is empty
+   * 
    * @param firstName
    * @return
    */
   public static boolean isEmpty(String firstName) {
-    return (firstName == null || firstName.trim().length()==0);
+    return (firstName == null || firstName.trim().length() == 0);
   }
 
   /**
    * Builds a string based on the elements the the array
-   * @param elements the elements to build the string from
-   * @param i the staring index.
-   * @param c the seperator character
+   * 
+   * @param elements
+   *          the elements to build the string from
+   * @param i
+   *          the staring index.
+   * @param c
+   *          the seperator character
    * @return a joined string starting with the seperator.
    */
   public static String join(String[] elements, int i, char c) {
     StringBuilder sb = new StringBuilder();
-    for ( int j = i; j < elements.length; j++ ) {
+    for (int j = i; j < elements.length; j++) {
       sb.append(c).append(elements[j]);
     }
-    if ( sb.length() == 0 ) {
+    if (sb.length() == 0) {
       sb.append("/");
+    }
+    return sb.toString();
+  }
+
+  /**
+   * @param query
+   * @return
+   */
+  public static String escapeJCRSQL(String query) {
+    StringBuilder sb = new StringBuilder();
+    char[] ca = query.toCharArray();
+    for (char c : ca) {
+      switch (c) {
+      case '\'':
+        sb.append("\\'");
+        break;
+      case '\"':
+        sb.append("\\\"");
+        break;
+      case '\\':
+        sb.append("\\\\");
+        break;
+      default:
+        sb.append(c);
+        break;
+      }
     }
     return sb.toString();
   }
