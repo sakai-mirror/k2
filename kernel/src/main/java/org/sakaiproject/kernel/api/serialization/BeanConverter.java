@@ -17,6 +17,8 @@
  */
 package org.sakaiproject.kernel.api.serialization;
 
+import java.util.Map;
+
 public interface BeanConverter {
   String REPOSITORY_BEANCONVETER = "beanconverters.repository";
 
@@ -25,4 +27,10 @@ public interface BeanConverter {
   String convertToString(Object pojo);
 
   String getContentType();
+
+  /**
+   * @param json
+   * @return
+   */
+  Map<String, Object> convertToMap(String json);
 }

@@ -18,12 +18,14 @@
 package org.sakaiproject.kernel.serialization.json.test;
 
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+
+import net.sf.json.JSONObject;
 
 import org.junit.After;
 import org.junit.Before;
@@ -126,5 +128,24 @@ public class BeanJsonLibConverterTest {
     
   }
 
+  
+  @Test
+  public void testConvertMapArray() {
+    Map<String, Object> map = new HashMap<String, Object>();
+    map.put("test", "testSingle");
+    map.put("testArray", new String[] {"t1","t2","t3","t4"});
+    
+    String json = converter.convertToString(map);
+    assertEquals("{\"testArray\":[\"t1\",\"t2\",\"t3\",\"t4\"],\"test\":\"testSingle\"}", json);
+
+    Map<String, Object> finalMap = converter.convertToMap(json);
+    assertArrayEquals(map.keySet().toArray(), finalMap.keySet().toArray());
+    assertEquals(map.get("test"), finalMap.get("test"));
+    assertNotNull(finalMap.get("testArray"));
+    System.err.println(finalMap);
+    
+    assertArrayEquals((String[])map.get("testArray"), (String[])finalMap.get("testArray"));
+    System.err.println(json);
+  }
   
 }

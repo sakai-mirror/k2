@@ -33,7 +33,11 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 
 import java.lang.reflect.Array;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * BeanConverter implementation us the net.sf.json-lib json library.
@@ -42,7 +46,8 @@ public class BeanJsonLibConverter implements BeanConverter {
   /**
    * The Logger.
    */
-  protected static final Log LOG = LogFactory.getLog(BeanJsonLibConverter.class);
+  protected static final Log LOG = LogFactory
+      .getLog(BeanJsonLibConverter.class);
   /**
    * The Guice injector used to create beans.
    */
@@ -56,11 +61,13 @@ public class BeanJsonLibConverter implements BeanConverter {
    */
   private boolean debugMode = false;
 
-
   /**
    * Create an BeanConverter with an injector.
-   * @param injector the Guice injector to use for conversion
-   * @param jsonConfig the Json Configuration
+   * 
+   * @param injector
+   *          the Guice injector to use for conversion
+   * @param jsonConfig
+   *          the Json Configuration
    */
   @Inject
   public BeanJsonLibConverter(Injector injector,
@@ -75,9 +82,13 @@ public class BeanJsonLibConverter implements BeanConverter {
 
   /**
    * Convert the json string into a pojo based on the supplied root class.
-   * @param string the json string
-   * @param rootBeanClass the root class of the bean
-   * @param <T> The typep of the pojo to be returned
+   * 
+   * @param string
+   *          the json string
+   * @param rootBeanClass
+   *          the root class of the bean
+   * @param <T>
+   *          The typep of the pojo to be returned
    * @return A pojo of the same type as the rootBeanClass
    */
   @SuppressWarnings("unchecked")
@@ -105,7 +116,7 @@ public class BeanJsonLibConverter implements BeanConverter {
       } else {
         Object rootObject = injector.getInstance(rootBeanClass);
         Object o = JSONArray.toList(jsonArray, rootObject, jsonConfig);
-        
+
         return (T) o;
       }
     } else {
@@ -116,16 +127,58 @@ public class BeanJsonLibConverter implements BeanConverter {
       }
 
       Object rootObject = injector.getInstance(rootBeanClass);
-      Object o = JSONObject.toBean(jsonObject, rootObject, jsonConfig);
-      return (T) o;
+      T o = (T) JSONObject.toBean(jsonObject, rootObject, jsonConfig);
+      return o;
 
     }
   }
 
+  @SuppressWarnings("unchecked")
+  public Map<String, Object> convertToMap(String json) {
+    JSONObject jsonObject = JSONObject.fromObject(json);
+    Map<String, Object> finalMap = (Map<String, Object>) JSONObject.toBean(
+        jsonObject, HashMap.class);
+    convertLists(finalMap);
+    return finalMap;
+  }
+
+  /**
+   * @param finalMap
+   */
+  @SuppressWarnings("unchecked")
+  private void convertLists(Map<String, Object> map) {
+    for (Entry<String, Object> e : map.entrySet()) {
+      Object o = e.getValue();
+      Class<?> clazz = null;
+      if (o instanceof Iterable) {
+
+        Iterable<?> c = (Iterable<?>) o;
+        for (Object co : c) {
+          if (co != null) {
+            if (clazz == null) {
+              clazz = co.getClass();
+            } else if (clazz.isAssignableFrom(co.getClass())) {
+              clazz = co.getClass();
+            } else {
+              clazz = Object.class;
+            }
+          }
+        }
+        if ( clazz == null ) {
+          clazz = Object.class;
+        }
+        e.setValue(((Collection) o).toArray((Object[]) Array.newInstance(clazz, 0)));
+      } else if (o instanceof Map) {
+        convertLists((Map<String, Object>) o);
+      }
+    }
+  }
 
   /**
    * Convert the pojo to a json string representation.
-   * @param pojo the pojo to convert
+   * 
+   * @param pojo
+   *          the pojo to convert
    * @return the json string representation of the pojo.
    */
   public String convertToString(Object pojo) {
@@ -149,23 +202,27 @@ public class BeanJsonLibConverter implements BeanConverter {
 
   /**
    * Add a mapping to the json -> pojo conversion map.
-   * @param key the name of the json key to bind to
-   * @param class1 the class that should be used to represent that key
+   * 
+   * @param key
+   *          the name of the json key to bind to
+   * @param class1
+   *          the class that should be used to represent that key
    */
   @SuppressWarnings("unchecked")
   public void addMapping(String key, Class<?> class1) {
     jsonConfig.getClassMap().put(key, class1);
   }
-  
+
   /**
-   * reset any mappings. 
+   * reset any mappings.
    */
   public void resetMappings() {
     jsonConfig.getClassMap().clear();
   }
-  
+
   /**
-   * @param debugMode the debugMode to set
+   * @param debugMode
+   *          the debugMode to set
    */
   public void setDebugMode(boolean debugMode) {
     this.debugMode = debugMode;
