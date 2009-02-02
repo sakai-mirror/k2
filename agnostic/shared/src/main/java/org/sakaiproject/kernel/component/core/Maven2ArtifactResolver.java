@@ -22,6 +22,7 @@ import com.google.inject.Inject;
 import org.sakaiproject.kernel.api.Artifact;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
 import org.sakaiproject.kernel.api.ArtifactResolverService;
+import org.sakaiproject.kernel.util.StringUtils;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -41,8 +42,11 @@ public class Maven2ArtifactResolver implements ArtifactResolverService {
    */
   @Inject
   public Maven2ArtifactResolver() {
-    // TODO Auto-generated constructor stub
-    repo = new File(new File(System.getProperty("user.home"), ".m2"),
+    String repoHome = System.clearProperty("loacal.repo.location");
+    if ( StringUtils.isEmpty(repoHome)) {
+      repoHome = System.getProperty("user.home");
+    }
+    repo = new File(new File(repoHome, ".m2"),
         "repository");
 
   }
