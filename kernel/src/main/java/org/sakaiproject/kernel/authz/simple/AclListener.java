@@ -20,6 +20,8 @@ package org.sakaiproject.kernel.authz.simple;
 
 import com.google.inject.Inject;
 
+import net.sf.ehcache.Cache;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.authz.AccessControlStatement;
@@ -27,6 +29,8 @@ import org.sakaiproject.kernel.api.jcr.EventRegistration;
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
+import org.sakaiproject.kernel.api.memory.CacheManagerService;
+import org.sakaiproject.kernel.api.memory.CacheScope;
 import org.sakaiproject.kernel.model.AclIndexBean;
 
 import java.util.ArrayList;
@@ -53,21 +57,28 @@ public class AclListener implements EventListener, EventRegistration {
   private static final Log LOG = LogFactory.getLog(AclListener.class);
   private final JCRNodeFactoryService jcrNodeFactoryService;
   private final EntityManager entityManager;
+  private CacheManagerService cacheManagerService;
 
-  public void register(ObservationManager observationManager)
-      throws RepositoryException {
-    observationManager.addEventListener(this, Event.PROPERTY_ADDED
-        | Event.PROPERTY_CHANGED | Event.PROPERTY_REMOVED, "/", false, null,
-        new String[] { JCRConstants.NT_FILE, JCRConstants.NT_FOLDER }, false);
-
-  }
 
   @Inject
   public AclListener(JCRNodeFactoryService jcrNodeFactoryService,
-      EntityManager entityManager) {
+      EntityManager entityManager, CacheManagerService cacheManagerService ) {
     this.jcrNodeFactoryService = jcrNodeFactoryService;
     this.entityManager = entityManager;
+    this.cacheManagerService = cacheManagerService;
   }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.jcr.EventRegistration#register(javax.jcr.observation.ObservationManager)
+   */
+  public void register(ObservationManager observationManager)
+  throws RepositoryException {
+observationManager.addEventListener(this, Event.PROPERTY_ADDED
+    | Event.PROPERTY_CHANGED | Event.PROPERTY_REMOVED, "/", false, null,
+    new String[] { JCRConstants.NT_FILE, JCRConstants.NT_FOLDER }, false);
+
+}
 
   /**
    * {@inheritDoc}
@@ -76,6 +87,7 @@ public class AclListener implements EventListener, EventRegistration {
    *      java.lang.String, java.lang.String, java.lang.String)
    */
   public void handleEvent(int type, String userID, String filePath) {
+    try {
     if ((type == Event.PROPERTY_ADDED || type == Event.PROPERTY_CHANGED || type == Event.PROPERTY_REMOVED)) {
 
       ArrayList<AclIndexBean> toCreate = new ArrayList<AclIndexBean>();
@@ -146,6 +158,18 @@ public class AclListener implements EventListener, EventRegistration {
       } catch (JCRNodeFactoryServiceException e) {
         // nothing we can do
         LOG.error(e.getMessage(), e);
+      }
+    }
+    } finally {
+      try {
+        cacheManagerService.unbind(CacheScope.REQUEST);
+      } catch ( Exception ex) {
+        // not interested
+      }
+      try {
+        cacheManagerService.unbind(CacheScope.THREAD);
+      } catch ( Exception ex ) {
+        // not interested
       }
     }
   }
