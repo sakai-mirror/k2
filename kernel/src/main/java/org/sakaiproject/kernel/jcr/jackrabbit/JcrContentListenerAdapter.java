@@ -23,6 +23,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.jcr.EventRegistration;
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
+import org.sakaiproject.kernel.api.memory.CacheManagerService;
+import org.sakaiproject.kernel.api.memory.CacheScope;
 import org.sakaiproject.kernel.jcr.api.JcrContentListener;
 
 import java.util.List;
@@ -44,15 +46,18 @@ public class JcrContentListenerAdapter implements EventListener,
   private static final String DATA_NODE = "/" + JCRConstants.JCR_CONTENT + "/"
       + JCRConstants.JCR_DATA;
   private List<JcrContentListener> listeners;
+  private CacheManagerService cacheManager;
 
   /**
-   * @param listeners 
+   * @param listeners
    * @throws RepositoryException
    * 
    */
   @Inject
-  public JcrContentListenerAdapter(List<JcrContentListener> listeners) throws RepositoryException {
+  public JcrContentListenerAdapter(List<JcrContentListener> listeners,
+      CacheManagerService cacheManager) throws RepositoryException {
     this.listeners = listeners;
+    this.cacheManager = cacheManager;
   }
 
   /**
@@ -64,9 +69,10 @@ public class JcrContentListenerAdapter implements EventListener,
    */
   public void register(ObservationManager observationManager)
       throws RepositoryException {
-    observationManager.addEventListener(this, Event.PROPERTY_ADDED
-        | Event.PROPERTY_CHANGED | Event.PROPERTY_REMOVED, "/", true, null,
-        new String[] { JCRConstants.NT_RESOURCE, JCRConstants.NT_UNSTRUCTURED }, false);
+    observationManager
+        .addEventListener(this, Event.PROPERTY_ADDED | Event.PROPERTY_CHANGED
+            | Event.PROPERTY_REMOVED, "/", true, null, new String[] {
+            JCRConstants.NT_RESOURCE, JCRConstants.NT_UNSTRUCTURED }, false);
     LOG.info("Registerd JcrContentListener ");
   }
 
@@ -76,24 +82,36 @@ public class JcrContentListenerAdapter implements EventListener,
    * @see javax.jcr.observation.EventListener#onEvent(javax.jcr.observation.EventIterator)
    */
   public void onEvent(EventIterator events) {
-    for (; events.hasNext();) {
-      try {
-        Event event = events.nextEvent();
-        LOG.info("Firing event "+event);
-        String path = event.getPath();
-        if (path.endsWith(DATA_NODE)) {
-          String filePath = path.substring(0, path.length()
-              - DATA_NODE.length());
-          String fileName = filePath.substring(filePath.lastIndexOf("/")+1);
-          for (JcrContentListener listener : listeners) {
-            listener.onEvent(event.getType(), event.getUserID(), filePath,
-                fileName);
+    try {
+      for (; events.hasNext();) {
+        try {
+          Event event = events.nextEvent();
+          LOG.info("Firing event " + event);
+          String path = event.getPath();
+          if (path.endsWith(DATA_NODE)) {
+            String filePath = path.substring(0, path.length()
+                - DATA_NODE.length());
+            String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
+            for (JcrContentListener listener : listeners) {
+              listener.onEvent(event.getType(), event.getUserID(), filePath,
+                  fileName);
+            }
           }
+        } catch (Exception rex) {
+          rex.printStackTrace();
         }
-      } catch (Exception rex) {
-        rex.printStackTrace();
       }
-
+    } finally {
+      try {
+        cacheManager.unbind(CacheScope.REQUEST);
+      } catch (Exception ex) {
+        // dont care about this
+      }
+      try {
+        cacheManager.unbind(CacheScope.THREAD);
+      } catch (Exception ex) {
+        // dont care about this
+      }
     }
   }
 }

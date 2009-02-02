@@ -49,6 +49,10 @@ public class EntityManagerHolder implements ThreadBound {
         transaction.commit();
       }
       entityManager.close();
+      System.err.println("==========================Entity Manager is Closed=================");
+    } else {
+      System.err.println("==========================Entity Manager Already Closed=================");
+           
     }
   }
 
