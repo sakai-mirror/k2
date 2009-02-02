@@ -42,7 +42,7 @@ public class Maven2ArtifactResolver implements ArtifactResolverService {
    */
   @Inject
   public Maven2ArtifactResolver() {
-    String repoHome = System.clearProperty("loacal.repo.location");
+    String repoHome = System.clearProperty("local.repo.location");
     if ( StringUtils.isEmpty(repoHome)) {
       repoHome = System.getProperty("user.home");
     }
