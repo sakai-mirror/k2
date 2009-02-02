@@ -33,6 +33,7 @@ import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.authz.simple.NullUserEnvironment;
 import org.sakaiproject.kernel.util.IOUtils;
+import org.sakaiproject.kernel.util.PathUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.kernel.webapp.RestServiceFaultException;
 
@@ -53,12 +54,15 @@ import javax.servlet.http.HttpServletResponse;
 public class RestMeProvider implements RestProvider {
 
   private static final String ANON_UE_FILE = "/configuration/defaults/anonue.json";
+  private static final String PROFILE_JSON = "profile.json";
+  private static final String PRIVATE_PATH_BASE = "jcrprivateshared.base";
   private static RestDescription DESCRIPTION = new RestDescription();
   private JCRNodeFactoryService jcrNodeFactoryService;
   private SessionManagerService sessionManagerService;
   private UserLocale userLocale;
   private BeanConverter beanConverter;
   private UserEnvironmentResolverService userEnvironmentResolverService;
+  private String sharedPrivatePathBase;
 
   @Inject
   public RestMeProvider(
@@ -67,7 +71,8 @@ public class RestMeProvider implements RestProvider {
       JCRNodeFactoryService jcrNodeFactoryService,
       UserLocale userLocale,
       @Named(BeanConverter.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
-      UserEnvironmentResolverService userEnvironmentResolverService) {
+      UserEnvironmentResolverService userEnvironmentResolverService,
+      @Named(PRIVATE_PATH_BASE) String sharedPrivatePathBase) {
     Registry<String, RestProvider> registry = registryService
         .getRegistry(RestProvider.REST_REGISTRY);
     registry.add(this);
@@ -76,6 +81,7 @@ public class RestMeProvider implements RestProvider {
     this.userLocale = userLocale;
     this.beanConverter = beanConverter;
     this.userEnvironmentResolverService = userEnvironmentResolverService;
+    this.sharedPrivatePathBase = sharedPrivatePathBase;
   }
 
   static {
@@ -123,7 +129,8 @@ public class RestMeProvider implements RestProvider {
                 + "\"ISO3Country\":\"USA\",\"displayVariant\":\"\",\"language\":\"en\",\"displayLanguage\":\"English\","
                 + "\"ISO3Language\":\"eng\",\"displayName\":\"English (United States)\"}, "
                 + "preferences :{ userid : \"ib236\",  superUser: false,  subjects : [\"group1:maintain\" ,\"group2:maintain\" ,"
-                + "\"group2:access\" ,\".engineering:student\"]}}");
+                + "\"group2:access\" ,\".engineering:student\"]}," +
+                		"\"userStoragePrefix\":\"/12/14/useuuid\",\"profile\": {} }");
 
   }
 
@@ -146,18 +153,20 @@ public class RestMeProvider implements RestProvider {
           .getLocale(), session);
       if (user == null || user.getUuid() == null
           || "anon".equals(user.getUuid())) {
-        sendOutput(response, locale, ANON_UE_FILE);
+        String pathPrefix = PathUtils.getUserPrefix("anon");
+        sendOutput(response, locale, pathPrefix, ANON_UE_FILE);
       } else {
         UserEnvironment userEnvironment = userEnvironmentResolverService
             .resolve(user);
+        String pathPrefix = PathUtils.getUserPrefix(user.getUuid());
         if (userEnvironment == null
             || userEnvironment instanceof NullUserEnvironment) {
-          sendDefaultUserOutput(response, locale, user.getUuid());
+          sendDefaultUserOutput(response, locale, pathPrefix, user.getUuid());
         } else {
-          sendOutput(response, locale, userEnvironment);
+          sendOutput(response, locale, pathPrefix, userEnvironment);
         }
       }
-    } catch ( SecurityException ex ) {
+    } catch (SecurityException ex) {
       throw ex;
     } catch (RestServiceFaultException ex) {
       throw ex;
@@ -174,8 +183,8 @@ public class RestMeProvider implements RestProvider {
    * @throws IOException
    */
   private void sendOutput(HttpServletResponse response, Locale locale,
-      UserEnvironment userEnvironment) throws RepositoryException,
-      JCRNodeFactoryServiceException, IOException {
+      String pathPrefix, UserEnvironment userEnvironment)
+      throws RepositoryException, JCRNodeFactoryServiceException, IOException {
     response.setContentType(RestProvider.CONTENT_TYPE);
     ServletOutputStream outputStream = response.getOutputStream();
     outputStream.print("{ \"locale\" :");
@@ -186,6 +195,8 @@ public class RestMeProvider implements RestProvider {
     String json = beanConverter.convertToString(userEnvironment);
     userEnvironment.setProtected(false);
     outputStream.print(json);
+    outputPathPrefix(pathPrefix, outputStream);
+    outputUserProfile(pathPrefix, outputStream);
     outputStream.print("}");
   }
 
@@ -197,26 +208,45 @@ public class RestMeProvider implements RestProvider {
    * @throws IOException
    */
   private void sendOutput(HttpServletResponse response, Locale locale,
-      String path) throws RepositoryException, JCRNodeFactoryServiceException,
-      IOException {
+      String pathPrefix, String path) throws RepositoryException,
+      JCRNodeFactoryServiceException, IOException {
     response.setContentType(RestProvider.CONTENT_TYPE);
     ServletOutputStream outputStream = response.getOutputStream();
     outputStream.print("{ \"locale\" :");
     outputStream.print(beanConverter.convertToString(userLocale
         .localeToMap(locale)));
-    outputStream.print(", \"preferences\" :");
+    sendFile("preferences", path, outputStream);
+    outputPathPrefix(pathPrefix, outputStream);
+    outputStream.print(", \"profile\" : {}");
+    outputStream.print("}");
+  }
+
+  /**
+   * @param string
+   * @param path
+   * @throws IOException
+   * @throws RepositoryException
+   */
+  private void sendFile(String key, String path,
+      ServletOutputStream outputStream) throws IOException, RepositoryException {
 
     InputStream in = null;
     try {
       in = jcrNodeFactoryService.getInputStream(path);
+      outputStream.print(", \"");
+      outputStream.print(key);
+      outputStream.print("\" :");
       IOUtils.stream(in, outputStream);
+    } catch (JCRNodeFactoryServiceException ex) {
+      outputStream.print(", \"");
+      outputStream.print(key);
+      outputStream.print("\" : {}");
     } finally {
       try {
         in.close();
       } catch (Exception ex) {
       }
     }
-    outputStream.print("}");
   }
 
   /**
@@ -227,20 +257,41 @@ public class RestMeProvider implements RestProvider {
    * @throws IOException
    */
   private void sendDefaultUserOutput(HttpServletResponse response,
-      Locale locale, String userUuid) throws RepositoryException,
-      JCRNodeFactoryServiceException, IOException {
+      Locale locale, String pathPrefix, String userUuid)
+      throws RepositoryException, JCRNodeFactoryServiceException, IOException {
     response.setContentType(RestProvider.CONTENT_TYPE);
     ServletOutputStream outputStream = response.getOutputStream();
-    outputStream.print("{ locale :");
+    outputStream.print("{ \"locale\" :");
     outputStream.print(beanConverter.convertToString(userLocale
         .localeToMap(locale)));
-    outputStream.print(", preferences :");
+    outputStream.print(", \"preferences\" :");
     Map<String, Object> m = new HashMap<String, Object>();
     m.put("uuid", userUuid);
     m.put("superUser", false);
     m.put("subjects", new String[0]);
     outputStream.print(beanConverter.convertToString(m));
+    outputPathPrefix(pathPrefix, outputStream);
+    outputUserProfile(pathPrefix, outputStream);
     outputStream.print("}");
+  }
+
+  /**
+   * @param response
+   * @param userUuid
+   * @throws RepositoryException
+   * @throws IOException
+   */
+  private void outputUserProfile(String pathPrefix,
+      ServletOutputStream outputStream) throws IOException, RepositoryException {
+    String path = sharedPrivatePathBase + pathPrefix + PROFILE_JSON;
+    sendFile("profile", path, outputStream);
+  }
+
+  private void outputPathPrefix(String pathPrefix,
+      ServletOutputStream outputStream) throws IOException {
+    outputStream.print(", \"userStoragePrefix\":\"");
+    outputStream.print(pathPrefix);
+    outputStream.print("\"");
   }
 
   /**
