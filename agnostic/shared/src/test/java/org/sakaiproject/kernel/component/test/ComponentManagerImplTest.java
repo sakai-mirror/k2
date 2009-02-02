@@ -18,6 +18,7 @@
 package org.sakaiproject.kernel.component.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import org.apache.commons.logging.Log;
@@ -76,6 +77,7 @@ public class ComponentManagerImplTest {
   public void testComponentManagerImpl() {
     @SuppressWarnings("unused")
     ComponentManager cm = new ComponentManagerImpl(kernel);
+    assertNotNull(cm);
   }
 
   /**

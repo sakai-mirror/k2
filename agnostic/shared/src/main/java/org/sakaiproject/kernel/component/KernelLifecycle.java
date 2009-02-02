@@ -188,7 +188,7 @@ public class KernelLifecycle implements CommonLifecycle<Kernel> {
             + edenSpaceUsed / (ONEM) + " MB\n" + "\tTenured Used " + tenuredGenUsed / (ONEM)
             + " MB\n" + "\tSurvivour Used " + survivorSpaceUsed / (ONEM) + " MB");
       } catch (Exception ex2) {
-        LOG.info("Startup Memory Stats Not available");
+        LOG.info("Startup Memory Stats Not available ",ex2);
       }
       lifecycleEvent(CommonLifecycleEvent.START);
       lifecycleEvent(CommonLifecycleEvent.AFTER_START);
