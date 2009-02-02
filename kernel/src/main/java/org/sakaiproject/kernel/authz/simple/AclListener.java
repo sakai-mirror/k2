@@ -20,8 +20,6 @@ package org.sakaiproject.kernel.authz.simple;
 
 import com.google.inject.Inject;
 
-import net.sf.ehcache.Cache;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.authz.AccessControlStatement;
