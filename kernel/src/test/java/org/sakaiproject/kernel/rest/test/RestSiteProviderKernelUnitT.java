@@ -100,7 +100,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         injector.getInstance(Key.get(BeanConverter.class, Names
             .named(BeanConverter.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService);
+        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -127,6 +127,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     expect(request.getParameter("description")).andReturn(
         "Description:sitethatdoesnotexist");
     expect(request.getParameter("type")).andReturn("Type:sitethatdoesnotexist");
+    expect(request.getParameter("owner")).andReturn(null);
     Capture<SiteBean> captureSiteBean = new Capture<SiteBean>();
     siteService.createSite(capture(captureSiteBean));
     expectLastCall();
@@ -141,7 +142,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         injector.getInstance(Key.get(BeanConverter.class, Names
             .named(BeanConverter.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService);
+        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     String body = new String(baos.toByteArray(), "UTF-8");
@@ -189,7 +190,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         injector.getInstance(Key.get(BeanConverter.class, Names
             .named(BeanConverter.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService);
+        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     String body = new String(baos.toByteArray(), "UTF-8");
@@ -229,7 +230,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         injector.getInstance(Key.get(BeanConverter.class, Names
             .named(BeanConverter.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService);
+        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -260,7 +261,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         injector.getInstance(Key.get(BeanConverter.class, Names
             .named(BeanConverter.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService);
+        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -295,7 +296,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         injector.getInstance(Key.get(BeanConverter.class, Names
             .named(BeanConverter.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService);
+        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -330,7 +331,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         injector.getInstance(Key.get(BeanConverter.class, Names
             .named(BeanConverter.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService);
+        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -366,7 +367,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         injector.getInstance(Key.get(BeanConverter.class, Names
             .named(BeanConverter.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService);
+        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -402,7 +403,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         injector.getInstance(Key.get(BeanConverter.class, Names
             .named(BeanConverter.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService);
+        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -438,7 +439,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         injector.getInstance(Key.get(BeanConverter.class, Names
             .named(BeanConverter.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService);
+        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -473,7 +474,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         injector.getInstance(Key.get(BeanConverter.class, Names
             .named(BeanConverter.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService);
+        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -508,7 +509,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         injector.getInstance(Key.get(BeanConverter.class, Names
             .named(BeanConverter.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService);
+        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -543,7 +544,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         injector.getInstance(Key.get(BeanConverter.class, Names
             .named(BeanConverter.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService);
+        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -578,7 +579,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         injector.getInstance(Key.get(BeanConverter.class, Names
             .named(BeanConverter.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService);
+        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -613,7 +614,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         injector.getInstance(Key.get(BeanConverter.class, Names
             .named(BeanConverter.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService);
+        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -657,7 +658,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         injector.getInstance(Key.get(BeanConverter.class, Names
             .named(BeanConverter.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService);
+        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     assertTrue(siteBeanCapture.hasCaptured());
@@ -706,7 +707,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         injector.getInstance(Key.get(BeanConverter.class, Names
             .named(BeanConverter.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService);
+        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     assertTrue(siteBeanCapture.hasCaptured());
@@ -756,7 +757,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         injector.getInstance(Key.get(BeanConverter.class, Names
             .named(BeanConverter.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService);
+        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -792,7 +793,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         injector.getInstance(Key.get(BeanConverter.class, Names
             .named(BeanConverter.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService);
+        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -831,7 +832,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         injector.getInstance(Key.get(BeanConverter.class, Names
             .named(BeanConverter.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService);
+        subjectPermissionService, userResolverService);
     try {
       rsp.dispatch(elements, request, response);
       fail();
@@ -875,7 +876,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         injector.getInstance(Key.get(BeanConverter.class, Names
             .named(BeanConverter.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService);
+        subjectPermissionService, userResolverService);
     try {
       rsp.dispatch(elements, request, response);
       fail();
@@ -918,7 +919,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         injector.getInstance(Key.get(BeanConverter.class, Names
             .named(BeanConverter.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService);
+        subjectPermissionService, userResolverService);
     try {
       rsp.dispatch(elements, request, response);
       fail();
@@ -959,7 +960,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         injector.getInstance(Key.get(BeanConverter.class, Names
             .named(BeanConverter.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService);
+        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     assertTrue(siteBeanCapture.hasCaptured());
@@ -1002,7 +1003,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         injector.getInstance(Key.get(BeanConverter.class, Names
             .named(BeanConverter.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService);
+        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     assertTrue(siteBeanCapture.hasCaptured());
@@ -1045,7 +1046,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         injector.getInstance(Key.get(BeanConverter.class, Names
             .named(BeanConverter.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService);
+        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -1074,7 +1075,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         injector.getInstance(Key.get(BeanConverter.class, Names
             .named(BeanConverter.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService);
+        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -1106,7 +1107,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         injector.getInstance(Key.get(BeanConverter.class, Names
             .named(BeanConverter.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService);
+        subjectPermissionService, userResolverService);
     try {
       rsp.dispatch(elements, request, response);
     } catch (SecurityException ex) {
