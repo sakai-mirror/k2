@@ -17,6 +17,7 @@
  */
 package org.sakaiproject.kernel.user.jcr;
 
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
@@ -43,11 +44,19 @@ public class JcrUserFactoryService implements UserFactoryService {
   public static final String JCR_USERENV_BASE = "jcruserenv.base";
   public static final String JCR_USERENV_TEMPLATES = "jcruserenv.templates";
   private static final String JCR_DEFAULT_TEMPLATE = "jcruserenv.templates.default";
+  private static final String JCR_PROFILE_TEMPLATES = "jcrprofile.templates";
+  private static final String JCR_PROFILE_DEFAUT_TEMPLATES = "jcrprofile.templates.default";
+  private static final String PROFILE_JSON = "profile.json";
+  private static final String PRIVATE_PATH_BASE = "jcrprivateshared.base";
+
   private EntityManager entityManager;
   private String userEnvironmentBase;
   private Map<String, String> userTemplateMap;
   private String defaultTemplate;
   long entropy = System.currentTimeMillis();
+  private String sharedPrivatePathBase;
+  private String defaultProfileTemplate;
+  private HashMap<String, String> profileTemplateMap;
 
   /**
    * 
@@ -56,16 +65,29 @@ public class JcrUserFactoryService implements UserFactoryService {
   public JcrUserFactoryService(EntityManager entityManager,
       @Named(JCR_USERENV_BASE) String userEnvironmentBase,
       @Named(JCR_USERENV_TEMPLATES) String userTemplates,
-      @Named(JCR_DEFAULT_TEMPLATE) String defaultTemplate) {
+      @Named(JCR_DEFAULT_TEMPLATE) String defaultTemplate,
+      @Named(PRIVATE_PATH_BASE) String sharedPrivatePathBase,
+      @Named(JCR_PROFILE_TEMPLATES) String profileTemplates,
+      @Named(JCR_PROFILE_DEFAUT_TEMPLATES) String defaultProfileTemplate
+
+      ) {
     this.entityManager = entityManager;
     this.defaultTemplate = defaultTemplate;
+    this.defaultProfileTemplate = defaultProfileTemplate;
     this.userEnvironmentBase = userEnvironmentBase;
-    userTemplateMap = new HashMap<String, String>();
+    userTemplateMap = Maps.newHashMap();
     String[] templates = StringUtils.split(userTemplates, ';');
     for (String template : templates) {
       String[] nv = StringUtils.split(template, '=', 2);
       userTemplateMap.put(nv[0].trim(), nv[1].trim());
     }
+    profileTemplateMap = Maps.newHashMap();
+    templates = StringUtils.split(profileTemplates, ';');
+    for (String template : templates) {
+      String[] nv = StringUtils.split(template, '=', 2);
+      profileTemplateMap.put(nv[0].trim(), nv[1].trim());
+    }
+    this.sharedPrivatePathBase =sharedPrivatePathBase;
   }
 
   /**
@@ -116,6 +138,38 @@ public class JcrUserFactoryService implements UserFactoryService {
     String template = userTemplateMap.get(userType);
     if (template == null) {
       return defaultTemplate;
+    }
+    return template;
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.user.UserFactoryService#getUserPathPrefix(java.lang.String)
+   */
+  public String getUserPathPrefix(String uuid) {
+    return PathUtils.getUserPrefix(uuid);
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.user.UserFactoryService#getUserProfilePath(java.lang.String)
+   */
+  public String getUserProfilePath(String uuid) {
+    
+    return sharedPrivatePathBase + PathUtils.getUserPrefix(uuid) + PROFILE_JSON;
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.user.UserFactoryService#getUserProfileTempate(java.lang.String)
+   */
+  public String getUserProfileTempate(String userType) {
+    if (userType == null) {
+      return defaultProfileTemplate;
+    }
+    String template = profileTemplateMap.get(userType);
+    if (template == null) {
+      return defaultProfileTemplate;
     }
     return template;
   }

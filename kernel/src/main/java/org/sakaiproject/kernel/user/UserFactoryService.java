@@ -65,4 +65,29 @@ public interface UserFactoryService {
    */
   String getUserEnvironmentBasePath(String uuid);
 
+  /**
+   * get the path for the User profile (absolute path)
+   * 
+   * @param uuid
+   * @return
+   */
+  String getUserProfilePath(String uuid);
+
+  /**
+   * the user path prefix that is used to locate the user in the jcr, this is
+   * only a fragment, there needs to be a prefix.
+   * 
+   * @param uuid
+   * @return
+   */
+  String getUserPathPrefix(String uuid);
+
+  /**
+   * The path to the user profile template (absolute path)
+   * 
+   * @param userType
+   * @return
+   */
+  String getUserProfileTempate(String userType);
+
 }

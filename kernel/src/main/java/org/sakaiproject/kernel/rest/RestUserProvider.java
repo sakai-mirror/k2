@@ -342,7 +342,9 @@ public class RestUserProvider implements RestProvider {
 
       String userEnvironmentPath = userFactoryService.getUserEnvPath(u
           .getUuid());
-
+      
+      String userProfilePath = userFactoryService.getUserProfilePath(u.getUuid());
+      
       String userEnvironmentTemplate = userFactoryService
           .getUserEnvTemplate(userType);
 
@@ -350,6 +352,7 @@ public class RestUserProvider implements RestProvider {
       templateInputStream = jcrNodeFactoryService
           .getInputStream(userEnvironmentTemplate);
       String template = IOUtils.readFully(templateInputStream, "UTF-8");
+      System.err.println("Loading UE from "+userEnvironmentTemplate+" as "+template);
       UserEnvironmentBean userEnvironmentBean = beanConverter.convertToObject(
           template, UserEnvironmentBean.class);
 
@@ -357,15 +360,12 @@ public class RestUserProvider implements RestProvider {
       userEnvironmentBean.setEid(externalId);
       userEnvironmentBean.setUuid(u.getUuid());
       Map<String, String> p = new HashMap<String, String>();
-      p.put("firstName", firstName);
-      p.put("lastName", lastName);
-      p.put("email", email);
       p.put("userType", userType);
-
       userEnvironmentBean.setProperties(p);
 
       // save the template
       String userEnv = beanConverter.convertToString(userEnvironmentBean);
+      System.err.println("Saving UE to "+userEnvironmentPath+" as "+userEnv);
       bais = new ByteArrayInputStream(userEnv.getBytes("UTF-8"));
       Node userEnvNode = jcrNodeFactoryService.setInputStream(
           userEnvironmentPath, bais, RestProvider.CONTENT_TYPE);
@@ -376,6 +376,24 @@ public class RestUserProvider implements RestProvider {
               .sha1Hash(password));
 
       userEnvNode.save();
+      templateInputStream.close();
+      bais.close();
+      
+      templateInputStream = jcrNodeFactoryService
+      .getInputStream(userFactoryService.getUserProfileTempate(userType));    
+      template = IOUtils.readFully(templateInputStream, "UTF-8");
+      System.err.println("Loading Profile from "+userFactoryService.getUserProfileTempate(userType)+" as "+template);
+      Map<String, Object> profileMap = beanConverter.convertToMap(template);
+      profileMap.put("firstName", firstName);
+      profileMap.put("lastName", lastName);
+      profileMap.put("email", email);
+      String profile = beanConverter.convertToString(profileMap);
+      System.err.println("Saving Profile to "+userProfilePath+" as "+profile);
+      bais = new ByteArrayInputStream(profile.getBytes("UTF-8"));
+      Node profileNode = jcrNodeFactoryService.setInputStream(
+          userProfilePath, bais, RestProvider.CONTENT_TYPE);
+      profileNode.save();
+      
 
       Map<String, Object> r = new HashMap<String, Object>();
       r.put("response", "OK");

@@ -20,7 +20,6 @@ package org.sakaiproject.kernel.jcr.jackrabbit.sakai;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,8 +29,6 @@ import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.jcr.api.internal.RepositoryStartupException;
 import org.sakaiproject.kernel.jcr.api.internal.StartupAction;
 import org.sakaiproject.kernel.user.UserFactoryService;
-import org.sakaiproject.kernel.user.jcr.JcrUserFactoryService;
-import org.sakaiproject.kernel.util.PathUtils;
 import org.sakaiproject.kernel.util.ResourceLoader;
 import org.sakaiproject.kernel.util.StringUtils;
 
@@ -56,16 +53,16 @@ public class PopulateBaseRepository implements StartupAction {
       .getLog(PopulateBaseRepository.class);
   private static final String RESOURCES_TO_LOAD = "res://org/sakaiproject/kernel/jcr/jackrabbit/populate_repository.properties";
   private JCRNodeFactoryService jcrNodeFactoryService;
-  private String userEnvironmentBase;
+  private UserFactoryService userFactoryService;
 
   /**
    * Construct the populate action, injecting the {@link JCRNodeFactoryService}
    */
   @Inject
   public PopulateBaseRepository(JCRNodeFactoryService jFactoryService,
-      @Named(JcrUserFactoryService.JCR_USERENV_BASE) String userEnvironmentBase) {
+      UserFactoryService userFactoryService) {
     this.jcrNodeFactoryService = jFactoryService;
-    this.userEnvironmentBase = userEnvironmentBase;
+    this.userFactoryService = userFactoryService;
   }
 
   /**
@@ -106,7 +103,9 @@ public class PopulateBaseRepository implements StartupAction {
         String path = null;
         if (pathSpec.length > 1) {
           if ("userenv".equals(pathSpec[1])) {
-            path = getUserEnvPath(pathSpec[0]);
+            path = userFactoryService.getUserEnvPath(pathSpec[0]);
+          } else if ("profile".equals(pathSpec[1])) {
+            path = userFactoryService.getUserProfilePath(pathSpec[0]);
           } else {
             path = pathSpec[0];
           }
@@ -181,13 +180,5 @@ public class PopulateBaseRepository implements StartupAction {
     return false;
   }
 
-  /**
-   * @return generate the user environment path given an internal ID for the
-   *         user.
-   */
-  public String getUserEnvPath(String userId) {
-    String prefix = PathUtils.getUserPrefix(userId);
-    return userEnvironmentBase + prefix + UserFactoryService.USERENV;
-  }
 
 }
