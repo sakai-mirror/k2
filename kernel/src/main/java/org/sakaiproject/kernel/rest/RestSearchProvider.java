@@ -27,10 +27,15 @@ import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
+import org.sakaiproject.kernel.util.IOUtils;
+import org.sakaiproject.kernel.util.JCRNodeMap;
 import org.sakaiproject.kernel.util.StringUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.kernel.webapp.RestServiceFaultException;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +44,7 @@ import java.util.NoSuchElementException;
 import javax.jcr.LoginException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.query.InvalidQueryException;
@@ -138,10 +144,12 @@ public class RestSearchProvider implements RestProvider {
    * @return
    * @throws RepositoryException
    * @throws LoginException
+   * @throws IOException 
+   * @throws UnsupportedEncodingException 
    */
   private Map<String, Object> doSearch(HttpServletRequest request,
       HttpServletResponse response) throws RestServiceFaultException,
-      LoginException, RepositoryException {
+      LoginException, RepositoryException, UnsupportedEncodingException, IOException {
     Session session = jcrService.getSession();
     String query = request.getParameter(QUERY);
     String nresults = request.getParameter(NRESUTS_PER_PAGE);
@@ -185,7 +193,7 @@ public class RestSearchProvider implements RestProvider {
     System.err.println("Executed " + sqlQuery + " in " + (endMs - startMs)
         + " ms " + ni.getSize() + " hits");
     Map<String, Object> results = new HashMap<String, Object>();
-    List<String> resultList = Lists.newArrayList();
+    List<Map<String, Object>> resultList = Lists.newArrayList();
     long size = ni.getSize();
     long startPos = 0;
     long endPos = 0;
@@ -197,11 +205,38 @@ public class RestSearchProvider implements RestProvider {
 
       for (int i = start; (i < end) && (ni.hasNext());) {
         Node n = ni.nextNode();
-        n = n.getParent();
-        if (JCRConstants.NT_FILE.equals(n.getPrimaryNodeType().getName())) {
-          resultList.add(n.getPath());
-          i++;
+        Node parentNode = n.getParent();
+        Map<String, Object> itemResponse = new HashMap<String, Object>();
+        itemResponse.put("nodeproperties", new JCRNodeMap(parentNode, 1));
+        if (JCRConstants.NT_FILE.equals(parentNode.getPrimaryNodeType()
+            .getName())) {
+          String mimeType = "application/octet-stream";
+          String encoding = "UTF-8";
+          Property mimeTypeProperty = n.getProperty(JCRConstants.JCR_MIMETYPE);
+          if (mimeTypeProperty != null) {
+            mimeType = mimeTypeProperty.getString();
+          }
+          Property contentEncoding = n.getProperty(JCRConstants.JCR_ENCODING);
+          if (contentEncoding != null) {
+            encoding = contentEncoding.getString();
+          }
+          if (mimeType != null && mimeType.startsWith("text")) {
+            Property p = n.getProperty(JCRConstants.JCR_DATA);
+            if (p.getLength() < 10240) {
+              InputStream in = null;
+              try {
+                in = p.getStream();
+                itemResponse.put("content", IOUtils.readFully(in, encoding));
+              } finally {
+                try {
+                  in.close();
+                } catch (Exception ex) {
+                }
+              }
+            }
+          }
         }
+        resultList.add(itemResponse);
         endPos = ni.getPosition();
       }
 
@@ -213,7 +248,7 @@ public class RestSearchProvider implements RestProvider {
     results.put("size", size);
     results.put("start", startPos);
     results.put("end", endPos);
-    results.put("results", resultList.toArray(new String[0]));
+    results.put("results", resultList);
     return results;
   }
 

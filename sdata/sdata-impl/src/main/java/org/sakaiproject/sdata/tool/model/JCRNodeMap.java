@@ -18,6 +18,8 @@
 
 package org.sakaiproject.sdata.tool.model;
 
+import com.google.common.collect.ImmutableSet;
+
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.sdata.tool.api.ResourceDefinition;
 
@@ -25,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -43,6 +46,8 @@ public class JCRNodeMap extends HashMap<String, Object> {
 	 * 
 	 */
   private static final long serialVersionUID = -7045000748456348620L;
+  private static final Set<String> IGNORE = ImmutableSet.of(
+      "sakai:sha1-password-hash", "acl:acl");
 
   /**
    * @throws RepositoryException
@@ -108,18 +113,20 @@ public class JCRNodeMap extends HashMap<String, Object> {
     for (PropertyIterator pi = n.getProperties(); pi.hasNext();) {
       Property p = pi.nextProperty();
       String name = p.getName();
-      boolean multiValue = p.getDefinition().isMultiple();
-      if (multiValue) {
-        Value[] v = p.getValues();
-        Object[] o = new String[v.length];
-        for (int i = 0; i < o.length; i++) {
-          o[i] = formatType(v[i]);
-        }
-        m.put(name, o);
-      } else {
-        Value v = p.getValue();
-        m.put(name, formatType(v));
+      if (!IGNORE.contains(name)) {
+        boolean multiValue = p.getDefinition().isMultiple();
+        if (multiValue) {
+          Value[] v = p.getValues();
+          Object[] o = new String[v.length];
+          for (int i = 0; i < o.length; i++) {
+            o[i] = formatType(v[i]);
+          }
+          m.put(name, o);
+        } else {
+          Value v = p.getValue();
+          m.put(name, formatType(v));
 
+        }
       }
     }
     return m;
