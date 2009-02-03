@@ -30,6 +30,7 @@ import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.site.SiteService;
 import org.sakaiproject.kernel.api.user.User;
+import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.model.RoleBean;
 import org.sakaiproject.kernel.model.SiteBean;
@@ -55,6 +56,7 @@ public class RestSiteProvider implements RestProvider {
     String NAME = "name";
     String DESCRIPTION = "description";
     String TYPE = "type";
+    String OWNER = "owner";
   }
 
   private static final String KEY = "site";
@@ -72,6 +74,7 @@ public class RestSiteProvider implements RestProvider {
   private SessionManagerService sessionManagerService;
   private SubjectPermissionService subjectPermissionService;
   private RegistryService registryService;
+  private UserResolverService userResolverService;
 
   static {
     DESC = new RestDescription();
@@ -98,7 +101,7 @@ public class RestSiteProvider implements RestProvider {
                 + Params.NAME
                 + ","
                 + Params.DESCRIPTION
-                + "," + Params.TYPE + " the Site ID must not exist");
+                + "," + Params.TYPE +  ","+Params.OWNER+" the Site ID must not exist");
     DESC.addURLTemplate("/rest/" + KEY + "/" + CREATE,
         "Accepts POST to create a site, see the section on Create for details");
     DESC.addURLTemplate("/rest/" + KEY + "/" + GET + "/<siteId>",
@@ -115,6 +118,7 @@ public class RestSiteProvider implements RestProvider {
     DESC.addParameter(Params.NAME, "The Site Name");
     DESC.addParameter(Params.DESCRIPTION, "The Site Description");
     DESC.addParameter(Params.TYPE, "The Site Type");
+    DESC.addParameter(Params.OWNER, "The Site Owner, only available to super users");
     DESC.addResponse(String.valueOf(HttpServletResponse.SC_OK),
         "If the action completed Ok, or if the site exits");
     DESC.addResponse(String.valueOf(HttpServletResponse.SC_CONFLICT),
@@ -132,7 +136,8 @@ public class RestSiteProvider implements RestProvider {
       @Named(BeanConverter.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
       UserEnvironmentResolverService userEnvironmentResolverService,
       SessionManagerService sessionManagerService,
-      SubjectPermissionService subjectPermissionService) {
+      SubjectPermissionService subjectPermissionService,
+      UserResolverService userResolverService) {
     this.siteService = siteService;
     this.registryService = registryService;
     Registry<String, RestProvider> restRegistry = registryService
@@ -142,6 +147,7 @@ public class RestSiteProvider implements RestProvider {
     this.userEnvironmentResolverService = userEnvironmentResolverService;
     this.sessionManagerService = sessionManagerService;
     this.subjectPermissionService = subjectPermissionService;
+    this.userResolverService = userResolverService;
   }
 
   /**
@@ -245,20 +251,35 @@ public class RestSiteProvider implements RestProvider {
       response.sendError(HttpServletResponse.SC_CONFLICT);
       return null;
     } else {
+      
       Session session = sessionManagerService.getCurrentSession();
       UserEnvironmentBean userEnv = (UserEnvironmentBean) userEnvironmentResolverService.resolve(session);
-      UserEnvironmentBean newUserEnvironment = new UserEnvironmentBean(subjectPermissionService,0,registryService);
-      newUserEnvironment.copyFrom(userEnv);
-      
-      String newSubject = id+":owner";
-      String[] subjects = newUserEnvironment.getSubjects();
-      subjects = StringUtils.addString(subjects, newSubject);
-      newUserEnvironment.setSubjects(subjects);
       
             // get the rest of the site info
       String name = request.getParameter(Params.NAME);
       String description = request.getParameter(Params.DESCRIPTION);
       String type = request.getParameter(Params.TYPE);
+      String owner = request.getParameter(Params.OWNER);
+      
+      User ownerUser = user;
+      UserEnvironmentBean ownerUserEnvironmentBean = userEnv;
+      if ( !StringUtils.isEmpty(owner)) {
+        if ( !userEnv.isSuperUser() ) {
+          throw new RestServiceFaultException(HttpServletResponse.SC_FORBIDDEN,"Must be a super user to specify a site owner");
+        }
+        ownerUser = userResolverService.resolveWithUUID(owner);
+        if ( ownerUser == null ) {
+          throw new RestServiceFaultException(HttpServletResponse.SC_NOT_FOUND,"Secified Owner does not exist ");
+        }
+        ownerUserEnvironmentBean = (UserEnvironmentBean) userEnvironmentResolverService.resolve(ownerUser);
+      }
+      
+      UserEnvironmentBean newUserEnvironment = new UserEnvironmentBean(subjectPermissionService,0,registryService);
+      newUserEnvironment.copyFrom(ownerUserEnvironmentBean);
+      String newSubject = id+":owner";
+      String[] subjects = newUserEnvironment.getSubjects();
+      subjects = StringUtils.addString(subjects, newSubject);
+      newUserEnvironment.setSubjects(subjects);
 
       // create the site
       SiteBean site = new SiteBean();
@@ -266,7 +287,7 @@ public class RestSiteProvider implements RestProvider {
       site.setName(name);
       site.setDescription(description);
       site.setType(type);
-      site.addOwner(userEnv.getUser().getUuid());
+      site.addOwner(ownerUser.getUuid());
       
       // add the admin role
       RoleBean roles[] = new RoleBean[1];
