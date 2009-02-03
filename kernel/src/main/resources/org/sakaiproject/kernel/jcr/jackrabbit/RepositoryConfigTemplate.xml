@@ -160,7 +160,7 @@
         <!-- 
         The Access manager is pulled from the Guice Injector, this entry is a complete dummy and is not used.
         -->
-        <AccessManager class="org.sakaiproject.kernel.jcr.jackrabbit.ShouldNotHaveBeenUser.AccessManagerIsGuiceInjected">
+        <AccessManager class="org.sakaiproject.kernel.jcr.jackrabbit.ShouldNotHaveBeenUsed.AccessManagerIsGuiceInjected">
         </AccessManager>
      
         <LoginModule class="org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiLoginModule">
