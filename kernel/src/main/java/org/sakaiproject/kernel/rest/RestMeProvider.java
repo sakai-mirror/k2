@@ -29,6 +29,7 @@ import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.user.User;
+import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.authz.simple.NullUserEnvironment;
@@ -63,12 +64,14 @@ public class RestMeProvider implements RestProvider {
   private BeanConverter beanConverter;
   private UserEnvironmentResolverService userEnvironmentResolverService;
   private String sharedPrivatePathBase;
+  private UserResolverService userResolverService;
 
   @Inject
   public RestMeProvider(
       RegistryService registryService,
       SessionManagerService sessionManagerService,
       JCRNodeFactoryService jcrNodeFactoryService,
+      UserResolverService userResolverService,
       UserLocale userLocale,
       @Named(BeanConverter.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
       UserEnvironmentResolverService userEnvironmentResolverService,
@@ -82,6 +85,7 @@ public class RestMeProvider implements RestProvider {
     this.beanConverter = beanConverter;
     this.userEnvironmentResolverService = userEnvironmentResolverService;
     this.sharedPrivatePathBase = sharedPrivatePathBase;
+    this.userResolverService = userResolverService;
   }
 
   static {
@@ -119,8 +123,11 @@ public class RestMeProvider implements RestProvider {
         .addHeader("none",
             "The service neither looks for headers nor sets any non standatd headers");
     DESCRIPTION
-        .addURLTemplate("me*",
-            "The service is selected by /rest/me any training path will be ignored");
+        .addURLTemplate("me",
+            "The service is selected by /rest/me and provides the me json for the current user.");
+    DESCRIPTION
+    .addURLTemplate("me/<userid>",
+        "The service is selected by /rest/me and provides the a reduced me json response for the specified user.");
     DESCRIPTION
         .addResponse(
             "200",
@@ -129,8 +136,8 @@ public class RestMeProvider implements RestProvider {
                 + "\"ISO3Country\":\"USA\",\"displayVariant\":\"\",\"language\":\"en\",\"displayLanguage\":\"English\","
                 + "\"ISO3Language\":\"eng\",\"displayName\":\"English (United States)\"}, "
                 + "preferences :{ userid : \"ib236\",  superUser: false,  subjects : [\"group1:maintain\" ,\"group2:maintain\" ,"
-                + "\"group2:access\" ,\".engineering:student\"]}," +
-                		"\"userStoragePrefix\":\"/12/14/useuuid\",\"profile\": {} }");
+                + "\"group2:access\" ,\".engineering:student\"]},"
+                + "\"userStoragePrefix\":\"/12/14/useuuid\",\"profile\": {} }");
 
   }
 
@@ -144,6 +151,58 @@ public class RestMeProvider implements RestProvider {
   public void dispatch(String[] elements, HttpServletRequest request,
       HttpServletResponse response) {
     try {
+      if (elements.length > 1) {
+        doOtherUser(elements, request, response);
+      } else {
+        doUser(elements, request, response);
+      }
+    } catch (SecurityException ex) {
+      throw ex;
+    } catch (RestServiceFaultException ex) {
+      throw ex;
+    } catch (Exception ex) {
+      throw new RestServiceFaultException(ex.getMessage(), ex);
+    }
+
+  }
+
+  /**
+   * Output another user, limited information set.
+   * @param elements the path elements of the request.
+   * @param request the request object.
+   * @param response the response object.
+   * @throws IOException if there was a problem sending the output.
+   * @throws RepositoryException the there was a problem with the repository.
+   */
+  private void doOtherUser(String[] elements, HttpServletRequest request,
+      HttpServletResponse response) throws IOException, RepositoryException {
+    String userId = elements[1];
+    User user = userResolverService.resolveWithUUID(userId);
+    if (user == null) {
+      throw new RestServiceFaultException(HttpServletResponse.SC_NOT_FOUND,
+          "User " + userId + " does not exist");
+    }
+    String pathPrefix = PathUtils.getUserPrefix(user.getUuid());
+    response.setContentType(RestProvider.CONTENT_TYPE);
+
+    ServletOutputStream outputStream = response.getOutputStream();
+    outputStream.print("{ \"restricted\": true");
+    outputPathPrefix(pathPrefix, outputStream);
+    outputUserProfile(pathPrefix, outputStream);
+    outputStream.print("}");
+
+  }
+
+  /**
+   * Output this user.
+   * @param elements the request path elements.
+   * @param request the request object.
+   * @param response the response object.
+   * @throws IOException 
+   * @throws JCRNodeFactoryServiceException 
+   * @throws RepositoryException 
+   */
+  public void doUser(String[] elements, HttpServletRequest request, HttpServletResponse response) throws RepositoryException, JCRNodeFactoryServiceException, IOException {
       Session session = sessionManagerService.getCurrentSession();
       User user = session.getUser();
 
@@ -166,13 +225,6 @@ public class RestMeProvider implements RestProvider {
           sendOutput(response, locale, pathPrefix, userEnvironment);
         }
       }
-    } catch (SecurityException ex) {
-      throw ex;
-    } catch (RestServiceFaultException ex) {
-      throw ex;
-    } catch (Exception ex) {
-      throw new RestServiceFaultException(ex.getMessage(), ex);
-    }
   }
 
   /**

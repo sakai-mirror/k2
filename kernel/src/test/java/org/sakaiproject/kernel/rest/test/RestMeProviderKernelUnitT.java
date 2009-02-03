@@ -23,7 +23,9 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,6 +51,7 @@ import org.sakaiproject.kernel.test.AuthZServiceKernelUnitT;
 import org.sakaiproject.kernel.test.KernelIntegrationBase;
 import org.sakaiproject.kernel.util.PathUtils;
 import org.sakaiproject.kernel.util.ResourceLoader;
+import org.sakaiproject.kernel.webapp.RestServiceFaultException;
 import org.sakaiproject.kernel.webapp.SakaiServletRequest;
 import org.sakaiproject.kernel.webapp.test.InternalUser;
 
@@ -142,12 +145,66 @@ public class RestMeProviderKernelUnitT extends KernelIntegrationBase {
         response,  userResolverService, sessionManagerService);
     sessionManagerService.bindRequest(sakaiServletRequest);
 
-    rmp.dispatch(new String[] { "me", "garbage" }, request, response);
-
+    rmp.dispatch(new String[] { "me" }, request, response);
     String responseString = new String(baos.toByteArray(), "UTF-8");
 
     System.err.println("Response Wasxxxx " + responseString);
     assertTrue(responseString.indexOf("uuid") < 0);
+
+    cacheManagerService.unbind(CacheScope.REQUEST);
+    verify(request, response, session);
+
+  }
+
+  
+  @Test
+  public void testAnonGetOther() throws ServletException, IOException {
+    KernelManager km = new KernelManager();
+    SessionManagerService sessionManagerService = km
+        .getService(SessionManagerService.class);
+    CacheManagerService cacheManagerService = km
+        .getService(CacheManagerService.class);
+    UserResolverService userResolverService = km
+        .getService(UserResolverService.class);
+
+    RegistryService registryService = km.getService(RegistryService.class);
+    Registry<String, RestProvider> registry = registryService
+        .getRegistry(RestProvider.REST_REGISTRY);
+    RestMeProvider rmp = (RestMeProvider) registry.getMap().get("me");
+
+    HttpServletRequest request = createMock(HttpServletRequest.class);
+    HttpServletResponse response = createMock(HttpServletResponse.class);
+    HttpSession session = createMock(HttpSession.class);
+    
+    
+    expect(request.getRequestedSessionId()).andReturn("SESSIONID-123-1").anyTimes();
+    expect(session.getId()).andReturn("SESSIONID-123-1").anyTimes();
+    Cookie cookie = new Cookie("SAKAIID","SESSIONID-123-1");
+    expect(request.getCookies()).andReturn(new Cookie[]{cookie}).anyTimes();
+
+
+    expect(request.getAttribute("_no_session")).andReturn(null).anyTimes();
+    expect(request.getSession(true)).andReturn(session).anyTimes();
+    expect(request.getAttribute("_uuid")).andReturn(null).anyTimes();
+    expect(session.getAttribute("_u")).andReturn(null).anyTimes();
+    expect(session.getAttribute("_uu")).andReturn(null).anyTimes();
+    expect(request.getLocale()).andReturn(new Locale("en", "US")).anyTimes();
+    expect(session.getAttribute("sakai.locale.")).andReturn(null).anyTimes();
+    response.addCookie((Cookie) anyObject());
+    expectLastCall().anyTimes();
+
+    replay(request, response, session);
+
+    SakaiServletRequest sakaiServletRequest = new SakaiServletRequest(request,
+        response,  userResolverService, sessionManagerService);
+    sessionManagerService.bindRequest(sakaiServletRequest);
+
+    try {
+    rmp.dispatch(new String[] { "me","garbage" }, request, response);
+    fail();
+    } catch ( RestServiceFaultException ex) {
+      assertEquals(HttpServletResponse.SC_NOT_FOUND,ex.getStatusCode());
+    }
 
     cacheManagerService.unbind(CacheScope.REQUEST);
     verify(request, response, session);
@@ -203,7 +260,7 @@ public class RestMeProviderKernelUnitT extends KernelIntegrationBase {
         response, userResolverService, sessionManagerService);
     sessionManagerService.bindRequest(sakaiServletRequest);
 
-    rmp.dispatch(new String[] { "me", "garbage" }, request, response);
+    rmp.dispatch(new String[] { "me" }, request, response);
 
     String responseString = new String(baos.toByteArray(), "UTF-8");
     System.err.println("Response Was " + responseString);
@@ -292,7 +349,7 @@ public class RestMeProviderKernelUnitT extends KernelIntegrationBase {
         response, userResolverService, sessionManagerService);
     sessionManagerService.bindRequest(sakaiServletRequest);
 
-    rmp.dispatch(new String[] { "me", "garbage" }, request, response);
+    rmp.dispatch(new String[] { "me" }, request, response);
 
     System.err.println("=====================================FAILING HERE ");
     String responseString = new String(baos.toByteArray(), "UTF-8");
