@@ -392,6 +392,10 @@ public class RestUserProvider implements RestProvider {
       bais = new ByteArrayInputStream(profile.getBytes("UTF-8"));
       Node profileNode = jcrNodeFactoryService.setInputStream(
           userProfilePath, bais, RestProvider.CONTENT_TYPE);
+      
+      profileNode.setProperty("sakai:firstName", firstName);
+      profileNode.setProperty("sakai:lastName", lastName);
+      profileNode.setProperty("sakai:email", email);
       profileNode.save();
       
 

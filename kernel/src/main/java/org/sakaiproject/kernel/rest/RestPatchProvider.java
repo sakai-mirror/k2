@@ -58,6 +58,7 @@ public class RestPatchProvider implements RestProvider {
     public String[] names;
     public String[] values;
     public String[] actions;
+    public String[] indexes;
 
     /**
      * @param request
@@ -66,8 +67,10 @@ public class RestPatchProvider implements RestProvider {
       names = request.getParameterValues(NAME);
       values = request.getParameterValues(VALUE);
       actions = request.getParameterValues(ACTION);
+      indexes = request.getParameterValues(INDEX);
       if (names == null || values == null || actions == null
-          || names.length != values.length || names.length != actions.length || names.length == 0) {
+          || names.length != values.length || names.length != actions.length
+          || names.length == 0) {
         throw new RestServiceFaultException(
             HttpServletResponse.SC_BAD_REQUEST,
             "The "
@@ -77,6 +80,12 @@ public class RestPatchProvider implements RestProvider {
                 + " or"
                 + ACTION
                 + " parameters are either not present or they are not of the same size");
+      }
+      if (indexes != null && indexes.length != names.length) {
+        throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
+            "If some properties are to be indexed, all must be specified, the '"
+                + INDEX + "' array must be the same lenght as the '" + KEY
+                + "' array");
       }
       for (String name : names) {
         if (StringUtils.isEmpty(name)) {
@@ -94,6 +103,7 @@ public class RestPatchProvider implements RestProvider {
 
   private static final String VALUE = "v";
   private static final String ACTION = "a";
+  private static final String INDEX = "i";
 
   private static final String KEY = "patch";
 
@@ -127,6 +137,7 @@ public class RestPatchProvider implements RestProvider {
     DESC.addParameter(ACTION, "multiple value, An array of action values "
         + UPDATE_ACTION + " or " + REMOVE_ACTION + " where " + UPDATE_ACTION
         + " will add a value that is not present ");
+    DESC.addParameter(INDEX, "multiple value, An array of property idex flags, if 1 the corresponding key is indexed, if 0 it is not");
     DESC.addResponse(String.valueOf(HttpServletResponse.SC_OK),
         "If the action completed Ok");
     DESC.addResponse(String.valueOf(HttpServletResponse.SC_FORBIDDEN),
@@ -260,8 +271,7 @@ public class RestPatchProvider implements RestProvider {
           in.close();
         } catch (IOException ex) {
         }
-        map = beanConverter.convertToObject(content,
-            Map.class);
+        map = beanConverter.convertToObject(content, Map.class);
       } else {
         map = new HashMap<String, Object>();
       }
@@ -274,8 +284,28 @@ public class RestPatchProvider implements RestProvider {
       }
       String result = beanConverter.convertToString(map);
       in = new ByteArrayInputStream(result.getBytes(StringUtils.UTF8));
-      n = jcrNodeFactoryService.setInputStream(path, in, RestProvider.CONTENT_TYPE);
-
+      n = jcrNodeFactoryService.setInputStream(path, in,
+          RestProvider.CONTENT_TYPE);
+      
+      // deal with indexed properties.
+      for (int i = 0; i < params.names.length; i++) {
+        boolean index = false;
+        if ( params.indexes != null && "1".equals(params.indexes[i]) ) {
+          index = true;
+        }
+        if ( n.hasProperty("sakai:"+params.names[i]) ) {
+          // if remove, remove it, else update
+          if ( REMOVE_ACTION.equals(params.actions[i])) {
+            n.getProperty("sakai:"+params.names[i]).remove();
+          } else {
+            n.setProperty("sakai:"+params.names[i], params.values[i]);
+          }
+        } else if ( index ) {
+          // add it
+          n.setProperty("sakai:"+params.names[i], params.values[i]);
+        }
+        
+      }
       n.save();
       Map<String, Object> outputMap = new HashMap<String, Object>();
       outputMap.put("response", "OK");

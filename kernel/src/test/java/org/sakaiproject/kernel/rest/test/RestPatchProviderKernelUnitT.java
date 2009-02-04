@@ -94,6 +94,7 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
         new String[] { "a1", "b2", "c3", "d4" });
     expect(request.getParameterValues("a")).andReturn(
         new String[] { "u", "r", "u", "r" });
+    expect(request.getParameterValues("i")).andReturn(null);
 
     response.setContentType(RestProvider.CONTENT_TYPE);
     expectLastCall();
@@ -145,6 +146,7 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
         new String[] { "a1", "b2", "c3", "d4" });
     expect(request.getParameterValues("a")).andReturn(
         new String[] { "u", "r", "u", "r" });
+    expect(request.getParameterValues("i")).andReturn(null);
 
     response.setContentType(RestProvider.CONTENT_TYPE);
     expectLastCall();
@@ -202,6 +204,7 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
         new String[] { "a1", "b2", "c3", "d4" });
     expect(request.getParameterValues("a")).andReturn(
         new String[] { "u", "r", "u", "r" });
+    expect(request.getParameterValues("i")).andReturn(null);
 
     response.setContentType(RestProvider.CONTENT_TYPE);
     expectLastCall();
@@ -253,6 +256,7 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
         new String[] { "a1", "b2", "c3", "d4" });
     expect(request.getParameterValues("a")).andReturn(
         new String[] { "u", "r", "u", "r" });
+    expect(request.getParameterValues("i")).andReturn(null);
 
     response.setContentType(RestProvider.CONTENT_TYPE);
     expectLastCall();
@@ -310,6 +314,7 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
         new String[] { "a1", "b2", "c3", "d4" });
     expect(request.getParameterValues("a")).andReturn(
         new String[] { "u", "r", "u", "r" });
+    expect(request.getParameterValues("i")).andReturn(null);
 
     expectLastCall();
 
