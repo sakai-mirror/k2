@@ -25,12 +25,16 @@ import org.apache.jackrabbit.webdav.simple.ResourceConfig;
 import org.apache.jackrabbit.webdav.simple.SimpleWebdavServlet;
 import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.jcr.JCRService;
+import org.sakaiproject.kernel.util.StringUtils;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.jcr.Repository;
 import javax.jcr.Session;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;
@@ -46,17 +50,34 @@ public class SakaiWebDavServlet extends SimpleWebdavServlet {
    */
   private static final long serialVersionUID = 1L;
   private static final Log LOG = LogFactory.getLog(SakaiWebDavServlet.class);
+  private static final String DEFAULT_FILTER = ".DS_Store";
   private Repository repository;
   private JCRService jcrService;
+  private Map<String, String> filterElement = new HashMap<String, String>();
 
   @Override
   public Repository getRepository() {
     return repository;
   }
 
+  /**
+   * {@inheritDoc}
+   * 
+   * @see javax.servlet.GenericServlet#init(javax.servlet.ServletConfig)
+   */
   @Override
-  public void init() throws ServletException {
-    super.init();
+  public void init(ServletConfig config) throws ServletException {
+    super.init(config);
+
+    String filter = config.getInitParameter("path-filter");
+    if (StringUtils.isEmpty(filter)) {
+      filter = DEFAULT_FILTER;
+    }
+    String[] filters = StringUtils.split(filter, ';');
+    for (String f : filters) {
+      f = f.trim();
+      filterElement.put(f, f);
+    }
 
     KernelManager km = new KernelManager();
     jcrService = km.getService(JCRService.class);
@@ -80,6 +101,14 @@ public class SakaiWebDavServlet extends SimpleWebdavServlet {
       HttpServletResponse response) throws ServletException, IOException {
 
     final String pinfo = request.getPathInfo();
+
+    String[] elements = StringUtils.split(pinfo, '/');
+    for (String e : elements) {
+      if (filterElement.containsKey(e)) {
+        response.sendError(HttpServletResponse.SC_FORBIDDEN);
+        return;
+      }
+    }
 
     if (pinfo == null) {
       String uri = request.getRequestURI();
