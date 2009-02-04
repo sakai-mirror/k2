@@ -35,7 +35,7 @@ import javax.jcr.RepositoryException;
 public class JcrSynchronousContentListenerAdapter extends
     JcrContentListenerAdapter implements SynchronousEventListener {
 
-  public static final String SYNCHRONOUS_LISTENERS = "sycronous-listeners";
+  public static final String SYNCHRONOUS_LISTENERS = "sychronous-listeners";
 
   /**
    * @param listeners
