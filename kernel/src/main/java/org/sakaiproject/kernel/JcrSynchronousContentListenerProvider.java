@@ -20,18 +20,15 @@ package org.sakaiproject.kernel;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
-import org.sakaiproject.kernel.authz.simple.AclListener;
-import org.sakaiproject.kernel.authz.simple.SubjectPermissionListener;
-import org.sakaiproject.kernel.authz.simple.UserEnvironmentListener;
 import org.sakaiproject.kernel.jcr.api.JcrContentListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * A list of synchronous providers that are invoked as part of the save operation
  */
-public class JcrContentListenerProviders implements
+public class JcrSynchronousContentListenerProvider implements
     Provider<List<JcrContentListener>> {
 
   private final List<JcrContentListener> list = new ArrayList<JcrContentListener>();
@@ -40,12 +37,7 @@ public class JcrContentListenerProviders implements
    *
    */
   @Inject
-  public JcrContentListenerProviders(
-      UserEnvironmentListener userEnvironmentListener,
-      SubjectPermissionListener subjectPermissionListener,
-      AclListener aclListener) {
-    list.add(userEnvironmentListener);
-    list.add(subjectPermissionListener);
+  public JcrSynchronousContentListenerProvider() {
   }
 
   /**

@@ -47,6 +47,7 @@ public class JcrContentListenerAdapter implements EventListener,
       + JCRConstants.JCR_DATA;
   private List<JcrContentListener> listeners;
   private CacheManagerService cacheManager;
+  protected boolean unbind = false;
 
   /**
    * @param listeners
@@ -73,7 +74,7 @@ public class JcrContentListenerAdapter implements EventListener,
         .addEventListener(this, Event.PROPERTY_ADDED | Event.PROPERTY_CHANGED
             | Event.PROPERTY_REMOVED, "/", true, null, new String[] {
             JCRConstants.NT_RESOURCE, JCRConstants.NT_UNSTRUCTURED }, false);
-    LOG.info("Registerd JcrContentListener ");
+    LOG.info("Registerd  " + this.getClass().getName());
   }
 
   /**
@@ -102,15 +103,17 @@ public class JcrContentListenerAdapter implements EventListener,
         }
       }
     } finally {
-      try {
-        cacheManager.unbind(CacheScope.REQUEST);
-      } catch (Exception ex) {
-        // dont care about this
-      }
-      try {
-        cacheManager.unbind(CacheScope.THREAD);
-      } catch (Exception ex) {
-        // dont care about this
+      if (unbind) {
+        try {
+          cacheManager.unbind(CacheScope.REQUEST);
+        } catch (Exception ex) {
+          // dont care about this
+        }
+        try {
+          cacheManager.unbind(CacheScope.THREAD);
+        } catch (Exception ex) {
+          // dont care about this
+        }
       }
     }
   }

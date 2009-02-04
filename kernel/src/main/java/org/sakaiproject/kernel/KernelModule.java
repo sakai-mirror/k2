@@ -49,6 +49,7 @@ import org.sakaiproject.kernel.initialization.InitializationActionProvider;
 import org.sakaiproject.kernel.internal.api.InitializationAction;
 import org.sakaiproject.kernel.jcr.api.JcrContentListener;
 import org.sakaiproject.kernel.jcr.api.internal.StartupAction;
+import org.sakaiproject.kernel.jcr.jackrabbit.JcrSynchronousContentListenerAdapter;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiAccessManager;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.StartupActionProvider;
@@ -143,7 +144,7 @@ public class KernelModule extends AbstractModule {
     };
     bind(initializationActionType).toProvider(
         InitializationActionProvider.class);
-    
+
     bind(AccessManager.class).to(SakaiAccessManager.class);
     // Secure bind(AccessManager.class).to(SecureSakaiAccessManager.class);
 
@@ -180,13 +181,22 @@ public class KernelModule extends AbstractModule {
     };
     bind(sessionMap).toProvider(SessionMapProvider.class);
 
+    // event registration
     TypeLiteral<List<EventRegistration>> eventList = new TypeLiteral<List<EventRegistration>>() {
     };
     bind(eventList).toProvider(EventRegistrationProvider.class);
 
     TypeLiteral<List<JcrContentListener>> contentListeners = new TypeLiteral<List<JcrContentListener>>() {
     };
-    bind(contentListeners).toProvider(JcrContentListenerProviders.class);
+    bind(contentListeners).toProvider(JcrContentListenerProvider.class);
+
+    TypeLiteral<List<JcrContentListener>> syncContentListeners = new TypeLiteral<List<JcrContentListener>>() {
+    };
+    bind(syncContentListeners)
+        .annotatedWith(
+            Names
+                .named(JcrSynchronousContentListenerAdapter.SYNCHRONOUS_LISTENERS))
+        .toProvider(JcrSynchronousContentListenerProvider.class);
 
     TypeLiteral<List<ValueProcessor>> valueProcessors = new TypeLiteral<List<ValueProcessor>>() {
     };
