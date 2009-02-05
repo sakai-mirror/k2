@@ -64,6 +64,8 @@ public class RestSearchProvider implements RestProvider {
   private static final String QUERY = "q";
   private static final String NRESUTS_PER_PAGE = "n";
   private static final String PAGE = "p";
+  private static final String SORT = "s";
+  private static final String SQL = "sql";
 
   static {
     DESC.setTitle("Search");
@@ -81,6 +83,8 @@ public class RestSearchProvider implements RestProvider {
     DESC.addParameter(QUERY, "The query string");
     DESC.addParameter(NRESUTS_PER_PAGE, "the number of results per page");
     DESC.addParameter(PAGE, "the page, 0 = the first page ");
+    DESC.addParameter(SORT,
+        "an array of fields to sort by eg sakai:firstName sakai:lastName ");
     DESC.addResponse(String.valueOf(HttpServletResponse.SC_OK),
         "The search was completed OK and the result set is returned ");
     DESC.addResponse(String.valueOf(HttpServletResponse.SC_FORBIDDEN),
@@ -144,16 +148,19 @@ public class RestSearchProvider implements RestProvider {
    * @return
    * @throws RepositoryException
    * @throws LoginException
-   * @throws IOException 
-   * @throws UnsupportedEncodingException 
+   * @throws IOException
+   * @throws UnsupportedEncodingException
    */
   private Map<String, Object> doSearch(HttpServletRequest request,
       HttpServletResponse response) throws RestServiceFaultException,
-      LoginException, RepositoryException, UnsupportedEncodingException, IOException {
+      LoginException, RepositoryException, UnsupportedEncodingException,
+      IOException {
     Session session = jcrService.getSession();
     String query = request.getParameter(QUERY);
     String nresults = request.getParameter(NRESUTS_PER_PAGE);
     String page = request.getParameter(PAGE);
+    String sql = request.getParameter(SQL);
+    String[] sort = request.getParameterValues(SORT);
 
     if (StringUtils.isEmpty(query)) {
       throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
@@ -177,8 +184,23 @@ public class RestSearchProvider implements RestProvider {
 
     Query q = null;
     String escapedQuery = StringUtils.escapeJCRSQL(query);
-    String sqlQuery = "SELECT * FROM " + nodeType + " WHERE CONTAINS(.,'"
-        + escapedQuery + "' )";
+    StringBuilder sb = new StringBuilder();
+    sb.append("SELECT * FROM ").append(nodeType).append(" WHERE CONTAINS(.,'")
+        .append(escapedQuery).append("' )");
+    if (sort != null && sort.length > 0) {
+      sb.append(" ORDER BY ").append(sort[0]);
+      if (sort.length > 1) {
+        for (int i = 1; i < sort.length; i++) {
+          sb.append(",").append(sort[i]);
+        }
+      }
+
+    }
+    String sqlQuery = sb.toString();
+    if (!StringUtils.isEmpty(sql)) {
+      sqlQuery = sql;
+    }
+
     try {
       q = queryManager.createQuery(sqlQuery, Query.SQL);
     } catch (InvalidQueryException ex) {

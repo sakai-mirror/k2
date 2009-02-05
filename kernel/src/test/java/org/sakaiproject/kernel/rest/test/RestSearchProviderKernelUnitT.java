@@ -19,7 +19,7 @@ package org.sakaiproject.kernel.rest.test;
 
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Injector;
@@ -40,6 +40,8 @@ import org.sakaiproject.kernel.util.StringUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.jcr.RepositoryException;
@@ -55,7 +57,7 @@ public class RestSearchProviderKernelUnitT extends BaseRestUnitT {
    */
   public static class QueryPattern {
 
-    private Map<String, String> params;
+    private Map<String, List<String>> params;
     private String response;
 
     /**
@@ -63,10 +65,15 @@ public class RestSearchProviderKernelUnitT extends BaseRestUnitT {
      * @param string
      */
     public QueryPattern(String[] params, String response) {
-      
+
       this.params = Maps.newHashMap();
-      for ( int i = 0; i < params.length; i+= 2) {
-        this.params.put(params[i], params[i+1]);
+      for (int i = 0; i < params.length; i += 2) {
+        List<String> l = this.params.get(params[i]);
+        if (l == null) {
+          l = new ArrayList<String>();
+          this.params.put(params[i], l);
+        }
+        l.add(params[i + 1]);
       }
       this.response = response;
     }
@@ -76,7 +83,11 @@ public class RestSearchProviderKernelUnitT extends BaseRestUnitT {
      * @return
      */
     public String getParameter(String key) {
-      return params.get(key);
+      List<String> l = params.get(key);
+      if (l == null || l.size() == 0) {
+        return null;
+      }
+      return l.get(0);
     }
 
     /**
@@ -86,14 +97,28 @@ public class RestSearchProviderKernelUnitT extends BaseRestUnitT {
       return response;
     }
 
+    /**
+     * @param string
+     * @return
+     */
+    public String[] getParameterValues(String key) {
+      List<String> l = params.get(key);
+      if (l == null || l.size() == 0) {
+        return null;
+      }
+      return l.toArray(new String[0]);
+    }
+
   }
 
-  private static final QueryPattern[] TESTPATTERN = new QueryPattern[] { 
-    new QueryPattern(new String[] {"q", "somethingthatwillnerverexist", "n", null, "p", null},
-      "{\"start\":0,\"page\":0,\"end\":0,\"pageSize\":0,\"size\":0}"), 
-    new QueryPattern(new String[] {"q", "admin", "n", null, "p", null},
-    "{\"start\":0,\"page\":0,\"end\":0,\"pageSize\":0,\"size\":0}") 
-  
+  private static final QueryPattern[] TESTPATTERN = new QueryPattern[] {
+      new QueryPattern(new String[] { "q", "somethingthatwillnerverexist", "n",
+          null, "p", null }, "\"size\":0"),
+      new QueryPattern(new String[] { "q", "admin", "n", null, "p", null },
+          "\"size\":3"),
+      new QueryPattern(new String[] { "q", "admin", "n", null, "p", null, "s",
+          "sakai:firstName", "s", "sakai:lastName" }, "\"size\":3")
+
   };
 
   private static boolean shutdown;
@@ -117,13 +142,13 @@ public class RestSearchProviderKernelUnitT extends BaseRestUnitT {
    * @throws IOException
    * @throws JCRNodeFactoryServiceException
    * @throws RepositoryException
-   * @throws InterruptedException 
+   * @throws InterruptedException
    */
   @Test
   public void testSearch() throws ServletException, IOException,
       RepositoryException, JCRNodeFactoryServiceException, InterruptedException {
     setupServices();
-    
+
     Thread.sleep(10000);
     for (QueryPattern testQuery : TESTPATTERN) {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -133,6 +158,9 @@ public class RestSearchProviderKernelUnitT extends BaseRestUnitT {
       expect(request.getParameter("q")).andReturn(testQuery.getParameter("q"));
       expect(request.getParameter("n")).andReturn(testQuery.getParameter("n"));
       expect(request.getParameter("p")).andReturn(testQuery.getParameter("p"));
+      expect(request.getParameterValues("s")).andReturn(
+          testQuery.getParameterValues("s"));
+      expect(request.getParameter("sql")).andReturn(null).anyTimes();
 
       response.setContentType(RestProvider.CONTENT_TYPE);
       expectLastCall();
@@ -147,7 +175,8 @@ public class RestSearchProviderKernelUnitT extends BaseRestUnitT {
       rsp.dispatch(elements, request, response);
 
       String op = baos.toString(StringUtils.UTF8);
-      assertEquals(testQuery.getResponse(), op);
+      
+      assertTrue(op,op.indexOf(testQuery.getResponse()) > 0);
 
       verifyMocks();
       resetMocks();
