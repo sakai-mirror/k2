@@ -15,24 +15,23 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.user.test;
+package org.sakaiproject.kernel.rest.test;
 
-
-import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.sakaiproject.kernel.api.user.User;
-import org.sakaiproject.kernel.user.AnonUser;
+import org.sakaiproject.kernel.rest.UserLocale;
+
+import java.util.Locale;
 
 /**
  * 
  */
-public class UserObjectTest {
-
+public class UserLocaleUT {
+  
   @Test
-  public void testAnonUser() {
-    User u = new AnonUser();
-    assertEquals("anon", u.getUuid());
+  public void testUserLocaleToMap() {
+    UserLocale ul = new UserLocale();
+    System.err.println(ul.localeToMap(new Locale("")));
+    System.err.println(ul.localeToMap(new Locale("en","US")));
   }
-
 }

@@ -33,7 +33,7 @@ import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiUserPrincipalImpl;
 /**
  * 
  */
-public class SakaiUserPrincipalTest {
+public class SakaiUserPrincipalUT {
 
   @Test
   public void testSakaiUserPrincipal() {

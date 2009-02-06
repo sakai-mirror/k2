@@ -15,22 +15,24 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.jcr.jackrabbit.sakai.test;
+package org.sakaiproject.kernel.user.test;
+
 
 import static org.junit.Assert.*;
-import org.junit.Test;
-import org.sakaiproject.kernel.jcr.jackrabbit.sakai.JCRIdPwEvidence;
 
+import org.junit.Test;
+import org.sakaiproject.kernel.api.user.User;
+import org.sakaiproject.kernel.user.AnonUser;
 
 /**
  * 
  */
-public class JCRIdPwEvidenceTest {
+public class UserObjectUT {
 
   @Test
-  public void testJcrIdPwEvidence() {
-    JCRIdPwEvidence jcIdPwEvidence = new JCRIdPwEvidence("userid","password");
-    assertEquals("userid", jcIdPwEvidence.getIdentifier());
-    assertEquals("password", jcIdPwEvidence.getPassword());
+  public void testAnonUser() {
+    User u = new AnonUser();
+    assertEquals("anon", u.getUuid());
   }
+
 }

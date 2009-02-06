@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * 
  */
-public class SakaiServletResponseTest {
+public class SakaiServletResponseUT {
 
   /**
    * @throws java.lang.Exception

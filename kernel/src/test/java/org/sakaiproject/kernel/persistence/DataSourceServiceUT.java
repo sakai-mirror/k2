@@ -40,7 +40,7 @@ import java.sql.Statement;
 
 import javax.sql.DataSource;
 
-public class DataSourceServiceTest {
+public class DataSourceServiceUT {
   @Before
   public void beforeClass() throws Exception {
     File dbBase = new File("target/unittestdb");

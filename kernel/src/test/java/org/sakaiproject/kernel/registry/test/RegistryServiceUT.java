@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * 
  */
-public class RegistryServiceTest {
+public class RegistryServiceUT {
 
   @Test
   public void testRegistryServiceAddForward() {

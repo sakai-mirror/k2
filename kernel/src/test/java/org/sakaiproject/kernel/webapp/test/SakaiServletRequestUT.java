@@ -42,7 +42,7 @@ import javax.servlet.http.HttpSession;
 /**
  * 
  */
-public class SakaiServletRequestTest {
+public class SakaiServletRequestUT {
 
   /**
    * @throws java.lang.Exception

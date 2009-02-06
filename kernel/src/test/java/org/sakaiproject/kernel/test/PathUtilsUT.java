@@ -28,14 +28,14 @@ import org.sakaiproject.kernel.util.StringUtils;
 /**
  * 
  */
-public class PathUtilsTest {
+public class PathUtilsUT {
   private static final String[] USER_PATH_TEST = new String[] { null, "",
       "~test", "ieb236" };
   private static final String[] REFERENCE_PARENT_TEST = new String[] {
       "/user/home/ieb:/user/home", "/user/home/ieb///:/user/home",
       "/user/home////ieb:/user/home", "/user////home////ieb:/user////home",
       "/user/:/", "/////:/" };
-  private static final Log LOG = LogFactory.getLog(PathUtilsTest.class);
+  private static final Log LOG = LogFactory.getLog(PathUtilsUT.class);
 
   /**
    * Test method for

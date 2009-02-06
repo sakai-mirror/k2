@@ -29,7 +29,7 @@ import org.sakaiproject.kernel.jcr.api.internal.RepositoryStartupException;
  * This class binds and tests exceptions, mainly to ensure that they can be
  * constructed.
  */
-public class ExceptionTest {
+public class ExceptionUT {
 
   @Test
   public void testRepositroyStartupException() {

@@ -15,27 +15,22 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.jcr.jackrabbit.test;
+package org.sakaiproject.kernel.jcr.jackrabbit.sakai.test;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-import org.sakaiproject.kernel.jcr.jackrabbit.JCRAnonymousPrincipal;
+import org.sakaiproject.kernel.jcr.jackrabbit.sakai.JCRIdPwEvidence;
 
 
 /**
  * 
  */
-public class JCRAnonymousPrincipalTest {
+public class JCRIdPwEvidenceUT {
 
   @Test
-  public void testJCRAnonymousPrincipal() {
-    JCRAnonymousPrincipal jcrAnonymousPrincipal = new JCRAnonymousPrincipal("Test");
-    JCRAnonymousPrincipal jcrAnonymousPrincipal2 = new JCRAnonymousPrincipal("Test");
-    assertTrue(jcrAnonymousPrincipal.equals(jcrAnonymousPrincipal2));
-    assertFalse(jcrAnonymousPrincipal.equals("Test2"));
-    assertEquals("AnonymousPrincipal", jcrAnonymousPrincipal.toString());
-    jcrAnonymousPrincipal.hashCode();
-    assertEquals("Test", jcrAnonymousPrincipal.getName());
-    
+  public void testJcrIdPwEvidence() {
+    JCRIdPwEvidence jcIdPwEvidence = new JCRIdPwEvidence("userid","password");
+    assertEquals("userid", jcIdPwEvidence.getIdentifier());
+    assertEquals("password", jcIdPwEvidence.getPassword());
   }
 }

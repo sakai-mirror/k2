@@ -24,6 +24,7 @@ import org.junit.runners.Suite.SuiteClasses;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.authz.AclListenerT;
 import org.sakaiproject.kernel.rest.test.RestMeProviderKernelUnitT;
+import org.sakaiproject.kernel.rest.test.RestMySitesProviderKernelUnitT;
 import org.sakaiproject.kernel.rest.test.RestPatchProviderKernelUnitT;
 import org.sakaiproject.kernel.rest.test.RestSearchProviderKernelUnitT;
 import org.sakaiproject.kernel.rest.test.RestSiteProviderKernelUnitT;
@@ -39,12 +40,13 @@ import org.sakaiproject.kernel.webapp.test.SakaiAuthenticationFilterKernelUnitT;
     RequestFilterKernelUnitT.class, SakaiAuthenticationFilterKernelUnitT.class,
     RestMeProviderKernelUnitT.class, SessionManagerServiceKernelUnitT.class,
     AclListenerT.class, SiteServiceT.class, RestSiteProviderKernelUnitT.class,
-    RestPatchProviderKernelUnitT.class, RestSearchProviderKernelUnitT.class})
+    RestPatchProviderKernelUnitT.class, RestSearchProviderKernelUnitT.class,
+    RestMySitesProviderKernelUnitT.class })
 public class AllKernelTest {
   private static boolean shutdown;
   static {
     try {
-      System.err.println("Starting Kernel +++++++++++++++++++++++"); 
+      System.err.println("Starting Kernel +++++++++++++++++++++++");
       shutdown = KernelIntegrationBase.beforeClass();
     } catch (ComponentActivatorException e) {
       e.printStackTrace();

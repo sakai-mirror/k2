@@ -40,7 +40,7 @@ import java.util.Map;
 /**
  * 
  */
-public class BeanJsonLibConverterTest {
+public class BeanJsonLibConverterUT {
 
   private BeanJsonLibConverter converter;
   private Injector injector;

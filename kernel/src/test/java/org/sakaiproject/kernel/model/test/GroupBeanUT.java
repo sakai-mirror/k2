@@ -36,10 +36,10 @@ import java.io.IOException;
 /**
  * 
  */
-public class GroupBeanTest {
+public class GroupBeanUT {
 
   private static final Log LOG = LogFactory
-      .getLog(GroupBeanTest.class);
+      .getLog(GroupBeanUT.class);
   private static final String[] GROUPS = { "group1" };
   private static final String TEST_GROUP = "res://org/sakaiproject/kernel/test/samplegroup/";
 

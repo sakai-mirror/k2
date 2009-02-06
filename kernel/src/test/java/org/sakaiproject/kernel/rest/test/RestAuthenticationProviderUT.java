@@ -50,7 +50,7 @@ import javax.servlet.http.HttpSession;
 /**
  * 
  */
-public class RestAuthenticationProviderTest {
+public class RestAuthenticationProviderUT {
 
   @Test
   public void testGet() throws ServletException, IOException {

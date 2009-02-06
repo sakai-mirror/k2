@@ -65,10 +65,10 @@ import javax.servlet.http.HttpSession;
 /**
  *
  */
-public class RestMySitesProviderTest extends KernelIntegrationBase {
+public class RestMySitesProviderKernelUnitT extends KernelIntegrationBase {
 
   private static final Log LOG = LogFactory
-      .getLog(RestMySitesProviderTest.class);
+      .getLog(RestMySitesProviderKernelUnitT.class);
 
   private static boolean shutdownKernel;
 

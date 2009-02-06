@@ -39,10 +39,10 @@ import java.io.IOException;
 /**
  * 
  */
-public class UserEnvironmentBeanTest {
+public class UserEnvironmentBeanUT {
 
   private static final Log LOG = LogFactory
-      .getLog(UserEnvironmentBeanTest.class);
+      .getLog(UserEnvironmentBeanUT.class);
   private static final String[] USERS = { "admin", "ib236" };
   private static final String TEST_USERENV = "res://org/sakaiproject/kernel/test/sampleuserenv/";
 
