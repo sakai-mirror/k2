@@ -117,7 +117,17 @@ public class RestSearchProviderKernelUnitT extends BaseRestUnitT {
       new QueryPattern(new String[] { "q", "admin", "n", null, "p", null },
           "\"size\":3"),
       new QueryPattern(new String[] { "q", "admin", "n", null, "p", null, "s",
-          "sakai:firstName", "s", "sakai:lastName" }, "\"size\":3")
+          "sakai:firstName", "s", "sakai:lastName" }, "\"size\":3"),
+      new QueryPattern(new String[] { "q", "admin", "n", null, "p", null, "s",
+          "sakai:firstName", "s", "sakai:lastName", "path", "/xyz" }, "\"size\":0"),
+      new QueryPattern(new String[] { "q", "admin", "n", null, "p", null, "s",
+          "sakai:firstName", "s", "sakai:lastName", "path", "/_private" }, "\"size\":2"),
+      new QueryPattern(new String[] { "q", "admin", "n", null, "p", null, "s",
+          "sakai:firstName", "s", "sakai:lastName", "path", "_private" }, "\"size\":2"),
+      new QueryPattern(new String[] { "q", "admin", "n", null, "p", null, "s",
+          "sakai:firstName", "s", "sakai:lastName", "path", "_private/" }, "\"size\":2"),
+      new QueryPattern(new String[] { "q", "admin", "n", null, "p", null, "s",
+          "sakai:firstName", "s", "sakai:lastName", "path", "/_private/" }, "\"size\":2")
 
   };
 
@@ -149,7 +159,6 @@ public class RestSearchProviderKernelUnitT extends BaseRestUnitT {
       RepositoryException, JCRNodeFactoryServiceException, InterruptedException {
     setupServices();
 
-    Thread.sleep(10000);
     for (QueryPattern testQuery : TESTPATTERN) {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       setupAnyTimes("user1", "SESSION-21312312", baos);
@@ -161,6 +170,7 @@ public class RestSearchProviderKernelUnitT extends BaseRestUnitT {
       expect(request.getParameterValues("s")).andReturn(
           testQuery.getParameterValues("s"));
       expect(request.getParameter("sql")).andReturn(null).anyTimes();
+      expect(request.getParameter("path")).andReturn(testQuery.getParameter("path"));
 
       response.setContentType(RestProvider.CONTENT_TYPE);
       expectLastCall();

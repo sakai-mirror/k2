@@ -65,6 +65,7 @@ public class RestSearchProvider implements RestProvider {
   private static final String NRESUTS_PER_PAGE = "n";
   private static final String PAGE = "p";
   private static final String SORT = "s";
+  private static final String PATH = "path";
   private static final String SQL = "sql";
 
   static {
@@ -83,6 +84,13 @@ public class RestSearchProvider implements RestProvider {
     DESC.addParameter(QUERY, "The query string");
     DESC.addParameter(NRESUTS_PER_PAGE, "the number of results per page");
     DESC.addParameter(PAGE, "the page, 0 = the first page ");
+    DESC
+        .addParameter(
+            PATH,
+            "an absolute path into the JCR eg '/_private', this path must be a "
+                + "whole element and cant be partial. eg '/_priv' will select a path "
+                + "starting '/_priv/' and not '/_priv*' ");
+
     DESC.addParameter(SORT,
         "an array of fields to sort by eg sakai:firstName sakai:lastName ");
     DESC.addResponse(String.valueOf(HttpServletResponse.SC_OK),
@@ -161,6 +169,7 @@ public class RestSearchProvider implements RestProvider {
     String page = request.getParameter(PAGE);
     String sql = request.getParameter(SQL);
     String[] sort = request.getParameterValues(SORT);
+    String path = request.getParameter(PATH);
 
     if (StringUtils.isEmpty(query)) {
       throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
@@ -185,7 +194,20 @@ public class RestSearchProvider implements RestProvider {
     Query q = null;
     String escapedQuery = StringUtils.escapeJCRSQL(query);
     StringBuilder sb = new StringBuilder();
-    sb.append("SELECT * FROM ").append(nodeType).append(" WHERE CONTAINS(.,'")
+    sb.append("SELECT * FROM ").append(nodeType).append(" WHERE ");
+    if ( !StringUtils.isEmpty(path) ) {
+      path = path.trim();
+      if ( !(path.charAt(0) == '/') ) {
+        path = "/"+path;
+      }
+      if ( !(path.charAt(path.length()-1) == '/') ) {
+        path = path+"/";
+      }
+      path = path+"%";
+      path = StringUtils.escapeJCRSQL(path);
+      sb.append("jcr:path LIKE '").append(path).append("' AND ");
+    }
+    sb.append("CONTAINS(.,'")
         .append(escapedQuery).append("' )");
     if (sort != null && sort.length > 0) {
       sb.append(" ORDER BY ").append(sort[0]);
