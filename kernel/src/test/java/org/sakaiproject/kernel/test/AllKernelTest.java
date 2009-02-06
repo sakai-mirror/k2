@@ -25,6 +25,7 @@ import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.authz.AclListenerT;
 import org.sakaiproject.kernel.rest.test.RestMeProviderKernelUnitT;
 import org.sakaiproject.kernel.rest.test.RestPatchProviderKernelUnitT;
+import org.sakaiproject.kernel.rest.test.RestSearchProviderKernelUnitT;
 import org.sakaiproject.kernel.rest.test.RestSiteProviderKernelUnitT;
 import org.sakaiproject.kernel.site.SiteServiceT;
 import org.sakaiproject.kernel.webapp.test.SakaiAuthenticationFilterKernelUnitT;
@@ -38,7 +39,7 @@ import org.sakaiproject.kernel.webapp.test.SakaiAuthenticationFilterKernelUnitT;
     RequestFilterKernelUnitT.class, SakaiAuthenticationFilterKernelUnitT.class,
     RestMeProviderKernelUnitT.class, SessionManagerServiceKernelUnitT.class,
     AclListenerT.class, SiteServiceT.class, RestSiteProviderKernelUnitT.class,
-    RestPatchProviderKernelUnitT.class})
+    RestPatchProviderKernelUnitT.class, RestSearchProviderKernelUnitT.class})
 public class AllKernelTest {
   private static boolean shutdown;
   static {

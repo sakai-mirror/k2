@@ -67,6 +67,7 @@ public class RestSearchProvider implements RestProvider {
   private static final String SORT = "s";
   private static final String PATH = "path";
   private static final String SQL = "sql";
+  private static final String MIMETYPE = "mimetype";
 
   static {
     DESC.setTitle("Search");
@@ -90,6 +91,10 @@ public class RestSearchProvider implements RestProvider {
             "an absolute path into the JCR eg '/_private', this path must be a "
                 + "whole element and cant be partial. eg '/_priv' will select a path "
                 + "starting '/_priv/' and not '/_priv*' ");
+    DESC
+    .addParameter(
+        MIMETYPE,
+        "limit the search to a single mime type");
 
     DESC.addParameter(SORT,
         "an array of fields to sort by eg sakai:firstName sakai:lastName ");
@@ -170,6 +175,7 @@ public class RestSearchProvider implements RestProvider {
     String sql = request.getParameter(SQL);
     String[] sort = request.getParameterValues(SORT);
     String path = request.getParameter(PATH);
+    String mimeTypeSearch = request.getParameter(MIMETYPE);
 
     if (StringUtils.isEmpty(query)) {
       throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
@@ -206,6 +212,11 @@ public class RestSearchProvider implements RestProvider {
       path = path+"%";
       path = StringUtils.escapeJCRSQL(path);
       sb.append("jcr:path LIKE '").append(path).append("' AND ");
+    }
+    if ( !StringUtils.isEmpty(mimeTypeSearch) ) {
+      mimeTypeSearch = mimeTypeSearch.trim();
+      mimeTypeSearch = StringUtils.escapeJCRSQL(mimeTypeSearch);
+      sb.append("jcr:mimeType = '").append(mimeTypeSearch).append("' AND ");
     }
     sb.append("CONTAINS(.,'")
         .append(escapedQuery).append("' )");

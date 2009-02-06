@@ -115,9 +115,9 @@ public class RestSearchProviderKernelUnitT extends BaseRestUnitT {
       new QueryPattern(new String[] { "q", "somethingthatwillnerverexist", "n",
           null, "p", null }, "\"size\":0"),
       new QueryPattern(new String[] { "q", "admin", "n", null, "p", null },
-          "\"size\":3"),
+          "\"size\":8"),
       new QueryPattern(new String[] { "q", "admin", "n", null, "p", null, "s",
-          "sakai:firstName", "s", "sakai:lastName" }, "\"size\":3"),
+          "sakai:firstName", "s", "sakai:lastName" }, "\"size\":8"),
       new QueryPattern(new String[] { "q", "admin", "n", null, "p", null, "s",
           "sakai:firstName", "s", "sakai:lastName", "path", "/xyz" }, "\"size\":0"),
       new QueryPattern(new String[] { "q", "admin", "n", null, "p", null, "s",
@@ -127,7 +127,11 @@ public class RestSearchProviderKernelUnitT extends BaseRestUnitT {
       new QueryPattern(new String[] { "q", "admin", "n", null, "p", null, "s",
           "sakai:firstName", "s", "sakai:lastName", "path", "_private/" }, "\"size\":2"),
       new QueryPattern(new String[] { "q", "admin", "n", null, "p", null, "s",
-          "sakai:firstName", "s", "sakai:lastName", "path", "/_private/" }, "\"size\":2")
+          "sakai:firstName", "s", "sakai:lastName", "path", "/_private/" }, "\"size\":2"),
+      new QueryPattern(new String[] { "q", "admin", "n", null, "p", null, "s",
+          "sakai:firstName", "s", "sakai:lastName", "path", "/_private/", "mimetype", "text/plain" }, "\"size\":1"),
+      new QueryPattern(new String[] { "q", "admin", "n", null, "p", null, "s",
+          "sakai:firstName", "s", "sakai:lastName", "path", "/_private/", "mimetype", "text/html" }, "\"size\":0")
 
   };
 
@@ -171,6 +175,7 @@ public class RestSearchProviderKernelUnitT extends BaseRestUnitT {
           testQuery.getParameterValues("s"));
       expect(request.getParameter("sql")).andReturn(null).anyTimes();
       expect(request.getParameter("path")).andReturn(testQuery.getParameter("path"));
+      expect(request.getParameter("mimetype")).andReturn(testQuery.getParameter("mimetype"));
 
       response.setContentType(RestProvider.CONTENT_TYPE);
       expectLastCall();
