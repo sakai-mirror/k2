@@ -129,7 +129,8 @@ public class JmsEmailMessage implements EmailMessage, Serializable {
   private String format;
 
   /**
-   *
+   * Reference to the messaging service. This is used to change message to Jms
+   * Message and not intended to be used after serialization.
    */
   private transient MessagingService messagingService;
 
@@ -141,6 +142,7 @@ public class JmsEmailMessage implements EmailMessage, Serializable {
     recipients = new HashMap<RcptType, List<EmailAddress>>();
     headers = new HashMap<String, String>();
     attachments = new ArrayList<Attachment>();
+    replyTo = new ArrayList<EmailAddress>();
   }
 
   /**
