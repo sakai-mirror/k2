@@ -262,6 +262,7 @@ public class RestSearchProvider implements RestProvider {
         Node n = ni.nextNode();
         Node parentNode = n.getParent();
         Map<String, Object> itemResponse = new HashMap<String, Object>();
+        itemResponse.put("path",parentNode.getPath());
         itemResponse.put("nodeproperties", new JCRNodeMap(parentNode, 1));
         if (JCRConstants.NT_FILE.equals(parentNode.getPrimaryNodeType()
             .getName())) {
