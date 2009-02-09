@@ -91,10 +91,7 @@ public class RestSearchProvider implements RestProvider {
             "an absolute path into the JCR eg '/_private', this path must be a "
                 + "whole element and cant be partial. eg '/_priv' will select a path "
                 + "starting '/_priv/' and not '/_priv*' ");
-    DESC
-    .addParameter(
-        MIMETYPE,
-        "limit the search to a single mime type");
+    DESC.addParameter(MIMETYPE, "limit the search to a single mime type");
 
     DESC.addParameter(SORT,
         "an array of fields to sort by eg sakai:firstName sakai:lastName ");
@@ -201,25 +198,24 @@ public class RestSearchProvider implements RestProvider {
     String escapedQuery = StringUtils.escapeJCRSQL(query);
     StringBuilder sb = new StringBuilder();
     sb.append("SELECT * FROM ").append(nodeType).append(" WHERE ");
-    if ( !StringUtils.isEmpty(path) ) {
+    if (!StringUtils.isEmpty(path)) {
       path = path.trim();
-      if ( !(path.charAt(0) == '/') ) {
-        path = "/"+path;
+      if (!(path.charAt(0) == '/')) {
+        path = "/" + path;
       }
-      if ( !(path.charAt(path.length()-1) == '/') ) {
-        path = path+"/";
+      if (!(path.charAt(path.length() - 1) == '/')) {
+        path = path + "/";
       }
-      path = path+"%";
+      path = path + "%";
       path = StringUtils.escapeJCRSQL(path);
       sb.append("jcr:path LIKE '").append(path).append("' AND ");
     }
-    if ( !StringUtils.isEmpty(mimeTypeSearch) ) {
+    if (!StringUtils.isEmpty(mimeTypeSearch)) {
       mimeTypeSearch = mimeTypeSearch.trim();
       mimeTypeSearch = StringUtils.escapeJCRSQL(mimeTypeSearch);
       sb.append("jcr:mimeType = '").append(mimeTypeSearch).append("' AND ");
     }
-    sb.append("CONTAINS(.,'")
-        .append(escapedQuery).append("' )");
+    sb.append("CONTAINS(.,'").append(escapedQuery).append("' )");
     if (sort != null && sort.length > 0) {
       sb.append(" ORDER BY ").append(sort[0]);
       if (sort.length > 1) {
@@ -262,21 +258,26 @@ public class RestSearchProvider implements RestProvider {
         Node n = ni.nextNode();
         Node parentNode = n.getParent();
         Map<String, Object> itemResponse = new HashMap<String, Object>();
-        itemResponse.put("path",parentNode.getPath());
+        itemResponse.put("path", parentNode.getPath());
         itemResponse.put("nodeproperties", new JCRNodeMap(parentNode, 1));
         if (JCRConstants.NT_FILE.equals(parentNode.getPrimaryNodeType()
             .getName())) {
           String mimeType = "application/octet-stream";
           String encoding = "UTF-8";
-          Property mimeTypeProperty = n.getProperty(JCRConstants.JCR_MIMETYPE);
-          if (mimeTypeProperty != null) {
-            mimeType = mimeTypeProperty.getString();
+          if (n.hasNode(JCRConstants.JCR_MIMETYPE)) {
+            Property mimeTypeProperty = n
+                .getProperty(JCRConstants.JCR_MIMETYPE);
+            if (mimeTypeProperty != null) {
+              mimeType = mimeTypeProperty.getString();
+            }
           }
-          Property contentEncoding = n.getProperty(JCRConstants.JCR_ENCODING);
-          if (contentEncoding != null) {
-            encoding = contentEncoding.getString();
+          if (n.hasNode(JCRConstants.JCR_ENCODING)) {
+            Property contentEncoding = n.getProperty(JCRConstants.JCR_ENCODING);
+            if (contentEncoding != null) {
+              encoding = contentEncoding.getString();
+            }
           }
-          if (mimeType != null && mimeType.startsWith("text")) {
+          if (mimeType != null && mimeType.startsWith("text") && n.hasNode(JCRConstants.JCR_DATA)) {
             Property p = n.getProperty(JCRConstants.JCR_DATA);
             if (p.getLength() < 10240) {
               InputStream in = null;
