@@ -249,12 +249,12 @@ public class RestSearchProvider implements RestProvider {
     long startPos = 0;
     long endPos = 0;
     try {
-      System.err.println("Skipping " + start);
+      System.err.println("Skipping " + start + " going to " + end);
       ni.skip(start);
       startPos = ni.getPosition();
       endPos = startPos;
 
-      for (int i = start; (i < end) && (ni.hasNext());) {
+      for (int i = start; (i < end) && (ni.hasNext()); i++) {
         Node n = ni.nextNode();
         Node parentNode = n.getParent();
         Map<String, Object> itemResponse = new HashMap<String, Object>();
@@ -277,7 +277,8 @@ public class RestSearchProvider implements RestProvider {
               encoding = contentEncoding.getString();
             }
           }
-          if (mimeType != null && mimeType.startsWith("text") && n.hasNode(JCRConstants.JCR_DATA)) {
+          if (mimeType != null && mimeType.startsWith("text")
+              && n.hasNode(JCRConstants.JCR_DATA)) {
             Property p = n.getProperty(JCRConstants.JCR_DATA);
             if (p.getLength() < 10240) {
               InputStream in = null;
