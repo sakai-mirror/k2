@@ -97,6 +97,7 @@ public class JCRNodeMap extends HashMap<String, Object> {
           .getString());
     }
     put("length", String.valueOf(content.getLength()));
+    
   }
 
   /**
@@ -124,6 +125,29 @@ public class JCRNodeMap extends HashMap<String, Object> {
 
         }
       }
+    }
+    if ( n.hasNode(JCRConstants.JCR_CONTENT) ) {
+      Node content = n.getNode(JCRConstants.JCR_CONTENT);
+      for (PropertyIterator pi = content.getProperties(); pi.hasNext();) {
+        Property p = pi.nextProperty();
+        String name = p.getName();
+        if (!IGNORE.contains(name)) {
+          boolean multiValue = p.getDefinition().isMultiple();
+          if (multiValue) {
+            Value[] v = p.getValues();
+            Object[] o = new String[v.length];
+            for (int i = 0; i < o.length; i++) {
+              o[i] = formatType(v[i]);
+            }
+            m.put(name, o);
+          } else {
+            Value v = p.getValue();
+            m.put(name, formatType(v));
+
+          }
+        }
+      }
+      
     }
     return m;
   }

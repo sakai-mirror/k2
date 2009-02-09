@@ -151,6 +151,13 @@ public class PopulateBaseRepository implements StartupAction {
               n.setProperty(lv[1], StringUtils.sha1Hash(lv[2]));
             }
           }
+          l = map.get("content-property");
+          if (l != null) {
+            for (String[] lv : l) {
+              Node dataNode = n.getNode(JCRConstants.JCR_CONTENT);
+              dataNode.setProperty(lv[1], lv[2]);
+            }
+          }
           l = map.get("body");
           if (l != null) {
             for (String[] lv : l) {
@@ -163,6 +170,7 @@ public class PopulateBaseRepository implements StartupAction {
               }
             }
           }
+          
           n.save();
         } else {
           LOG.info("Starting Node already exists " + path);

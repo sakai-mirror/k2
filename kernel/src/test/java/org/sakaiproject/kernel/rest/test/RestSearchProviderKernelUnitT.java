@@ -26,6 +26,10 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
 
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -41,6 +45,9 @@ import org.sakaiproject.kernel.util.StringUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -115,19 +122,19 @@ public class RestSearchProviderKernelUnitT extends BaseRestUnitT {
       new QueryPattern(new String[] { "q", "somethingthatwillnerverexist", "n",
           null, "p", null }, "\"size\":0"),
       new QueryPattern(new String[] { "q", "admin", "n", null, "p", null },
-          "\"size\":8"),
+          "\"size\":7"),
       new QueryPattern(new String[] { "q", "admin", "n", null, "p", null, "s",
-          "sakai:firstName", "s", "sakai:lastName" }, "\"size\":8"),
+          "sakai:firstName", "s", "sakai:lastName" }, "\"size\":7"),
       new QueryPattern(new String[] { "q", "admin", "n", null, "p", null, "s",
           "sakai:firstName", "s", "sakai:lastName", "path", "/xyz" }, "\"size\":0"),
       new QueryPattern(new String[] { "q", "admin", "n", null, "p", null, "s",
-          "sakai:firstName", "s", "sakai:lastName", "path", "/_private" }, "\"size\":2"),
+          "sakai:firstName", "s", "sakai:lastName", "path", "/_private" }, "\"size\":1"),
       new QueryPattern(new String[] { "q", "admin", "n", null, "p", null, "s",
-          "sakai:firstName", "s", "sakai:lastName", "path", "_private" }, "\"size\":2"),
+          "sakai:firstName", "s", "sakai:lastName", "path", "_private" }, "\"size\":1"),
       new QueryPattern(new String[] { "q", "admin", "n", null, "p", null, "s",
-          "sakai:firstName", "s", "sakai:lastName", "path", "_private/" }, "\"size\":2"),
+          "sakai:firstName", "s", "sakai:lastName", "path", "_private/" }, "\"size\":1"),
       new QueryPattern(new String[] { "q", "admin", "n", null, "p", null, "s",
-          "sakai:firstName", "s", "sakai:lastName", "path", "/_private/" }, "\"size\":2"),
+          "sakai:firstName", "s", "sakai:lastName", "path", "/_private/" }, "\"size\":1"),
       new QueryPattern(new String[] { "q", "admin", "n", null, "p", null, "s",
           "sakai:firstName", "s", "sakai:lastName", "path", "/_private/", "mimetype", "text/plain" }, "\"size\":1"),
       new QueryPattern(new String[] { "q", "admin", "n", null, "p", null, "s",
@@ -149,15 +156,6 @@ public class RestSearchProviderKernelUnitT extends BaseRestUnitT {
     KernelIntegrationBase.afterClass(shutdown);
   }
 
-  /**
-   * Patch new file with data
-   * 
-   * @throws ServletException
-   * @throws IOException
-   * @throws JCRNodeFactoryServiceException
-   * @throws RepositoryException
-   * @throws InterruptedException
-   */
   @Test
   public void testSearch() throws ServletException, IOException,
       RepositoryException, JCRNodeFactoryServiceException, InterruptedException {
@@ -196,6 +194,78 @@ public class RestSearchProviderKernelUnitT extends BaseRestUnitT {
       verifyMocks();
       resetMocks();
     }
+  }
+  @Test
+  public void testSearchSort() throws ServletException, IOException,
+      RepositoryException, JCRNodeFactoryServiceException, InterruptedException {
+    setupServices();
+    QueryPattern testQuery = new QueryPattern(new String[] { "q", "user", "n", null, "p", null, "s",
+        "sakai:firstName", "s", "sakai:lastName", "path", "/_private/", "mimetype", "text/plain" }, "\"size\":7");
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      setupAnyTimes("user1", "SESSION-21312312", baos);
+      expect(request.getMethod()).andReturn("POST").anyTimes();
+
+      expect(request.getParameter("q")).andReturn(testQuery.getParameter("q"));
+      expect(request.getParameter("n")).andReturn(testQuery.getParameter("n"));
+      expect(request.getParameter("p")).andReturn(testQuery.getParameter("p"));
+      expect(request.getParameterValues("s")).andReturn(
+          testQuery.getParameterValues("s"));
+      expect(request.getParameter("sql")).andReturn(null).anyTimes();
+      expect(request.getParameter("path")).andReturn(testQuery.getParameter("path"));
+      expect(request.getParameter("mimetype")).andReturn(testQuery.getParameter("mimetype"));
+
+      response.setContentType(RestProvider.CONTENT_TYPE);
+      expectLastCall();
+
+      replayMocks();
+
+      String[] elements = new String[] { "search" };
+
+      RestSearchProvider rsp = new RestSearchProvider(registryService,
+          jcrService, injector.getInstance(Key.get(BeanConverter.class, Names
+              .named(BeanConverter.REPOSITORY_BEANCONVETER))));
+      rsp.dispatch(elements, request, response);
+
+      String op = baos.toString(StringUtils.UTF8);
+      
+      assertTrue(op,op.indexOf(testQuery.getResponse()) > 0);
+      
+      JSONObject jo = JSONObject.fromObject(op);
+      JSONArray results = jo.getJSONArray("results");
+      assertNotNull(results);
+      assertEquals(7,results.size());
+      String prevFirstName = null;
+      String prevLastName = null;
+      for ( int i = 0; i < results.size(); i++ ) {
+        JSONObject r = results.getJSONObject(i);
+        JSONObject props = r.getJSONObject("nodeproperties");
+        System.err.println("Properties are "+props.toString());
+        props = props.getJSONObject("properties");
+        String firstName = props.getString("sakai:firstName");
+        String lastName = props.getString("sakai:lastName");
+        if ( prevFirstName == null ) {
+          prevFirstName = firstName;
+          prevLastName = lastName;
+        } else {
+          int cmp = prevFirstName.compareTo(firstName);
+          int cmp2 = prevLastName.compareTo(lastName);
+          if ( cmp > 0 ) {
+            fail("FirstName not in order "+prevFirstName+":"+firstName);
+          } else if ( cmp == 0 ) {
+            if ( cmp2 > 0 ) {
+              fail("LastName not in order "+prevLastName+":"+lastName);
+                   
+            }
+          }
+        }
+        
+      }
+      
+      
+      
+
+      verifyMocks();
+      resetMocks();
   }
 
 }

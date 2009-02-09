@@ -73,7 +73,7 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
       node.addMixin(JCRConstants.MIX_ACL);
     }
     Node resource = node.addNode(JCRConstants.JCR_CONTENT,
-        JCRConstants.NT_RESOURCE);
+        JCRConstants.NT_UNSTRUCTURED);
     resource
         .setProperty(JCRConstants.JCR_LASTMODIFIED, new GregorianCalendar());
     resource.setProperty(JCRConstants.JCR_MIMETYPE, mimeType==null?"application/octet-stream":mimeType);
