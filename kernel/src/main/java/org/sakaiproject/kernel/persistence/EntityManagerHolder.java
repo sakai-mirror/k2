@@ -29,12 +29,14 @@ import javax.persistence.EntityTransaction;
 public class EntityManagerHolder implements ThreadBound {
 
   private EntityManager entityManager;
+  private String sourceThread;
 
   /**
    * 
    */
   public EntityManagerHolder(EntityManager entityManager) {
     this.entityManager = entityManager;
+    this.sourceThread = String.valueOf(Thread.currentThread());
   }
 
   /**
@@ -61,5 +63,12 @@ public class EntityManagerHolder implements ThreadBound {
    */
   public EntityManager getEntityManager() {
     return entityManager;
+  }
+
+  /**
+   * @return
+   */
+  public String getSourceThread() {
+    return sourceThread;
   }
 }

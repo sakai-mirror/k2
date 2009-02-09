@@ -28,6 +28,8 @@ import org.sakaiproject.kernel.api.memory.Cache;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
 
+import java.util.Map.Entry;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -48,6 +50,7 @@ public class ScopedEntityManager implements EntityManager, RequiresStop {
   private ReferenceMap<String, EntityManagerHolder> entityManagerReferenceMap = new ReferenceMap<String, EntityManagerHolder>(
       ReferenceType.STRONG, ReferenceType.WEAK);
   private CacheScope scope;
+  private long nextReport = 0;
 
   @Inject
   public ScopedEntityManager(EntityManagerFactory entityManagerFactory,
@@ -88,7 +91,16 @@ public class ScopedEntityManager implements EntityManager, RequiresStop {
       cache.put(ENTITY_MANAGER, entityManagerHolder);
       entityManagerReferenceMap.put(String.valueOf(entityManagerHolder),
           entityManagerHolder);
-
+    } 
+    if ( nextReport  < System.currentTimeMillis() ) {
+      nextReport = System.currentTimeMillis()+10000L;
+      StringBuilder sb = new StringBuilder();
+      sb.append("Entity Manager List ").append(entityManagerReferenceMap.size()).append("\n");
+      for ( Entry<String, EntityManagerHolder> ehes : entityManagerReferenceMap.entrySet()) {
+        EntityManagerHolder eh = ehes.getValue();
+        sb.append("\t").append(eh.getEntityManager()).append(" on ").append(eh.getSourceThread()).append("\n");
+      }
+      System.err.println(sb.toString());
     }
     return entityManagerHolder.getEntityManager();
   }

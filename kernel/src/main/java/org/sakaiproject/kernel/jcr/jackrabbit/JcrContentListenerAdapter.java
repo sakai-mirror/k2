@@ -47,7 +47,7 @@ public class JcrContentListenerAdapter implements EventListener,
       + JCRConstants.JCR_DATA;
   private List<JcrContentListener> listeners;
   private CacheManagerService cacheManager;
-  protected boolean unbind = false;
+  protected boolean unbind = true;
 
   /**
    * @param listeners
