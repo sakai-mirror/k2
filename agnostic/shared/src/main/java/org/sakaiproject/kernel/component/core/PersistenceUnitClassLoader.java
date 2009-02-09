@@ -242,7 +242,7 @@ public class PersistenceUnitClassLoader extends ClassLoader {
     try {
         url = file.toURI().toURL();
     } catch (MalformedURLException e) {
-        LOG.error("cannot convert file to URL " + e.toString());    
+        LOG.error("cannot convert file to URL " + e.toString());
     }
     LOG.debug("URL: " + url);
     final URL urlout = url;
@@ -482,7 +482,7 @@ public class PersistenceUnitClassLoader extends ClassLoader {
   /**
    * Enumeration for handling the return from getResources of new temp URLs.
    */
-  private class UrlEnumeration implements Enumeration<URL> {
+  private static class UrlEnumeration implements Enumeration<URL> {
     private URL url;
 
     UrlEnumeration(URL url) {
