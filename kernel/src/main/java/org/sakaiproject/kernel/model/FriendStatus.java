@@ -1,8 +1,8 @@
 /*
- * Licensed to the Sakai Foundation (SF) under one
+ * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
- * regarding copyright ownership. The SF licenses this file
+ * regarding copyright ownership. The ASF licenses this file
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
@@ -15,35 +15,20 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel;
-
-import com.google.inject.Provider;
-
-import org.sakaiproject.kernel.model.FriendBean;
-
-import java.util.HashMap;
-import java.util.Map;
+package org.sakaiproject.kernel.model;
 
 /**
  * 
  */
-public class JsonClassMapProvider implements Provider<Map<String, Object>> {
-
-  private Map<String, Object> map = new HashMap<String, Object>();
-  
+public enum FriendStatus {
   /**
+   * The current user has been invited by another user.
+   */
+  INVITED(), ACCEPTED(), BLOCKED(), 
+  /**
+   * An invitation has been sent to this user, but has not yet been accepted.
    * 
    */
-  public JsonClassMapProvider() {
-    map.put("friends", FriendBean.class);
-  }
-
-  /**
-   * {@inheritDoc}
-   * @see com.google.inject.Provider#get()
-   */
-  public Map<String, Object> get() {
-    return map;
-  }
+  PENDING();
 
 }

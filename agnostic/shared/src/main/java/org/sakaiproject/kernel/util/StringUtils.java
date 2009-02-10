@@ -228,4 +228,21 @@ public class StringUtils {
     return sb.toString();
   }
 
+  /**
+   * Removes all space chars, usefull for test comparisons, not much use elsewhere.
+   * @param after
+   * @return
+   */
+  public static String stripBlanks(String before) {
+    char[] cb = before.toCharArray();
+    char[] ca = new char[cb.length];
+    int i = 0;
+    for ( char c: cb) {
+      if (!Character.isSpaceChar(c)) {
+        ca[i++] = c;
+      }
+    }
+    return new String(ca,0,i);
+  }
+
 }
