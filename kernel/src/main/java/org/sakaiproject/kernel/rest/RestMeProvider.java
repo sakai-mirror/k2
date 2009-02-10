@@ -74,8 +74,7 @@ public class RestMeProvider implements RestProvider {
       UserFactoryService userFactoryService,
       UserLocale userLocale,
       @Named(BeanConverter.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
-      UserEnvironmentResolverService userEnvironmentResolverService
-      ) {
+      UserEnvironmentResolverService userEnvironmentResolverService) {
     Registry<String, RestProvider> registry = registryService
         .getRegistry(RestProvider.REST_REGISTRY);
     registry.add(this);
@@ -123,11 +122,13 @@ public class RestMeProvider implements RestProvider {
         .addHeader("none",
             "The service neither looks for headers nor sets any non standatd headers");
     DESCRIPTION
-        .addURLTemplate("me",
+        .addURLTemplate(
+            "me",
             "The service is selected by /rest/me and provides the me json for the current user.");
     DESCRIPTION
-    .addURLTemplate("me/<userid>",
-        "The service is selected by /rest/me and provides the a reduced me json response for the specified user.");
+        .addURLTemplate(
+            "me/<userid>",
+            "The service is selected by /rest/me and provides the a reduced me json response for the specified user.");
     DESCRIPTION
         .addResponse(
             "200",
@@ -168,11 +169,17 @@ public class RestMeProvider implements RestProvider {
 
   /**
    * Output another user, limited information set.
-   * @param elements the path elements of the request.
-   * @param request the request object.
-   * @param response the response object.
-   * @throws IOException if there was a problem sending the output.
-   * @throws RepositoryException the there was a problem with the repository.
+   * 
+   * @param elements
+   *          the path elements of the request.
+   * @param request
+   *          the request object.
+   * @param response
+   *          the response object.
+   * @throws IOException
+   *           if there was a problem sending the output.
+   * @throws RepositoryException
+   *           the there was a problem with the repository.
    */
   private void doOtherUser(String[] elements, HttpServletRequest request,
       HttpServletResponse response) throws IOException, RepositoryException {
@@ -194,34 +201,39 @@ public class RestMeProvider implements RestProvider {
 
   /**
    * Output this user.
-   * @param elements the request path elements.
-   * @param request the request object.
-   * @param response the response object.
-   * @throws IOException 
-   * @throws JCRNodeFactoryServiceException 
-   * @throws RepositoryException 
+   * 
+   * @param elements
+   *          the request path elements.
+   * @param request
+   *          the request object.
+   * @param response
+   *          the response object.
+   * @throws IOException
+   * @throws JCRNodeFactoryServiceException
+   * @throws RepositoryException
    */
-  public void doUser(String[] elements, HttpServletRequest request, HttpServletResponse response) throws RepositoryException, JCRNodeFactoryServiceException, IOException {
-      Session session = sessionManagerService.getCurrentSession();
-      User user = session.getUser();
+  public void doUser(String[] elements, HttpServletRequest request,
+      HttpServletResponse response) throws RepositoryException,
+      JCRNodeFactoryServiceException, IOException {
+    Session session = sessionManagerService.getCurrentSession();
+    User user = session.getUser();
 
-      System.err.println("Got user as " + user);
+    System.err.println("Got user as " + user);
 
-      Locale locale = userEnvironmentResolverService.getUserLocale(request
-          .getLocale(), session);
-      if (user == null || user.getUuid() == null
-          || "anon".equals(user.getUuid())) {
-        sendOutput(response, locale, new AnonUser(), ANON_UE_FILE);
+    Locale locale = userEnvironmentResolverService.getUserLocale(request
+        .getLocale(), session);
+    if (user == null || user.getUuid() == null || "anon".equals(user.getUuid())) {
+      sendOutput(response, locale, new AnonUser(), ANON_UE_FILE);
+    } else {
+      UserEnvironment userEnvironment = userEnvironmentResolverService
+          .resolve(user);
+      if (userEnvironment == null
+          || userEnvironment instanceof NullUserEnvironment) {
+        sendDefaultUserOutput(response, locale, user);
       } else {
-        UserEnvironment userEnvironment = userEnvironmentResolverService
-            .resolve(user);
-        if (userEnvironment == null
-            || userEnvironment instanceof NullUserEnvironment) {
-          sendDefaultUserOutput(response, locale, user);
-        } else {
-          sendOutput(response, locale, userEnvironment.getUser(), userEnvironment);
-        }
+        sendOutput(response, locale, userEnvironment.getUser(), userEnvironment);
       }
+    }
   }
 
   /**
@@ -232,8 +244,8 @@ public class RestMeProvider implements RestProvider {
    * @throws IOException
    */
   private void sendOutput(HttpServletResponse response, Locale locale,
-      User user, UserEnvironment userEnvironment)
-      throws RepositoryException, JCRNodeFactoryServiceException, IOException {
+      User user, UserEnvironment userEnvironment) throws RepositoryException,
+      JCRNodeFactoryServiceException, IOException {
     response.setContentType(RestProvider.CONTENT_TYPE);
     ServletOutputStream outputStream = response.getOutputStream();
     outputStream.print("{ \"locale\" :");
@@ -282,11 +294,17 @@ public class RestMeProvider implements RestProvider {
     InputStream in = null;
     try {
       in = jcrNodeFactoryService.getInputStream(path);
-      outputStream.print(", \"");
-      outputStream.print(key);
-      outputStream.print("\" :");
-      IOUtils.stream(in, outputStream);
-    } catch (JCRNodeFactoryServiceException ex) {
+      if (in == null) {
+        outputStream.print(", \"");
+        outputStream.print(key);
+        outputStream.print("\" : {}");
+      } else {
+        outputStream.print(", \"");
+        outputStream.print(key);
+        outputStream.print("\" :");
+        IOUtils.stream(in, outputStream);
+      }
+    } catch (Exception ex) {
       outputStream.print(", \"");
       outputStream.print(key);
       outputStream.print("\" : {}");
@@ -306,8 +324,8 @@ public class RestMeProvider implements RestProvider {
    * @throws IOException
    */
   private void sendDefaultUserOutput(HttpServletResponse response,
-      Locale locale, User user)
-      throws RepositoryException, JCRNodeFactoryServiceException, IOException {
+      Locale locale, User user) throws RepositoryException,
+      JCRNodeFactoryServiceException, IOException {
     response.setContentType(RestProvider.CONTENT_TYPE);
     ServletOutputStream outputStream = response.getOutputStream();
     outputStream.print("{ \"locale\" :");
@@ -330,14 +348,14 @@ public class RestMeProvider implements RestProvider {
    * @throws RepositoryException
    * @throws IOException
    */
-  private void outputUserProfile(String uuid,
-      ServletOutputStream outputStream) throws IOException, RepositoryException {
+  private void outputUserProfile(String uuid, ServletOutputStream outputStream)
+      throws IOException, RepositoryException {
     String path = userFactoryService.getUserProfilePath(uuid);
     sendFile("profile", path, outputStream);
   }
 
-  private void outputPathPrefix(String uuid,
-      ServletOutputStream outputStream) throws IOException {
+  private void outputPathPrefix(String uuid, ServletOutputStream outputStream)
+      throws IOException {
     String pathPrefix = userFactoryService.getUserPathPrefix(uuid);
     outputStream.print(", \"userStoragePrefix\":\"");
     outputStream.print(pathPrefix);
