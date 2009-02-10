@@ -22,6 +22,7 @@ import com.google.inject.name.Named;
 
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
+import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.rest.RestProvider;
@@ -392,7 +393,7 @@ public class RestUserProvider implements RestProvider {
       bais = new ByteArrayInputStream(profile.getBytes("UTF-8"));
       Node profileNode = jcrNodeFactoryService.setInputStream(
           userProfilePath, bais, RestProvider.CONTENT_TYPE);
-      Node dataNode = profileNode.getNode("jcr:data");
+      Node dataNode = profileNode.getNode(JCRConstants.JCR_CONTENT);
       dataNode.setProperty("sakai:firstName", firstName);
       dataNode.setProperty("sakai:lastName", lastName);
       dataNode.setProperty("sakai:email", email);
