@@ -145,7 +145,8 @@ public class RestUserProvider implements RestProvider {
             && elements[1].trim().length() > 0) {
           handleUserExists(elements[1].trim(), response);
         } else {
-          throw new RestServiceFaultException(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+          throw new RestServiceFaultException(
+              HttpServletResponse.SC_METHOD_NOT_ALLOWED);
         }
       }
     } catch (SecurityException ex) {
@@ -153,7 +154,7 @@ public class RestUserProvider implements RestProvider {
     } catch (RestServiceFaultException ex) {
       throw ex;
     } catch (Exception ex) {
-      throw new RestServiceFaultException(ex.getMessage(),ex);
+      throw new RestServiceFaultException(ex.getMessage(), ex);
     }
   }
 
@@ -256,7 +257,7 @@ public class RestUserProvider implements RestProvider {
     if (!superUser) {
       if (passwordOld == null) {
         throw new RestServiceFaultException(HttpServletResponse.SC_FORBIDDEN,
-                "You must specify the old password in order to change the password.");
+            "You must specify the old password in order to change the password.");
       }
       // set the password
       Property storedPassword = userEnvNode
@@ -266,8 +267,8 @@ public class RestUserProvider implements RestProvider {
         String oldPasswordHash = StringUtils.sha1Hash(passwordOld);
         if (storedPasswordString != null) {
           if (!oldPasswordHash.equals(storedPasswordString)) {
-            throw new RestServiceFaultException(HttpServletResponse.SC_CONFLICT,
-                "Old Password does not match ");
+            throw new RestServiceFaultException(
+                HttpServletResponse.SC_CONFLICT, "Old Password does not match ");
           }
         }
       }
@@ -343,9 +344,10 @@ public class RestUserProvider implements RestProvider {
 
       String userEnvironmentPath = userFactoryService.getUserEnvPath(u
           .getUuid());
-      
-      String userProfilePath = userFactoryService.getUserProfilePath(u.getUuid());
-      
+
+      String userProfilePath = userFactoryService.getUserProfilePath(u
+          .getUuid());
+
       String userEnvironmentTemplate = userFactoryService
           .getUserEnvTemplate(userType);
 
@@ -353,7 +355,8 @@ public class RestUserProvider implements RestProvider {
       templateInputStream = jcrNodeFactoryService
           .getInputStream(userEnvironmentTemplate);
       String template = IOUtils.readFully(templateInputStream, "UTF-8");
-      System.err.println("Loading UE from "+userEnvironmentTemplate+" as "+template);
+      System.err.println("Loading UE from " + userEnvironmentTemplate + " as "
+          + template);
       UserEnvironmentBean userEnvironmentBean = beanConverter.convertToObject(
           template, UserEnvironmentBean.class);
 
@@ -366,7 +369,8 @@ public class RestUserProvider implements RestProvider {
 
       // save the template
       String userEnv = beanConverter.convertToString(userEnvironmentBean);
-      System.err.println("Saving UE to "+userEnvironmentPath+" as "+userEnv);
+      System.err.println("Saving UE to " + userEnvironmentPath + " as "
+          + userEnv);
       bais = new ByteArrayInputStream(userEnv.getBytes("UTF-8"));
       Node userEnvNode = jcrNodeFactoryService.setInputStream(
           userEnvironmentPath, bais, RestProvider.CONTENT_TYPE);
@@ -379,26 +383,34 @@ public class RestUserProvider implements RestProvider {
       userEnvNode.save();
       templateInputStream.close();
       bais.close();
-      
+
       templateInputStream = jcrNodeFactoryService
-      .getInputStream(userFactoryService.getUserProfileTempate(userType));    
+          .getInputStream(userFactoryService.getUserProfileTempate(userType));
       template = IOUtils.readFully(templateInputStream, "UTF-8");
-      System.err.println("Loading Profile from "+userFactoryService.getUserProfileTempate(userType)+" as "+template);
+      System.err.println("Loading Profile from "
+          + userFactoryService.getUserProfileTempate(userType) + " as "
+          + template);
       Map<String, Object> profileMap = beanConverter.convertToMap(template);
       profileMap.put("firstName", firstName);
       profileMap.put("lastName", lastName);
       profileMap.put("email", email);
       String profile = beanConverter.convertToString(profileMap);
-      System.err.println("Saving Profile to "+userProfilePath+" as "+profile);
+      System.err.println("Saving Profile to " + userProfilePath + " as "
+          + profile);
       bais = new ByteArrayInputStream(profile.getBytes("UTF-8"));
-      Node profileNode = jcrNodeFactoryService.setInputStream(
-          userProfilePath, bais, RestProvider.CONTENT_TYPE);
-      Node dataNode = profileNode.getNode(JCRConstants.JCR_CONTENT);
-      dataNode.setProperty("sakai:firstName", firstName);
-      dataNode.setProperty("sakai:lastName", lastName);
-      dataNode.setProperty("sakai:email", email);
+      Node profileNode = jcrNodeFactoryService.setInputStream(userProfilePath,
+          bais, RestProvider.CONTENT_TYPE);
+      if (profileNode.hasNode(JCRConstants.JCR_CONTENT)) {
+        Node dataNode = profileNode.getNode(JCRConstants.JCR_CONTENT);
+        dataNode.setProperty("sakai:firstName", firstName);
+        dataNode.setProperty("sakai:lastName", lastName);
+        dataNode.setProperty("sakai:email", email);
+      } else {
+        throw new RestServiceFaultException(
+            HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+            "The nt:file node does not have a jcr:content child, the is not as per the JSR-170 specification, unable to create users");
+      }
       profileNode.save();
-      
 
       Map<String, Object> r = new HashMap<String, Object>();
       r.put("response", "OK");
