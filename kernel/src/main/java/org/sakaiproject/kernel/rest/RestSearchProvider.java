@@ -264,21 +264,21 @@ public class RestSearchProvider implements RestProvider {
             .getName())) {
           String mimeType = "application/octet-stream";
           String encoding = "UTF-8";
-          if (n.hasNode(JCRConstants.JCR_MIMETYPE)) {
+          if (n.hasProperty(JCRConstants.JCR_MIMETYPE)) {
             Property mimeTypeProperty = n
                 .getProperty(JCRConstants.JCR_MIMETYPE);
             if (mimeTypeProperty != null) {
               mimeType = mimeTypeProperty.getString();
             }
           }
-          if (n.hasNode(JCRConstants.JCR_ENCODING)) {
+          if (n.hasProperty(JCRConstants.JCR_ENCODING)) {
             Property contentEncoding = n.getProperty(JCRConstants.JCR_ENCODING);
             if (contentEncoding != null) {
               encoding = contentEncoding.getString();
             }
           }
           if (mimeType != null && mimeType.startsWith("text")
-              && n.hasNode(JCRConstants.JCR_DATA)) {
+              && n.hasProperty(JCRConstants.JCR_DATA)) {
             Property p = n.getProperty(JCRConstants.JCR_DATA);
             if (p.getLength() < 10240) {
               InputStream in = null;
