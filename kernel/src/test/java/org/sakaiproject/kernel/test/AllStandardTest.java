@@ -23,6 +23,7 @@ import org.junit.runners.Suite.SuiteClasses;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.test.JCRIdPwEvidenceUT;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.test.SakaiUserPrincipalUT;
 import org.sakaiproject.kernel.jcr.jackrabbit.test.JCRAnonymousPrincipalUT;
+import org.sakaiproject.kernel.model.test.FriendsBeanUT;
 import org.sakaiproject.kernel.model.test.GroupBeanUT;
 import org.sakaiproject.kernel.model.test.UserEnvironmentBeanUT;
 import org.sakaiproject.kernel.persistence.DataSourceServiceUT;
@@ -42,8 +43,8 @@ import org.sakaiproject.kernel.webapp.test.SakaiServletResponseUT;
     ExceptionUT.class, GroupBeanUT.class, BeanJsonLibConverterUT.class,
     UserObjectUT.class, SakaiServletResponseUT.class,
     UserEnvironmentBeanUT.class, JCRIdPwEvidenceUT.class,
-    RegistryServiceUT.class, DataSourceServiceUT.class,
-    UserLocaleUT.class, SakaiUserPrincipalUT.class,
-    JCRAnonymousPrincipalUT.class, RestAuthenticationProviderUT.class })
+    RegistryServiceUT.class, DataSourceServiceUT.class, UserLocaleUT.class,
+    SakaiUserPrincipalUT.class, JCRAnonymousPrincipalUT.class,
+    RestAuthenticationProviderUT.class, FriendsBeanUT.class })
 public class AllStandardTest {
 }

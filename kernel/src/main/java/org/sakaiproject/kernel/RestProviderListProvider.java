@@ -23,6 +23,7 @@ import com.google.inject.Provider;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.rest.DefaultRestProvider;
 import org.sakaiproject.kernel.rest.RestAuthenticationProvider;
+import org.sakaiproject.kernel.rest.RestFriendsProvider;
 import org.sakaiproject.kernel.rest.RestLogoutProvider;
 import org.sakaiproject.kernel.rest.RestMeProvider;
 import org.sakaiproject.kernel.rest.RestMySitesProvider;
@@ -52,7 +53,8 @@ public class RestProviderListProvider implements Provider<List<RestProvider>> {
       RestUserProvider restUserProvider,
       RestMySitesProvider restMySitesProvider,
       RestPatchProvider restPatchProvider,
-      RestSearchProvider restSearchProvider) {
+      RestSearchProvider restSearchProvider,
+      RestFriendsProvider restFriendsProvider) {
     list.add(restAuthenticationProvider);
     list.add(defaultRestProvider);
     list.add(restMeProvider);
@@ -62,6 +64,7 @@ public class RestProviderListProvider implements Provider<List<RestProvider>> {
     list.add(restMySitesProvider);
     list.add(restPatchProvider);
     list.add(restSearchProvider);
+    list.add(restFriendsProvider);
   }
 
   /**

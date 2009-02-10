@@ -41,13 +41,14 @@ public class FriendBean {
     this.properties = new HashMap<String, String>();
   }
   /**
+   * @param friendStatus 
    * 
    */
-  public FriendBean(String personUuid, String friendUuid) {
+  public FriendBean(String personUuid, String friendUuid, FriendStatus friendStatus) {
     this.personUuid = personUuid;
     this.friendUuid = friendUuid;
     this.lastUpdate = System.currentTimeMillis();
-    this.status = FriendStatus.INVITED;
+    this.status = friendStatus;
     this.properties = new HashMap<String, String>();
   }
 
@@ -113,5 +114,18 @@ public class FriendBean {
    */
   public Map<String, String> getProperties() {
     return Maps.newHashMap(properties);
+  }
+  /**
+   * @return
+   */
+  public boolean isInState(FriendStatus friendStatus) {
+    return (status == friendStatus);
+  }
+  /**
+   * @param accepted
+   */
+  public void updateStatus(FriendStatus newStatus) {
+    lastUpdate = System.currentTimeMillis();
+    status = newStatus;
   }
 }

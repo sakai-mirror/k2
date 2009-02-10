@@ -18,14 +18,13 @@
 package org.sakaiproject.kernel.serialization.json.test;
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-
-import net.sf.json.JSONObject;
 
 import org.junit.After;
 import org.junit.Before;

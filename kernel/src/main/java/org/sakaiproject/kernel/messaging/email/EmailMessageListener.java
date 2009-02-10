@@ -229,6 +229,7 @@ public class EmailMessageListener implements MessageListener {
    */
   private MimeBodyPart createAttachmentPart(Attachment attachment)
       throws MessagingException {
+    // looks like this isnt used , probable bug.
     MimeBodyPart attachPart = new MimeBodyPart();
     FileDataSource source = new FileDataSource(attachment.getFile());
     attachPart = new MimeBodyPart();

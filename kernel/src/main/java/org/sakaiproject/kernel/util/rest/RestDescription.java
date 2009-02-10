@@ -17,9 +17,11 @@
  */
 package org.sakaiproject.kernel.util.rest;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 import org.sakaiproject.kernel.util.XmlUtils;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -97,7 +99,7 @@ public class RestDescription {
   private <K, V> Map<K, V> getMap(Map<String, Object> source, String name) {
     Map<K, V> m = (Map<K, V>) source.get(name);
     if (m == null) {
-      m = new HashMap<K, V>();
+      m = Maps.newLinkedHashMap();
       source.put(name, m);
     }
     return m;
@@ -112,7 +114,7 @@ public class RestDescription {
   private <T> List<T> getList(Map<String, Object> source, String name) {
     List<T> m = (List<T>) source.get(name);
     if (m == null) {
-      m = new ArrayList<T>();
+      m = Lists.newArrayList();
       source.put(name, m);
     }
     return m;

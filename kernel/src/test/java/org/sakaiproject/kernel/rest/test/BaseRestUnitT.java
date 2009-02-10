@@ -67,6 +67,7 @@ public class BaseRestUnitT {
   protected JCRNodeFactoryService jcrNodeFactoryService;
   protected JCRService jcrService;
 
+
   /**
    * Set up the services and mocks.
    */
@@ -125,6 +126,7 @@ public class BaseRestUnitT {
       final ByteArrayOutputStream baos) throws IOException {
     User user = new InternalUser(username); // this is a pre-loaded user.
 
+    expect(request.getRemoteUser()).andReturn(user.getUuid()).anyTimes();
     expect(request.getAttribute("_no_session")).andReturn(null).anyTimes();
     expect(request.getSession(true)).andReturn(session).anyTimes();
     expect(request.getAttribute("_uuid")).andReturn(null).anyTimes();

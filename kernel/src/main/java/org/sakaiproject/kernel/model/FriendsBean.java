@@ -18,9 +18,10 @@
 package org.sakaiproject.kernel.model;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -28,19 +29,20 @@ import java.util.List;
 public class FriendsBean {
 
   private String uuid;
-  private List<FriendBean> friends;
+  private Map<String, FriendBean> friends;
 
   /**
    * 
    */
   public FriendsBean() {
-    friends = new ArrayList<FriendBean>();
+    friends = Maps.newLinkedHashMap();
   }
 
   /**
    * @param string
    */
   public FriendsBean(String uuid) {
+    friends = Maps.newLinkedHashMap();
     this.uuid = uuid;
   }
 
@@ -63,7 +65,7 @@ public class FriendsBean {
    * @return the friends
    */
   public List<FriendBean> getFriends() {
-    return Lists.newArrayList(friends);
+    return Lists.newArrayList(friends.values());
   }
 
   /**
@@ -71,16 +73,40 @@ public class FriendsBean {
    *          the friends to set
    */
   public void setFriends(List<FriendBean> friends) {
-    this.friends = Lists.newArrayList(friends);
+    Map<String, FriendBean> newFriends = Maps.newLinkedHashMap();
+    for ( FriendBean fb : friends ) {
+      newFriends.put(fb.getFriendUuid(), fb);
+    }
+    this.friends = newFriends;
   }
 
   /**
    * @param friendBean
    */
   public void addFriend(FriendBean friendBean) {
-    if (friends == null) {
-      friends = Lists.newArrayList();
-    }
-    friends.add(friendBean);
+    friends.put(friendBean.getFriendUuid(),friendBean);
+  }
+
+  /**
+   * @param friendUuid
+   */
+  public void removeFriend(String friendUuid) {
+    friends.remove(friendUuid);
+  }
+
+  /**
+   * @param friendUuid
+   * @return
+   */
+  public boolean hasFriend(String friendUuid) {
+    return friends.containsKey(friendUuid);
+  }
+
+  /**
+   * @param friendUuid
+   * @return
+   */
+  public FriendBean getFriend(String friendUuid) {
+    return friends.get(friendUuid);
   }
 }

@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.sakaiproject.kernel.model.FriendBean;
+import org.sakaiproject.kernel.model.FriendStatus;
 import org.sakaiproject.kernel.model.FriendsBean;
 import org.sakaiproject.kernel.serialization.json.BeanJsonLibConverter;
 import org.sakaiproject.kernel.util.ResourceLoader;
@@ -68,13 +69,13 @@ public class FriendsBeanUT {
         .getInstance(BeanJsonLibConverter.class);
 
     FriendsBean fb = new FriendsBean("person1");
-    fb.addFriend(new FriendBean("person1", "person2"));
-    fb.addFriend(new FriendBean("person1", "person3"));
-    fb.addFriend(new FriendBean("person1", "person4"));
-    fb.addFriend(new FriendBean("person1", "person5"));
-    fb.addFriend(new FriendBean("person1", "person6"));
-    fb.addFriend(new FriendBean("person1", "person7"));
-    fb.addFriend(new FriendBean("person1", "person8"));
+    fb.addFriend(new FriendBean("person1", "person2", FriendStatus.INVITED));
+    fb.addFriend(new FriendBean("person1", "person3", FriendStatus.ACCEPTED));
+    fb.addFriend(new FriendBean("person1", "person4", FriendStatus.BLOCKED));
+    fb.addFriend(new FriendBean("person1", "person5", FriendStatus.PENDING));
+    fb.addFriend(new FriendBean("person1", "person6", FriendStatus.INVITED));
+    fb.addFriend(new FriendBean("person1", "person7", FriendStatus.INVITED));
+    fb.addFriend(new FriendBean("person1", "person8", FriendStatus.INVITED));
     String json = converter.convertToString(fb);
     LOG.info("Friends JSON " + json);
     FriendsBean friendsBean = converter
