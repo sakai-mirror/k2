@@ -175,7 +175,7 @@ public class MultipartStream {
      * A byte sequence that marks the end of <code>header-part</code>
      * (<code>CRLFCRLF</code>).
      */
-    protected static final byte[] HEADER_SEPARATOR = {
+    static final byte[] HEADER_SEPARATOR = {
         CR, LF, CR, LF };
 
 
@@ -183,7 +183,7 @@ public class MultipartStream {
      * A byte sequence that that follows a delimiter that will be
      * followed by an encapsulation (<code>CRLF</code>).
      */
-    protected static final byte[] FIELD_SEPARATOR = {
+    static final byte[] FIELD_SEPARATOR = {
         CR, LF};
 
 
@@ -191,14 +191,14 @@ public class MultipartStream {
      * A byte sequence that that follows a delimiter of the last
      * encapsulation in the stream (<code>--</code>).
      */
-    protected static final byte[] STREAM_TERMINATOR = {
+    static final byte[] STREAM_TERMINATOR = {
         DASH, DASH};
 
 
     /**
      * A byte sequence that precedes a boundary (<code>CRLF--</code>).
      */
-    protected static final byte[] BOUNDARY_PREFIX = {
+    static final byte[] BOUNDARY_PREFIX = {
         CR, LF, DASH, DASH};
 
 

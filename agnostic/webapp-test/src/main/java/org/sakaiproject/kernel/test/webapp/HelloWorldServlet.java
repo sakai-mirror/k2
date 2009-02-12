@@ -90,7 +90,7 @@ public class HelloWorldServlet extends HttpServlet {
   public static final String DEPLOYED_URL = "/hello";
   public static final String REQUEST_URL = SERVER_URL + DEPLOYED_URL;
   public static final String RESPONSE = "hello";
-  private Kernel kernel;
+  private transient Kernel kernel;
 
   /**
    * @see javax.servlet.GenericServlet#init(javax.servlet.ServletConfig)

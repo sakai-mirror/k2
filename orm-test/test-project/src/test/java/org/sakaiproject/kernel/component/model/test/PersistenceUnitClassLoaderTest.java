@@ -33,13 +33,9 @@ import org.sakaiproject.kernel.component.core.SharedClassloaderArtifact;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Enumeration;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -66,10 +62,25 @@ public class PersistenceUnitClassLoaderTest {
     final Maven2ArtifactResolver dependencyResolver = new Maven2ArtifactResolver();
     kernel = new KernelImpl();
 
-    scl = new SharedClassLoader(prs, dependencyResolver,
-        new SharedClassloaderArtifact(), kernel);
+    scl = AccessController
+        .doPrivileged(new PrivilegedAction<SharedClassLoader>() {
 
-    pucl = new PersistenceUnitClassLoader(scl);
+          public SharedClassLoader run() {
+            return new SharedClassLoader(prs, dependencyResolver,
+                new SharedClassloaderArtifact(), kernel);
+
+          }
+
+        });
+
+    pucl = AccessController
+        .doPrivileged(new PrivilegedAction<PersistenceUnitClassLoader>() {
+
+          public PersistenceUnitClassLoader run() {
+            return new PersistenceUnitClassLoader(scl);
+          }
+
+        });
 
     docFactory = DocumentBuilderFactory.newInstance();
     builder = docFactory.newDocumentBuilder();
@@ -96,7 +107,7 @@ public class PersistenceUnitClassLoaderTest {
   /**
    * Check that the classloader returns more than one instance of orm.xml when
    * using the non-merging classloader.
-   *
+   * 
    * @throws Exception
    */
   @Test
@@ -116,8 +127,8 @@ public class PersistenceUnitClassLoaderTest {
   /**
    * Check that the classloader returns only one instance of persistence.xml
    * when using the merging classloader.
-   *
-   *
+   * 
+   * 
    * @throws Exception
    */
   @Test
@@ -137,7 +148,7 @@ public class PersistenceUnitClassLoaderTest {
   /**
    * Check that the classloader returns only one instance of orm.xml when using
    * the merging classloader.
-   *
+   * 
    * @throws Exception
    */
   @Test
@@ -157,7 +168,7 @@ public class PersistenceUnitClassLoaderTest {
   /**
    * Check that the persistence.xml returned from the merging classloader has
    * some expected elements from non-kernel persistence.xml files.
-   *
+   * 
    * @throws Exception
    */
   @Test
@@ -178,7 +189,7 @@ public class PersistenceUnitClassLoaderTest {
         XPathConstants.NODESET);
     // this should be 2 but will need to change if class nodes are added
     // persistence.xml of kernel
-    assertTrue(nodes.getLength()>2);
+    assertTrue(nodes.getLength() > 2);
 
     final XPathExpression XPATH_MAPPING_TEXT = XPATH
         .compile("//persistence/persistence-unit/mapping-file/text()");
@@ -191,7 +202,7 @@ public class PersistenceUnitClassLoaderTest {
   /**
    * Check that the orm.xml returned from the merging classloader has some
    * expected elements from non-kernel orm.xml files.
-   *
+   * 
    * @throws Exception
    */
   @Test
@@ -217,21 +228,17 @@ public class PersistenceUnitClassLoaderTest {
   /**
    * Prints out the file located at the provided URL. Used for visually checking
    * the merged xml files.
-   *
+   * 
    * @param url
    * @throws FileNotFoundException
    * @throws URISyntaxException
    * @throws IOException
    */
-  private void printFile(URL url) throws FileNotFoundException,
-      URISyntaxException, IOException {
-    BufferedReader br = new BufferedReader(
-        new FileReader(new File(url.toURI())));
-    StringBuilder sb = new StringBuilder();
-    while (br.ready()) {
-      sb.append(br.readLine()).append("\n");
-    }
-    br.close();
-    LOG.info(sb);
-  }
+  /*
+   * private void printFile(URL url) throws FileNotFoundException,
+   * URISyntaxException, IOException { BufferedReader br = new BufferedReader(
+   * new FileReader(new File(url.toURI()))); StringBuilder sb = new
+   * StringBuilder(); while (br.ready()) {
+   * sb.append(br.readLine()).append("\n"); } br.close(); LOG.info(sb); }
+   */
 }

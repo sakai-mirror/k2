@@ -67,6 +67,9 @@ public class SakaiLocatorFactory implements DavLocatorFactory {
     } else {
       resourcePath = Text.unescape(href);
     }
+    if ( prefix == null ) {
+      prefix = "";
+    }
 
     return new SakaiResourceLocator(prefix, workspaceName, resourcePath, this);
   }

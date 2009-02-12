@@ -51,8 +51,8 @@ public class SakaiWebDavServlet extends SimpleWebdavServlet {
   private static final long serialVersionUID = 1L;
   private static final Log LOG = LogFactory.getLog(SakaiWebDavServlet.class);
   private static final String DEFAULT_FILTER = ".DS_Store";
-  private Repository repository;
-  private JCRService jcrService;
+  private transient Repository repository;
+  private transient JCRService jcrService;
   private Map<String, String> filterElement = new HashMap<String, String>();
 
   @Override
@@ -120,9 +120,9 @@ public class SakaiWebDavServlet extends SimpleWebdavServlet {
 
   }
 
-  private DavLocatorFactory locatorFactory;
+  private transient DavLocatorFactory locatorFactory;
 
-  private SessionProvider sessionProvider;
+  private transient SessionProvider sessionProvider;
 
   // ---------- SimpleWebdavServlet overwrites -------------------------------
 

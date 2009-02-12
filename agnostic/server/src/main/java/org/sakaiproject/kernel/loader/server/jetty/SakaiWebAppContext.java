@@ -17,6 +17,8 @@
  */
 package org.sakaiproject.kernel.loader.server.jetty;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mortbay.jetty.webapp.WebAppClassLoader;
@@ -29,6 +31,9 @@ import org.sakaiproject.kernel.loader.server.SwitchedClassLoader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.AccessControlException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 /**
  *
@@ -45,7 +50,8 @@ public class SakaiWebAppContext extends WebAppContext {
    * @throws IOException
    * 
    */
-  public SakaiWebAppContext(ClassLoader containerClassLoader) throws CommonObjectConfigurationException, IOException {
+  public SakaiWebAppContext(ClassLoader containerClassLoader)
+      throws CommonObjectConfigurationException, IOException {
     this.containerClassLoader = containerClassLoader;
   }
 
@@ -55,16 +61,26 @@ public class SakaiWebAppContext extends WebAppContext {
    * @see org.mortbay.jetty.handler.ContextHandler#getClassLoader()
    */
   @Override
+  @SuppressWarnings(value = "DC_DOUBLECHECK", justification = "Double checking in this instance avoids excessive use of the sunchronized lock as the variable is immutable once set")
   public ClassLoader getClassLoader() {
     if (webappClassLoader == null) {
       synchronized (lock) {
         if (webappClassLoader == null) {
           try {
 
-            CommonObjectManager com = new CommonObjectManager("sharedclassloader");
-            ClassLoader cl = com.getManagedObject();
-            parentClassloader = new SwitchedClassLoader(new URL[]{}, cl, containerClassLoader);
-            
+            CommonObjectManager com = new CommonObjectManager(
+                "sharedclassloader");
+            final ClassLoader cl = com.getManagedObject();
+            parentClassloader = AccessController
+                .doPrivileged(new PrivilegedAction<SwitchedClassLoader>() {
+
+                  public SwitchedClassLoader run() {
+                    return new SwitchedClassLoader(new URL[] {}, cl,
+                        containerClassLoader);
+                  }
+
+                });
+
             LOG.info("Got Classloader fromm JMX as " + parentClassloader + "("
                 + parentClassloader.getClass() + ")");
             if (LOG.isDebugEnabled()) {
@@ -76,11 +92,22 @@ public class SakaiWebAppContext extends WebAppContext {
               }
             }
 
-            webappClassLoader = new WebAppClassLoader(parentClassloader, this);
+            webappClassLoader = AccessController
+                .doPrivileged(new PrivilegedAction<WebAppClassLoader>() {
+
+                  public WebAppClassLoader run() {
+                    try {
+                      return new WebAppClassLoader(parentClassloader,
+                          SakaiWebAppContext.this);
+                    } catch (IOException e) {
+                      throw new AccessControlException(
+                          "Unable to start classloader cause:" + e.getMessage());
+                    }
+                  }
+
+                });
             super.setClassLoader(webappClassLoader);
           } catch (CommonObjectConfigurationException e) {
-            LOG.error(e);
-          } catch (IOException e) {
             LOG.error(e);
           }
         }
@@ -88,19 +115,21 @@ public class SakaiWebAppContext extends WebAppContext {
     }
     return webappClassLoader;
   }
-  
-  /* (non-Javadoc)
+
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.mortbay.jetty.webapp.WebAppContext#setWar(java.lang.String)
    */
   @Override
   public void setWar(String war) {
     try {
       Resource r = Resource.newResource(war);
-      LOG.info("Resource "+r);
+      LOG.info("Resource " + r);
     } catch (MalformedURLException e) {
-      LOG.info("Resource Error "+e.getMessage(),e);
+      LOG.info("Resource Error " + e.getMessage(), e);
     } catch (IOException e) {
-      LOG.info("Resource Error "+e.getMessage(),e);
+      LOG.info("Resource Error " + e.getMessage(), e);
     }
     super.setWar(war);
   }

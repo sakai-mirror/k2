@@ -26,7 +26,7 @@ import org.apache.commons.fileupload.sdata.servlet.ServletFileUpload;
 /** Tests the progress listener.
  */
 public class ProgressListenerUnitT extends FileUploadTestCase {
-	private class ProgressListenerImpl implements ProgressListener {
+	private static class ProgressListenerImpl implements ProgressListener {
 		private final long expectedContentLength;
 		private final int expectedItems;
 		private Long bytesRead;
@@ -41,9 +41,9 @@ public class ProgressListenerUnitT extends FileUploadTestCase {
 			assertTrue(pItems >= 0  &&  pItems <= expectedItems);
 
 			assertTrue(bytesRead == null  ||  pBytesRead >= bytesRead.longValue());
-			bytesRead = new Long(pBytesRead);
+			bytesRead = Long.valueOf(pBytesRead);
 			assertTrue(items == null  ||  pItems >= items.intValue());
-			items = new Integer(pItems);
+			items = Integer.valueOf(pItems);
 		}
 		void checkFinished(){
 			assertEquals(expectedContentLength, bytesRead.longValue());

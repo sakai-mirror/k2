@@ -33,6 +33,7 @@ import org.sakaiproject.kernel.api.authz.UnauthorizedException;
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
+import org.sakaiproject.kernel.webapp.RestServiceFaultException;
 import org.sakaiproject.sdata.tool.api.HandlerSerialzer;
 import org.sakaiproject.sdata.tool.api.ResourceDefinition;
 import org.sakaiproject.sdata.tool.api.ResourceDefinitionFactory;
@@ -496,7 +497,10 @@ public class JCRHandler extends AbstractHandler {
           out = response.getOutputStream();
 
           in = content.getStream();
-          in.skip(ranges[0]);
+          long loc = in.skip(ranges[0]);
+          if (  loc != ranges[0] ) {
+            throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,"Range specified is invalid asked for "+ranges[0]+" got "+loc);
+          }
           byte[] b = new byte[10240];
           int nbytes = 0;
           while ((nbytes = in.read(b)) > 0 && length > 0) {
@@ -836,7 +840,6 @@ public class JCRHandler extends AbstractHandler {
               uploadMap.put("status", "ok");
 
               uploads.put(fieldName, uploadMap);
-              uploadMap = new HashMap<String, Object>();
             }
           } catch (Exception ex) {
             log.error("Failed to Upload Content", ex);
@@ -853,7 +856,7 @@ public class JCRHandler extends AbstractHandler {
             }
             uploadMap.put("stacktrace", stackTrace);
             uploads.put(fieldName, uploadMap);
-            uploadMap = new HashMap<String, Object>();
+            uploadMap = null;
 
           }
 
@@ -868,6 +871,7 @@ public class JCRHandler extends AbstractHandler {
           valueList.add(value);
         }
       }
+      
       responseMap.put("success", true);
       responseMap.put("errors", errors.toArray(new String[1]));
       responseMap.put("uploads", uploads);

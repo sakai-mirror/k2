@@ -501,7 +501,8 @@ public abstract class FileUploadBase {
       if (start == end) {
         break;
       }
-      String header = headerPart.substring(start, end);
+      StringBuilder header = new StringBuilder();
+      header.append(headerPart.substring(start, end));
       start = end + 2;
       while (start < len) {
         int nonWs = start;
@@ -517,10 +518,10 @@ public abstract class FileUploadBase {
         }
         // Continuation line found
         end = parseEndOfLine(headerPart, nonWs);
-        header += " " + headerPart.substring(nonWs, end);
+        header.append(" ").append(headerPart.substring(nonWs, end));
         start = end + 2;
       }
-      parseHeaderLine(headers, header);
+      parseHeaderLine(headers, header.toString());
     }
     return headers;
   }

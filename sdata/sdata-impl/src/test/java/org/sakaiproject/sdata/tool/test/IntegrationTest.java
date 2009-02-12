@@ -162,8 +162,8 @@ public class IntegrationTest {
     replay(config, request, response, session);
     SakaiServletRequest srequest = new SakaiServletRequest(request, response,
         userResolverService, sessionManagerService);
-    @SuppressWarnings("unused")
     SakaiServletResponse sresponse = new SakaiServletResponse(response);
+    assertNotNull(sresponse);
     sessionManagerService.bindRequest(srequest);
     authzResolverService.setRequestGrant("testServletRequest");
     ControllerServlet controllerServlet = new ControllerServlet();

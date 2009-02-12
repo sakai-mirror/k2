@@ -153,7 +153,7 @@ public class DefaultFileItemUnitT extends TestCase
         String tempPath = System.getProperty("java.io.tmpdir");
         String tempDirName = "testAboveThresholdSpecifiedRepository";
         File tempDir = new File(tempPath, tempDirName);
-        tempDir.mkdir();
+        assertTrue(tempDir.mkdir());
         doTestAboveThreshold(tempDir);
         assertTrue(tempDir.delete());
     }
