@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  **********************************************************************************/
-package org.sakaiproject.email.api;
+package org.sakaiproject.kernel.api.email;
 
 /**
  * Format types of text when using a content-type of text. Taken from RFC 2646.<br>

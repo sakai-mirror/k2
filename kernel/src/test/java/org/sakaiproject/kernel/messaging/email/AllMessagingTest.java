@@ -23,8 +23,8 @@ import org.junit.runners.Suite.SuiteClasses;
  *
  */
 @RunWith(Suite.class)
-@SuiteClasses( { AttachmentT.class, EmailAddressT.class,
-    EmailMessageListenerT.class, JmsSessionProviderT.class,
+@SuiteClasses( { EmailAddressT.class, EmailMessageListenerT.class,
+    JmsEmailMessageT.class, JmsSessionProviderT.class,
     MailSessionProviderT.class, MessagingModuleT.class })
 public class AllMessagingTest {
 

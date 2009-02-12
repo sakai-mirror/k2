@@ -15,12 +15,11 @@
  ******************************************************************************/
 package org.sakaiproject.kernel.messaging.email;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sakaiproject.kernel.api.email.CharacterSet;
 import org.sakaiproject.kernel.api.email.ContentType;
@@ -28,6 +27,7 @@ import org.sakaiproject.kernel.api.email.EmailAddress;
 import org.sakaiproject.kernel.api.email.PlainTextFormat;
 import org.sakaiproject.kernel.api.email.RecipientType;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Observable;
@@ -44,33 +44,25 @@ import javax.mail.Session;
  * Unit test for email message listener
  */
 public class EmailMessageListenerT {
-  static final String HOST = "localhost";
-  static final String PORT = "8025";
-  static Session session;
-  static EmailMessageListener listener;
+  final String HOST = "localhost";
+  final String PORT = "8025";
+  Session session;
+  EmailMessageListener listener;
 
   private JmsEmailMessage email;
 
-  @BeforeClass
-  public static void beforeClass() {
+  @Before
+  public void setUp() {
     Properties props = new Properties();
     props.put("mail.smtp.host", HOST);
     props.put("mail.smtp.port", PORT);
-    props.put("mail.smtp.from", "postmaster@emailMessageListener.test");
+    // props.put("mail.smtp.from", "postmaster@emailMessageListener.test");
     props.put("mail.smtp.sendpartial", "true");
     session = Session.getDefaultInstance(props);
 
     listener = new EmailMessageListener(session);
     listener.setAllowTransport(false);
-  }
 
-  @AfterClass
-  public static void afterClass() {
-    session = null;
-  }
-
-  @Before
-  public void setUp() {
     email = new JmsEmailMessage(null);
   }
 
@@ -78,7 +70,7 @@ public class EmailMessageListenerT {
   public void jmsSend() throws Exception {
     ObjectMessage msg = new TestObjMsg(email);
     // pass a null service because we're starting after when the service is used
-    email.setFrom(new EmailAddress("test@example.com", "Some Dude"));
+    email.setFrom(new EmailAddress("jmssend@example.com", "Some Dude"));
     email.addRecipient(RecipientType.TO, new EmailAddress("random@example.com",
         "Random Chick"));
     email.setBody("This is some test text.");
@@ -89,7 +81,7 @@ public class EmailMessageListenerT {
   @Test
   public void send() throws Exception {
     // pass a null service because we're starting after when the service is used
-    email.setFrom(new EmailAddress("test@example.com", "Some Dude"));
+    email.setFrom(new EmailAddress("send@example.com", "Some Dude"));
     email.addRecipient(RecipientType.TO, new EmailAddress("random@example.com",
         "Random Chick"));
     email.setBody("This is some test text.");
@@ -100,8 +92,8 @@ public class EmailMessageListenerT {
   @Test
   public void invalidFrom() throws Exception {
     // pass a null service because we're starting after when the service is used
-    email.addRecipient(RecipientType.TO, new EmailAddress("random@example.com",
-        "Random Chick"));
+    email.addRecipient(RecipientType.TO, new EmailAddress(
+        "invalidfrom@example.com", "Random Chick"));
     email.setBody("This is some test text.");
 
     try {
@@ -115,7 +107,7 @@ public class EmailMessageListenerT {
   @Test
   public void noRcpts() throws Exception {
     // pass a null service because we're starting after when the service is used
-    email.setFrom(new EmailAddress("test@example.com", "Some Dude"));
+    email.setFrom(new EmailAddress("norcpts@example.com", "Some Dude"));
     email.setBody("This is some test text.");
 
     try {
@@ -126,12 +118,53 @@ public class EmailMessageListenerT {
     }
   }
 
-  /**
-   * TODO this test needs to setup a Dumbster server and check the email after
-   * it has been sent.
-   *
-   * @throws Exception
-   */
+  @Test
+  public void sendNoCharsetOrContentType() throws Exception {
+    // pass a null service because we're starting after when the service is used
+    email.setFrom(new EmailAddress("nocharsetorcontenttype@example.com",
+        "Some Dude"));
+    email.addRecipient(RecipientType.TO, new EmailAddress("random@example.com",
+        "Random Chick"));
+    email.setBody("This is some test text.");
+    email.setCharacterSet(null);
+    email.setContentType(null);
+
+    final StringBuilder emailString = new StringBuilder();
+    listener.addObserver(new Observer() {
+      public void update(Observable o, Object arg) {
+        emailString.append(arg);
+      }
+    });
+    listener.handleMessage(email);
+
+    int contentPos = emailString.indexOf("Content-Type: "
+        + ContentType.TEXT_PLAIN + "; charset=" + CharacterSet.US_ASCII);
+    assertTrue(contentPos > -1);
+  }
+
+  @Test
+  public void sendNoContentType() throws Exception {
+    // pass a null service because we're starting after when the service is used
+    email.setFrom(new EmailAddress("nocontenttype@example.com",
+        "Some Dude"));
+    email.addRecipient(RecipientType.TO, new EmailAddress("random@example.com",
+        "Random Chick"));
+    email.setBody("This is some test text.");
+    email.setContentType(null);
+
+    final StringBuilder emailString = new StringBuilder();
+    listener.addObserver(new Observer() {
+      public void update(Observable o, Object arg) {
+        emailString.append(arg);
+      }
+    });
+    listener.handleMessage(email);
+
+    int contentPos = emailString.indexOf("Content-Type: "
+        + ContentType.TEXT_PLAIN + "; charset=" + CharacterSet.UTF_8);
+    assertTrue(contentPos > -1);
+  }
+
   @Test
   public void setFormatWhenPlainText() throws Exception {
     // pass a null service because we're starting after when the service is used
@@ -152,12 +185,103 @@ public class EmailMessageListenerT {
     });
     listener.handleMessage(email);
 
-    int contentPos = emailString.indexOf("\nContent-Type: "
+    int contentPos = emailString.indexOf("Content-Type: "
         + ContentType.TEXT_PLAIN + "; format=" + PlainTextFormat.FLOWED
-        + "; charset=" + CharacterSet.UTF_8 + "\n");
+        + "; charset=" + CharacterSet.UTF_8);
     assertTrue(contentPos > -1);
   }
 
+  @Test
+  public void setFormatWhenNotPlainText() throws Exception {
+    // pass a null service because we're starting after when the service is used
+    email.setFrom(new EmailAddress("formatwhennotplaintext@example.com",
+        "Some Dude"));
+    email.addRecipient(RecipientType.TO, new EmailAddress("random@example.com",
+        "Random Chick"));
+    email.setBody("This is some test text.");
+    email.setContentType(ContentType.TEXT_HTML);
+    email.setFormat(PlainTextFormat.FLOWED);
+    email.setCharacterSet(CharacterSet.UTF_8);
+
+    final StringBuilder emailString = new StringBuilder();
+    listener.addObserver(new Observer() {
+      public void update(Observable o, Object arg) {
+        emailString.append(arg);
+      }
+    });
+    listener.handleMessage(email);
+
+    int contentPos = emailString.indexOf("Content-Type: "
+        + ContentType.TEXT_HTML + "; charset=" + CharacterSet.UTF_8);
+    assertTrue(contentPos > -1);
+
+    int flowedPos = emailString.indexOf("; format=" + PlainTextFormat.FLOWED);
+    assertEquals(-1, flowedPos);
+  }
+
+  @Test
+  public void sendWithAttachments() throws Exception {
+    // pass a null service because we're starting after when the service is used
+    email.setFrom(new EmailAddress("attachments@example.com", "Some Dude"));
+    email.addRecipient(RecipientType.TO, new EmailAddress("random@example.com",
+        "Random Chick"));
+    email.setBody("This is some test text.");
+    File f1 = File.createTempFile("test1", null);
+    File f2 = File.createTempFile("test2", null);
+    email.addAttachment(f1);
+    email.addAttachment(f2);
+
+    final StringBuilder emailString = new StringBuilder();
+    listener.addObserver(new Observer() {
+      public void update(Observable o, Object arg) {
+        emailString.append(arg);
+      }
+    });
+    listener.handleMessage(email);
+
+    int contentPos = emailString.indexOf("Content-Type: multipart/mixed");
+    assertTrue(contentPos > -1);
+
+    String boundaryHeader = "boundary=\"";
+    int boundBeg = emailString.indexOf(boundaryHeader)
+        + boundaryHeader.length();
+    assertTrue(boundBeg > boundaryHeader.length());
+    int boundEnd = emailString.indexOf("\"", boundBeg + 1);
+    assertTrue(boundEnd > -1);
+
+    String boundary = emailString.substring(boundBeg, boundEnd);
+
+    int pos = boundEnd;
+    int countBoundaries = -1;
+    while (pos > -1) {
+      countBoundaries++;
+      pos = emailString.indexOf(boundary, pos + 1);
+    }
+    // 3 => 1 for content, 2 for attachments. May also be an extra one after
+    // that at the end of the message.
+    assertTrue(countBoundaries >= 3);
+  }
+
+  @Test
+  public void sendWithBadAttachment() throws Exception {
+    // pass a null service because we're starting after when the service is used
+    email.setFrom(new EmailAddress("attachments@example.com", "Some Dude"));
+    email.addRecipient(RecipientType.TO, new EmailAddress("random@example.com",
+        "Random Chick"));
+    email.setBody("This is some test text.");
+    File f1 = new File("test1.tmp");
+    email.addAttachment(f1);
+
+    final StringBuilder emailString = new StringBuilder();
+    listener.addObserver(new Observer() {
+      public void update(Observable o, Object arg) {
+        emailString.append(arg);
+      }
+    });
+    listener.handleMessage(email);
+
+    assertEquals(0, emailString.length());
+  }
   class TestObjMsg implements ObjectMessage {
     private Serializable obj;
 

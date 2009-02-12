@@ -56,12 +56,20 @@ public interface EmailMessage {
   List<EmailAddress> getReplyTo();
 
   /**
-   * Set recipient for replies.
+   * Add recipient for replies.
+   *
+   * @param email
+   *          EmailAddress of reply to recipient.
+   */
+  void addReplyTo(EmailAddress emailAddress);
+
+  /**
+   * Add recipient for replies.
    *
    * @param email
    *          Email string of reply to recipient.
    */
-  void addReplyTo(EmailAddress emailAddress);
+  void addReplyTo(String email);
 
   /**
    * Set recipient for replies.
@@ -70,13 +78,6 @@ public interface EmailMessage {
    *          {@link EmailAddress} of reply to recipient.
    */
   void addReplyTo(List<EmailAddress> replyTo);
-
-  /**
-   * Get intended recipients of this message.
-   *
-   * @return List of {@link EmailAddress} that will receive this message
-   */
-  Map<RecipientType, List<EmailAddress>> getRecipients();
 
   /**
    * Get recipients of this message that are associated to a certain type
@@ -160,9 +161,9 @@ public interface EmailMessage {
   /**
    * Get the attachments on this message
    *
-   * @return List of {@link Attachment} attached to this message.
+   * @return List of {@link File} attached to this message.
    */
-  List<Attachment> getAttachments();
+  List<File> getAttachments();
 
   /**
    * Add an attachment to this message.
@@ -170,15 +171,7 @@ public interface EmailMessage {
    * @param attachment
    *          File to attach to this message.
    */
-  void addAttachment(Attachment attachment);
-
-  /**
-   * Add an attachment to this message. Same as addAttachment(new
-   * Attachment(file)).
-   *
-   * @param file
-   */
-  void addAttachment(File file);
+  void addAttachment(File attachment);
 
   /**
    * Set the attachments of this message. Will replace any existing attachments.
@@ -186,7 +179,7 @@ public interface EmailMessage {
    * @param attachments
    *          The attachments to set on this message.
    */
-  void addAttachments(List<Attachment> attachments);
+  void addAttachments(List<File> attachments);
 
   /**
    * Get the headers of this message.
@@ -194,6 +187,14 @@ public interface EmailMessage {
    * @return {@link java.util.Map} of headers set on this message.
    */
   Map<String, String> getHeaders();
+
+  /**
+   * Get a specific header from this message.
+   *
+   * @param key
+   * @return The header value stored. null if not found.
+   */
+  String getHeader(String key);
 
   /**
    * Flattens the headers down to "key: value" strings.
@@ -234,22 +235,6 @@ public interface EmailMessage {
    *          The value of the header.
    */
   void setHeader(String key, String value);
-
-  /**
-   * Set the headers of this message. Will replace any existing headers.
-   *
-   * @param headers
-   *          The headers to use on this message.
-   */
-  void setHeaders(Map<String, String> headers);
-
-  /**
-   * Sets headers on this message. The expected format of each header is
-   * "key:value".
-   *
-   * @param headers
-   */
-  void setHeaders(List<String> headers);
 
   /**
    * Get the mime type of this message.

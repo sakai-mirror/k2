@@ -16,7 +16,6 @@
  **********************************************************************************/
 package org.sakaiproject.kernel.messaging.email;
 
-import org.sakaiproject.kernel.api.email.Attachment;
 import org.sakaiproject.kernel.api.email.CharacterSet;
 import org.sakaiproject.kernel.api.email.ContentType;
 import org.sakaiproject.kernel.api.email.EmailAddress;
@@ -100,7 +99,7 @@ public class JmsEmailMessage implements EmailMessage, Serializable {
   /**
    * Attachments to consider for message
    */
-  private List<Attachment> attachments;
+  private List<File> attachments;
 
   /**
    * Arbitrary headers for message
@@ -123,7 +122,7 @@ public class JmsEmailMessage implements EmailMessage, Serializable {
 
   /**
    * Format of this message if in plain text.
-   * 
+   *
    * @see org.sakaiproject.kernel.api.email.PlainTextFormat
    */
   private String format;
@@ -141,7 +140,7 @@ public class JmsEmailMessage implements EmailMessage, Serializable {
     this.messagingService = messagingService;
     recipients = new HashMap<RecipientType, List<EmailAddress>>();
     headers = new HashMap<String, String>();
-    attachments = new ArrayList<Attachment>();
+    attachments = new ArrayList<File>();
     replyTo = new ArrayList<EmailAddress>();
   }
 
@@ -187,13 +186,20 @@ public class JmsEmailMessage implements EmailMessage, Serializable {
    * Set recipient for replies.
    *
    * @param email
-   *          Email string of reply to recipient.
+   *          EmailAddress of reply to recipient.
    */
   public void addReplyTo(EmailAddress emailAddress) {
-    if (replyTo == null) {
-      replyTo = new ArrayList<EmailAddress>();
-    }
     replyTo.add(emailAddress);
+  }
+
+  /**
+   * Set recipient for replies.
+   *
+   * @param email
+   *          Email string of reply to recipient.
+   */
+  public void addReplyTo(String email) {
+    replyTo.add(new EmailAddress(email));
   }
 
   /**
@@ -204,15 +210,6 @@ public class JmsEmailMessage implements EmailMessage, Serializable {
    */
   public void addReplyTo(List<EmailAddress> replyTo) {
     this.replyTo = replyTo;
-  }
-
-  /**
-   * Get intended recipients of this message.
-   *
-   * @return List of {@link EmailAddress} that will receive this messagel
-   */
-  public Map<RecipientType, List<EmailAddress>> getRecipients() {
-    return recipients;
   }
 
   /**
@@ -352,9 +349,9 @@ public class JmsEmailMessage implements EmailMessage, Serializable {
   /**
    * Get the attachments on this message
    *
-   * @return List of {@link Attachment} attached to this message.
+   * @return List of {@link java.io.File} attached to this message.
    */
-  public List<Attachment> getAttachments() {
+  public List<File> getAttachments() {
     return attachments;
   }
 
@@ -364,23 +361,8 @@ public class JmsEmailMessage implements EmailMessage, Serializable {
    * @param attachment
    *          File to attach to this message.
    */
-  public void addAttachment(Attachment attachment) {
-    if (attachment != null) {
-      if (attachments == null) {
-        attachments = new ArrayList<Attachment>();
-      }
-      attachments.add(attachment);
-    }
-  }
-
-  /**
-   * Add an attachment to this message. Same as addAttachment(new
-   * Attachment(file)).
-   *
-   * @param file
-   */
-  public void addAttachment(File file) {
-    addAttachment(new Attachment(file));
+  public void addAttachment(File attachment) {
+    attachments.add(attachment);
   }
 
   /**
@@ -389,7 +371,7 @@ public class JmsEmailMessage implements EmailMessage, Serializable {
    * @param attachments
    *          The attachments to set on this message.
    */
-  public void addAttachments(List<Attachment> attachments) {
+  public void addAttachments(List<File> attachments) {
     this.attachments.addAll(attachments);
   }
 
@@ -400,6 +382,16 @@ public class JmsEmailMessage implements EmailMessage, Serializable {
    */
   public Map<String, String> getHeaders() {
     return headers;
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @see org.sakaiproject.kernel.api.email.EmailMessage#getHeader(java.lang.String)
+   */
+  public String getHeader(String key) {
+    String retval = headers.get(key);
+    return retval;
   }
 
   /**
@@ -428,7 +420,7 @@ public class JmsEmailMessage implements EmailMessage, Serializable {
    * @param key
    */
   public void removeHeader(String key) {
-    if (headers != null && !headers.isEmpty() && headers.containsKey(key)) {
+    if (!headers.isEmpty() && headers.containsKey(key)) {
       headers.remove(key);
     }
   }
@@ -445,7 +437,7 @@ public class JmsEmailMessage implements EmailMessage, Serializable {
    *          The value of the header.
    */
   public void addHeader(String key, String value) {
-    if (headers == null || headers.get(key) == null) {
+    if (headers.get(key) == null) {
       setHeader(key, value);
     } else if (key != null && value != null) {
       String prevVal = headers.get(key);
@@ -468,41 +460,7 @@ public class JmsEmailMessage implements EmailMessage, Serializable {
    */
   public void setHeader(String key, String value) {
     if (key != null && value != null) {
-      if (headers == null) {
-        headers = new HashMap<String, String>();
-      }
-
       headers.put(key, value);
-    }
-  }
-
-  /**
-   * Set the headers of this message. Will replace any existing headers.
-   *
-   * @param headers
-   *          The headers to use on this message.
-   */
-  public void setHeaders(Map<String, String> headers) {
-    this.headers.putAll(headers);
-  }
-
-  /**
-   * Sets headers on this message. The expected format of each header is key:
-   * value.
-   *
-   * @param headers
-   */
-  public void setHeaders(List<String> headers) {
-    if (headers != null) {
-      for (String header : headers) {
-        int splitPoint = header.indexOf(":");
-        String key = header.substring(0, splitPoint);
-        String value = null;
-        if (splitPoint != header.length() - 1) {
-          value = header.substring(splitPoint + 1).trim();
-        }
-        setHeader(key, value);
-      }
     }
   }
 

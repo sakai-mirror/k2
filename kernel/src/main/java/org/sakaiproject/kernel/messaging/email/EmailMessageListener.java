@@ -19,13 +19,13 @@ import com.google.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.sakaiproject.kernel.api.email.Attachment;
 import org.sakaiproject.kernel.api.email.ContentType;
 import org.sakaiproject.kernel.api.email.EmailAddress;
 import org.sakaiproject.kernel.api.email.EmailMessage;
 import org.sakaiproject.kernel.api.email.RecipientType;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -122,7 +122,7 @@ public class EmailMessageListener implements MessageListener {
     String content = email.getBody();
     String charset = email.getCharacterSet();
     String format = email.getFormat();
-    List<Attachment> attachments = email.getAttachments();
+    List<File> attachments = email.getAttachments();
 
     // build the content type
     String contentType = email.getContentType();
@@ -192,7 +192,7 @@ public class EmailMessageListener implements MessageListener {
 
       // add attachments
       if (attachments != null) {
-        for (Attachment attachment : attachments) {
+        for (File attachment : attachments) {
           MimeBodyPart attachPart = createAttachmentPart(attachment);
           multipart.addBodyPart(attachPart);
         }
@@ -204,7 +204,7 @@ public class EmailMessageListener implements MessageListener {
 
     // add in any additional headers
     Map<String, String> headers = email.getHeaders();
-    if (headers != null && !headers.isEmpty()) {
+    if (!headers.isEmpty()) {
       for (Entry<String, String> header : headers.entrySet()) {
         mimeMsg.setHeader(header.getKey(), header.getValue());
       }
@@ -225,7 +225,8 @@ public class EmailMessageListener implements MessageListener {
         log.info(emailString);
         observable.notifyObservers(emailString);
       } catch (IOException e) {
-        log.info("Transport disabled and unable to write message to log.");
+        log.info("Transport disabled and unable to write message to log: "
+            + e.getMessage(), e);
       }
     }
   }
@@ -248,12 +249,12 @@ public class EmailMessageListener implements MessageListener {
    * @param attachment
    * @throws MessagingException
    */
-  private MimeBodyPart createAttachmentPart(Attachment attachment)
+  private MimeBodyPart createAttachmentPart(File attachment)
       throws MessagingException {
-    FileDataSource source = new FileDataSource(attachment.getFile());
+    FileDataSource source = new FileDataSource(attachment);
     MimeBodyPart attachPart = new MimeBodyPart();
     attachPart.setDataHandler(new DataHandler(source));
-    attachPart.setFileName(attachment.getFile().getPath());
+    attachPart.setFileName(attachment.getPath());
     return attachPart;
   }
 

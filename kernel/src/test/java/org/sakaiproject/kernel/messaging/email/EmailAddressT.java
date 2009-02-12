@@ -16,6 +16,8 @@
 package org.sakaiproject.kernel.messaging.email;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.sakaiproject.kernel.api.email.EmailAddress;
@@ -41,7 +43,7 @@ public class EmailAddressT {
   }
 
   @Test
-  public void tostringMinimum() {
+  public void toStringMinimum() {
     String address = "test1@example.com";
     EmailAddress ea = new EmailAddress(address);
     String toString = ea.toString();
@@ -49,11 +51,28 @@ public class EmailAddressT {
   }
 
   @Test
-  public void tostringFull() {
+  public void toStringFull() {
     String address = "test1@example.com";
     String personal = "Test Person";
     EmailAddress ea = new EmailAddress(address, personal);
     String toString = ea.toString();
     assertEquals("\"" + personal + "\" <" + address + ">", toString);
+  }
+
+  @Test
+  public void equals() {
+    String e1 = "test1@example.com";
+    String e2 = "test2@example.com";
+    EmailAddress ea1 = new EmailAddress(e1);
+    EmailAddress ea2 = new EmailAddress("test3@example.com");
+
+    assertTrue(ea1.equals(e1));
+    assertTrue(ea1.equals(ea1));
+    assertFalse(ea1.equals(e2));
+    assertFalse(ea2.equals(e2));
+
+    assertTrue(new EmailAddress(null).equals(null));
+    assertFalse(new EmailAddress(null).equals("whatever"));
+    assertFalse(ea2.equals(null));
   }
 }
