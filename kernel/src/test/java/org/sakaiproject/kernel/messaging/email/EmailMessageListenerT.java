@@ -44,8 +44,8 @@ import javax.mail.Session;
  * Unit test for email message listener
  */
 public class EmailMessageListenerT {
-  final String HOST = "localhost";
-  final String PORT = "8025";
+  static final String HOST = "localhost";
+  static final String PORT = "8025";
   Session session;
   EmailMessageListener listener;
 
@@ -282,7 +282,8 @@ public class EmailMessageListenerT {
 
     assertEquals(0, emailString.length());
   }
-  class TestObjMsg implements ObjectMessage {
+
+  static class TestObjMsg implements ObjectMessage {
     private Serializable obj;
 
     TestObjMsg(Serializable obj) {

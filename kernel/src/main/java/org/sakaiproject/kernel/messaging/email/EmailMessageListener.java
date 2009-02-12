@@ -191,11 +191,9 @@ public class EmailMessageListener implements MessageListener {
       multipart.addBodyPart(msgBodyPart);
 
       // add attachments
-      if (attachments != null) {
-        for (File attachment : attachments) {
-          MimeBodyPart attachPart = createAttachmentPart(attachment);
-          multipart.addBodyPart(attachPart);
-        }
+      for (File attachment : attachments) {
+        MimeBodyPart attachPart = createAttachmentPart(attachment);
+        multipart.addBodyPart(attachPart);
       }
 
       // set the multipart container as the content of the message
@@ -299,7 +297,7 @@ public class EmailMessageListener implements MessageListener {
     observable.addObserver(ob);
   }
 
-  class EmailMessageObservable extends Observable {
+  static class EmailMessageObservable extends Observable {
     @Override
     public void notifyObservers(Object o) {
       setChanged();

@@ -33,13 +33,9 @@ import java.util.Properties;
 public class MessagingModuleT {
   @Test
   public void createDeadInjector() {
-    try {
-      Injector inj = Guice.createInjector(new MessagingModule());
-      inj.getInstance(javax.mail.Session.class);
-      fail("Shouldn't work without the properties being set.");
-    } catch (Exception e) {
-      // expected
-    }
+    Injector inj = Guice.createInjector(new MessagingModule());
+    inj.getInstance(javax.mail.Session.class);
+    fail("Shouldn't work without the properties being set.");
   }
 
   @Test
