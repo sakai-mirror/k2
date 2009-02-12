@@ -68,11 +68,39 @@ public class RestFriendsProvider implements RestProvider {
     /**
      * major path element, always requires friendUuid
      */
-    connect(3, new String[] { FRIENDUUID }), request(3,
-        new String[] { MESSAGE }), accept(3, new String[] {}), cancel(3,
-        new String[] {}), UNDEFINED(0, new String[] {}), reject(3,
-        new String[] {}), ignore(3, new String[] {}), status(2, new String[] {}), remove(
-        3, new String[] {});
+    connect(3, new String[] { FRIENDUUID }),
+    /**
+     * minor path element, request a connection, requires a message
+     */
+    request(3, new String[] { MESSAGE }),
+    /**
+     * minor path element, accept a connection
+     */
+    accept(3, new String[] {}),
+    /**
+     * minor path element, cancel a connection request
+     */
+    cancel(3, new String[] {}),
+    /**
+     * Undefined element
+     */
+    UNDEFINED(0, new String[] {}),
+    /**
+     * reject a connection request
+     */
+    reject(3, new String[] {}),
+    /**
+     * ignore a connection request
+     */
+    ignore(3, new String[] {}),
+    /**
+     * major element, get my connections
+     */
+    status(2, new String[] {}),
+    /**
+     * remove a connection
+     */
+    remove(3, new String[] {});
 
     protected String[] required;
     protected int nelements;
@@ -93,6 +121,7 @@ public class RestFriendsProvider implements RestProvider {
     protected String friendUuid;
     protected String message;
     protected String uuid;
+    protected String type;
     private PathElement major;
     private PathElement minor;
 
@@ -157,6 +186,7 @@ public class RestFriendsProvider implements RestProvider {
       }
 
       friendUuid = request.getParameter(FRIENDUUID);
+      type = request.getParameter(FRIENDTYPE);
       message = request.getParameter(MESSAGE);
 
     }
@@ -169,6 +199,8 @@ public class RestFriendsProvider implements RestProvider {
   private static final String PRIVATE_PATH_BASE = "jcrprivate.base";
 
   private static final String FRIENDUUID = "friendUuid";
+
+  private static final String FRIENDTYPE = "friendType";
 
   private static final String MESSAGE = "message";
 
@@ -195,7 +227,7 @@ public class RestFriendsProvider implements RestProvider {
             2,
             "Status ",
             "Responds with the current users friends records. Super admins may request other users friends records.  ");
-   
+
     DESC
         .addURLTemplate(
             "/rest/" + KEY + "/" + PathElement.status + "/" + "/<userid>",
@@ -239,6 +271,8 @@ public class RestFriendsProvider implements RestProvider {
                 + "accept, otherwise its the current user. The post must be accompanied by friend to cancel.");
     DESC.addSection(2, "POST", "");
     DESC.addParameter(FRIENDUUID, "the UUID of the friend");
+    DESC.addParameter(FRIENDTYPE,
+        "the type of the friend, a string associated with the connection.");
     DESC.addParameter(MESSAGE,
         "the message associated with the request, required for requests");
     DESC.addResponse(String.valueOf(HttpServletResponse.SC_OK),
@@ -399,10 +433,18 @@ public class RestFriendsProvider implements RestProvider {
       throw new RestServiceFaultException(HttpServletResponse.SC_CONFLICT,
           "There is already a connection invited, pending or accepted ");
     }
-    myFriends.addFriend(new FriendBean(params.uuid, params.friendUuid,
-        FriendStatus.PENDING));
-    friendFriends.addFriend(new FriendBean(params.friendUuid, params.uuid,
-        FriendStatus.INVITED));
+    FriendBean friend = new FriendBean(params.uuid, params.friendUuid,
+        FriendStatus.PENDING);
+    FriendBean me = new FriendBean(params.friendUuid, params.uuid,
+        FriendStatus.INVITED);
+    if (!StringUtils.isEmpty(params.type)) {
+      me.setProperties(ImmutableMap.of("type", params.type, "message",
+          params.message));
+      friend.setProperties(ImmutableMap.of("type", params.type, "message",
+          params.message));
+    }
+    myFriends.addFriend(friend);
+    friendFriends.addFriend(me);
     saveFriends(myFriends);
     saveFriends(friendFriends);
     return OK;

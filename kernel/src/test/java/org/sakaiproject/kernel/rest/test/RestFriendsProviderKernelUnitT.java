@@ -262,6 +262,7 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
     expect(request.getMethod()).andReturn("POST");
 
     expect(request.getParameter("friendUuid")).andReturn("MyFriend");
+    expect(request.getParameter("friendType")).andReturn(null);
     expect(request.getParameter("message")).andReturn("hi");
     response.setContentType(RestProvider.CONTENT_TYPE);
     expectLastCall();
@@ -598,6 +599,7 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
     expect(request.getMethod()).andReturn("POST");
 
     expect(request.getParameter("friendUuid")).andReturn(friend);
+    expect(request.getParameter("friendType")).andReturn("distant");
     expect(request.getParameter("message")).andReturn(message);
     response.setContentType(RestProvider.CONTENT_TYPE);
     expectLastCall();
@@ -631,6 +633,7 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
     expect(request.getMethod()).andReturn("GET");
 
     expect(request.getParameter("friendUuid")).andReturn(null);
+    expect(request.getParameter("friendType")).andReturn(null);
     expect(request.getParameter("message")).andReturn(null);
     response.setContentType(RestProvider.CONTENT_TYPE);
     expectLastCall();
