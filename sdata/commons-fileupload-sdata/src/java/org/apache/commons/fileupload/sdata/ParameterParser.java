@@ -267,15 +267,14 @@ public class ParameterParser {
    * 
    * @return a map of name/value pairs
    */
-  public Map<String, String> parse(final char[] inchars, int offset, int length,
+  public Map<String, String> parse( final char[] chars, int offset, int length,
       char separator) {
 
     if (chars == null) {
       return new HashMap<String, String>();
     }
     HashMap<String, String> params = new HashMap<String, String>();
-    this.chars = new char[inchars.length];
-    System.arraycopy(inchars,0, chars, 0, inchars.length);
+    this.chars = chars.clone();
     this.pos = offset;
     this.len = length;
 

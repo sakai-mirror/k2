@@ -31,9 +31,6 @@ import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.FileCleaner;
 import org.apache.commons.io.output.DeferredFileOutputStream;
@@ -107,11 +104,6 @@ public class DiskFileItem
     private static final String UID =
             new java.rmi.server.UID().toString()
                 .replace(':', '_').replace('-', '_');
-
-
-    private static final Logger LOG = Logger.getLogger("commons.fileupload");
-
-
 
     /**
      * Counter used in unique identifier generation.
@@ -318,7 +310,7 @@ public class DiskFileItem
      *
      * @return The contents of the file as an array of bytes.
      */
-    @SuppressWarnings(value={"EI_EXPOSE_REP"}, justification="Copyig the arry buffer would represent a huge overhead")
+    @SuppressWarnings(value={"EI_EXPOSE_REP","RR_NOT_CHECKED"},justification="No point in copying the data from cache.")
     public byte[] get() {
         if (isInMemory()) {
             if (cachedContent == null) {
@@ -332,9 +324,7 @@ public class DiskFileItem
 
         try {
             fis = new FileInputStream(dfos.getFile());
-            if ( fis.read(fileData) < fileData.length ) {
-              LOG.log(Level.FINE,"Didnt read data completely");
-            }
+            fis.read(fileData);
         } catch (IOException e) {
             fileData = null;
         } finally {
@@ -478,13 +468,12 @@ public class DiskFileItem
      * collected, this method can be used to ensure that this is done at an
      * earlier time, thus preserving system resources.
      */
+    @SuppressWarnings(value={"RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"})
     public void delete() {
         cachedContent = null;
         File outputFile = getStoreLocation();
         if (outputFile != null && outputFile.exists()) {
-            if ( !outputFile.delete() ) {
-              LOG.log(Level.FINE,"Failed to delete file "+outputFile);
-            }
+            outputFile.delete();
         }
     }
 
@@ -592,13 +581,12 @@ public class DiskFileItem
     /**
      * Removes the file contents from the temporary storage.
      */
+    @SuppressWarnings(value={"RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"})
     protected void finalize() {
         File outputFile = dfos.getFile();
 
         if (outputFile != null && outputFile.exists()) {
-            if (!outputFile.delete() ) {
-              LOG.log(Level.FINE,"Failed to delete "+outputFile);
-            }
+            outputFile.delete();
         }
     }
 
@@ -702,6 +690,7 @@ public class DiskFileItem
      * @throws IOException if an error occurs.
      * @throws ClassNotFoundException if class cannot be found.
      */
+    @SuppressWarnings(value={"RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"})
     private void readObject(ObjectInputStream in)
             throws IOException, ClassNotFoundException {
         // read values
@@ -714,9 +703,7 @@ public class DiskFileItem
             FileInputStream input = new FileInputStream(dfosFile);
 
             IOUtils.copy(input, output);
-            if ( !dfosFile.delete()) {
-              LOG.fine("Failed to delete"+dfosFile);
-            }
+            dfosFile.delete();
             dfosFile = null;
         }
         output.close();

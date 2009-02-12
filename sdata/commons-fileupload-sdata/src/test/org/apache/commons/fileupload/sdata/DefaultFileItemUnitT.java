@@ -148,14 +148,15 @@ public class DefaultFileItemUnitT extends TestCase
      * Test creation of a field for which the amount of data falls above the
      * configured threshold, where a specific repository is configured.
      */
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value={"RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"})
     public void testAboveThresholdSpecifiedRepository()
     {
         String tempPath = System.getProperty("java.io.tmpdir");
         String tempDirName = "testAboveThresholdSpecifiedRepository";
         File tempDir = new File(tempPath, tempDirName);
-        assertTrue(tempDir.mkdir());
+        tempDir.mkdir();
         doTestAboveThreshold(tempDir);
-        assertTrue(tempDir.delete());
+        tempDir.delete();
     }
 
     /**
