@@ -63,10 +63,6 @@ public class KernelLifecycle implements CommonLifecycle<Kernel> {
    */
   private static final long ONEM = 1024 * 1024;
 
-  /**
-   * Failure code that is used.
-   */
-  private static final int FAILURE_CODE = 10;
 
   /**
    * a concurrent store of listeners.
@@ -187,6 +183,8 @@ public class KernelLifecycle implements CommonLifecycle<Kernel> {
             + " MB\n" + "\tCode Cache Used " + codeCacheUsed / (ONEM) + " MB\n" + "\tEden Used "
             + edenSpaceUsed / (ONEM) + " MB\n" + "\tTenured Used " + tenuredGenUsed / (ONEM)
             + " MB\n" + "\tSurvivour Used " + survivorSpaceUsed / (ONEM) + " MB");
+      } catch (RuntimeException ex2) {
+        LOG.info("Startup Memory Stats Not available ",ex2);
       } catch (Exception ex2) {
         LOG.info("Startup Memory Stats Not available ",ex2);
       }
@@ -196,7 +194,7 @@ public class KernelLifecycle implements CommonLifecycle<Kernel> {
 
     } catch (Throwable ex) {
       LOG.error("Failed to start Component Lifecycle ", ex);
-      System.exit(FAILURE_CODE);
+      throw new Error("Failed to start Component Lifecycle ",ex);
     }
     LOG.info("============END of LIFECYCLE STARTUP===============================");
 
@@ -339,7 +337,7 @@ public class KernelLifecycle implements CommonLifecycle<Kernel> {
    * @return the date the kernel was last loaded.
    */
   public Date getLastLoadDate() {
-    return lastLoadDate;
+    return new Date(lastLoadDate.getTime());
   }
 
   /**

@@ -66,7 +66,7 @@ public class URLComponentSpecificationImplTest {
   @Test
   public void testOutput() throws IOException {
     XStream xstream = new XStream();
-    Annotations.configureAliases(xstream, Component.CLASSES);
+    Annotations.configureAliases(xstream, Component.getComponentClasses());
     Component c = new Component();
     c.setActivator("activator.class");
     c.setDocumentation("docs");

@@ -20,9 +20,9 @@ package org.sakaiproject.kernel.component;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.Annotations;
 
+import org.sakaiproject.kernel.api.Artifact;
 import org.sakaiproject.kernel.api.ComponentSpecification;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
-import org.sakaiproject.kernel.api.Artifact;
 import org.sakaiproject.kernel.api.PackageExport;
 import org.sakaiproject.kernel.component.model.Component;
 import org.sakaiproject.kernel.util.ComponentSpecificationUtil;
@@ -65,8 +65,8 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
    */
   private Artifact[] artifacts;
 
-  @SuppressWarnings("unused")
-  private String source;
+  //@SuppressWarnings("unused")
+  //private String source;
   private PackageExport[] exports;
   private URL componentClasspath;
 
@@ -92,7 +92,7 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
       }
     }
     XStream xstream = new XStream();
-    Annotations.configureAliases(xstream, Component.CLASSES);
+    Annotations.configureAliases(xstream, Component.getComponentClasses());
     Reader in = null;
     InputStream xsd = null;
     try {
@@ -149,7 +149,7 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getClassPathURLs()
    */
   public Artifact[] getClassPathDependencies() {
-    return artifacts;
+    return artifacts.clone();
   }
 
   /**
@@ -166,7 +166,7 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getComponentDependencies()
    */
   public Artifact[] getComponentDependencies() {
-    return componentDependencies;
+    return componentDependencies.clone();
   }
 
   /**
@@ -211,7 +211,7 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getDependencies()
    */
   public Artifact[] getDependencies() {
-    return artifacts;
+    return artifacts.clone();
   }
 
   /**
@@ -220,7 +220,7 @@ public class URLComponentSpecificationImpl implements ComponentSpecification {
    * @see org.sakaiproject.kernel.api.ComponentSpecification#getExports()
    */
   public PackageExport[] getExports() {
-    return exports;
+    return exports.clone();
   }
 
   /**

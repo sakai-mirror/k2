@@ -43,6 +43,8 @@ import org.sakaiproject.kernel.component.test.mock.MockArtifact;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -64,22 +66,30 @@ public class ComponentClassloaderTest {
   public void setUp() throws ComponentSpecificationException {
     packageRegistryService = new PackageRegistryServiceImpl();
     exportClassloader = this.getClass().getClassLoader();
-    exporter = new MockClassExport(exportClassloader, new MockArtifact("test1"),"META-INF/persistance.xml");
+    exporter = new MockClassExport(exportClassloader,
+        new MockArtifact("test1"), "META-INF/persistance.xml");
     packageRegistryService.addExport("org.sakaiproject.kernel.component.test",
         exporter);
 
     Maven2ArtifactResolver dependencyResolver = new Maven2ArtifactResolver();
-    DependencyImpl cpdep = new DependencyImpl();
+    final DependencyImpl cpdep = new DependencyImpl();
     cpdep.setGroupId("commons-lang");
     cpdep.setArtifactId("commons-lang");
     cpdep.setVersion("2.3");
     cpdep.setScope(DependencyScope.SHARE);
 
-    URL[] urls = new URL[1];
+    final URL[] urls = new URL[1];
     urls[0] = dependencyResolver.resolve(null, cpdep);
 
-    componentClassloader = new ComponentClassLoader(packageRegistryService,
-        urls, this.getClass().getClassLoader(), cpdep);
+    componentClassloader = AccessController
+        .doPrivileged(new PrivilegedAction<ComponentClassLoader>() {
+
+          public ComponentClassLoader run() {
+            return new ComponentClassLoader(packageRegistryService, urls, this
+                .getClass().getClassLoader(), cpdep);
+          }
+
+        });
 
   }
 
@@ -144,11 +154,9 @@ public class ComponentClassloaderTest {
     Vector<URL> v = new Vector<URL>();
     v.add(new URL("http://notareal.com/url"));
     Exporter mockExporter = EasyMock.createMock(Exporter.class);
-    
+
     replay(mockExporter);
-    
-    
-    
+
     Enumeration<URL> urls = componentClassloader
         .getResources("META-INF/persistance.xml");
     assertNotNull(urls);
@@ -158,18 +166,18 @@ public class ComponentClassloaderTest {
       i++;
       URL u = urls.nextElement();
       String url = u.toString();
-      if ( map.containsKey(url) ) {
-        fail("Duplicate URL found "+url);
+      if (map.containsKey(url)) {
+        fail("Duplicate URL found " + url);
       }
       map.put(url, url);
     }
     verify(mockExporter);
-    
+
     reset(mockExporter);
-    
-    expect(mockExporter.findExportedResources("META-INF/persistance.xml")).andReturn(v.elements());
+
+    expect(mockExporter.findExportedResources("META-INF/persistance.xml"))
+        .andReturn(v.elements());
     replay(mockExporter);
-    
 
     packageRegistryService.addResource("META-INF", mockExporter);
 
@@ -182,14 +190,14 @@ public class ComponentClassloaderTest {
       URL u = urls.nextElement();
       String url = u.toString();
       if (map.containsKey(url)) {
-        
-      } else if ( map2.containsKey(url) ) {
-        fail("Duplicate URL found second time "+url);
+
+      } else if (map2.containsKey(url)) {
+        fail("Duplicate URL found second time " + url);
       } else {
-        map2.put(url,url);
-        map.put(url,url);
+        map2.put(url, url);
+        map.put(url, url);
       }
-    }    
+    }
     verify(mockExporter);
 
   }

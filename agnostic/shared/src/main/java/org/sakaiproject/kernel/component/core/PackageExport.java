@@ -39,7 +39,7 @@ public class PackageExport extends ConcurrentHashMap<String, PackageExport> {
   /**
    * The classloader to use for package stubs that end here in the tree.
    */
-  private Exporter exporter;
+  private transient Exporter exporter;
   /**
    * The name of the package at this point.
    */

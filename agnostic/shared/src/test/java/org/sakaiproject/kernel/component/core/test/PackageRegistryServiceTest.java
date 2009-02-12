@@ -28,6 +28,8 @@ import org.sakaiproject.kernel.component.test.mock.MockArtifact;
 
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -45,12 +47,32 @@ public class PackageRegistryServiceTest {
   @Before
   public void setUp() {
 
-    apiLoader = new MockClassExport(new URLClassLoader(new URL[0]),
-        new MockArtifact("apiloader"),"META-INF/persistance.xml");
-    special = new MockClassExport(new URLClassLoader(new URL[0]),
-        new MockArtifact("special"),"META-INF/persistance.xml");
-    specialsomewhere = new MockClassExport(new URLClassLoader(new URL[0]),
-        new MockArtifact("specialsomewhere"),"META-INF/persistance.xml");
+    apiLoader = new MockClassExport(AccessController
+        .doPrivileged(new PrivilegedAction<URLClassLoader>() {
+
+          public URLClassLoader run() {
+            return new URLClassLoader(new URL[0]);
+          }
+
+        }), new MockArtifact("apiloader"), "META-INF/persistance.xml");
+    special = new MockClassExport(AccessController
+        .doPrivileged(new PrivilegedAction<URLClassLoader>() {
+
+          public URLClassLoader run() {
+            return new URLClassLoader(new URL[0]);
+          }
+
+        }),
+        new MockArtifact("special"), "META-INF/persistance.xml");
+    specialsomewhere = new MockClassExport(AccessController
+        .doPrivileged(new PrivilegedAction<URLClassLoader>() {
+
+          public URLClassLoader run() {
+            return new URLClassLoader(new URL[0]);
+          }
+
+        }),
+        new MockArtifact("specialsomewhere"), "META-INF/persistance.xml");
     registry = new PackageRegistryServiceImpl();
 
   }
@@ -135,7 +157,7 @@ public class PackageRegistryServiceTest {
             .findClassloader("org.sakaiproject.kernel.api.something.special.somewhere.else.Test213"));
 
     registry
-    .removeExport("org.sakaiproject.kernel.api.something.special.somewhere.else.or.something");
+        .removeExport("org.sakaiproject.kernel.api.something.special.somewhere.else.or.something");
     registry
         .removeExport("org.sakaiproject.kernel.api.something.special.somewhere.else");
     assertSame(apiLoader, registry
@@ -161,6 +183,7 @@ public class PackageRegistryServiceTest {
         registry
             .findClassloader("org.sakaiproject.kernel.api.something.special.somewhere.else.Test213"));
   }
+
   /**
    * Test method for
    * {@link org.sakaiproject.kernel.component.core.PackageRegistryServiceImpl#addExport(java.lang.String, java.lang.ClassLoader)}
@@ -170,25 +193,25 @@ public class PackageRegistryServiceTest {
   public void testAddResource() {
     registry.addResource("org/sakaiproject/kernel", apiLoader);
     registry
-    .addExport("org/sakaiproject/kernel/api/something/special", special);
-    
-    Enumeration<URL> e = registry.findExportedResources("org/sakaiproject/kernel");
-    while(e.hasMoreElements()) {
-     @SuppressWarnings("unused")
-    URL u = e.nextElement();
+        .addExport("org/sakaiproject/kernel/api/something/special", special);
+
+    Enumeration<URL> e = registry
+        .findExportedResources("org/sakaiproject/kernel");
+    while (e.hasMoreElements()) {
+      @SuppressWarnings("unused")
+      URL u = e.nextElement();
     }
- 
+
   }
-  
-  
+
   @Test
   public void testGetExports() {
     registry.addResource("org/sakaiproject/kernel", apiLoader);
     registry
-    .addExport("org.sakaiproject.kernel.api.something.special", special);
+        .addExport("org.sakaiproject.kernel.api.something.special", special);
     Map<String, String> exports = registry.getExports();
-    for ( Entry<String,String> e : exports.entrySet() ) {
-      System.err.println("Entry "+e.getKey()+":"+e.getValue());
+    for (Entry<String, String> e : exports.entrySet()) {
+      System.err.println("Entry " + e.getKey() + ":" + e.getValue());
     }
   }
 

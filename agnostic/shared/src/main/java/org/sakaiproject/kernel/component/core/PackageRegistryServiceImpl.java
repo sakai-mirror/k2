@@ -145,15 +145,19 @@ public class PackageRegistryServiceImpl implements PackageRegistryService {
     }
     if (key != null) {
       PackageExport child = container.get(key);
-      Exporter parentClassloader = container.getClassExporter();
+      if (child != null) {
+        Exporter parentClassloader = container.getClassExporter();
 
-      if (setChildClassLoaders(child, child.getClassExporter(),
-          parentClassloader) == 0) {
-        // if there are no other classloaders in in the child tree, remove the
-        // child tree alltogether.
-        container.remove(key);
+        if (setChildClassLoaders(child, child.getClassExporter(),
+            parentClassloader) == 0) {
+          // if there are no other classloaders in in the child tree, remove the
+          // child tree alltogether.
+          container.remove(key);
+        } else {
+          child.setClassExporter(parentClassloader);
+        }
       } else {
-        child.setClassExporter(parentClassloader);
+        LOG.warn("Located a null child at a key that should have contained a PackageExport Key was:"+key);
       }
     }
   }

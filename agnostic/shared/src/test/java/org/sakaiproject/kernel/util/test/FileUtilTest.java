@@ -21,6 +21,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +37,7 @@ import java.io.IOException;
  */
 public class FileUtilTest {
 
+  private static final Log LOG = LogFactory.getLog(FileUtilTest.class);
   private File baseFile;
 
   @Before
@@ -61,7 +64,9 @@ public class FileUtilTest {
    * @throws IOException 
    */
   private void touchFile(File f) throws IOException {
-    f.getParentFile().mkdirs();
+    if ( f.getParentFile().mkdirs() ) {
+      LOG.debug("Created directory for "+f);
+    }
     FileWriter fw = new FileWriter(f);
     fw.write(String.valueOf(System.currentTimeMillis()));
     fw.close();

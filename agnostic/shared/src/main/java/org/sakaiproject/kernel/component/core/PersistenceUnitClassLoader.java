@@ -234,7 +234,9 @@ public class PersistenceUnitClassLoader extends ClassLoader {
     // classes.
     final File file = new File(System.getProperty("java.io.tmpdir") + "/sakai/"
         + filename);
-    file.getParentFile().mkdirs();
+    if ( file.getParentFile().mkdirs() ) {
+      LOG.debug("Created "+file);
+    }
     final PrintWriter pw = new PrintWriter(new FileWriter(file));
     pw.print(xml);
     pw.close();
@@ -509,6 +511,8 @@ public class PersistenceUnitClassLoader extends ClassLoader {
         sb.append(br.readLine()).append("\n");
       }
       br.close();
+    } catch (RuntimeException e) {
+      // do nothing
     } catch (Exception e) {
       // do nothing
     }

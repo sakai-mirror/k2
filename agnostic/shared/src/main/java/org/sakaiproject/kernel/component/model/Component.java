@@ -33,7 +33,7 @@ import java.util.List;
 @XStreamAlias("component")
 public class Component implements Artifact {
 
-  public static final Class<?>[] CLASSES = { Component.class,
+  static final Class<?>[] CLASSES = { Component.class,
       DependencyImpl.class, DependencyScope.class, PackageExportImpl.class };
   /**
    * The name of activator class.
@@ -265,6 +265,13 @@ public class Component implements Artifact {
    */
   public boolean isManaged() {
     return !isUnmanaged();
+  }
+
+  /**
+   * @return
+   */
+  public static Class<?>[] getComponentClasses() {
+    return CLASSES.clone();
   }
 
 }

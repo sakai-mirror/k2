@@ -37,7 +37,9 @@ public class FileUtil {
           deleteAll(fc);
         }
       }
-      f.delete();
+      if ( f.delete() ) {
+        throw new RuntimeException("Failed to delete file "+f);
+      }
     }
   }
 

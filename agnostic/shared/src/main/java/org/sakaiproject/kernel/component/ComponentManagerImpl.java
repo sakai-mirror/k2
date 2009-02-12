@@ -204,6 +204,10 @@ public class ComponentManagerImpl implements ComponentManager {
       startedComponents.put(spec.getName(), spec);
       LOG.info("==================STARTED   " + spec.getName());
       return true;
+    } catch (RuntimeException e) {
+      LOG.error("==================FAILED   " + spec.getName());
+      throw new KernelConfigurationException("Unable to start component "
+          + spec + " cause:" + e.getMessage(), e);
     } catch (Exception e) {
       LOG.error("==================FAILED   " + spec.getName());
       throw new KernelConfigurationException("Unable to start component "

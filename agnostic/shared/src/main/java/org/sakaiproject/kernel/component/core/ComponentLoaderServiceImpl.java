@@ -39,6 +39,8 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -73,7 +75,7 @@ public class ComponentLoaderServiceImpl implements ComponentLoaderService {
       throws IOException, ComponentSpecificationException,
       KernelConfigurationException {
     // convert the location set into a list of URLs
-    Map<String,URL> locations = new HashMap<String,URL>();
+    final Map<String,URL> locations = new HashMap<String,URL>();
     LOG.info("Component Loacations has been set to " + componentLocations);
     for (String location : StringUtils.split(componentLocations, ';')) {
       location = location.trim();
@@ -124,10 +126,11 @@ public class ComponentLoaderServiceImpl implements ComponentLoaderService {
     LOG.info("    bundle contains " + locations.size() + " components");
 
     // bind to the parent classloader ?
-    ClassLoader parent = null;
+    ClassLoader pcl = null;
     if (fromClassloader) {
-      parent = this.getClass().getClassLoader();
+      pcl = this.getClass().getClassLoader();
     }
+    final ClassLoader parent = pcl;
     // find all the instances
     
     LOG.info("+++++++++++search locations ++++++++++++++++++++++");
@@ -135,9 +138,16 @@ public class ComponentLoaderServiceImpl implements ComponentLoaderService {
       LOG.info("Searching in "+location.toString());
     }
     LOG.info("--------------------------------------------------");
-    URLClassLoader uclassloader = new URLClassLoader(locations.values()
-        .toArray(new URL[0]), parent);
+    URLClassLoader uclassloader = AccessController.doPrivileged(new PrivilegedAction<URLClassLoader>() {
 
+      public URLClassLoader run() {
+        return 
+        new URLClassLoader(locations.values()
+            .toArray(new URL[0]), parent);
+     }
+      
+    });
+ 
     for ( URL u : uclassloader.getURLs() ) {
       LOG.info("Configured with "+u);
     }

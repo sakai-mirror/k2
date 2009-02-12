@@ -19,6 +19,8 @@ package org.sakaiproject.kernel.component.core.test;
 
 import static org.junit.Assert.*;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,6 +47,7 @@ public class ComponentLoaderServiceImplTest {
 
   private static final String COMPONENT1 = "res://org/sakaiproject/kernel/component/core/test/component1.xml";
   private static final String COMPONENT2 = "res://org/sakaiproject/kernel/component/core/test/component2.xml";
+  private static final Log LOG = LogFactory.getLog(ComponentLoaderServiceImplTest.class) ;
   private File baseFile;
 
   /**
@@ -53,29 +56,32 @@ public class ComponentLoaderServiceImplTest {
   @Before
   public void setUp() throws Exception {
     baseFile = new File("target/fileutiltest");
-    touchFile(new File(baseFile,"testfile1.txt"));
-    touchFile(new File(baseFile,"testfile2.txt"));
-    createComponent(new File(baseFile,"testfile1.jar"), COMPONENT1);
-    File c = new File(baseFile,"sub");
-    File d = new File(c,"sub");
-    File e = new File(d,"sub");
-    File x = new File(e,"sub");
-    touchFile(new File(x,"testfile1.txt"));
-    touchFile(new File(x,"testfile2.txt"));
-    createComponent(new File(x,"testfile2.jar"), COMPONENT2);
+    touchFile(new File(baseFile, "testfile1.txt"));
+    touchFile(new File(baseFile, "testfile2.txt"));
+    createComponent(new File(baseFile, "testfile1.jar"), COMPONENT1);
+    File c = new File(baseFile, "sub");
+    File d = new File(c, "sub");
+    File e = new File(d, "sub");
+    File x = new File(e, "sub");
+    touchFile(new File(x, "testfile1.txt"));
+    touchFile(new File(x, "testfile2.txt"));
+    createComponent(new File(x, "testfile2.jar"), COMPONENT2);
 
   }
 
   /**
    * @param file
-   * @throws IOException 
+   * @throws IOException
    */
   private void createComponent(File f, String component) throws IOException {
-    f.getParentFile().mkdirs();
+    if (f.getParentFile().mkdirs()) {
+      LOG.debug("Created Directory " + f);
+    }
     JarOutputStream jarOutput = new JarOutputStream(new FileOutputStream(f));
     JarEntry jarEntry = new JarEntry("SAKAI-INF/component.xml");
     jarOutput.putNextEntry(jarEntry);
-    String componentXml = ResourceLoader.readResource(component,this.getClass().getClassLoader());
+    String componentXml = ResourceLoader.readResource(component, this
+        .getClass().getClassLoader());
     jarOutput.write(componentXml.getBytes("UTF-8"));
     jarOutput.closeEntry();
     jarOutput.close();
@@ -83,10 +89,12 @@ public class ComponentLoaderServiceImplTest {
 
   /**
    * @param f
-   * @throws IOException 
+   * @throws IOException
    */
   private void touchFile(File f) throws IOException {
-    f.getParentFile().mkdirs();
+    if (f.getParentFile().mkdirs()) {
+      LOG.debug("Created Directory " + f);
+    }
     FileWriter fw = new FileWriter(f);
     try {
       fw.write(String.valueOf(System.currentTimeMillis()));
@@ -104,37 +112,48 @@ public class ComponentLoaderServiceImplTest {
   }
 
   /**
-   * Test method for {@link org.sakaiproject.kernel.component.core.ComponentLoaderServiceImpl#load(java.lang.String, boolean)}.
-   * @throws KernelConfigurationException 
-   * @throws ComponentSpecificationException 
-   * @throws IOException 
+   * Test method for
+   * {@link org.sakaiproject.kernel.component.core.ComponentLoaderServiceImpl#load(java.lang.String, boolean)}
+   * .
+   * 
+   * @throws KernelConfigurationException
+   * @throws ComponentSpecificationException
+   * @throws IOException
    */
   @Test
-  public void testLoad() throws IOException, ComponentSpecificationException, KernelConfigurationException {
+  public void testLoad() throws IOException, ComponentSpecificationException,
+      KernelConfigurationException {
     MockComponentManager cm = new MockComponentManager();
     Maven2ArtifactResolver dependencyResolver = new Maven2ArtifactResolver();
-    ComponentLoaderServiceImpl cl = new ComponentLoaderServiceImpl(cm, dependencyResolver);
+    ComponentLoaderServiceImpl cl = new ComponentLoaderServiceImpl(cm,
+        dependencyResolver);
     cl.load(baseFile.getPath(), false);
     ComponentSpecification[] specs = cm.getStartedComponents();
-    assertEquals(2, specs.length);    
+    assertEquals(2, specs.length);
   }
+
   /**
-   * Test method for {@link org.sakaiproject.kernel.component.core.ComponentLoaderServiceImpl#load(java.lang.String, boolean)}.
-   * @throws KernelConfigurationException 
-   * @throws ComponentSpecificationException 
-   * @throws IOException 
+   * Test method for
+   * {@link org.sakaiproject.kernel.component.core.ComponentLoaderServiceImpl#load(java.lang.String, boolean)}
+   * .
+   * 
+   * @throws KernelConfigurationException
+   * @throws ComponentSpecificationException
+   * @throws IOException
    */
   @Test
-  public void testLoadSingle() throws IOException, ComponentSpecificationException, KernelConfigurationException {
+  public void testLoadSingle() throws IOException,
+      ComponentSpecificationException, KernelConfigurationException {
     MockComponentManager cm = new MockComponentManager();
     Maven2ArtifactResolver dependencyResolver = new Maven2ArtifactResolver();
-    ComponentLoaderServiceImpl cl = new ComponentLoaderServiceImpl(cm, dependencyResolver);
-    File singleJar = new File(baseFile,"testfile1.jar");
+    ComponentLoaderServiceImpl cl = new ComponentLoaderServiceImpl(cm,
+        dependencyResolver);
+    File singleJar = new File(baseFile, "testfile1.jar");
     createComponent(singleJar, COMPONENT1);
 
     cl.load(singleJar.getPath(), false);
     ComponentSpecification[] specs = cm.getStartedComponents();
-    assertEquals(1, specs.length);    
+    assertEquals(1, specs.length);
   }
 
 }

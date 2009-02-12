@@ -33,6 +33,8 @@ import org.sakaiproject.kernel.api.PackageExport;
 import org.sakaiproject.kernel.api.PackageRegistryService;
 
 import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,9 +73,9 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
    * @see org.sakaiproject.kernel.api.ClassLoaderService#getComponentClassLoader(org.sakaiproject.kernel.api.ComponentSpecification,
    *      java.lang.ClassLoader)
    */
-  public ClassLoader getComponentClassLoader(ComponentSpecification spec)
+  public ClassLoader getComponentClassLoader(final ComponentSpecification spec)
       throws ComponentSpecificationException {
-    List<URL> urls = new ArrayList<URL>();
+    final List<URL> urls = new ArrayList<URL>();
     if (spec.getComponentClasspath() != null) {
       urls.add(spec.getComponentClasspath());
     }
@@ -102,8 +104,16 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
                 + " which MUST contain all the kernel dependencies for this test to run ");
       }
     } else {
-      cl = new ComponentClassLoader(packageRegistryService, urls
-          .toArray(new URL[0]), sharedClassLoader, spec.getComponentArtifact());
+      cl = AccessController
+          .doPrivileged(new PrivilegedAction<ComponentClassLoader>() {
+
+            public ComponentClassLoader run() {
+              return new ComponentClassLoader(packageRegistryService, urls
+                  .toArray(new URL[0]), sharedClassLoader, spec
+                  .getComponentArtifact());
+            }
+
+          });
     }
     // add the shared dependencies
     for (Artifact artifact : spec.getDependencies()) {

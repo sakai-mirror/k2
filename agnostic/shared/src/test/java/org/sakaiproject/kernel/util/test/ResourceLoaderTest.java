@@ -21,6 +21,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,6 +41,7 @@ import java.net.URI;
  */
 public class ResourceLoaderTest {
 
+  private static final Log LOG = LogFactory.getLog(ResourceLoaderTest.class);
   private File baseFile;
 
   @Before
@@ -57,7 +60,9 @@ public class ResourceLoaderTest {
    * @throws IOException
    */
   private void touchFile(File f) throws IOException {
-    f.getParentFile().mkdirs();
+    if ( f.getParentFile().mkdirs() ) {
+      LOG.debug("Created parent "+f);
+    }
     FileWriter fw = new FileWriter(f);
     try {
       fw.write(String.valueOf(System.currentTimeMillis()));
@@ -97,7 +102,6 @@ public class ResourceLoaderTest {
     in.close();
 */
     File f = new File(baseFile, "testfile1.txt");
-    String path = f.getAbsolutePath();
     URI uri = f.toURI();
     in = ResourceLoader.openResource(uri.toString(),this.getClass().getClassLoader());
     assertNotNull(in);
