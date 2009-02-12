@@ -17,6 +17,9 @@
  */
 package org.sakaiproject.kernel.util;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
@@ -26,6 +29,8 @@ import java.util.List;
  * Utility class for working on the file system.
  */
 public class FileUtil {
+
+  private static final Log LOG = LogFactory.getLog(FileUtil.class);
 
   /**
    * @param f
@@ -38,7 +43,7 @@ public class FileUtil {
         }
       }
       if ( f.delete() ) {
-        throw new RuntimeException("Failed to delete file "+f);
+        LOG.warn("Failed to delete file "+f);
       }
     }
   }

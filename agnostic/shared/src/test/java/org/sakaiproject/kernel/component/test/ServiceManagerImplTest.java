@@ -18,6 +18,7 @@
 package org.sakaiproject.kernel.component.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
@@ -62,7 +63,7 @@ public class ServiceManagerImplTest {
   @Test
   public void testServiceManagerImpl() {
     ServiceManagerImpl serviceManager = new ServiceManagerImpl(kernel);
-    assertNull(serviceManager);
+    assertNotNull(serviceManager);
   }
 
   /**
