@@ -13,23 +13,19 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package org.sakaiproject.kernel.messaging;
+package org.sakaiproject.kernel.messaging.email;
 
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-
-import javax.jms.Session;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 /**
- * Provide a configured JMS Session for Guice.
+ *
  */
-public class JmsSessionProvider implements Provider<Session> {
-  @Inject
-  public JmsSessionProvider() {
+@RunWith(Suite.class)
+@SuiteClasses( { AttachmentT.class, EmailAddressT.class,
+    EmailMessageListenerT.class, JmsSessionProviderT.class,
+    MailSessionProviderT.class, MessagingModuleT.class })
+public class AllMessagingTest {
 
-  }
-
-  public Session get() {
-    return null;
-  }
 }

@@ -27,22 +27,6 @@ public class EmailAddress implements Serializable {
   private static final long serialVersionUID = 1L;
 
   /**
-   * Type safe constant for recipient types
-   */
-  public enum RcptType {
-    // recipients to be marked in the "to" header
-    TO,
-    // recipients to be marked in the "cc" header
-    CC,
-    // recipients to be marked in the "bcc" header
-    BCC,
-    // actual recipients of message. if specified, other recipients are marked
-    // in the headers
-    // but not used in the SMTP transport.
-    ACTUAL
-  }
-
-  /**
    * holds the personal part of the email address (ie. name)
    */
   private String personal;
@@ -110,8 +94,8 @@ public class EmailAddress implements Serializable {
   public String toString() {
     String retval = getAddress();
 
-    boolean personalEmpty = getPersonal() != null
-        && getPersonal().trim().length() > 0;
+    boolean personalEmpty = getPersonal() == null
+        || getPersonal().trim().length() == 0;
 
     if (!personalEmpty) {
       retval = "\"" + getPersonal() + "\" <" + getAddress() + ">";

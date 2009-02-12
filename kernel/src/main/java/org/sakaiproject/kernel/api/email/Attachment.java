@@ -33,7 +33,7 @@ public class Attachment implements Serializable {
   /**
    * files to associated to this attachment
    */
-  private File file;
+  private final File file;
 
   public Attachment(File file) {
     this.file = file;
@@ -52,16 +52,7 @@ public class Attachment implements Serializable {
     return file;
   }
 
-  /**
-   * Set the file associated to this attachment
-   *
-   * @param file
-   */
-  public void setFile(File file) {
-    this.file = file;
-  }
-
-  public static List<Attachment> toAttachment(List<File> files) {
+  public static List<Attachment> toAttachment(List<? extends File> files) {
     ArrayList<Attachment> attachments = null;
     if (files != null) {
       attachments = new ArrayList<Attachment>();

@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.sakaiproject.kernel.messaging.email;
 
+import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.name.Named;
 
@@ -31,6 +32,7 @@ public class MailSessionProvider implements Provider<Session> {
   /**
    *
    */
+  @Inject
   public MailSessionProvider(@Named("mail.smtp.host") String host,
       @Named("mail.smtp.port") String port) {
     Properties props = new Properties();

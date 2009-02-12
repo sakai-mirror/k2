@@ -15,7 +15,6 @@
  ******************************************************************************/
 package org.sakaiproject.kernel.api.email;
 
-import org.sakaiproject.kernel.api.email.EmailAddress.RcptType;
 import org.sakaiproject.kernel.api.messaging.MessagingException;
 
 import java.io.File;
@@ -77,7 +76,7 @@ public interface EmailMessage {
    *
    * @return List of {@link EmailAddress} that will receive this message
    */
-  Map<RcptType, List<EmailAddress>> getRecipients();
+  Map<RecipientType, List<EmailAddress>> getRecipients();
 
   /**
    * Get recipients of this message that are associated to a certain type
@@ -86,7 +85,7 @@ public interface EmailMessage {
    * @return
    * @see Type
    */
-  List<EmailAddress> getRecipients(RcptType type);
+  List<EmailAddress> getRecipients(RecipientType type);
 
   /**
    * Add a recipient to this message.
@@ -96,7 +95,7 @@ public interface EmailMessage {
    * @param email
    *          Email to send to.
    */
-  void addRecipient(RcptType type, String email);
+  void addRecipient(RecipientType type, String email);
 
   /**
    * Add a recipient to this message.
@@ -108,7 +107,7 @@ public interface EmailMessage {
    * @param email
    *          Email to send to.
    */
-  void addRecipient(RcptType type, EmailAddress address);
+  void addRecipient(RecipientType type, EmailAddress address);
 
   /**
    * Add multiple recipients to this message.
@@ -118,7 +117,7 @@ public interface EmailMessage {
    * @param addresses
    *          List of {@link EmailAddress} to add to this message.
    */
-  void addRecipients(RcptType type, List<EmailAddress> addresses);
+  void addRecipients(RecipientType type, List<EmailAddress> addresses);
 
   /**
    * Get all recipients as a flattened list. This is intended to be used for

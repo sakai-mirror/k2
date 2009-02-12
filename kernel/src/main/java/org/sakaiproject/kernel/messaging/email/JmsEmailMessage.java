@@ -21,7 +21,7 @@ import org.sakaiproject.kernel.api.email.CharacterSet;
 import org.sakaiproject.kernel.api.email.ContentType;
 import org.sakaiproject.kernel.api.email.EmailAddress;
 import org.sakaiproject.kernel.api.email.EmailMessage;
-import org.sakaiproject.kernel.api.email.EmailAddress.RcptType;
+import org.sakaiproject.kernel.api.email.RecipientType;
 import org.sakaiproject.kernel.api.messaging.MessagingException;
 import org.sakaiproject.kernel.api.messaging.MessagingService;
 
@@ -85,7 +85,7 @@ public class JmsEmailMessage implements EmailMessage, Serializable {
   /**
    * Recipients of message
    */
-  private Map<RcptType, List<EmailAddress>> recipients;
+  private Map<RecipientType, List<EmailAddress>> recipients;
 
   /**
    * Subject of message
@@ -123,8 +123,8 @@ public class JmsEmailMessage implements EmailMessage, Serializable {
 
   /**
    * Format of this message if in plain text.
-   *
-   * @see org.sakaiproject.kernel.api.PlainTextFormat
+   * 
+   * @see org.sakaiproject.kernel.api.email.PlainTextFormat
    */
   private String format;
 
@@ -139,7 +139,7 @@ public class JmsEmailMessage implements EmailMessage, Serializable {
    */
   public JmsEmailMessage(MessagingService messagingService) {
     this.messagingService = messagingService;
-    recipients = new HashMap<RcptType, List<EmailAddress>>();
+    recipients = new HashMap<RecipientType, List<EmailAddress>>();
     headers = new HashMap<String, String>();
     attachments = new ArrayList<Attachment>();
     replyTo = new ArrayList<EmailAddress>();
@@ -211,7 +211,7 @@ public class JmsEmailMessage implements EmailMessage, Serializable {
    *
    * @return List of {@link EmailAddress} that will receive this messagel
    */
-  public Map<RcptType, List<EmailAddress>> getRecipients() {
+  public Map<RecipientType, List<EmailAddress>> getRecipients() {
     return recipients;
   }
 
@@ -222,7 +222,7 @@ public class JmsEmailMessage implements EmailMessage, Serializable {
    * @return
    * @see Type
    */
-  public List<EmailAddress> getRecipients(RcptType type) {
+  public List<EmailAddress> getRecipients(RecipientType type) {
     List<EmailAddress> retval = null;
     if (recipients != null) {
       retval = recipients.get(type);
@@ -238,7 +238,7 @@ public class JmsEmailMessage implements EmailMessage, Serializable {
    * @param email
    *          Email to send to.
    */
-  public void addRecipient(RcptType type, String email) {
+  public void addRecipient(RecipientType type, String email) {
     List<EmailAddress> addresses = recipients.get(type);
     if (addresses == null) {
       addresses = new ArrayList<EmailAddress>();
@@ -257,7 +257,7 @@ public class JmsEmailMessage implements EmailMessage, Serializable {
    * @param email
    *          Email to send to.
    */
-  public void addRecipient(RcptType type, EmailAddress address) {
+  public void addRecipient(RecipientType type, EmailAddress address) {
     List<EmailAddress> addresses = recipients.get(type);
     if (addresses == null) {
       addresses = new ArrayList<EmailAddress>();
@@ -274,7 +274,7 @@ public class JmsEmailMessage implements EmailMessage, Serializable {
    * @param addresses
    *          List of {@link EmailAddress} to add to this message.
    */
-  public void addRecipients(RcptType type, List<EmailAddress> addresses) {
+  public void addRecipients(RecipientType type, List<EmailAddress> addresses) {
     List<EmailAddress> currentAddresses = recipients.get(type);
     if (currentAddresses == null) {
       recipients.put(type, addresses);
@@ -292,20 +292,20 @@ public class JmsEmailMessage implements EmailMessage, Serializable {
   public List<EmailAddress> getAllRecipients() {
     List<EmailAddress> rcpts = new ArrayList<EmailAddress>();
 
-    if (recipients.containsKey(RcptType.TO)) {
-      rcpts.addAll(recipients.get(RcptType.TO));
+    if (recipients.containsKey(RecipientType.TO)) {
+      rcpts.addAll(recipients.get(RecipientType.TO));
     }
 
-    if (recipients.containsKey(RcptType.CC)) {
-      rcpts.addAll(recipients.get(RcptType.CC));
+    if (recipients.containsKey(RecipientType.CC)) {
+      rcpts.addAll(recipients.get(RecipientType.CC));
     }
 
-    if (recipients.containsKey(RcptType.BCC)) {
-      rcpts.addAll(recipients.get(RcptType.BCC));
+    if (recipients.containsKey(RecipientType.BCC)) {
+      rcpts.addAll(recipients.get(RecipientType.BCC));
     }
 
-    if (recipients.containsKey(RcptType.ACTUAL)) {
-      rcpts.addAll(recipients.get(RcptType.ACTUAL));
+    if (recipients.containsKey(RecipientType.ACTUAL)) {
+      rcpts.addAll(recipients.get(RecipientType.ACTUAL));
     }
 
     return rcpts;

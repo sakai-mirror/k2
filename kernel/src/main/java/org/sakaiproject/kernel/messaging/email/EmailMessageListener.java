@@ -23,12 +23,16 @@ import org.sakaiproject.kernel.api.email.Attachment;
 import org.sakaiproject.kernel.api.email.ContentType;
 import org.sakaiproject.kernel.api.email.EmailAddress;
 import org.sakaiproject.kernel.api.email.EmailMessage;
-import org.sakaiproject.kernel.api.email.EmailAddress.RcptType;
+import org.sakaiproject.kernel.api.email.RecipientType;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Map.Entry;
 
 import javax.activation.DataHandler;
@@ -41,7 +45,6 @@ import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.SendFailedException;
 import javax.mail.Transport;
-import javax.mail.Message.RecipientType;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
@@ -55,15 +58,23 @@ import javax.mail.internet.MimePart;
 public class EmailMessageListener implements MessageListener {
   private static final Log log = LogFactory.getLog(EmailMessageListener.class);
 
+  private final javax.mail.Session session;
+
   /**
    * Testing variable to enable/disable the calling of Transport.send
    */
   private boolean allowTransport = true;
-  private final javax.mail.Session session;
+
+  /**
+   * Object to notify observers of changes in this class. This should be
+   * considered a testing instrumentation.
+   */
+  private Observable observable;
 
   @Inject
   public EmailMessageListener(javax.mail.Session session) {
     this.session = session;
+    observable = new EmailMessageObservable();
   }
 
   protected void setAllowTransport(boolean allowTransport) {
@@ -116,16 +127,16 @@ public class EmailMessageListener implements MessageListener {
     // build the content type
     String contentType = email.getContentType();
     if (contentType != null) {
+      // message format is only used when content type is text/plain as
+      // specified in the rfc
+      if (ContentType.TEXT_PLAIN.equals(contentType) && format != null
+          && format.trim().length() != 0) {
+        contentType += "; format=" + format;
+      }
+
       if (charset != null && charset.trim().length() != 0) {
         contentType += "; charset=" + charset;
       }
-    }
-
-    // message format is only used when content type is text/plain as
-    // specified in the rfc
-    if (ContentType.TEXT_PLAIN.equals(charset) && format != null
-        && format.trim().length() != 0) {
-      contentType += "; format=" + format;
     }
 
     // transform to a MimeMessage
@@ -139,20 +150,20 @@ public class EmailMessageListener implements MessageListener {
     InternetAddress[] replyTo = emails2Internets(email.getReplyTo(), invalids);
 
     // convert and validate the 'to' addresses
-    InternetAddress[] to = emails2Internets(email.getRecipients(RcptType.TO),
-        invalids);
+    InternetAddress[] to = emails2Internets(email
+        .getRecipients(RecipientType.TO), invalids);
 
     // convert and validate 'cc' addresses
-    InternetAddress[] cc = emails2Internets(email.getRecipients(RcptType.CC),
-        invalids);
+    InternetAddress[] cc = emails2Internets(email
+        .getRecipients(RecipientType.CC), invalids);
 
     // convert and validate 'bcc' addresses
-    InternetAddress[] bcc = emails2Internets(email.getRecipients(RcptType.BCC),
-        invalids);
+    InternetAddress[] bcc = emails2Internets(email
+        .getRecipients(RecipientType.BCC), invalids);
 
     // convert and validate actual email addresses
     InternetAddress[] actual = emails2Internets(email
-        .getRecipients(RcptType.ACTUAL), invalids);
+        .getRecipients(RecipientType.ACTUAL), invalids);
 
     int totalRcpts = to.length + cc.length + bcc.length;
     if (totalRcpts == 0 && actual.length == 0) {
@@ -162,11 +173,11 @@ public class EmailMessageListener implements MessageListener {
     MimeMessage mimeMsg = new MimeMessage(session);
     mimeMsg.setFrom(from);
     mimeMsg.setReplyTo(replyTo);
-    mimeMsg.setRecipients(RecipientType.TO, to);
-    mimeMsg.setRecipients(RecipientType.CC, cc);
-    mimeMsg.setRecipients(RecipientType.BCC, bcc);
+    mimeMsg.setRecipients(javax.mail.Message.RecipientType.TO, to);
+    mimeMsg.setRecipients(javax.mail.Message.RecipientType.CC, cc);
+    mimeMsg.setRecipients(javax.mail.Message.RecipientType.BCC, bcc);
 
-    if (attachments != null && attachments.size() > 0) {
+    if (attachments.size() == 0) {
       setContent(mimeMsg, content, charset, contentType);
     } else {
       // create a multipart container
@@ -205,6 +216,16 @@ public class EmailMessageListener implements MessageListener {
         Transport.send(mimeMsg);
       } else {
         Transport.send(mimeMsg, actual);
+      }
+    } else {
+      try {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        mimeMsg.writeTo(output);
+        String emailString = output.toString();
+        log.info(emailString);
+        observable.notifyObservers(emailString);
+      } catch (IOException e) {
+        log.info("Transport disabled and unable to write message to log.");
       }
     }
   }
@@ -271,5 +292,17 @@ public class EmailMessageListener implements MessageListener {
     }
 
     return addrs;
+  }
+
+  void addObserver(Observer ob) {
+    observable.addObserver(ob);
+  }
+
+  class EmailMessageObservable extends Observable {
+    @Override
+    public void notifyObservers(Object o) {
+      setChanged();
+      super.notifyObservers(o);
+    }
   }
 }

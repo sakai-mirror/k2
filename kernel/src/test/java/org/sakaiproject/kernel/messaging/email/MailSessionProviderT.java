@@ -13,23 +13,22 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package org.sakaiproject.kernel.messaging;
+package org.sakaiproject.kernel.messaging.email;
 
-import com.google.inject.Inject;
-import com.google.inject.Provider;
+import static org.junit.Assert.assertNotNull;
 
-import javax.jms.Session;
+import org.junit.Test;
+
+import javax.mail.Session;
 
 /**
- * Provide a configured JMS Session for Guice.
+ *
  */
-public class JmsSessionProvider implements Provider<Session> {
-  @Inject
-  public JmsSessionProvider() {
-
-  }
-
-  public Session get() {
-    return null;
+public class MailSessionProviderT {
+  @Test
+  public void getSession() {
+    MailSessionProvider prov = new MailSessionProvider("localhost", "25");
+    Session session = prov.get();
+    assertNotNull(session);
   }
 }
