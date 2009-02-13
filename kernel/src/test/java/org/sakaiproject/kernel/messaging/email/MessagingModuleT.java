@@ -19,6 +19,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
+import com.google.inject.CreationException;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
@@ -33,9 +34,13 @@ import java.util.Properties;
 public class MessagingModuleT {
   @Test
   public void createDeadInjector() {
-    Injector inj = Guice.createInjector(new MessagingModule());
-    inj.getInstance(javax.mail.Session.class);
-    fail("Shouldn't work without the properties being set.");
+     try {
+      Injector inj = Guice.createInjector(new MessagingModule());
+      inj.getInstance(javax.mail.Session.class);
+      fail("Shouldn't work without the properties being set.");
+     } catch (CreationException e) {
+      // expected
+    }
   }
 
   @Test
