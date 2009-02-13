@@ -67,6 +67,9 @@ public class EmailAddressT {
     EmailAddress ea1_1 = new EmailAddress(e1);
     EmailAddress ea2 = new EmailAddress("test3@example.com");
 
+    // hash codes are equal
+    assertEquals(ea1.hashCode(), ea1_1.hashCode());
+
     // EmailAddress doesn't equal String
     assertFalse(ea1.equals(e1));
 
@@ -77,10 +80,10 @@ public class EmailAddressT {
     assertTrue(ea1.equals(ea1_1));
     assertTrue(ea1_1.equals(ea1));
 
-    // null equals null
-    assertTrue(new EmailAddress(null).equals(null));
+    // null arguments doesn't equal null address
+    assertFalse(new EmailAddress(null).equals(null));
 
-    // null doesn't equals not-null
+    // null doesn't equal not-null
     assertFalse(new EmailAddress(null).equals("whatever"));
 
     // not-null doesn't equal null

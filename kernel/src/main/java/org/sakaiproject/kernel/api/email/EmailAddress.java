@@ -105,17 +105,27 @@ public class EmailAddress implements Serializable {
   }
 
   @Override
+  public int hashCode() {
+    int hash = 0;
+    if (address != null) {
+      hash = address.hashCode();
+    }
+    return hash;
+  }
+
+  @Override
   public boolean equals(Object o) {
     boolean equals = false;
 
-    if (address == null && o == null) {
-      equals = true;
-    } else if (o instanceof EmailAddress) {
-      String add = ((EmailAddress) o).getAddress();
-
-      boolean bothNull = address == null && add == null;
-      if (bothNull || (address != null && address.equals(add))) {
+    if (o != null) {
+      if (this == o) {
         equals = true;
+      } else if (o instanceof EmailAddress) {
+        EmailAddress ea = (EmailAddress) o;
+        if (address == ea.getAddress()
+            || (address != null && address.equals(ea.getAddress()))) {
+          equals = true;
+        }
       }
     }
 
