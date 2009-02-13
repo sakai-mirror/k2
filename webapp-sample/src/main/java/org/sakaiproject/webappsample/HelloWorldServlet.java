@@ -30,7 +30,6 @@ import org.sakaiproject.kernel.api.ServiceSpec;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -46,22 +45,6 @@ public class HelloWorldServlet extends HttpServlet {
    */
   private static final long serialVersionUID = 2383631675063579262L;
   private static final Log LOG = LogFactory.getLog(HelloWorldServlet.class);
-  private Kernel kernel;
-
-  /**
-   * @see javax.servlet.GenericServlet#init(javax.servlet.ServletConfig)
-   */
-  @Override
-  public void init(ServletConfig config) throws ServletException {
-    super.init(config);
-    KernelManager km = new KernelManager();
-    try {
-      kernel = km.getKernel();
-      LOG.info("Got kernel as " + kernel);
-    } catch (KernelConfigurationException e) {
-      throw new ServletException(e);
-    }
-  }
 
   /**
    * Write a hello response.
@@ -79,14 +62,21 @@ public class HelloWorldServlet extends HttpServlet {
   protected void doGet(final HttpServletRequest req,
       final HttpServletResponse resp) throws ServletException, IOException {
 
-    ServiceManager serviceManager = kernel.getServiceManager();
-    HelloWorldService helloWorldService = serviceManager
-        .getService(new ServiceSpec(HelloWorldService.class));
-    resp.setContentType("text/plain");
-    PrintWriter w = resp.getWriter();
-    w.print("This is the Hello World Servlet saying ");
-    w.print(helloWorldService.getGreeting());
-    w.print(" from the HelloWorldService ");
+    KernelManager km = new KernelManager();
+    try {
+      Kernel kernel = km.getKernel();
+      LOG.info("Got kernel as " + kernel);
 
+      ServiceManager serviceManager = kernel.getServiceManager();
+      HelloWorldService helloWorldService = serviceManager
+          .getService(new ServiceSpec(HelloWorldService.class));
+      resp.setContentType("text/plain");
+      PrintWriter w = resp.getWriter();
+      w.print("This is the Hello World Servlet saying ");
+      w.print(helloWorldService.getGreeting());
+      w.print(" from the HelloWorldService ");
+    } catch (KernelConfigurationException e) {
+      throw new ServletException(e);
+    }
   }
 }
