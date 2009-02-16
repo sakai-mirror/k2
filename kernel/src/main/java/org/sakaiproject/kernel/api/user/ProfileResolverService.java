@@ -15,28 +15,31 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.model;
+package org.sakaiproject.kernel.api.user;
+
+import com.google.inject.ImplementedBy;
+
+import org.sakaiproject.kernel.user.ProfileResolverServiceImpl;
+
 
 /**
- * The status of a connection.
+ * Resolves profiles
  */
-public enum FriendStatus {
-  /**
-   * The current user has been invited by another user.
-   */
-  INVITED(), 
-  /**
-   * connection has been accepted 
-   */
-  ACCEPTED(), 
-  /**
-   * The connection has been blocked, preventing connection 
-   */
-  BLOCKED(), 
-  /**
-   * An invitation has been sent to this user, but has not yet been accepted.
-   * 
-   */
-  PENDING();
+@ImplementedBy(ProfileResolverServiceImpl.class)
+public interface ProfileResolverService {
 
+  /**
+   * Resolves a user into its profile
+   * @param string
+   * @return
+   */
+  UserProfile resolve(String uuid);
+
+  /**
+   * Create a new user profile,
+   * @param u the user
+   * @param userType the type of the user
+   * @return a new profile not saved.
+   */
+  UserProfile create(String uuid, String userType);
 }

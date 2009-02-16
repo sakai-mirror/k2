@@ -31,6 +31,7 @@ import org.sakaiproject.kernel.JsonClassMapProvider;
 import org.sakaiproject.kernel.JsonMorpherListProvider;
 import org.sakaiproject.kernel.KernelModule;
 import org.sakaiproject.kernel.ValueProcessorsProvider;
+import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.authz.simple.NullUserEnvironment;
@@ -38,6 +39,7 @@ import org.sakaiproject.kernel.serialization.json.BeanJsonLibConfig;
 import org.sakaiproject.kernel.serialization.json.BeanJsonLibConverter;
 import org.sakaiproject.kernel.serialization.json.BeanProcessor;
 import org.sakaiproject.kernel.serialization.json.ValueProcessor;
+import org.sakaiproject.kernel.user.UserFactoryService;
 import org.sakaiproject.kernel.util.PropertiesLoader;
 
 import java.util.ArrayList;
@@ -115,6 +117,11 @@ public class ModelModule extends AbstractModule {
     TypeLiteral<List<Morpher>> jsonMorpherList = new TypeLiteral<List<Morpher>>() {
     };
     bind(jsonMorpherList).toProvider(JsonMorpherListProvider.class);
+    
+    
+    // add some mocks
+    bind(JCRNodeFactoryService.class).toInstance(EasyMock.createMock(JCRNodeFactoryService.class));
+    bind(UserFactoryService.class).toInstance(EasyMock.createMock(UserFactoryService.class));
 
   }
 }

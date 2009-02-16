@@ -15,28 +15,30 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.model;
+package org.sakaiproject.kernel.api.social;
+
+import com.google.inject.ImplementedBy;
+
+import org.sakaiproject.kernel.model.FriendsBean;
+import org.sakaiproject.kernel.social.FriendsResolverServiceImpl;
 
 /**
- * The status of a connection.
+ * The Friends resolver service resolves a FriendsBean from a user id.
  */
-public enum FriendStatus {
-  /**
-   * The current user has been invited by another user.
-   */
-  INVITED(), 
-  /**
-   * connection has been accepted 
-   */
-  ACCEPTED(), 
-  /**
-   * The connection has been blocked, preventing connection 
-   */
-  BLOCKED(), 
-  /**
-   * An invitation has been sent to this user, but has not yet been accepted.
-   * 
-   */
-  PENDING();
+@ImplementedBy(FriendsResolverServiceImpl.class)
+public interface FriendsResolverService {
 
+  /**
+   * The name of the friends file 
+   */
+  public static final String FRIENDS_FILE = "fiends.json";
+  
+  /**
+   * Get the FriendsBean for the user uuid.
+   * @param uuid
+   * @return
+   */
+  FriendsBean resolve(String uuid);
+  
+  
 }

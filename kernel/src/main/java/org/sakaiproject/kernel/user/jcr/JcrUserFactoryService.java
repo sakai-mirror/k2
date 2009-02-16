@@ -46,8 +46,7 @@ public class JcrUserFactoryService implements UserFactoryService {
   private static final String JCR_DEFAULT_TEMPLATE = "jcruserenv.templates.default";
   private static final String JCR_PROFILE_TEMPLATES = "jcrprofile.templates";
   private static final String JCR_PROFILE_DEFAUT_TEMPLATES = "jcrprofile.templates.default";
-  private static final String PROFILE_JSON = "profile.json";
-  private static final String PRIVATE_PATH_BASE = "jcrprivateshared.base";
+  public static final String PRIVATE_PATH_BASE = "jcrprivateshared.base";
 
   private EntityManager entityManager;
   private String userEnvironmentBase;

@@ -23,6 +23,7 @@ import com.google.inject.Provider;
 import org.sakaiproject.kernel.authz.simple.SubjectPermissionListener;
 import org.sakaiproject.kernel.authz.simple.UserEnvironmentListener;
 import org.sakaiproject.kernel.jcr.api.JcrContentListener;
+import org.sakaiproject.kernel.social.FriendsListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,9 +42,11 @@ public class JcrContentListenerProvider implements
   @Inject
   public JcrContentListenerProvider(
       UserEnvironmentListener userEnvironmentListener,
-      SubjectPermissionListener subjectPermissionListener) {
+      SubjectPermissionListener subjectPermissionListener,
+      FriendsListener friendsListener) {
     list.add(userEnvironmentListener);
     list.add(subjectPermissionListener);
+    list.add(friendsListener);
   }
 
   /**

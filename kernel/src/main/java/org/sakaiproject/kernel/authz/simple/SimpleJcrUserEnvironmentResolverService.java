@@ -34,7 +34,9 @@ import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
+import org.sakaiproject.kernel.model.UserEnvironmentBean;
 import org.sakaiproject.kernel.user.UserFactoryService;
+import org.sakaiproject.kernel.user.jcr.JcrAuthenticationResolverProvider;
 import org.sakaiproject.kernel.util.IOUtils;
 import org.sakaiproject.kernel.util.StringUtils;
 
@@ -42,6 +44,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -135,7 +139,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
     try {
       in = jcrNodeFactoryService.getInputStream(userEnvPath);
       String userEnvBody = IOUtils.readFully(in, "UTF-8");
-      System.err.println(" Loaded User Env from JCR as "+userEnvBody);
+      System.err.println(" Loaded User Env from JCR as " + userEnvBody);
       // convert to a bean, the
       UserEnvironment ue = beanConverter.convertToObject(userEnvBody,
           UserEnvironment.class);
@@ -270,6 +274,80 @@ public class SimpleJcrUserEnvironmentResolverService implements
       } catch (Exception ex) {
       }
     }
+
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService#create(org.sakaiproject.kernel.api.user.User,
+   *      java.lang.String)
+   */
+  public UserEnvironment create(User u, String externalId, String password,
+      String userType) {
+    String userEnvironmentPath = userFactoryService.getUserEnvPath(u.getUuid());
+
+    ByteArrayInputStream bais = null;
+    InputStream templateInputStream = null;
+    try {
+
+      String userEnvironmentTemplate = userFactoryService
+          .getUserEnvTemplate(userType);
+
+      // load the template
+      templateInputStream = jcrNodeFactoryService
+          .getInputStream(userEnvironmentTemplate);
+      String template = IOUtils.readFully(templateInputStream, "UTF-8");
+      System.err.println("Loading UE from " + userEnvironmentTemplate + " as "
+          + template);
+      UserEnvironmentBean userEnvironmentBean = beanConverter.convertToObject(
+          template, UserEnvironmentBean.class);
+
+      // make the template this user
+      userEnvironmentBean.setEid(externalId);
+      userEnvironmentBean.setUuid(u.getUuid());
+      Map<String, String> p = new HashMap<String, String>();
+      p.put("userType", userType);
+      userEnvironmentBean.setProperties(p);
+
+      // save the template
+      String userEnv = beanConverter.convertToString(userEnvironmentBean);
+      System.err.println("Saving UE to " + userEnvironmentPath + " as "
+          + userEnv);
+      bais = new ByteArrayInputStream(userEnv.getBytes("UTF-8"));
+      Node userEnvNode = jcrNodeFactoryService.setInputStream(
+          userEnvironmentPath, bais, RestProvider.CONTENT_TYPE);
+
+      // set the password
+      userEnvNode.setProperty(
+          JcrAuthenticationResolverProvider.JCRPASSWORDHASH, StringUtils
+              .sha1Hash(password));
+
+      userEnvNode.save();
+
+    } catch (RepositoryException e) {
+      LOG.error(e.getMessage(), e);
+    } catch (JCRNodeFactoryServiceException e) {
+      LOG.error(e.getMessage(), e);
+    } catch (UnsupportedEncodingException e) {
+      LOG.error(e.getMessage(), e);
+    } catch (NoSuchAlgorithmException e) {
+      LOG.error(e.getMessage(), e);
+    } catch (IOException e) {
+      LOG.error(e.getMessage(), e);
+    } finally {
+      try {
+        bais.close();
+      } catch (Exception ex) {
+        // not interested
+      }
+      try {
+        templateInputStream.close();
+      } catch (Exception ex) {
+        // not interested
+      }
+    }
+    return null;
 
   }
 }

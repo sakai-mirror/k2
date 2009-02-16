@@ -97,4 +97,12 @@ public interface UserEnvironmentResolverService {
    */
   void save (UserEnvironment userEnvironment) throws UpdateFailedException;
 
+  /**
+   * @param u
+   * @param externalId
+   * @param password
+   * @param userType
+   */
+  UserEnvironment create(User u, String externalId, String password, String userType);
+
 }

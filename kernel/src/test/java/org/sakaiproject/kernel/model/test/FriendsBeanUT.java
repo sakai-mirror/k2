@@ -68,7 +68,8 @@ public class FriendsBeanUT {
     BeanJsonLibConverter converter = injector
         .getInstance(BeanJsonLibConverter.class);
 
-    FriendsBean fb = new FriendsBean("person1");
+    FriendsBean fb = injector.getInstance(FriendsBean.class);
+    fb.setUuid("person1");
     fb.addFriend(new FriendBean("person1", "person2", FriendStatus.INVITED));
     fb.addFriend(new FriendBean("person1", "person3", FriendStatus.ACCEPTED));
     fb.addFriend(new FriendBean("person1", "person4", FriendStatus.BLOCKED));

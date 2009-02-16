@@ -30,6 +30,7 @@ public class FriendBean {
   private String personUuid;
   private long lastUpdate;
   private transient FriendStatus status ;
+  private transient Map<String, Object> profile;
   private Map<String,String> properties;
   
   /**
@@ -38,7 +39,8 @@ public class FriendBean {
   public FriendBean() {
     this.lastUpdate = System.currentTimeMillis();
     this.status = FriendStatus.INVITED;
-    this.properties = new HashMap<String, String>();
+    this.properties = Maps.newHashMap();
+    this.profile = Maps.newHashMap();
   }
   /**
    * @param friendStatus 
@@ -49,7 +51,8 @@ public class FriendBean {
     this.friendUuid = friendUuid;
     this.lastUpdate = System.currentTimeMillis();
     this.status = friendStatus;
-    this.properties = new HashMap<String, String>();
+    this.properties = Maps.newHashMap();
+    this.profile = Maps.newHashMap();
   }
 
   /**
@@ -127,5 +130,19 @@ public class FriendBean {
   public void updateStatus(FriendStatus newStatus) {
     lastUpdate = System.currentTimeMillis();
     status = newStatus;
+  }
+  
+  /**
+   * @return the profile
+   */
+  public Map<String, Object> getProfile() {
+    return Maps.newHashMap(profile);
+  }
+ 
+  /**
+   * @param hashMap the profile to set
+   */
+  public void setProfile(HashMap<String, Object> hashMap) {
+    this.profile = Maps.newHashMap(hashMap);
   }
 }

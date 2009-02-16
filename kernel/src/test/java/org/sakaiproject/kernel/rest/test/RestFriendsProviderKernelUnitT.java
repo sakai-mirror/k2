@@ -38,7 +38,7 @@ import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
-import org.sakaiproject.kernel.rest.RestFriendsProvider;
+import org.sakaiproject.kernel.rest.friends.RestFriendsProvider;
 import org.sakaiproject.kernel.test.KernelIntegrationBase;
 import org.sakaiproject.kernel.user.UserFactoryService;
 import org.sakaiproject.kernel.util.StringUtils;
@@ -56,7 +56,6 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
 
-  private static final String PRIVATE_BASE_PATH = "/_private";
   private static boolean shutdown;
   private static Injector injector;
 
@@ -70,8 +69,6 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
   public static void afterThisClass() {
     KernelIntegrationBase.afterClass(shutdown);
   }
-
-  private UserFactoryService userFactoryService;
 
   /**
    * Test a bad request
@@ -98,11 +95,11 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
       String[] elements = new String[] { "friend", "bad", "request" };
 
       RestFriendsProvider rsp = new RestFriendsProvider(registryService,
-          jcrNodeFactoryService, sessionManagerService,
-          userEnvironmentResolverService, userFactoryService, injector
-              .getInstance(Key.get(BeanConverter.class, Names
-                  .named(BeanConverter.REPOSITORY_BEANCONVETER))),
-          PRIVATE_BASE_PATH);
+          sessionManagerService, userEnvironmentResolverService,
+          profileResolverService, entityManager, friendsResolverService,
+          injector.getInstance(Key.get(BeanConverter.class, Names
+              .named(BeanConverter.REPOSITORY_BEANCONVETER))));
+
       try {
         rsp.dispatch(elements, request, response);
         fail();
@@ -125,11 +122,10 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
       String[] elements = new String[] { "friend", "connect" };
 
       RestFriendsProvider rsp = new RestFriendsProvider(registryService,
-          jcrNodeFactoryService, sessionManagerService,
-          userEnvironmentResolverService, userFactoryService, injector
-              .getInstance(Key.get(BeanConverter.class, Names
-                  .named(BeanConverter.REPOSITORY_BEANCONVETER))),
-          PRIVATE_BASE_PATH);
+          sessionManagerService, userEnvironmentResolverService,
+          profileResolverService, entityManager, friendsResolverService,
+          injector.getInstance(Key.get(BeanConverter.class, Names
+              .named(BeanConverter.REPOSITORY_BEANCONVETER))));
       try {
         rsp.dispatch(elements, request, response);
         fail();
@@ -152,11 +148,11 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
       String[] elements = new String[] { "friend", "connect", "badpathelement" };
 
       RestFriendsProvider rsp = new RestFriendsProvider(registryService,
-          jcrNodeFactoryService, sessionManagerService,
-          userEnvironmentResolverService, userFactoryService, injector
-              .getInstance(Key.get(BeanConverter.class, Names
-                  .named(BeanConverter.REPOSITORY_BEANCONVETER))),
-          PRIVATE_BASE_PATH);
+          sessionManagerService, userEnvironmentResolverService,
+          profileResolverService, entityManager, friendsResolverService,
+          injector.getInstance(Key.get(BeanConverter.class, Names
+              .named(BeanConverter.REPOSITORY_BEANCONVETER))));
+
       try {
         rsp.dispatch(elements, request, response);
         fail();
@@ -179,11 +175,10 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
       String[] elements = new String[] { "friend" };
 
       RestFriendsProvider rsp = new RestFriendsProvider(registryService,
-          jcrNodeFactoryService, sessionManagerService,
-          userEnvironmentResolverService, userFactoryService, injector
-              .getInstance(Key.get(BeanConverter.class, Names
-                  .named(BeanConverter.REPOSITORY_BEANCONVETER))),
-          PRIVATE_BASE_PATH);
+          sessionManagerService, userEnvironmentResolverService,
+          profileResolverService, entityManager, friendsResolverService,
+          injector.getInstance(Key.get(BeanConverter.class, Names
+              .named(BeanConverter.REPOSITORY_BEANCONVETER))));
       try {
         rsp.dispatch(elements, request, response);
         fail();
@@ -230,11 +225,10 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
         "frienduserid" };
 
     RestFriendsProvider rsp = new RestFriendsProvider(registryService,
-        jcrNodeFactoryService, sessionManagerService,
-        userEnvironmentResolverService, userFactoryService, injector
-            .getInstance(Key.get(BeanConverter.class, Names
-                .named(BeanConverter.REPOSITORY_BEANCONVETER))),
-        PRIVATE_BASE_PATH);
+        sessionManagerService, userEnvironmentResolverService,
+        profileResolverService, entityManager, friendsResolverService,
+        injector.getInstance(Key.get(BeanConverter.class, Names
+            .named(BeanConverter.REPOSITORY_BEANCONVETER))));
     try {
       rsp.dispatch(elements, request, response);
       fail();
@@ -264,6 +258,11 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
     expect(request.getParameter("friendUuid")).andReturn("MyFriend");
     expect(request.getParameter("friendType")).andReturn(null);
     expect(request.getParameter("message")).andReturn("hi");
+    expect(request.getParameter("p")).andReturn(null);
+    expect(request.getParameter("n")).andReturn(null);
+    expect(request.getParameterValues("s")).andReturn(null);
+    expect(request.getParameterValues("o")).andReturn(null);
+
     response.setContentType(RestProvider.CONTENT_TYPE);
     expectLastCall();
 
@@ -273,11 +272,10 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
         "frienduserid" };
 
     RestFriendsProvider rsp = new RestFriendsProvider(registryService,
-        jcrNodeFactoryService, sessionManagerService,
-        userEnvironmentResolverService, userFactoryService, injector
-            .getInstance(Key.get(BeanConverter.class, Names
-                .named(BeanConverter.REPOSITORY_BEANCONVETER))),
-        PRIVATE_BASE_PATH);
+        sessionManagerService, userEnvironmentResolverService,
+        profileResolverService, entityManager, friendsResolverService,
+        injector.getInstance(Key.get(BeanConverter.class, Names
+            .named(BeanConverter.REPOSITORY_BEANCONVETER))));
     rsp.dispatch(elements, request, response);
 
     String op = baos.toString(StringUtils.UTF8);
@@ -300,11 +298,10 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     RestFriendsProvider rsp = new RestFriendsProvider(registryService,
-        jcrNodeFactoryService, sessionManagerService,
-        userEnvironmentResolverService, userFactoryService, injector
-            .getInstance(Key.get(BeanConverter.class, Names
-                .named(BeanConverter.REPOSITORY_BEANCONVETER))),
-        PRIVATE_BASE_PATH);
+        sessionManagerService, userEnvironmentResolverService,
+        profileResolverService, entityManager, friendsResolverService,
+        injector.getInstance(Key.get(BeanConverter.class, Names
+            .named(BeanConverter.REPOSITORY_BEANCONVETER))));
 
     // request a connection
     connect(rsp, "user2", "SESSION-2131asdassdfsdfaqwe", "request", "user1",
@@ -375,11 +372,10 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     RestFriendsProvider rsp = new RestFriendsProvider(registryService,
-        jcrNodeFactoryService, sessionManagerService,
-        userEnvironmentResolverService, userFactoryService, injector
-            .getInstance(Key.get(BeanConverter.class, Names
-                .named(BeanConverter.REPOSITORY_BEANCONVETER))),
-        PRIVATE_BASE_PATH);
+        sessionManagerService, userEnvironmentResolverService,
+        profileResolverService, entityManager, friendsResolverService,
+        injector.getInstance(Key.get(BeanConverter.class, Names
+            .named(BeanConverter.REPOSITORY_BEANCONVETER))));
 
     // request a connection
     connect(rsp, "user2", "SESSION-2131asdassdfsdfaqwe", "request", "user1",
@@ -431,11 +427,10 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     RestFriendsProvider rsp = new RestFriendsProvider(registryService,
-        jcrNodeFactoryService, sessionManagerService,
-        userEnvironmentResolverService, userFactoryService, injector
-            .getInstance(Key.get(BeanConverter.class, Names
-                .named(BeanConverter.REPOSITORY_BEANCONVETER))),
-        PRIVATE_BASE_PATH);
+        sessionManagerService, userEnvironmentResolverService,
+        profileResolverService, entityManager, friendsResolverService,
+        injector.getInstance(Key.get(BeanConverter.class, Names
+            .named(BeanConverter.REPOSITORY_BEANCONVETER))));
 
     // request a connection
     connect(rsp, "user2", "SESSION-2131asdassdfsdfaqwe", "request", "user1",
@@ -487,11 +482,10 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     RestFriendsProvider rsp = new RestFriendsProvider(registryService,
-        jcrNodeFactoryService, sessionManagerService,
-        userEnvironmentResolverService, userFactoryService, injector
-            .getInstance(Key.get(BeanConverter.class, Names
-                .named(BeanConverter.REPOSITORY_BEANCONVETER))),
-        PRIVATE_BASE_PATH);
+        sessionManagerService, userEnvironmentResolverService,
+        profileResolverService, entityManager, friendsResolverService,
+        injector.getInstance(Key.get(BeanConverter.class, Names
+            .named(BeanConverter.REPOSITORY_BEANCONVETER))));
 
     // request a connection
     connect(rsp, "user2", "SESSION-2131asdassdfsdfaqwe", "request", "user1",
@@ -601,6 +595,11 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
     expect(request.getParameter("friendUuid")).andReturn(friend);
     expect(request.getParameter("friendType")).andReturn("distant");
     expect(request.getParameter("message")).andReturn(message);
+    expect(request.getParameter("p")).andReturn(null);
+    expect(request.getParameter("n")).andReturn(null);
+    expect(request.getParameterValues("s")).andReturn(null);
+    expect(request.getParameterValues("o")).andReturn(null);
+
     response.setContentType(RestProvider.CONTENT_TYPE);
     expectLastCall();
 
@@ -635,6 +634,11 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
     expect(request.getParameter("friendUuid")).andReturn(null);
     expect(request.getParameter("friendType")).andReturn(null);
     expect(request.getParameter("message")).andReturn(null);
+    expect(request.getParameter("p")).andReturn(null);
+    expect(request.getParameter("n")).andReturn(null);
+    expect(request.getParameterValues("s")).andReturn(null);
+    expect(request.getParameterValues("o")).andReturn(null);
+
     response.setContentType(RestProvider.CONTENT_TYPE);
     expectLastCall();
 

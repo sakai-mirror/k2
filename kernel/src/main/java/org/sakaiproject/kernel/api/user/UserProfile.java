@@ -15,28 +15,32 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.model;
+package org.sakaiproject.kernel.api.user;
+
+import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
+
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.jcr.RepositoryException;
 
 /**
- * The status of a connection.
+ * 
  */
-public enum FriendStatus {
+public interface UserProfile {
+
+  String getUuid();
+
+  HashMap<String, Object> getProperties();
+
+  void setProperties(Map<String, Object> properties);
+
   /**
-   * The current user has been invited by another user.
-   */
-  INVITED(), 
-  /**
-   * connection has been accepted 
-   */
-  ACCEPTED(), 
-  /**
-   * The connection has been blocked, preventing connection 
-   */
-  BLOCKED(), 
-  /**
-   * An invitation has been sent to this user, but has not yet been accepted.
+   * @throws RepositoryException 
+   * @throws JCRNodeFactoryServiceException 
+   * @throws UnsupportedEncodingException 
    * 
    */
-  PENDING();
-
+  void save() throws JCRNodeFactoryServiceException, RepositoryException, UnsupportedEncodingException;
 }

@@ -15,28 +15,19 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.model;
+package org.sakaiproject.kernel.rest.friends;
 
 /**
- * The status of a connection.
+ * An enum to define the sort order.
  */
-public enum FriendStatus {
+public enum FriendsSortOrder {
   /**
-   * The current user has been invited by another user.
+   * ascending 
    */
-  INVITED(), 
+  asc(),
   /**
-   * connection has been accepted 
+   * descending
    */
-  ACCEPTED(), 
-  /**
-   * The connection has been blocked, preventing connection 
-   */
-  BLOCKED(), 
-  /**
-   * An invitation has been sent to this user, but has not yet been accepted.
-   * 
-   */
-  PENDING();
+  desc();
 
 }

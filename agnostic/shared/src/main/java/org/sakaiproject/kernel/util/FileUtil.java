@@ -42,7 +42,7 @@ public class FileUtil {
           deleteAll(fc);
         }
       }
-      if ( f.delete() ) {
+      if ( !f.delete() ) {
         LOG.warn("Failed to delete file "+f);
       }
     }

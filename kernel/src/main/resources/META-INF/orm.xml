@@ -9,4 +9,6 @@
   </entity>
   <entity class="org.sakaiproject.kernel.model.UserBean">
   </entity>
+  <entity class="org.sakaiproject.kernel.model.FriendsIndexBean">
+  </entity>
 </entity-mappings>

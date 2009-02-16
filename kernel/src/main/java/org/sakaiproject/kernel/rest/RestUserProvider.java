@@ -22,7 +22,6 @@ import com.google.inject.name.Named;
 
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
-import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.rest.RestProvider;
@@ -30,7 +29,9 @@ import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.user.AuthenticationManagerService;
+import org.sakaiproject.kernel.api.user.ProfileResolverService;
 import org.sakaiproject.kernel.api.user.User;
+import org.sakaiproject.kernel.api.user.UserProfile;
 import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
@@ -39,14 +40,11 @@ import org.sakaiproject.kernel.model.UserEnvironmentBean;
 import org.sakaiproject.kernel.user.AnonUser;
 import org.sakaiproject.kernel.user.UserFactoryService;
 import org.sakaiproject.kernel.user.jcr.JcrAuthenticationResolverProvider;
-import org.sakaiproject.kernel.util.IOUtils;
 import org.sakaiproject.kernel.util.StringUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.kernel.webapp.RestServiceFaultException;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
@@ -82,6 +80,7 @@ public class RestUserProvider implements RestProvider {
   private SessionManagerService sessionManagerService;
   private boolean anonymousAccounting;
   private AuthenticationManagerService authenticationManagerService;
+  private ProfileResolverService profileResolverService;
 
   /**
    * @param sessionManager
@@ -97,6 +96,7 @@ public class RestUserProvider implements RestProvider {
       UserFactoryService userFactoryService,
       SessionManagerService sessionManagerService,
       AuthenticationManagerService authenticationManagerService,
+      ProfileResolverService profileResolverService,
       @Named(PROP_ANON_ACCOUNTING) String anonymousAccounting) {
     Registry<String, RestProvider> restRegistry = registryService
         .getRegistry(RestProvider.REST_REGISTRY);
@@ -108,7 +108,7 @@ public class RestUserProvider implements RestProvider {
     this.userEnvironmentResolverService = userEnvironmentResolverService;
     this.sessionManagerService = sessionManagerService;
     this.authenticationManagerService = authenticationManagerService;
-
+    this.profileResolverService = profileResolverService;
     this.anonymousAccounting = "true".equals(anonymousAccounting);
 
   }
@@ -299,135 +299,65 @@ public class RestUserProvider implements RestProvider {
   private Map<String, Object> createUser(HttpServletRequest request,
       HttpServletResponse response) throws RepositoryException,
       JCRNodeFactoryServiceException, IOException, NoSuchAlgorithmException {
-    ByteArrayInputStream bais = null;
-    InputStream templateInputStream = null;
-    try {
-      String firstName = request.getParameter(FIRST_NAME_PARAM);
-      String lastName = request.getParameter(LAST_NAME_PARAM);
-      String email = request.getParameter(EMAIL_PARAM);
-      String externalId = request.getParameter(EXTERNAL_USERID_PARAM);
-      String password = request.getParameter(PASSWORD_PARAM);
-      String userType = request.getParameter(USER_TYPE_PARAM);
+    String firstName = request.getParameter(FIRST_NAME_PARAM);
+    String lastName = request.getParameter(LAST_NAME_PARAM);
+    String email = request.getParameter(EMAIL_PARAM);
+    String externalId = request.getParameter(EXTERNAL_USERID_PARAM);
+    String password = request.getParameter(PASSWORD_PARAM);
+    String userType = request.getParameter(USER_TYPE_PARAM);
 
-      if (StringUtils.isEmpty(firstName)) {
-        throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
-            FIRST_NAME_PARAM + " is empty");
-      }
-      if (StringUtils.isEmpty(lastName)) {
-        throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
-            LAST_NAME_PARAM + " is empty");
-      }
-      if (StringUtils.isEmpty(email)) {
-        throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
-            EMAIL_PARAM + " is empty");
-      }
-      if (StringUtils.isEmpty(externalId)) {
-        throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
-            EXTERNAL_USERID_PARAM + " is empty");
-      }
-      if (StringUtils.isEmpty(password)) {
-        throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
-            PASSWORD_PARAM + " is empty");
-      }
-      if (StringUtils.isEmpty(userType)) {
-        throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
-            USER_TYPE_PARAM + " is empty");
-      }
-
-      User u = userResolverService.resolve(externalId);
-      if (u != null) {
-        throw new RestServiceFaultException(HttpServletResponse.SC_CONFLICT,
-            USER_TYPE_PARAM + " is empty");
-      }
-
-      u = userFactoryService.createNewUser(externalId);
-
-      String userEnvironmentPath = userFactoryService.getUserEnvPath(u
-          .getUuid());
-
-      String userProfilePath = userFactoryService.getUserProfilePath(u
-          .getUuid());
-
-      String userEnvironmentTemplate = userFactoryService
-          .getUserEnvTemplate(userType);
-
-      // load the template
-      templateInputStream = jcrNodeFactoryService
-          .getInputStream(userEnvironmentTemplate);
-      String template = IOUtils.readFully(templateInputStream, "UTF-8");
-      System.err.println("Loading UE from " + userEnvironmentTemplate + " as "
-          + template);
-      UserEnvironmentBean userEnvironmentBean = beanConverter.convertToObject(
-          template, UserEnvironmentBean.class);
-
-      // make the template this user
-      userEnvironmentBean.setEid(externalId);
-      userEnvironmentBean.setUuid(u.getUuid());
-      Map<String, String> p = new HashMap<String, String>();
-      p.put("userType", userType);
-      userEnvironmentBean.setProperties(p);
-
-      // save the template
-      String userEnv = beanConverter.convertToString(userEnvironmentBean);
-      System.err.println("Saving UE to " + userEnvironmentPath + " as "
-          + userEnv);
-      bais = new ByteArrayInputStream(userEnv.getBytes("UTF-8"));
-      Node userEnvNode = jcrNodeFactoryService.setInputStream(
-          userEnvironmentPath, bais, RestProvider.CONTENT_TYPE);
-
-      // set the password
-      userEnvNode.setProperty(
-          JcrAuthenticationResolverProvider.JCRPASSWORDHASH, StringUtils
-              .sha1Hash(password));
-
-      userEnvNode.save();
-      templateInputStream.close();
-      bais.close();
-
-      templateInputStream = jcrNodeFactoryService
-          .getInputStream(userFactoryService.getUserProfileTempate(userType));
-      template = IOUtils.readFully(templateInputStream, "UTF-8");
-      System.err.println("Loading Profile from "
-          + userFactoryService.getUserProfileTempate(userType) + " as "
-          + template);
-      Map<String, Object> profileMap = beanConverter.convertToMap(template);
-      profileMap.put("firstName", firstName);
-      profileMap.put("lastName", lastName);
-      profileMap.put("email", email);
-      String profile = beanConverter.convertToString(profileMap);
-      System.err.println("Saving Profile to " + userProfilePath + " as "
-          + profile);
-      bais = new ByteArrayInputStream(profile.getBytes("UTF-8"));
-      Node profileNode = jcrNodeFactoryService.setInputStream(userProfilePath,
-          bais, RestProvider.CONTENT_TYPE);
-      if (profileNode.hasNode(JCRConstants.JCR_CONTENT)) {
-        Node dataNode = profileNode.getNode(JCRConstants.JCR_CONTENT);
-        dataNode.setProperty("sakai:firstName", firstName);
-        dataNode.setProperty("sakai:lastName", lastName);
-        dataNode.setProperty("sakai:email", email);
-      } else {
-        throw new RestServiceFaultException(
-            HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-            "The nt:file node does not have a jcr:content child, the is not as per the JSR-170 specification, unable to create users");
-      }
-      profileNode.save();
-
-      Map<String, Object> r = new HashMap<String, Object>();
-      r.put("response", "OK");
-      r.put("uuid", u.getUuid());
-      return r;
-    } finally {
-      try {
-        bais.close();
-      } catch (Exception ex) {
-        // not interested
-      }
-      try {
-        templateInputStream.close();
-      } catch (Exception ex) {
-        // not interested
-      }
+    if (StringUtils.isEmpty(firstName)) {
+      throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
+          FIRST_NAME_PARAM + " is empty");
     }
+    if (StringUtils.isEmpty(lastName)) {
+      throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
+          LAST_NAME_PARAM + " is empty");
+    }
+    if (StringUtils.isEmpty(email)) {
+      throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
+          EMAIL_PARAM + " is empty");
+    }
+    if (StringUtils.isEmpty(externalId)) {
+      throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
+          EXTERNAL_USERID_PARAM + " is empty");
+    }
+    if (StringUtils.isEmpty(password)) {
+      throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
+          PASSWORD_PARAM + " is empty");
+    }
+    if (StringUtils.isEmpty(userType)) {
+      throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
+          USER_TYPE_PARAM + " is empty");
+    }
+
+    User u = userResolverService.resolve(externalId);
+    if (u != null) {
+      throw new RestServiceFaultException(HttpServletResponse.SC_CONFLICT,
+          USER_TYPE_PARAM + " is empty");
+    }
+
+    u = userFactoryService.createNewUser(externalId);
+
+    UserEnvironment ue = userEnvironmentResolverService.create(u, externalId, password, userType);
+    if ( ue == null ) {
+      throw new RestServiceFaultException(HttpServletResponse.SC_CONFLICT,"Unable to create new user");
+    }
+
+    UserProfile userProfile = profileResolverService.create(u.getUuid(), userType);
+    Map<String, Object> profileMap = userProfile.getProperties();
+
+    profileMap.put("firstName", firstName);
+    profileMap.put("lastName", lastName);
+    profileMap.put("email", email);
+
+    userProfile.setProperties(profileMap);
+    userProfile.save();
+
+    Map<String, Object> r = new HashMap<String, Object>();
+    r.put("response", "OK");
+    r.put("uuid", u.getUuid());
+    return r;
 
   }
 

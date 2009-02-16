@@ -19,32 +19,52 @@ package org.sakaiproject.kernel.model;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
+import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
+import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
+import org.sakaiproject.kernel.api.rest.RestProvider;
+import org.sakaiproject.kernel.api.serialization.BeanConverter;
+import org.sakaiproject.kernel.api.social.FriendsResolverService;
+import org.sakaiproject.kernel.user.UserFactoryService;
+import org.sakaiproject.kernel.util.StringUtils;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
+
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
 
 /**
  * 
  */
 public class FriendsBean {
+  private static final String PRIVATE_PATH_BASE = "jcrprivate.base";
 
   private String uuid;
   private Map<String, FriendBean> friends;
+  private JCRNodeFactoryService jcrNodeFactoryService;
+  private BeanConverter beanConverter;
+  private UserFactoryService userFactoryService;
+  private String privatePathBase;
 
-  /**
-   * 
-   */
-  public FriendsBean() {
+
+  @Inject
+  public FriendsBean(JCRNodeFactoryService jcrNodeFactoryService,
+      UserFactoryService userFactoryService,
+      @Named(BeanConverter.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
+      @Named(PRIVATE_PATH_BASE) String privatePathBase) {
     friends = Maps.newLinkedHashMap();
+    this.jcrNodeFactoryService = jcrNodeFactoryService;
+    this.beanConverter = beanConverter;
+    this.userFactoryService = userFactoryService;
+    this.privatePathBase = privatePathBase;
   }
 
-  /**
-   * @param string
-   */
-  public FriendsBean(String uuid) {
-    friends = Maps.newLinkedHashMap();
-    this.uuid = uuid;
-  }
 
   /**
    * @return the uuid
@@ -109,4 +129,30 @@ public class FriendsBean {
   public FriendBean getFriend(String friendUuid) {
     return friends.get(friendUuid);
   }
+
+  /**
+   * 
+   */
+  public Map<String, FriendBean> friendsMap() {
+    return Maps.newLinkedHashMap(friends);
+  }
+  
+  public void save() throws JCRNodeFactoryServiceException, RepositoryException, UnsupportedEncodingException {
+    String userPath = userFactoryService.getUserEnvPath(uuid);
+    userPath = privatePathBase + userPath + FriendsResolverService.FRIENDS_FILE;
+
+    String json = beanConverter.convertToString(this);
+    InputStream in = new ByteArrayInputStream(json.getBytes(StringUtils.UTF8));
+    try {
+      Node n = jcrNodeFactoryService.setInputStream(userPath, in,
+          RestProvider.CONTENT_TYPE);
+      n.save();
+    } finally {
+      try {
+        in.close();
+      } catch (Exception ex) {
+      }
+    }
+  }
+
 }

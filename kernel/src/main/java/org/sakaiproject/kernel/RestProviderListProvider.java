@@ -23,7 +23,6 @@ import com.google.inject.Provider;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.rest.DefaultRestProvider;
 import org.sakaiproject.kernel.rest.RestAuthenticationProvider;
-import org.sakaiproject.kernel.rest.RestFriendsProvider;
 import org.sakaiproject.kernel.rest.RestLogoutProvider;
 import org.sakaiproject.kernel.rest.RestMeProvider;
 import org.sakaiproject.kernel.rest.RestMySitesProvider;
@@ -32,6 +31,7 @@ import org.sakaiproject.kernel.rest.RestSearchProvider;
 import org.sakaiproject.kernel.rest.RestSiteProvider;
 import org.sakaiproject.kernel.rest.RestSnoopProvider;
 import org.sakaiproject.kernel.rest.RestUserProvider;
+import org.sakaiproject.kernel.rest.friends.RestFriendsProvider;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -34,15 +34,19 @@ import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.site.SiteService;
+import org.sakaiproject.kernel.api.social.FriendsResolverService;
+import org.sakaiproject.kernel.api.user.ProfileResolverService;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
+import org.sakaiproject.kernel.user.UserFactoryService;
 import org.sakaiproject.kernel.webapp.SakaiServletRequest;
 import org.sakaiproject.kernel.webapp.test.InternalUser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import javax.persistence.EntityManager;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -66,6 +70,10 @@ public class BaseRestUnitT {
   protected CacheManagerService cacheManagerService;
   protected JCRNodeFactoryService jcrNodeFactoryService;
   protected JCRService jcrService;
+  protected UserFactoryService userFactoryService;
+  protected ProfileResolverService profileResolverService;
+  protected EntityManager entityManager;
+  protected FriendsResolverService friendsResolverService;
 
 
   /**
@@ -81,6 +89,10 @@ public class BaseRestUnitT {
     cacheManagerService = km.getService(CacheManagerService.class);
     jcrNodeFactoryService = km.getService(JCRNodeFactoryService.class);
     jcrService = km.getService(JCRService.class);
+    userFactoryService = km.getService(UserFactoryService.class);
+    profileResolverService = km.getService(ProfileResolverService.class);
+    entityManager = km.getService(EntityManager.class);
+    friendsResolverService = km.getService(FriendsResolverService.class);
 
     siteService = createMock(SiteService.class);
     userResolverService = createMock(UserResolverService.class);

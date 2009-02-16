@@ -16,40 +16,41 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package org.sakaiproject.kernel.rest;
+package org.sakaiproject.kernel.rest.friends;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import edu.emory.mathcs.backport.java.util.Arrays;
+
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
-import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
-import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
-import org.sakaiproject.kernel.api.userenv.UserEnvironment;
+import org.sakaiproject.kernel.api.social.FriendsResolverService;
+import org.sakaiproject.kernel.api.user.ProfileResolverService;
+import org.sakaiproject.kernel.api.user.UserProfile;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.model.FriendBean;
 import org.sakaiproject.kernel.model.FriendStatus;
 import org.sakaiproject.kernel.model.FriendsBean;
-import org.sakaiproject.kernel.user.UserFactoryService;
-import org.sakaiproject.kernel.util.IOUtils;
+import org.sakaiproject.kernel.model.FriendsIndexBean;
 import org.sakaiproject.kernel.util.StringUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.kernel.webapp.RestServiceFaultException;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Map;
 
-import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -60,151 +61,9 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class RestFriendsProvider implements RestProvider {
 
-  /**
-   * The path elements that might be expected in a request.
-   */
-  public enum PathElement {
-
-    /**
-     * major path element, always requires friendUuid
-     */
-    connect(3, new String[] { FRIENDUUID }),
-    /**
-     * minor path element, request a connection, requires a message
-     */
-    request(3, new String[] { MESSAGE }),
-    /**
-     * minor path element, accept a connection
-     */
-    accept(3, new String[] {}),
-    /**
-     * minor path element, cancel a connection request
-     */
-    cancel(3, new String[] {}),
-    /**
-     * Undefined element
-     */
-    UNDEFINED(0, new String[] {}),
-    /**
-     * reject a connection request
-     */
-    reject(3, new String[] {}),
-    /**
-     * ignore a connection request
-     */
-    ignore(3, new String[] {}),
-    /**
-     * major element, get my connections
-     */
-    status(2, new String[] {}),
-    /**
-     * remove a connection
-     */
-    remove(3, new String[] {});
-
-    protected String[] required;
-    protected int nelements;
-
-    /**
-     * 
-     */
-    private PathElement(int nelements, String[] required) {
-      this.nelements = nelements;
-      this.required = required;
-    }
-  }
-
-  /**
-   * A parameter parser and validator.
-   */
-  public class MapParams {
-    protected String friendUuid;
-    protected String message;
-    protected String uuid;
-    protected String type;
-    private PathElement major;
-    private PathElement minor;
-
-    /**
-     * @param request
-     */
-    public MapParams(String[] elements, HttpServletRequest request) {
-      if (elements.length < 2) {
-        throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
-            "The request is invalid");
-      }
-      try {
-        major = PathElement.valueOf(elements[1]);
-      } catch (IllegalArgumentException ex) {
-        throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
-            "The is invalid " + StringUtils.join(elements, 0, '/'));
-      }
-      if (elements.length < major.nelements) {
-        throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
-            "The request is invalid");
-      }
-      if (major.nelements > 2) {
-        try {
-          minor = PathElement.valueOf(elements[2]);
-        } catch (IllegalArgumentException ex) {
-          throw new RestServiceFaultException(
-              HttpServletResponse.SC_BAD_REQUEST, "The is invalid "
-                  + StringUtils.join(elements, 0, '/'));
-        }
-      } else {
-        minor = PathElement.UNDEFINED;
-      }
-      if (elements.length < minor.nelements) {
-        throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
-            "The request is invalid");
-      }
-      for (String p : major.required) {
-        if (StringUtils.isEmpty(p)) {
-          throw new RestServiceFaultException(
-              HttpServletResponse.SC_BAD_REQUEST, p + " must be specified");
-
-        }
-      }
-      for (String p : minor.required) {
-        if (StringUtils.isEmpty(p)) {
-          throw new RestServiceFaultException(
-              HttpServletResponse.SC_BAD_REQUEST, p + " must be specified");
-
-        }
-      }
-      uuid = request.getRemoteUser();
-      if (elements.length > 3) {
-        Session session = sessionManagerService.getCurrentSession();
-        UserEnvironment userEnvironment = userEnvironmentResolverService
-            .resolve(session);
-        if (userEnvironment.isSuperUser()) {
-          uuid = elements[3];
-        } else {
-          throw new RestServiceFaultException(HttpServletResponse.SC_FORBIDDEN,
-              "Only a super user is allowed to perform friends operations on other users.");
-        }
-      }
-
-      friendUuid = request.getParameter(FRIENDUUID);
-      type = request.getParameter(FRIENDTYPE);
-      message = request.getParameter(MESSAGE);
-
-    }
-  }
-
   private static final RestDescription DESC = new RestDescription();
 
   private static final String KEY = "friend";
-
-  private static final String PRIVATE_PATH_BASE = "jcrprivate.base";
-
-  private static final String FRIENDUUID = "friendUuid";
-
-  private static final String FRIENDTYPE = "friendType";
-
-  private static final String MESSAGE = "message";
-
-  private static final String FRIENDS_FILE = "fiends.json";
 
   static {
     DESC.setTitle("Friends");
@@ -270,11 +129,20 @@ public class RestFriendsProvider implements RestProvider {
             "Accepts POST to remove an earlier connection. A super user may specify the user who is performing the "
                 + "accept, otherwise its the current user. The post must be accompanied by friend to cancel.");
     DESC.addSection(2, "POST", "");
-    DESC.addParameter(FRIENDUUID, "the UUID of the friend");
-    DESC.addParameter(FRIENDTYPE,
+    DESC.addParameter(FriendsParams.FRIENDUUID, "the UUID of the friend");
+    DESC.addParameter(FriendsParams.FRIENDTYPE,
         "the type of the friend, a string associated with the connection.");
-    DESC.addParameter(MESSAGE,
+    DESC.addParameter(FriendsParams.MESSAGE,
         "the message associated with the request, required for requests");
+    DESC.addParameter(FriendsParams.PAGE,
+        "the page of friends to respond with. (optional, default all)");
+    DESC.addParameter(FriendsParams.NRESUTS_PER_PAGE,
+        "the number of friends per page. (optional, default 10)");
+    DESC.addParameter(FriendsParams.SORT, "an array of fields to sort on from "
+        + Arrays.toString(FriendsSortField.values()) + " (optional)");
+    DESC.addParameter(FriendsParams.SORTORDER,
+        "an array of directions to sort, from "
+            + Arrays.toString(FriendsSortOrder.values()) + " (optional)");
     DESC.addResponse(String.valueOf(HttpServletResponse.SC_OK),
         "If the action completed Ok");
     DESC.addResponse(String.valueOf(HttpServletResponse.SC_CONFLICT),
@@ -286,7 +154,6 @@ public class RestFriendsProvider implements RestProvider {
         " Any other error");
   }
 
-  private JCRNodeFactoryService jcrNodeFactoryService;
 
   private BeanConverter beanConverter;
 
@@ -294,30 +161,34 @@ public class RestFriendsProvider implements RestProvider {
 
   private UserEnvironmentResolverService userEnvironmentResolverService;
 
-  private String privatePathBase;
 
   private Map<String, Object> OK = ImmutableMap.of("response", (Object) "OK");
 
-  private UserFactoryService userFactoryService;
+
+  private EntityManager entityManager;
+
+  private ProfileResolverService profileResolverService;
+
+  private FriendsResolverService friendsResolverService;
 
   @Inject
   public RestFriendsProvider(
       RegistryService registryService,
-      JCRNodeFactoryService jcrNodeFactoryService,
       SessionManagerService sessionManagerService,
       UserEnvironmentResolverService userEnvironmentResolverService,
-      UserFactoryService userFactoryService,
-      @Named(BeanConverter.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
-      @Named(PRIVATE_PATH_BASE) String privatePathBase) {
+      ProfileResolverService profileResolverService,
+      EntityManager entityManager,
+      FriendsResolverService friendsResolverService,
+      @Named(BeanConverter.REPOSITORY_BEANCONVETER) BeanConverter beanConverter) {
     Registry<String, RestProvider> registry = registryService
         .getRegistry(RestProvider.REST_REGISTRY);
     registry.add(this);
-    this.jcrNodeFactoryService = jcrNodeFactoryService;
     this.beanConverter = beanConverter;
-    this.privatePathBase = privatePathBase;
     this.sessionManagerService = sessionManagerService;
     this.userEnvironmentResolverService = userEnvironmentResolverService;
-    this.userFactoryService = userFactoryService;
+    this.entityManager = entityManager;
+    this.profileResolverService = profileResolverService;
+    this.friendsResolverService = friendsResolverService;
   }
 
   /**
@@ -330,7 +201,8 @@ public class RestFriendsProvider implements RestProvider {
   public void dispatch(String[] elements, HttpServletRequest request,
       HttpServletResponse response) {
     try {
-      MapParams params = new MapParams(elements, request);
+      FriendsParams params = new FriendsParams(elements, request,
+          sessionManagerService, userEnvironmentResolverService);
       Map<String, Object> map = Maps.newHashMap();
       switch (params.major) {
       case connect:
@@ -397,11 +269,11 @@ public class RestFriendsProvider implements RestProvider {
    * @throws JCRNodeFactoryServiceException
    * @throws IOException
    */
-  private Map<String, Object> doRemoveConnect(MapParams params,
+  private Map<String, Object> doRemoveConnect(FriendsParams params,
       HttpServletRequest request, HttpServletResponse response)
       throws JCRNodeFactoryServiceException, RepositoryException, IOException {
-    FriendsBean myFriends = loadFriends(params.uuid);
-    FriendsBean friendFriends = loadFriends(params.friendUuid);
+    FriendsBean myFriends = friendsResolverService.resolve(params.uuid);
+    FriendsBean friendFriends = friendsResolverService.resolve(params.friendUuid);
     if (!myFriends.hasFriend(params.friendUuid)
         || !friendFriends.hasFriend(params.uuid)) {
       throw new RestServiceFaultException(HttpServletResponse.SC_NOT_FOUND,
@@ -409,8 +281,8 @@ public class RestFriendsProvider implements RestProvider {
     }
     myFriends.removeFriend(params.friendUuid);
     friendFriends.removeFriend(params.uuid);
-    saveFriends(myFriends);
-    saveFriends(friendFriends);
+    myFriends.save();
+    friendFriends.save();
     return OK;
   }
 
@@ -423,11 +295,11 @@ public class RestFriendsProvider implements RestProvider {
    * @throws JCRNodeFactoryServiceException
    * @throws IOException
    */
-  private Map<String, Object> doRequestConnect(MapParams params,
+  private Map<String, Object> doRequestConnect(FriendsParams params,
       HttpServletRequest request, HttpServletResponse response)
       throws JCRNodeFactoryServiceException, RepositoryException, IOException {
-    FriendsBean myFriends = loadFriends(params.uuid);
-    FriendsBean friendFriends = loadFriends(params.friendUuid);
+    FriendsBean myFriends = friendsResolverService.resolve(params.uuid);
+    FriendsBean friendFriends = friendsResolverService.resolve(params.friendUuid);
     if (myFriends.hasFriend(params.friendUuid)
         || friendFriends.hasFriend(params.uuid)) {
       throw new RestServiceFaultException(HttpServletResponse.SC_CONFLICT,
@@ -445,8 +317,8 @@ public class RestFriendsProvider implements RestProvider {
     }
     myFriends.addFriend(friend);
     friendFriends.addFriend(me);
-    saveFriends(myFriends);
-    saveFriends(friendFriends);
+    myFriends.save();
+    friendFriends.save();
     return OK;
   }
 
@@ -459,11 +331,11 @@ public class RestFriendsProvider implements RestProvider {
    * @throws JCRNodeFactoryServiceException
    * @throws IOException
    */
-  private Map<String, Object> doAcceptConnect(MapParams params,
+  private Map<String, Object> doAcceptConnect(FriendsParams params,
       HttpServletRequest request, HttpServletResponse response)
       throws JCRNodeFactoryServiceException, RepositoryException, IOException {
-    FriendsBean myFriends = loadFriends(params.uuid);
-    FriendsBean friendFriends = loadFriends(params.friendUuid);
+    FriendsBean myFriends = friendsResolverService.resolve(params.uuid);
+    FriendsBean friendFriends = friendsResolverService.resolve(params.friendUuid);
     if (!myFriends.hasFriend(params.friendUuid)
         || !friendFriends.hasFriend(params.uuid)) {
       throw new RestServiceFaultException(HttpServletResponse.SC_NOT_FOUND,
@@ -479,8 +351,8 @@ public class RestFriendsProvider implements RestProvider {
 
     myFriendBean.updateStatus(FriendStatus.ACCEPTED);
     friendFriendBean.updateStatus(FriendStatus.ACCEPTED);
-    saveFriends(myFriends);
-    saveFriends(friendFriends);
+    myFriends.save();
+    friendFriends.save();
     return OK;
   }
 
@@ -493,11 +365,11 @@ public class RestFriendsProvider implements RestProvider {
    * @throws JCRNodeFactoryServiceException
    * @throws IOException
    */
-  private Map<String, Object> doCancelConnect(MapParams params,
+  private Map<String, Object> doCancelConnect(FriendsParams params,
       HttpServletRequest request, HttpServletResponse response)
       throws JCRNodeFactoryServiceException, RepositoryException, IOException {
-    FriendsBean myFriends = loadFriends(params.uuid);
-    FriendsBean friendFriends = loadFriends(params.friendUuid);
+    FriendsBean myFriends = friendsResolverService.resolve(params.uuid);
+    FriendsBean friendFriends = friendsResolverService.resolve(params.friendUuid);
     if (!myFriends.hasFriend(params.friendUuid)
         || !friendFriends.hasFriend(params.uuid)) {
       throw new RestServiceFaultException(HttpServletResponse.SC_NOT_FOUND,
@@ -513,8 +385,8 @@ public class RestFriendsProvider implements RestProvider {
 
     myFriends.removeFriend(params.friendUuid);
     friendFriends.removeFriend(params.uuid);
-    saveFriends(myFriends);
-    saveFriends(friendFriends);
+    myFriends.save();
+    friendFriends.save();
     return OK;
   }
 
@@ -527,11 +399,11 @@ public class RestFriendsProvider implements RestProvider {
    * @throws JCRNodeFactoryServiceException
    * @throws IOException
    */
-  private Map<String, Object> doRejectConnect(MapParams params,
+  private Map<String, Object> doRejectConnect(FriendsParams params,
       HttpServletRequest request, HttpServletResponse response)
       throws JCRNodeFactoryServiceException, RepositoryException, IOException {
-    FriendsBean myFriends = loadFriends(params.uuid);
-    FriendsBean friendFriends = loadFriends(params.friendUuid);
+    FriendsBean myFriends = friendsResolverService.resolve(params.uuid);
+    FriendsBean friendFriends = friendsResolverService.resolve(params.friendUuid);
     if (!myFriends.hasFriend(params.friendUuid)
         || !friendFriends.hasFriend(params.uuid)) {
       throw new RestServiceFaultException(HttpServletResponse.SC_NOT_FOUND,
@@ -547,8 +419,8 @@ public class RestFriendsProvider implements RestProvider {
 
     myFriends.removeFriend(params.friendUuid);
     friendFriends.removeFriend(params.uuid);
-    saveFriends(myFriends);
-    saveFriends(friendFriends);
+    myFriends.save();
+    friendFriends.save();
     return OK;
   }
 
@@ -561,11 +433,11 @@ public class RestFriendsProvider implements RestProvider {
    * @throws JCRNodeFactoryServiceException
    * @throws IOException
    */
-  private Map<String, Object> doIgnoreConnect(MapParams params,
+  private Map<String, Object> doIgnoreConnect(FriendsParams params,
       HttpServletRequest request, HttpServletResponse response)
       throws JCRNodeFactoryServiceException, RepositoryException, IOException {
-    FriendsBean myFriends = loadFriends(params.uuid);
-    FriendsBean friendFriends = loadFriends(params.friendUuid);
+    FriendsBean myFriends = friendsResolverService.resolve(params.uuid);
+    FriendsBean friendFriends = friendsResolverService.resolve(params.friendUuid);
     if (!myFriends.hasFriend(params.friendUuid)
         || !friendFriends.hasFriend(params.uuid)) {
       throw new RestServiceFaultException(HttpServletResponse.SC_NOT_FOUND,
@@ -581,8 +453,8 @@ public class RestFriendsProvider implements RestProvider {
 
     myFriends.removeFriend(params.friendUuid);
     friendFriends.removeFriend(params.uuid);
-    saveFriends(myFriends);
-    saveFriends(friendFriends);
+    myFriends.save();
+    friendFriends.save();
     return OK;
   }
 
@@ -595,10 +467,32 @@ public class RestFriendsProvider implements RestProvider {
    * @throws RepositoryException
    * @throws UnsupportedEncodingException
    */
-  private Map<String, Object> doStatus(MapParams params,
+  private Map<String, Object> doStatus(FriendsParams params,
       HttpServletRequest request, HttpServletResponse response)
       throws UnsupportedEncodingException, RepositoryException, IOException {
-    FriendsBean myFriends = loadFriends(params.uuid);
+    FriendsBean myFriends = friendsResolverService.resolve(params.uuid);
+
+    Query query = entityManager.createNamedQuery(FriendsIndexBean.FINDBY_UUID);
+    query.setFirstResult(params.start);
+    query.setMaxResults(params.end);
+    query.setParameter(FriendsIndexBean.PARAM_UUID, params.uuid);
+
+    List<?> results = query.getResultList();
+
+    Map<String, FriendBean> myFriendMap = myFriends.friendsMap();
+    Map<String, FriendBean> sortedFriendMap = Maps.newLinkedHashMap();
+    for (Object fio : results) {
+      FriendsIndexBean fi = (FriendsIndexBean) fio;
+      FriendBean fb = myFriendMap.get(fi.getFriendUuid());
+      if (fb != null) {
+        sortedFriendMap.put(fb.getFriendUuid(), fb);
+        UserProfile profile = profileResolverService
+            .resolve(fb.getFriendUuid());
+        fb.setProfile(profile.getProperties());
+
+      }
+    }
+
     return ImmutableMap.of("response", "OK", "status", myFriends);
   }
 
@@ -609,58 +503,6 @@ public class RestFriendsProvider implements RestProvider {
     throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST);
   }
 
-  /**
-   * @param uuid
-   * @return
-   * @throws RepositoryException
-   * @throws IOException
-   * @throws UnsupportedEncodingException
-   */
-  private FriendsBean loadFriends(String uuid) throws RepositoryException,
-      UnsupportedEncodingException, IOException {
-    String userPath = userFactoryService.getUserEnvPath(uuid);
-    userPath = privatePathBase + userPath + FRIENDS_FILE;
-    InputStream in = null;
-    try {
-      in = jcrNodeFactoryService.getInputStream(userPath);
-      String json = IOUtils.readFully(in, StringUtils.UTF8);
-      FriendsBean fb = beanConverter.convertToObject(json, FriendsBean.class);
-      return fb;
-    } catch (JCRNodeFactoryServiceException ex) {
-      return new FriendsBean(uuid);
-    } finally {
-      try {
-        in.close();
-      } catch (Exception ex) {
-      }
-    }
-  }
-
-  /**
-   * @param friendFriends
-   * @throws RepositoryException
-   * @throws JCRNodeFactoryServiceException
-   * @throws UnsupportedEncodingException
-   */
-  private void saveFriends(FriendsBean friendsBean)
-      throws JCRNodeFactoryServiceException, RepositoryException,
-      UnsupportedEncodingException {
-    String userPath = userFactoryService.getUserEnvPath(friendsBean.getUuid());
-    userPath = privatePathBase + userPath + FRIENDS_FILE;
-    String json = beanConverter.convertToString(friendsBean);
-    InputStream in = new ByteArrayInputStream(json.getBytes(StringUtils.UTF8));
-    try {
-      Node n = jcrNodeFactoryService.setInputStream(userPath, in,
-          RestProvider.CONTENT_TYPE);
-      n.save();
-    } finally {
-      try {
-        in.close();
-      } catch (Exception ex) {
-      }
-    }
-
-  }
 
   /**
    * {@inheritDoc}
