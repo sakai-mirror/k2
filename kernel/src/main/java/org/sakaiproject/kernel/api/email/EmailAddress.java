@@ -123,7 +123,7 @@ public class EmailAddress implements Serializable {
       } else if (o instanceof EmailAddress) {
         EmailAddress ea = (EmailAddress) o;
         if (address == ea.getAddress()
-            || (address != null && address.equals(ea.getAddress()))) {
+            || (address != null && address.hashCode() == ea.hashCode())) {
           equals = true;
         }
       }

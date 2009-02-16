@@ -62,7 +62,6 @@ public class EmailAddressT {
   @Test
   public void equals() {
     String e1 = "test1@example.com";
-    String e2 = "test2@example.com";
     EmailAddress ea1 = new EmailAddress(e1);
     EmailAddress ea1_1 = new EmailAddress(e1);
     EmailAddress ea2 = new EmailAddress("test3@example.com");
