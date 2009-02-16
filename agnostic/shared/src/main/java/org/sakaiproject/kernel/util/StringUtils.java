@@ -212,13 +212,7 @@ public class StringUtils {
     for (char c : ca) {
       switch (c) {
       case '\'':
-        sb.append("\\'");
-        break;
-      case '\"':
-        sb.append("\\\"");
-        break;
-      case '\\':
-        sb.append("\\\\");
+        sb.append("''");
         break;
       default:
         sb.append(c);
