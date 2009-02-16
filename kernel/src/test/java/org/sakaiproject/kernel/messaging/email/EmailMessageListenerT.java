@@ -499,6 +499,7 @@ public class EmailMessageListenerT {
      *
      * @see javax.jms.Message#getPropertyNames()
      */
+    @SuppressWarnings("unchecked")
     public Enumeration getPropertyNames() throws JMSException {
       return null;
     }
