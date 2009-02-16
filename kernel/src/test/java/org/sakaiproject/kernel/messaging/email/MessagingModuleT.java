@@ -53,7 +53,8 @@ public class MessagingModuleT {
 
     // TODO when this provider is functioning, turn this test back on. Guice
     // exceptions when returning null from a provider.
-    javax.jms.Session jmsSession = null; // inj.getInstance(javax.jms.Session.class);
+    javax.jms.Session jmsSession = null; // inj.getInstance(javax.jms.Session.
+                                         // class);
     assertNull(jmsSession);
 
     javax.mail.Session mailSession = inj.getInstance(javax.mail.Session.class);
