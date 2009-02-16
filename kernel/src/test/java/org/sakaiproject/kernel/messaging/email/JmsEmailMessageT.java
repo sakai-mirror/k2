@@ -62,11 +62,11 @@ public class JmsEmailMessageT {
 
     msg.addReplyTo(e1);
     List<EmailAddress> ea = msg.getReplyTo();
-    assertTrue(ea.get(0).equals(e1));
+    assertTrue(ea.get(0).getAddress().equals(e1));
 
     msg.addReplyTo(e2);
-    assertTrue(ea.get(0).equals(e1));
-    assertTrue(ea.get(1).equals(e2));
+    assertTrue(ea.get(0).getAddress().equals(e1));
+    assertTrue(ea.get(1).getAddress().equals(e2));
   }
 
   @Test
@@ -125,23 +125,23 @@ public class JmsEmailMessageT {
 
     List<EmailAddress> rcpts = msg.getRecipients(RecipientType.TO);
     assertEquals(2, rcpts.size());
-    assertTrue(rcpts.get(0).equals(add1));
-    assertTrue(rcpts.get(1).equals(add2));
+    assertTrue(rcpts.get(0).getAddress().equals(add1));
+    assertTrue(rcpts.get(1).getAddress().equals(add2));
 
     rcpts = msg.getRecipients(RecipientType.CC);
     assertEquals(2, rcpts.size());
-    assertTrue(rcpts.get(0).equals(add3));
-    assertTrue(rcpts.get(1).equals(add4));
+    assertTrue(rcpts.get(0).getAddress().equals(add3));
+    assertTrue(rcpts.get(1).getAddress().equals(add4));
 
     rcpts = msg.getRecipients(RecipientType.BCC);
     assertEquals(1, rcpts.size());
-    assertTrue(rcpts.get(0).equals(add5));
+    assertTrue(rcpts.get(0).getAddress().equals(add5));
 
     rcpts = msg.getRecipients(RecipientType.ACTUAL);
     assertEquals(3, rcpts.size());
-    assertTrue(rcpts.get(0).equals(add6));
-    assertTrue(rcpts.get(1).equals(add7));
-    assertTrue(rcpts.get(2).equals(add8));
+    assertTrue(rcpts.get(0).getAddress().equals(add6));
+    assertTrue(rcpts.get(1).getAddress().equals(add7));
+    assertTrue(rcpts.get(2).getAddress().equals(add8));
   }
 
   @Test
