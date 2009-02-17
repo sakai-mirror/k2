@@ -324,6 +324,9 @@ public class SimpleJcrUserEnvironmentResolverService implements
               .sha1Hash(password));
 
       userEnvNode.save();
+      
+      userEnvironmentBean.seal();
+      return userEnvironmentBean;
 
     } catch (RepositoryException e) {
       LOG.error(e.getMessage(), e);

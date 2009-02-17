@@ -17,6 +17,9 @@
  */
 package org.sakaiproject.kernel.user;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
@@ -38,10 +41,24 @@ import javax.jcr.RepositoryException;
  */
 public class ProfileResolverServiceImpl implements ProfileResolverService {
 
-  private static final Log LOG = LogFactory.getLog(ProfileResolverServiceImpl.class);
+  private static final Log LOG = LogFactory
+      .getLog(ProfileResolverServiceImpl.class);
   private JCRNodeFactoryService jcrNodeFactoryService;
   private UserFactoryService userFactoryService;
   private BeanConverter beanConverter;
+  
+  /**
+   * 
+   */
+  @Inject
+  public ProfileResolverServiceImpl(
+      @Named(BeanConverter.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
+      JCRNodeFactoryService jcrNodeFactoryService,
+      UserFactoryService userFactoryService) {
+    this.beanConverter = beanConverter;
+    this.userFactoryService = userFactoryService;
+    this.jcrNodeFactoryService = jcrNodeFactoryService;
+  }
 
   /**
    * {@inheritDoc}
@@ -49,28 +66,28 @@ public class ProfileResolverServiceImpl implements ProfileResolverService {
    * @see org.sakaiproject.kernel.api.user.ProfileResolverService#create(org.sakaiproject.kernel.api.user.User,
    *      java.lang.String)
    */
-  public UserProfile create(String uuid, String userType){
+  public UserProfile create(String uuid, String userType) {
 
     InputStream templateInputStream = null;
     try {
       templateInputStream = jcrNodeFactoryService
-
-      .getInputStream(userFactoryService.getUserProfileTempate(userType));
+          .getInputStream(userFactoryService.getUserProfileTempate(userType));
       String template = IOUtils.readFully(templateInputStream, "UTF-8");
       System.err.println("Loading Profile from "
           + userFactoryService.getUserProfileTempate(userType) + " as "
           + template);
       Map<String, Object> profileMap = beanConverter.convertToMap(template);
-      
-      return new UserProfileImpl(uuid,profileMap,userFactoryService,jcrNodeFactoryService,beanConverter);
+
+      return new UserProfileImpl(uuid, profileMap, userFactoryService,
+          jcrNodeFactoryService, beanConverter);
     } catch (RepositoryException e) {
-      LOG.error(e.getMessage(),e);
+      LOG.error(e.getMessage(), e);
     } catch (JCRNodeFactoryServiceException e) {
-      LOG.debug(e.getMessage(),e);
+      LOG.debug(e.getMessage(), e);
     } catch (UnsupportedEncodingException e) {
-      LOG.error(e.getMessage(),e);
+      LOG.error(e.getMessage(), e);
     } catch (IOException e) {
-      LOG.error(e.getMessage(),e);
+      LOG.error(e.getMessage(), e);
     } finally {
       try {
         templateInputStream.close();
@@ -85,7 +102,7 @@ public class ProfileResolverServiceImpl implements ProfileResolverService {
    * 
    * @see org.sakaiproject.kernel.api.user.ProfileResolverService#resolve(org.sakaiproject.kernel.api.user.User)
    */
-  public UserProfile resolve(String uuid)  {
+  public UserProfile resolve(String uuid) {
 
     InputStream profileInputStream = null;
     try {
@@ -94,17 +111,18 @@ public class ProfileResolverServiceImpl implements ProfileResolverService {
       .getInputStream(userFactoryService.getUserProfilePath(uuid));
       String template = IOUtils.readFully(profileInputStream, "UTF-8");
       Map<String, Object> profileMap = beanConverter.convertToMap(template);
-      
-      return new UserProfileImpl(uuid,profileMap,userFactoryService,jcrNodeFactoryService,beanConverter);
+
+      return new UserProfileImpl(uuid, profileMap, userFactoryService,
+          jcrNodeFactoryService, beanConverter);
 
     } catch (RepositoryException e) {
-      LOG.error(e.getMessage(),e);
+      LOG.error(e.getMessage(), e);
     } catch (JCRNodeFactoryServiceException e) {
-      LOG.debug(e.getMessage(),e);
+      LOG.debug(e.getMessage(), e);
     } catch (UnsupportedEncodingException e) {
-      LOG.error(e.getMessage(),e);
+      LOG.error(e.getMessage(), e);
     } catch (IOException e) {
-      LOG.error(e.getMessage(),e);
+      LOG.error(e.getMessage(), e);
     } finally {
       try {
         profileInputStream.close();
