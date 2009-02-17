@@ -32,7 +32,9 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.jcr.LoginException;
 import javax.jcr.Repository;
+import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -143,7 +145,13 @@ public class SakaiWebDavServlet extends SimpleWebdavServlet {
           workspace = "default"; // fall back name
         } finally {
           if (tmp != null) {
-            tmp.logout();
+            try {
+              jcrService.logout();
+            } catch (LoginException e) {
+              LOG.warn("Failed to logout "+e.getMessage());
+            } catch (RepositoryException e) {
+              LOG.warn("Failed to logout "+e.getMessage());
+            }
           }
         }
       }
