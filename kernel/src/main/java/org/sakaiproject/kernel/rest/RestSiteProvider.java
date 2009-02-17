@@ -21,6 +21,7 @@ package org.sakaiproject.kernel.rest;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.authz.SubjectPermissionService;
@@ -133,7 +134,7 @@ public class RestSiteProvider implements RestProvider {
   @Inject
   public RestSiteProvider(RegistryService registryService,
       SiteService siteService,
-      @Named(BeanConverter.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
+      @Named(KernelConstants.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
       UserEnvironmentResolverService userEnvironmentResolverService,
       SessionManagerService sessionManagerService,
       SubjectPermissionService subjectPermissionService,

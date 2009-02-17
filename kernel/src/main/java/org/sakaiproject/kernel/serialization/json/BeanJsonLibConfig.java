@@ -26,6 +26,8 @@ import net.sf.ezmorph.MorpherRegistry;
 import net.sf.json.JsonConfig;
 import net.sf.json.util.JSONUtils;
 
+import org.sakaiproject.kernel.KernelConstants;
+
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +37,6 @@ import java.util.Map;
 
 public class BeanJsonLibConfig extends JsonConfig {
 
-  public static final String JSON_CLASSMAP = "jsonconverter.classmap";
 
 
   /**
@@ -48,7 +49,7 @@ public class BeanJsonLibConfig extends JsonConfig {
   @Inject
   public BeanJsonLibConfig(Injector injector,
       List<ValueProcessor> valueProcessors, List<BeanProcessor> beanProcessors,
-      @Named(JSON_CLASSMAP) Map<String, Object> classMap,
+      @Named(KernelConstants.JSON_CLASSMAP) Map<String, Object> classMap,
       List<Morpher> morphers) {
 
     MorpherRegistry morpherRegistry = JSONUtils.getMorpherRegistry();

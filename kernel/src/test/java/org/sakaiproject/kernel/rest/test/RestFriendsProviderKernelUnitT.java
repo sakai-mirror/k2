@@ -34,6 +34,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sakaiproject.kernel.Activator;
+import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.rest.RestProvider;
@@ -98,7 +99,7 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
           sessionManagerService, userEnvironmentResolverService,
           profileResolverService, entityManager, friendsResolverService,
           injector.getInstance(Key.get(BeanConverter.class, Names
-              .named(BeanConverter.REPOSITORY_BEANCONVETER))));
+              .named(KernelConstants.REPOSITORY_BEANCONVETER))));
 
       try {
         rsp.dispatch(elements, request, response);
@@ -125,7 +126,7 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
           sessionManagerService, userEnvironmentResolverService,
           profileResolverService, entityManager, friendsResolverService,
           injector.getInstance(Key.get(BeanConverter.class, Names
-              .named(BeanConverter.REPOSITORY_BEANCONVETER))));
+              .named(KernelConstants.REPOSITORY_BEANCONVETER))));
       try {
         rsp.dispatch(elements, request, response);
         fail();
@@ -151,7 +152,7 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
           sessionManagerService, userEnvironmentResolverService,
           profileResolverService, entityManager, friendsResolverService,
           injector.getInstance(Key.get(BeanConverter.class, Names
-              .named(BeanConverter.REPOSITORY_BEANCONVETER))));
+              .named(KernelConstants.REPOSITORY_BEANCONVETER))));
 
       try {
         rsp.dispatch(elements, request, response);
@@ -178,7 +179,7 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
           sessionManagerService, userEnvironmentResolverService,
           profileResolverService, entityManager, friendsResolverService,
           injector.getInstance(Key.get(BeanConverter.class, Names
-              .named(BeanConverter.REPOSITORY_BEANCONVETER))));
+              .named(KernelConstants.REPOSITORY_BEANCONVETER))));
       try {
         rsp.dispatch(elements, request, response);
         fail();
@@ -228,7 +229,7 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
         sessionManagerService, userEnvironmentResolverService,
         profileResolverService, entityManager, friendsResolverService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))));
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))));
     try {
       rsp.dispatch(elements, request, response);
       fail();
@@ -276,7 +277,7 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
         sessionManagerService, userEnvironmentResolverService,
         profileResolverService, entityManager, friendsResolverService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))));
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))));
     rsp.dispatch(elements, request, response);
 
     String op = baos.toString(StringUtils.UTF8);
@@ -302,7 +303,7 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
         sessionManagerService, userEnvironmentResolverService,
         profileResolverService, entityManager, friendsResolverService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))));
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))));
 
     // request a connection
     connect(rsp, "user2", "SESSION-2131asdassdfsdfaqwe", "request", "user1",
@@ -376,7 +377,7 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
         sessionManagerService, userEnvironmentResolverService,
         profileResolverService, entityManager, friendsResolverService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))));
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))));
 
     // request a connection
     connect(rsp, "user2", "SESSION-2131asdassdfsdfaqwe", "request", "user1",
@@ -431,7 +432,7 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
         sessionManagerService, userEnvironmentResolverService,
         profileResolverService, entityManager, friendsResolverService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))));
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))));
 
     // request a connection
     connect(rsp, "user2", "SESSION-2131asdassdfsdfaqwe", "request", "user1",
@@ -486,7 +487,7 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
         sessionManagerService, userEnvironmentResolverService,
         profileResolverService, entityManager, friendsResolverService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))));
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))));
 
     // request a connection
     connect(rsp, "user2", "SESSION-2131asdassdfsdfaqwe", "request", "user1",
@@ -652,6 +653,9 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
     rsp.dispatch(elements, request, response);
 
     String op = baos.toString(StringUtils.UTF8);
+    
+    System.err.println("Got Response "+op);
+    
     JSONObject obj = JSONObject.fromObject(op);
     assertEquals("OK", obj.get("response"));
     JSONObject status = obj.getJSONObject("status");

@@ -19,12 +19,14 @@
 package org.sakaiproject.kernel.rest.friends;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
 
+import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
@@ -177,7 +179,7 @@ public class RestFriendsProvider implements RestProvider {
       ProfileResolverService profileResolverService,
       EntityManager entityManager,
       FriendsResolverService friendsResolverService,
-      @Named(BeanConverter.REPOSITORY_BEANCONVETER) BeanConverter beanConverter) {
+      @Named(KernelConstants.REPOSITORY_BEANCONVETER) BeanConverter beanConverter) {
     Registry<String, RestProvider> registry = registryService
         .getRegistry(RestProvider.REST_REGISTRY);
     registry.add(this);
@@ -506,6 +508,7 @@ public class RestFriendsProvider implements RestProvider {
     }
 
     List<?> results = query.getResultList();
+    System.err.println(" Results: "+results.size());
 
     Map<String, FriendBean> myFriendMap = myFriends.friendsMap();
     Map<String, FriendBean> sortedFriendMap = Maps.newLinkedHashMap();
@@ -520,6 +523,7 @@ public class RestFriendsProvider implements RestProvider {
 
       }
     }
+    myFriends.setFriends(Lists.newArrayList(sortedFriendMap.values()));
 
     return ImmutableMap.of("response", "OK", "status", myFriends);
   }

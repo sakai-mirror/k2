@@ -28,10 +28,6 @@ import org.sakaiproject.kernel.social.FriendsResolverServiceImpl;
 @ImplementedBy(FriendsResolverServiceImpl.class)
 public interface FriendsResolverService {
 
-  /**
-   * The name of the friends file 
-   */
-  public static final String FRIENDS_FILE = "fiends.json";
   
   /**
    * Get the FriendsBean for the user uuid.

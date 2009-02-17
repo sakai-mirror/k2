@@ -21,6 +21,7 @@ import com.google.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.user.User;
@@ -51,7 +52,7 @@ public class ProviderUserResolverService implements
       RegistryService providerService) {
     this.nullService = nullService;
     this.registry = providerService
-        .getRegistry(PROVIDER_REGISTRY);
+        .getRegistry(KernelConstants.USER_PROVIDER_REGISTRY);
   }
 
 

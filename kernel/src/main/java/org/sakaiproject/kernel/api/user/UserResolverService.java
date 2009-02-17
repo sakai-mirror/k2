@@ -29,10 +29,6 @@ import org.sakaiproject.kernel.user.ProviderUserResolverService;
 @Singleton
 public interface UserResolverService {
 
-  /**
-   * The name of the registry used for this type of service.
-   */
-  public static final String PROVIDER_REGISTRY = "user.provider.registry";
 
   /**
    * @param eid

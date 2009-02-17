@@ -21,6 +21,7 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
@@ -114,7 +115,7 @@ public class RestSearchProvider implements RestProvider {
   @Inject
   public RestSearchProvider(RegistryService registryService,
       JCRService jcrService,
-      @Named(BeanConverter.REPOSITORY_BEANCONVETER) BeanConverter beanConverter) {
+      @Named(KernelConstants.REPOSITORY_BEANCONVETER) BeanConverter beanConverter) {
     Registry<String, RestProvider> registry = registryService
         .getRegistry(RestProvider.REST_REGISTRY);
     registry.add(this);

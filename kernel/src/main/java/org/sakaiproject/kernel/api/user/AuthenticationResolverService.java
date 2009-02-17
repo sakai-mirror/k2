@@ -29,11 +29,6 @@ import java.security.Principal;
 @Singleton
 public interface AuthenticationResolverService {
 
-  /**
-   * The name of the registry used for this type of service.
-   */
-  public static final String PROVIDER_REGISTRY = "authentication.provider.registry";
-  public static final String MANAGER_PROVIDER_REGISTRY = "authentication.manager.provider.registry";
 
 
   /**

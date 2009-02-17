@@ -23,6 +23,7 @@ import com.google.inject.name.Named;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
@@ -44,7 +45,6 @@ import javax.jcr.RepositoryException;
  */
 public class FriendsResolverServiceImpl implements FriendsResolverService {
 
-  private static final String PRIVATE_PATH_BASE = "jcrprivate.base";
   private static final Log LOG = LogFactory.getLog(FriendsResolverService.class);
   private String privatePathBase;
   private JCRNodeFactoryService jcrNodeFactoryService;
@@ -59,8 +59,8 @@ public class FriendsResolverServiceImpl implements FriendsResolverService {
       UserFactoryService userFactoryService,
       ProfileResolverService profileResolverService,
       Injector injector,
-      @Named(BeanConverter.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
-      @Named(PRIVATE_PATH_BASE) String privatePathBase) {
+      @Named(KernelConstants.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
+      @Named(KernelConstants.PRIVATE_PATH_BASE) String privatePathBase) {
     this.jcrNodeFactoryService = jcrNodeFactoryService;
     this.beanConverter = beanConverter;
     this.privatePathBase = privatePathBase;
@@ -73,17 +73,19 @@ public class FriendsResolverServiceImpl implements FriendsResolverService {
    * @see org.sakaiproject.kernel.api.social.FriendsResolverService#resolve(java.lang.String)
    */
   public FriendsBean resolve(String uuid) {
-    String userPath = userFactoryService.getUserEnvPath(uuid);
-    userPath = privatePathBase + userPath + FRIENDS_FILE;
+    String userPath = userFactoryService.getUserEnvironmentBasePath(uuid);
+    userPath = privatePathBase + userPath + KernelConstants.FRIENDS_FILE;
     InputStream in = null;
     try {
       in = jcrNodeFactoryService.getInputStream(userPath);
       String json = IOUtils.readFully(in, StringUtils.UTF8);
       FriendsBean fb = beanConverter.convertToObject(json, FriendsBean.class);   
+      System.err.println("Loaded friends bean as "+fb);
       return fb;
     } catch (JCRNodeFactoryServiceException ex) {
       FriendsBean fb = injector.getInstance(FriendsBean.class);
       fb.setUuid(uuid);
+      System.err.println("create new friends bean as "+fb);
       return fb;
     } catch (RepositoryException e) {
       LOG.error(e.getMessage(),e);

@@ -29,6 +29,7 @@ import org.apache.commons.dbcp.PoolingDataSource;
 import org.apache.commons.pool.impl.GenericKeyedObjectPool;
 import org.apache.commons.pool.impl.GenericKeyedObjectPoolFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
+import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.persistence.DataSourceService;
 
 import java.sql.SQLException;
@@ -87,13 +88,13 @@ public class DataSourceServiceImpl implements DataSourceService,
    */
   @Inject
   @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = { "URF_UNREAD_FIELD" }, justification = "The conection factory must be initialized before use")
-  public DataSourceServiceImpl(@Named(JDBC_DRIVER_NAME) String driverClassName,
-      @Named(JDBC_URL) String url, @Named(JDBC_USERNAME) String username,
-      @Named(JDBC_PASSWORD) String password,
-      @Named(JDBC_VALIDATION_QUERY) String validationQuery,
-      @Named(JDBC_DEFAULT_READ_ONLY) boolean defaultReadOnly,
-      @Named(JDBC_DEFAULT_AUTO_COMMIT) boolean defaultAutoCommit,
-      @Named(JDBC_DEFAULT_PREPARED_STATEMENTS) boolean poolPreparedStatements)
+  public DataSourceServiceImpl(@Named(KernelConstants.JDBC_DRIVER_NAME) String driverClassName,
+      @Named(KernelConstants.JDBC_URL) String url, @Named(KernelConstants.JDBC_USERNAME) String username,
+      @Named(KernelConstants.JDBC_PASSWORD) String password,
+      @Named(KernelConstants.JDBC_VALIDATION_QUERY) String validationQuery,
+      @Named(KernelConstants.JDBC_DEFAULT_READ_ONLY) boolean defaultReadOnly,
+      @Named(KernelConstants.JDBC_DEFAULT_AUTO_COMMIT) boolean defaultAutoCommit,
+      @Named(KernelConstants.JDBC_DEFAULT_PREPARED_STATEMENTS) boolean poolPreparedStatements)
       throws ClassNotFoundException, SQLException {
 
     Class.forName(driverClassName);

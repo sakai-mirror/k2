@@ -36,6 +36,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sakaiproject.kernel.Activator;
+import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.rest.RestProvider;
@@ -183,7 +184,7 @@ public class RestSearchProviderKernelUnitT extends BaseRestUnitT {
 
       RestSearchProvider rsp = new RestSearchProvider(registryService,
           jcrService, injector.getInstance(Key.get(BeanConverter.class, Names
-              .named(BeanConverter.REPOSITORY_BEANCONVETER))));
+              .named(KernelConstants.REPOSITORY_BEANCONVETER))));
       rsp.dispatch(elements, request, response);
 
       String op = baos.toString(StringUtils.UTF8);
@@ -222,7 +223,7 @@ public class RestSearchProviderKernelUnitT extends BaseRestUnitT {
 
       RestSearchProvider rsp = new RestSearchProvider(registryService,
           jcrService, injector.getInstance(Key.get(BeanConverter.class, Names
-              .named(BeanConverter.REPOSITORY_BEANCONVETER))));
+              .named(KernelConstants.REPOSITORY_BEANCONVETER))));
       rsp.dispatch(elements, request, response);
 
       String op = baos.toString(StringUtils.UTF8);

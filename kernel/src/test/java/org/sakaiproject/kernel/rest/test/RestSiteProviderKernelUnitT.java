@@ -35,6 +35,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sakaiproject.kernel.Activator;
+import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.model.RoleBean;
@@ -98,7 +99,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -140,7 +141,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -188,7 +189,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -228,7 +229,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -259,7 +260,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -294,7 +295,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -329,7 +330,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -365,7 +366,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -401,7 +402,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -437,7 +438,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -472,7 +473,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -507,7 +508,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -542,7 +543,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -577,7 +578,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -612,7 +613,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -656,7 +657,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -705,7 +706,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -755,7 +756,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -791,7 +792,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -830,7 +831,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     try {
@@ -874,7 +875,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     try {
@@ -917,7 +918,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     try {
@@ -958,7 +959,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -1001,7 +1002,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -1044,7 +1045,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -1073,7 +1074,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -1105,7 +1106,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     try {

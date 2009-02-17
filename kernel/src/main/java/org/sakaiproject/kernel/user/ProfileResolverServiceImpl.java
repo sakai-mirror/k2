@@ -22,6 +22,7 @@ import com.google.inject.name.Named;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
@@ -52,7 +53,7 @@ public class ProfileResolverServiceImpl implements ProfileResolverService {
    */
   @Inject
   public ProfileResolverServiceImpl(
-      @Named(BeanConverter.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
+      @Named(KernelConstants.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
       JCRNodeFactoryService jcrNodeFactoryService,
       UserFactoryService userFactoryService) {
     this.beanConverter = beanConverter;

@@ -20,6 +20,7 @@ package org.sakaiproject.kernel.user.jcr;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.memory.Cache;
@@ -31,7 +32,6 @@ import org.sakaiproject.kernel.api.user.UserResolverProvider;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.model.UserBean;
-import org.sakaiproject.kernel.user.ProviderUserResolverService;
 
 import java.util.List;
 
@@ -63,7 +63,7 @@ public class JcrUserResolverProvider implements UserResolverProvider {
 
     // register as a user resolver
     Registry<String, UserResolverProvider> userResolverRegistry = registryService
-        .getRegistry(ProviderUserResolverService.PROVIDER_REGISTRY);
+        .getRegistry(KernelConstants.USER_PROVIDER_REGISTRY);
     userResolverRegistry.add(this);
 
   }

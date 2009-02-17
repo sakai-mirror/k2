@@ -23,18 +23,17 @@ import com.google.inject.name.Named;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
-import org.sakaiproject.kernel.api.social.FriendsResolverService;
 import org.sakaiproject.kernel.api.user.ProfileResolverService;
 import org.sakaiproject.kernel.api.user.UserProfile;
 import org.sakaiproject.kernel.jcr.api.JcrContentListener;
 import org.sakaiproject.kernel.model.FriendBean;
 import org.sakaiproject.kernel.model.FriendsBean;
 import org.sakaiproject.kernel.model.FriendsIndexBean;
-import org.sakaiproject.kernel.user.jcr.JcrUserFactoryService;
 import org.sakaiproject.kernel.util.IOUtils;
 
 import java.io.IOException;
@@ -57,7 +56,7 @@ public class FriendsListener implements JcrContentListener {
   private final BeanConverter beanConverter;
   private final JCRNodeFactoryService jcrNodeFactoryService;
   private final EntityManager entityManager;
-  private String sharedPrivatePathBase;
+  private String privatePathBase;
   private ProfileResolverService profileResolverService;
 
   /**
@@ -72,16 +71,17 @@ public class FriendsListener implements JcrContentListener {
    */
   @Inject
   public FriendsListener(
-
+      ProfileResolverService profileResolverService,
       JCRNodeFactoryService jcrNodeFactoryService,
-      @Named(JcrUserFactoryService.PRIVATE_PATH_BASE) String sharedPrivatePathBase,
-      @Named(BeanConverter.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
+      @Named(KernelConstants.PRIVATE_PATH_BASE) String privatePathBase,
+      @Named(KernelConstants.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
       SessionManagerService sessionManagerService,
       EntityManager entityManager) {
     this.jcrNodeFactoryService = jcrNodeFactoryService;
     this.beanConverter = beanConverter;
     this.entityManager = entityManager;
-    this.sharedPrivatePathBase = sharedPrivatePathBase;
+    this.privatePathBase = privatePathBase;
+    this.profileResolverService = profileResolverService;
   }
 
   /**
@@ -91,8 +91,9 @@ public class FriendsListener implements JcrContentListener {
    *      java.lang.String, java.lang.String, java.lang.String)
    */
   public void onEvent(int type, String userID, String filePath, String fileName) {
-    if (filePath.startsWith(sharedPrivatePathBase)) {
-      if (fileName.equals(FriendsResolverService.FRIENDS_FILE)) {
+    if (filePath.startsWith(privatePathBase)) {
+      System.err.println("++++++++++++++++++++++++++ Checking event matches "+fileName+" "+KernelConstants.FRIENDS_FILE+" "+fileName.equals(KernelConstants.FRIENDS_FILE));
+      if (fileName.equals(KernelConstants.FRIENDS_FILE)) {
         String friendsBody = null;
         InputStream in = null;
         try {

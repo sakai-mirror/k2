@@ -22,11 +22,11 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
-import org.sakaiproject.kernel.api.social.FriendsResolverService;
 import org.sakaiproject.kernel.user.UserFactoryService;
 import org.sakaiproject.kernel.util.StringUtils;
 
@@ -43,7 +43,6 @@ import javax.jcr.RepositoryException;
  * 
  */
 public class FriendsBean {
-  private static final String PRIVATE_PATH_BASE = "jcrprivate.base";
 
   private String uuid;
   private Map<String, FriendBean> friends;
@@ -56,8 +55,8 @@ public class FriendsBean {
   @Inject
   public FriendsBean(JCRNodeFactoryService jcrNodeFactoryService,
       UserFactoryService userFactoryService,
-      @Named(BeanConverter.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
-      @Named(PRIVATE_PATH_BASE) String privatePathBase) {
+      @Named(KernelConstants.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
+      @Named(KernelConstants.PRIVATE_PATH_BASE) String privatePathBase) {
     friends = Maps.newLinkedHashMap();
     this.jcrNodeFactoryService = jcrNodeFactoryService;
     this.beanConverter = beanConverter;
@@ -138,15 +137,17 @@ public class FriendsBean {
   }
   
   public void save() throws JCRNodeFactoryServiceException, RepositoryException, UnsupportedEncodingException {
-    String userPath = userFactoryService.getUserEnvPath(uuid);
-    userPath = privatePathBase + userPath + FriendsResolverService.FRIENDS_FILE;
+    String userPath = userFactoryService.getUserEnvironmentBasePath(uuid);
+    userPath = privatePathBase + userPath + KernelConstants.FRIENDS_FILE;
 
     String json = beanConverter.convertToString(this);
     InputStream in = new ByteArrayInputStream(json.getBytes(StringUtils.UTF8));
     try {
+      System.err.println("Saving Friends Bean "+userPath);
       Node n = jcrNodeFactoryService.setInputStream(userPath, in,
           RestProvider.CONTENT_TYPE);
       n.save();
+      System.err.println("Done Saving Friends Bean "+userPath);
     } finally {
       try {
         in.close();

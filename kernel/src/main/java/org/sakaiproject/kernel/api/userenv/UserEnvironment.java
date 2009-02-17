@@ -40,11 +40,7 @@ import org.sakaiproject.kernel.model.UserEnvironmentBean;
 @ImplementedBy(UserEnvironmentBean.class)
 public interface UserEnvironment extends Sealable {
 
-  /**
-   * Attribute used in the session to store a list of group memberships.
-   */
-  public static final String GROUPMEMBERSHIP = "userenv.grouplist";
-  public static final String NULLUSERENV = "userenv.null";
+ 
 
   /**
    * Does the UserEnvironment have a match for the subject statement.

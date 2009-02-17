@@ -22,6 +22,7 @@ import com.google.inject.name.Named;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.UpdateFailedException;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
@@ -75,8 +76,8 @@ public class SimpleJcrUserEnvironmentResolverService implements
   public SimpleJcrUserEnvironmentResolverService(
       JCRNodeFactoryService jcrNodeFactoryService,
       CacheManagerService cacheManagerService,
-      @Named(BeanConverter.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
-      @Named(UserEnvironment.NULLUSERENV) UserEnvironment nullUserEnv,
+      @Named(KernelConstants.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
+      @Named(KernelConstants.NULLUSERENV) UserEnvironment nullUserEnv,
       UserFactoryService userFactoryService) {
     this.jcrNodeFactoryService = jcrNodeFactoryService;
     this.nullUserEnv = nullUserEnv;

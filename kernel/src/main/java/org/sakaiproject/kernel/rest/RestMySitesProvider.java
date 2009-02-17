@@ -22,6 +22,7 @@ import com.google.inject.name.Named;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.Registry;
@@ -64,9 +65,6 @@ public class RestMySitesProvider implements RestProvider {
   private SessionManagerService sessionManagerService;
   private BeanConverter beanConverter;
 
-  public static final String JCR_USERENV_BASE = "jcruserenv.base"; // / add to
-  // shared api
-  public static final String USERENV = "userenv"; // /add to shared api
 
   public static final String OUTPUT_PARAM_NAME_STARTINDEX = "startIndex";
   public static final String OUTPUT_PARAM_NAME_ITEMSPERPAGE = "startIndex";
@@ -84,8 +82,8 @@ public class RestMySitesProvider implements RestProvider {
       RegistryService registryService,
       SessionManagerService sessionManagerService,
       SimpleJcrUserEnvironmentResolverService simpleJcrUserEnvironmentResolverService,
-      @Named(BeanConverter.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
-      @Named(JCR_USERENV_BASE) String userEnvironmentBase,
+      @Named(KernelConstants.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
+      @Named(KernelConstants.JCR_USERENV_BASE) String userEnvironmentBase,
       SiteService siteService) {
     Registry<String, RestProvider> registry = registryService
         .getRegistry(RestProvider.REST_REGISTRY);

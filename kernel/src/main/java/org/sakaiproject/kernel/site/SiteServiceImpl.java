@@ -23,6 +23,7 @@ import com.google.inject.name.Named;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.rest.RestProvider;
@@ -68,7 +69,7 @@ public class SiteServiceImpl implements SiteService {
   public SiteServiceImpl(
       EntityManager entityManager,
       JCRNodeFactoryService jcrNodeFactoryService,
-      @Named(BeanConverter.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
+      @Named(KernelConstants.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
       UserEnvironmentResolverService userEnvRes, SessionManagerService sessMgr) {
     this.entityManager = entityManager;
     this.jcrNodeFactoryService = jcrNodeFactoryService;

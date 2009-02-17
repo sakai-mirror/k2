@@ -22,6 +22,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 
+import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.model.UserBean;
 import org.sakaiproject.kernel.user.UserFactoryService;
@@ -41,12 +42,6 @@ import javax.persistence.EntityManager;
 @Singleton
 public class JcrUserFactoryService implements UserFactoryService {
 
-  public static final String JCR_USERENV_BASE = "jcruserenv.base";
-  public static final String JCR_USERENV_TEMPLATES = "jcruserenv.templates";
-  private static final String JCR_DEFAULT_TEMPLATE = "jcruserenv.templates.default";
-  private static final String JCR_PROFILE_TEMPLATES = "jcrprofile.templates";
-  private static final String JCR_PROFILE_DEFAUT_TEMPLATES = "jcrprofile.templates.default";
-  public static final String PRIVATE_PATH_BASE = "jcrprivateshared.base";
 
   private EntityManager entityManager;
   private String userEnvironmentBase;
@@ -62,12 +57,12 @@ public class JcrUserFactoryService implements UserFactoryService {
    */
   @Inject
   public JcrUserFactoryService(EntityManager entityManager,
-      @Named(JCR_USERENV_BASE) String userEnvironmentBase,
-      @Named(JCR_USERENV_TEMPLATES) String userTemplates,
-      @Named(JCR_DEFAULT_TEMPLATE) String defaultTemplate,
-      @Named(PRIVATE_PATH_BASE) String sharedPrivatePathBase,
-      @Named(JCR_PROFILE_TEMPLATES) String profileTemplates,
-      @Named(JCR_PROFILE_DEFAUT_TEMPLATES) String defaultProfileTemplate
+      @Named(KernelConstants.JCR_USERENV_BASE) String userEnvironmentBase,
+      @Named(KernelConstants.JCR_USERENV_TEMPLATES) String userTemplates,
+      @Named(KernelConstants.JCR_DEFAULT_TEMPLATE) String defaultTemplate,
+      @Named(KernelConstants.PRIVATE_SHARED_PATH_BASE) String sharedPrivatePathBase,
+      @Named(KernelConstants.JCR_PROFILE_TEMPLATES) String profileTemplates,
+      @Named(KernelConstants.JCR_PROFILE_DEFAUT_TEMPLATES) String defaultProfileTemplate
 
       ) {
     this.entityManager = entityManager;
@@ -113,7 +108,7 @@ public class JcrUserFactoryService implements UserFactoryService {
    * @see org.sakaiproject.kernel.user.UserFactoryService#getUserEnvPath(java.lang.String)
    */
   public String getUserEnvPath(String uuid) {
-    return getUserEnvironmentBasePath(uuid) + USERENV;
+    return getUserEnvironmentBasePath(uuid) + KernelConstants.USERENV;
   }
 
   /**
@@ -155,7 +150,7 @@ public class JcrUserFactoryService implements UserFactoryService {
    */
   public String getUserProfilePath(String uuid) {
     
-    return sharedPrivatePathBase + PathUtils.getUserPrefix(uuid) + PROFILE_JSON;
+    return sharedPrivatePathBase + PathUtils.getUserPrefix(uuid) + KernelConstants.PROFILE_JSON;
   }
 
   /**

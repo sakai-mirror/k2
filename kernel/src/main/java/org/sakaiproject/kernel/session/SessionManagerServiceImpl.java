@@ -21,6 +21,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 
+import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.memory.Cache;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
@@ -47,7 +48,6 @@ public class SessionManagerServiceImpl implements SessionManagerService {
    */
   private static final String REQUEST_CACHE = "request";
   private static final String CURRENT_REQUEST = "_r";
-  private static final String SESSION_COOKIE = "http.global.cookiename";
   private CacheManagerService cacheManagerService;
   private Map<String, HttpSession> sessionMap;
   private String cookieName;
@@ -55,7 +55,7 @@ public class SessionManagerServiceImpl implements SessionManagerService {
   @Inject
   public SessionManagerServiceImpl(CacheManagerService cacheManagerService,
       Map<String, HttpSession> sessionMap,
-      @Named(SESSION_COOKIE) String cookieName) {
+      @Named(KernelConstants.SESSION_COOKIE) String cookieName) {
     this.cacheManagerService = cacheManagerService;
     this.sessionMap = sessionMap;
     this.cookieName = cookieName;

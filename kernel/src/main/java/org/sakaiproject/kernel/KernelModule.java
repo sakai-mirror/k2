@@ -134,7 +134,7 @@ public class KernelModule extends AbstractModule {
     // JCR setup
     TypeLiteral<List<StartupAction>> startupActionType = new TypeLiteral<List<StartupAction>>() {
     };
-    bind(startupActionType).toProvider(StartupActionProvider.class);
+    bind(startupActionType).toProvider(StartupActionProvider.class).in(Scopes.SINGLETON);
 
     bind(Credentials.class).annotatedWith(
         Names.named(JCRService.NAME_CREDENTIALS)).to(SakaiJCRCredentials.class);
@@ -143,21 +143,21 @@ public class KernelModule extends AbstractModule {
     TypeLiteral<List<InitializationAction>> initializationActionType = new TypeLiteral<List<InitializationAction>>() {
     };
     bind(initializationActionType).toProvider(
-        InitializationActionProvider.class);
+        InitializationActionProvider.class).in(Scopes.SINGLETON);
 
     bind(AccessManager.class).to(SakaiAccessManager.class);
     // Secure bind(AccessManager.class).to(SecureSakaiAccessManager.class);
 
     TypeLiteral<Map<String, ReferenceResolverService>> resolverMap = new TypeLiteral<Map<String, ReferenceResolverService>>() {
     };
-    bind(resolverMap).toProvider(ReferenceResolverServiceProvider.class);
+    bind(resolverMap).toProvider(ReferenceResolverServiceProvider.class).in(Scopes.SINGLETON);
 
     bind(ReferenceResolverService.class).annotatedWith(
         Names.named(PathReferenceResolverService.DEFAULT_RESOLVER)).to(
-        JcrReferenceResolverService.class);
+        JcrReferenceResolverService.class).in(Scopes.SINGLETON);
 
     bind(BeanConverter.class).annotatedWith(
-        Names.named(BeanConverter.REPOSITORY_BEANCONVETER)).to(
+        Names.named(KernelConstants.REPOSITORY_BEANCONVETER)).to(
         BeanJsonLibConverter.class).in(Scopes.SINGLETON);
 
     // site service
@@ -168,27 +168,27 @@ public class KernelModule extends AbstractModule {
     bind(List.class).to(ArrayList.class);
     bind(Map[].class).to(HashMap[].class);
     bind(JsonConfig.class).annotatedWith(Names.named("SakaiKernelJsonConfig"))
-        .to(BeanJsonLibConfig.class);
+        .to(BeanJsonLibConfig.class).in(Scopes.SINGLETON);
 
     bind(UserFactoryService.class).to(JcrUserFactoryService.class).in(
         Scopes.SINGLETON);
 
     bind(UserEnvironment.class).annotatedWith(
-        Names.named(UserEnvironment.NULLUSERENV)).to(NullUserEnvironment.class)
+        Names.named(KernelConstants.NULLUSERENV)).to(NullUserEnvironment.class)
         .in(Scopes.SINGLETON);
 
     TypeLiteral<Map<String, HttpSession>> sessionMap = new TypeLiteral<Map<String, HttpSession>>() {
     };
-    bind(sessionMap).toProvider(SessionMapProvider.class);
+    bind(sessionMap).toProvider(SessionMapProvider.class).in(Scopes.SINGLETON);
 
     // event registration
     TypeLiteral<List<EventRegistration>> eventList = new TypeLiteral<List<EventRegistration>>() {
     };
-    bind(eventList).toProvider(EventRegistrationProvider.class);
+    bind(eventList).toProvider(EventRegistrationProvider.class).in(Scopes.SINGLETON);
 
     TypeLiteral<List<JcrContentListener>> contentListeners = new TypeLiteral<List<JcrContentListener>>() {
     };
-    bind(contentListeners).toProvider(JcrContentListenerProvider.class);
+    bind(contentListeners).toProvider(JcrContentListenerProvider.class).in(Scopes.SINGLETON);
 
     TypeLiteral<List<JcrContentListener>> syncContentListeners = new TypeLiteral<List<JcrContentListener>>() {
     };
@@ -196,25 +196,25 @@ public class KernelModule extends AbstractModule {
         .annotatedWith(
             Names
                 .named(JcrSynchronousContentListenerAdapter.SYNCHRONOUS_LISTENERS))
-        .toProvider(JcrSynchronousContentListenerProvider.class);
+        .toProvider(JcrSynchronousContentListenerProvider.class).in(Scopes.SINGLETON);
 
     TypeLiteral<List<ValueProcessor>> valueProcessors = new TypeLiteral<List<ValueProcessor>>() {
     };
-    bind(valueProcessors).toProvider(ValueProcessorsProvider.class);
+    bind(valueProcessors).toProvider(ValueProcessorsProvider.class).in(Scopes.SINGLETON);
 
     TypeLiteral<List<BeanProcessor>> beanProcessors = new TypeLiteral<List<BeanProcessor>>() {
     };
-    bind(beanProcessors).toProvider(BeanProcessorProvider.class);
+    bind(beanProcessors).toProvider(BeanProcessorProvider.class).in(Scopes.SINGLETON);
 
     TypeLiteral<Map<String, Object>> jsonClassMap = new TypeLiteral<Map<String, Object>>() {
     };
     bind(jsonClassMap).annotatedWith(
-        Names.named(BeanJsonLibConfig.JSON_CLASSMAP)).toProvider(
-        JsonClassMapProvider.class);
+        Names.named(KernelConstants.JSON_CLASSMAP)).toProvider(
+        JsonClassMapProvider.class).in(Scopes.SINGLETON);
 
     TypeLiteral<List<Morpher>> jsonMorpherList = new TypeLiteral<List<Morpher>>() {
     };
-    bind(jsonMorpherList).toProvider(JsonMorpherListProvider.class);
+    bind(jsonMorpherList).toProvider(JsonMorpherListProvider.class).in(Scopes.SINGLETON);
 
     // bind in the cached version
     bind(AuthenticationResolverService.class).to(

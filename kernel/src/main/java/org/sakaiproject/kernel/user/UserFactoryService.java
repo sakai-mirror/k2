@@ -24,15 +24,6 @@ import org.sakaiproject.kernel.api.user.User;
  */
 public interface UserFactoryService {
 
-  /**
-   * The Name of the userenv file in the system.
-   */
-  public static final String USERENV = "userenv";
-  
-  /**
-   * The name of the profile file. 
-   */
-  public static final String PROFILE_JSON = "profile.json";
 
 
   /**

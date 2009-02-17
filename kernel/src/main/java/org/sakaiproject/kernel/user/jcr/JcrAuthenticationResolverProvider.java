@@ -20,6 +20,7 @@ package org.sakaiproject.kernel.user.jcr;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
@@ -36,8 +37,6 @@ import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.JCRIdPwEvidence;
 import org.sakaiproject.kernel.user.AnonUser;
 import org.sakaiproject.kernel.user.AuthenticationImpl;
-import org.sakaiproject.kernel.user.AuthenticationResolverServiceImpl;
-import org.sakaiproject.kernel.user.UserFactoryService;
 import org.sakaiproject.kernel.util.PathUtils;
 import org.sakaiproject.kernel.util.StringUtils;
 
@@ -67,7 +66,7 @@ public class JcrAuthenticationResolverProvider implements
   @Inject
   public JcrAuthenticationResolverProvider(
       JCRNodeFactoryService jcrNodeFactoryService,
-      @Named(JcrUserFactoryService.JCR_USERENV_BASE) String userEnvironmentBase,
+      @Named(KernelConstants.JCR_USERENV_BASE) String userEnvironmentBase,
       UserResolverService userResolverService, RegistryService registryService,
       SessionManagerService sessionManagerService,
       UserEnvironmentResolverService userEnvironmentResolverService) {
@@ -78,10 +77,10 @@ public class JcrAuthenticationResolverProvider implements
     this.userEnvironmentResolverService = userEnvironmentResolverService;
     // register as a resolver and a manager
     Registry<String, AuthenticationResolverProvider> authResolverRegistry = registryService
-        .getRegistry(AuthenticationResolverServiceImpl.PROVIDER_REGISTRY);
+        .getRegistry(KernelConstants.AUTHENTICATION_PROVIDER_REGISTRY);
     authResolverRegistry.add(this);
     Registry<String, AuthenticationManagerProvider> authManagerRegistry = registryService
-        .getRegistry(AuthenticationResolverServiceImpl.MANAGER_PROVIDER_REGISTRY);
+        .getRegistry(KernelConstants.MANAGER_PROVIDER_REGISTRY);
     authManagerRegistry.add(this);
 
   }
@@ -217,6 +216,6 @@ public class JcrAuthenticationResolverProvider implements
    */
   public String getUserEnvPath(String userId) {
     String prefix = PathUtils.getUserPrefix(userId);
-    return userEnvironmentBase + prefix + UserFactoryService.USERENV;
+    return userEnvironmentBase + prefix + KernelConstants.USERENV;
   }
 }

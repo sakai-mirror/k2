@@ -31,6 +31,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sakaiproject.kernel.Activator;
+import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.rest.RestProvider;
@@ -106,7 +107,7 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
     RestPatchProvider rsp = new RestPatchProvider(registryService,
         jcrNodeFactoryService, injector.getInstance(Key.get(
             BeanConverter.class, Names
-                .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+                .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         PRIVATE_BASE_PATH);
     rsp.dispatch(elements, request, response);
 
@@ -164,7 +165,7 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
     RestPatchProvider rsp = new RestPatchProvider(registryService,
         jcrNodeFactoryService, injector.getInstance(Key.get(
             BeanConverter.class, Names
-                .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+                .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         PRIVATE_BASE_PATH);
     rsp.dispatch(elements, request, response);
 
@@ -216,7 +217,7 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
     RestPatchProvider rsp = new RestPatchProvider(registryService,
         jcrNodeFactoryService, injector.getInstance(Key.get(
             BeanConverter.class, Names
-                .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+                .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         PRIVATE_BASE_PATH);
     rsp.dispatch(elements, request, response);
 
@@ -274,7 +275,7 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
     RestPatchProvider rsp = new RestPatchProvider(registryService,
         jcrNodeFactoryService, injector.getInstance(Key.get(
             BeanConverter.class, Names
-                .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+                .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         PRIVATE_BASE_PATH);
     rsp.dispatch(elements, request, response);
 
@@ -325,7 +326,7 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
     RestPatchProvider rsp = new RestPatchProvider(registryService,
         jcrNodeFactoryService, injector.getInstance(Key.get(
             BeanConverter.class, Names
-                .named(BeanConverter.REPOSITORY_BEANCONVETER))),
+                .named(KernelConstants.REPOSITORY_BEANCONVETER))),
         PRIVATE_BASE_PATH);
     try {
       rsp.dispatch(elements, request, response);

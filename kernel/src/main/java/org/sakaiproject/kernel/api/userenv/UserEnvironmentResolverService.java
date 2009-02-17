@@ -35,11 +35,6 @@ import java.util.Locale;
 @Singleton
 public interface UserEnvironmentResolverService {
 
-  /**
-   * Setting: The time to live of User Env objects the local cache, this should
-   * be set in the kernel properties file.
-   */
-  public static final String TTL = "userenv.ttl";
 
 
   /**

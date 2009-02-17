@@ -22,6 +22,7 @@ import com.google.inject.name.Named;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
@@ -31,8 +32,6 @@ import org.sakaiproject.kernel.jcr.api.JcrContentListener;
 import org.sakaiproject.kernel.model.GroupMembershipBean;
 import org.sakaiproject.kernel.model.UserBean;
 import org.sakaiproject.kernel.model.UserEnvironmentBean;
-import org.sakaiproject.kernel.user.UserFactoryService;
-import org.sakaiproject.kernel.user.jcr.JcrUserFactoryService;
 import org.sakaiproject.kernel.util.IOUtils;
 
 import java.io.IOException;
@@ -71,8 +70,8 @@ public class UserEnvironmentListener implements JcrContentListener {
   @Inject
   public UserEnvironmentListener(
       JCRNodeFactoryService jcrNodeFactoryService,
-      @Named(JcrUserFactoryService.JCR_USERENV_BASE) String userEnvironmentBase,
-      @Named(BeanConverter.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
+      @Named(KernelConstants.JCR_USERENV_BASE) String userEnvironmentBase,
+      @Named(KernelConstants.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
       SessionManagerService sessionManagerService,
       UserEnvironmentResolverService userEnvironmentResolverService,
       EntityManager entityManager) {
@@ -91,7 +90,7 @@ public class UserEnvironmentListener implements JcrContentListener {
    */
   public void onEvent(int type, String userID, String filePath, String fileName) {
     if (filePath.startsWith(userEnvironmentBase)) {
-      if (fileName.equals(UserFactoryService.USERENV)) {
+      if (fileName.equals(KernelConstants.USERENV)) {
         String userEnvBody = null;
         try {
           userEnvBody = IOUtils.readFully(jcrNodeFactoryService

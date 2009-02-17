@@ -29,6 +29,7 @@ import org.easymock.EasyMock;
 import org.sakaiproject.kernel.BeanProcessorProvider;
 import org.sakaiproject.kernel.JsonClassMapProvider;
 import org.sakaiproject.kernel.JsonMorpherListProvider;
+import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.KernelModule;
 import org.sakaiproject.kernel.ValueProcessorsProvider;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
@@ -82,7 +83,7 @@ public class ModelModule extends AbstractModule {
     Names.bindProperties(this.binder(), properties);
 
     bind(BeanConverter.class).annotatedWith(
-        Names.named(BeanConverter.REPOSITORY_BEANCONVETER)).to(
+        Names.named(KernelConstants.REPOSITORY_BEANCONVETER)).to(
         BeanJsonLibConverter.class).in(Scopes.SINGLETON);
 
     // config for the bean converter
@@ -93,7 +94,7 @@ public class ModelModule extends AbstractModule {
         .to(BeanJsonLibConfig.class);
 
     bind(UserEnvironment.class).annotatedWith(
-        Names.named(UserEnvironment.NULLUSERENV)).to(NullUserEnvironment.class)
+        Names.named(KernelConstants.NULLUSERENV)).to(NullUserEnvironment.class)
         .in(Scopes.SINGLETON);
 
     // create some mocks to fill out the necessary classes
@@ -111,7 +112,7 @@ public class ModelModule extends AbstractModule {
     TypeLiteral<Map<String, Object>> jsonClassMap = new TypeLiteral<Map<String, Object>>() {
     };
     bind(jsonClassMap).annotatedWith(
-        Names.named(BeanJsonLibConfig.JSON_CLASSMAP)).toProvider(
+        Names.named(KernelConstants.JSON_CLASSMAP)).toProvider(
         JsonClassMapProvider.class);
 
     TypeLiteral<List<Morpher>> jsonMorpherList = new TypeLiteral<List<Morpher>>() {

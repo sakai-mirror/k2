@@ -71,7 +71,7 @@ public class FriendsParams {
       UserEnvironmentResolverService userEnvironmentResolverService) {
     if (elements.length < 2) {
       throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
-          "The request is invalid");
+          "The request is invalid, expected more than 2 path elements, got "+elements.length);
     }
     try {
       major = PathElement.valueOf(elements[1]);
@@ -81,7 +81,7 @@ public class FriendsParams {
     }
     if (elements.length < major.nelements) {
       throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
-          "The request is invalid");
+          "The request is invalid expecting "+major.nelements+" path elements, found "+Arrays.toString(elements));
     }
     if (major.nelements > 2) {
       try {
@@ -95,7 +95,7 @@ public class FriendsParams {
     }
     if (elements.length < minor.nelements) {
       throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
-          "The request is invalid");
+          "The request is invalid "+major.nelements+" path elements, found "+Arrays.toString(elements));
     }
     for (String p : major.required) {
       if (StringUtils.isEmpty(p)) {

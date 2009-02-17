@@ -34,6 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.TargetServer;
+import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.persistence.DataSourceService;
 import org.sakaiproject.kernel.component.core.PersistenceUnitClassLoader;
 
@@ -51,13 +52,6 @@ import javax.persistence.spi.PersistenceUnitTransactionType;
 public class EntityManagerFactoryProvider implements Provider<EntityManagerFactory> {
   private static final Log LOG = LogFactory.getLog(EntityManagerFactoryProvider.class);
 
-  private static final String DB_MIN_WRITE = "eclipselink.write.min";
-  private static final String DB_MIN_NUM_READ = "eclipselink.read.min";
-  private static final String DB_UNITNAME = "jpa.unitname";
-  public static final String JDBC_DRIVER_NAME = "jdbc.driver";
-  public static final String JDBC_URL = "jdbc.url";
-  public static final String JDBC_USERNAME = "jdbc.username";
-  public static final String JDBC_PASSWORD = "jdbc.password";
 
 
   private EntityManagerFactory entityManagerFactory;
@@ -73,12 +67,12 @@ public class EntityManagerFactoryProvider implements Provider<EntityManagerFacto
   @Inject
   @SuppressWarnings(value={"DP_CREATE_CLASSLOADER_INSIDE_DO_PRIVILEGED"}, justification="Expected to only ever be executed from a privalaged environment")
   public EntityManagerFactoryProvider(DataSourceService dataSourceService,
-      @Named(DB_MIN_NUM_READ) String minRead,
-      @Named(DB_MIN_WRITE) String minWrite,
-      @Named(DB_UNITNAME) String unitName,
-      @Named(JDBC_DRIVER_NAME) String driverClassName,
-      @Named(JDBC_URL) String url, @Named(JDBC_USERNAME) String username,
-      @Named(JDBC_PASSWORD) String password) {
+      @Named(KernelConstants.DB_MIN_NUM_READ) String minRead,
+      @Named(KernelConstants.DB_MIN_WRITE) String minWrite,
+      @Named(KernelConstants.DB_UNITNAME) String unitName,
+      @Named(KernelConstants.JDBC_DRIVER_NAME) String driverClassName,
+      @Named(KernelConstants.JDBC_URL) String url, @Named(KernelConstants.JDBC_USERNAME) String username,
+      @Named(KernelConstants.JDBC_PASSWORD) String password) {
 
     Map<String, Object> properties = new HashMap<String, Object>();
 

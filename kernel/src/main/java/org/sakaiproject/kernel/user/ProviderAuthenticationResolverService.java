@@ -19,6 +19,7 @@ package org.sakaiproject.kernel.user;
 
 import com.google.inject.Inject;
 
+import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.user.Authentication;
@@ -50,9 +51,9 @@ public class ProviderAuthenticationResolverService implements
       RegistryService registryService) {
     this.nullService = nullService;
     this.registry = registryService
-        .getRegistry(PROVIDER_REGISTRY);
+        .getRegistry(KernelConstants.AUTHENTICATION_PROVIDER_REGISTRY);
     
-   this.managerRegistry = registryService.getRegistry(MANAGER_PROVIDER_REGISTRY);
+   this.managerRegistry = registryService.getRegistry(KernelConstants.MANAGER_PROVIDER_REGISTRY);
   }
 
   /**

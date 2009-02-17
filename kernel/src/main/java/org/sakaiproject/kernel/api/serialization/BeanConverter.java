@@ -20,7 +20,6 @@ package org.sakaiproject.kernel.api.serialization;
 import java.util.Map;
 
 public interface BeanConverter {
-  String REPOSITORY_BEANCONVETER = "beanconverters.repository";
 
   <T> T convertToObject(String string, Class<?> className);
 

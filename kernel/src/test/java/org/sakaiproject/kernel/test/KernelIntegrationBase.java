@@ -19,6 +19,7 @@ package org.sakaiproject.kernel.test;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.jcr.JCRService;
@@ -32,7 +33,6 @@ import org.sakaiproject.kernel.api.site.SiteService;
 import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.component.KernelLifecycle;
-import org.sakaiproject.kernel.user.UserFactoryService;
 import org.sakaiproject.kernel.user.jcr.JcrAuthenticationResolverProvider;
 import org.sakaiproject.kernel.util.FileUtil;
 import org.sakaiproject.kernel.util.PathUtils;
@@ -219,7 +219,7 @@ public class KernelIntegrationBase {
    */
   public static String getUserEnvPath(String userId) {
     String prefix = PathUtils.getUserPrefix(userId);
-    return "/userenv" + prefix + UserFactoryService.USERENV;
+    return "/userenv" + prefix + KernelConstants.USERENV;
   }
 
   /**

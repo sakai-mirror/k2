@@ -20,6 +20,7 @@ package org.sakaiproject.kernel.rest;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
@@ -71,7 +72,6 @@ public class RestUserProvider implements RestProvider {
   private static final String USER_TYPE_PARAM = "userType";
   private static final String PASSWORD_OLD_PARAM = "oldPassword";
   private static final String EXISTS = "exists";
-  public static final String PROP_ANON_ACCOUNTING = "rest.user.anonymous.account.creation";
   private BeanConverter beanConverter;
   private UserResolverService userResolverService;
   private JCRNodeFactoryService jcrNodeFactoryService;
@@ -89,7 +89,7 @@ public class RestUserProvider implements RestProvider {
   @Inject
   public RestUserProvider(
       RegistryService registryService,
-      @Named(BeanConverter.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
+      @Named(KernelConstants.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
       UserResolverService userResolverService,
       UserEnvironmentResolverService userEnvironmentResolverService,
       JCRNodeFactoryService jcrNodeFactoryService,
@@ -97,7 +97,7 @@ public class RestUserProvider implements RestProvider {
       SessionManagerService sessionManagerService,
       AuthenticationManagerService authenticationManagerService,
       ProfileResolverService profileResolverService,
-      @Named(PROP_ANON_ACCOUNTING) String anonymousAccounting) {
+      @Named(KernelConstants.PROP_ANON_ACCOUNTING) String anonymousAccounting) {
     Registry<String, RestProvider> restRegistry = registryService
         .getRegistry(RestProvider.REST_REGISTRY);
     restRegistry.add(this);

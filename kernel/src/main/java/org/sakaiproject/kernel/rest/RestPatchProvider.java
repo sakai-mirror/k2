@@ -21,6 +21,7 @@ package org.sakaiproject.kernel.rest;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
@@ -115,7 +116,6 @@ public class RestPatchProvider implements RestProvider {
 
   private static final String REMOVE_ACTION = "r";
 
-  private static final String PRIVATE_PATH_BASE = "jcrprivate.base";
 
   static {
     DESC.setTitle("Patch");
@@ -151,20 +151,20 @@ public class RestPatchProvider implements RestProvider {
 
   private BeanConverter beanConverter;
 
-  private String privatePathBase;
+  private String privateSharedPathBase;
 
   @Inject
   public RestPatchProvider(
       RegistryService registryService,
       JCRNodeFactoryService jcrNodeFactoryService,
-      @Named(BeanConverter.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
-      @Named(PRIVATE_PATH_BASE) String privatePathBase) {
+      @Named(KernelConstants.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
+      @Named(KernelConstants.PRIVATE_SHARED_PATH_BASE) String privateSharedPathBase) {
     Registry<String, RestProvider> registry = registryService
         .getRegistry(RestProvider.REST_REGISTRY);
     registry.add(this);
     this.jcrNodeFactoryService = jcrNodeFactoryService;
     this.beanConverter = beanConverter;
-    this.privatePathBase = privatePathBase;
+    this.privateSharedPathBase = privateSharedPathBase;
   }
 
   /**
@@ -242,7 +242,7 @@ public class RestPatchProvider implements RestProvider {
     String user = request.getRemoteUser();
 
     String path = StringUtils.join(elements, 2, '/');
-    path = privatePathBase + PathUtils.getUserPrefix(user) + path;
+    path = privateSharedPathBase + PathUtils.getUserPrefix(user) + path;
     return saveProperties(path, new MapParams(request));
   }
 

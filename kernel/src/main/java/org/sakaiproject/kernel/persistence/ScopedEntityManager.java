@@ -22,6 +22,7 @@ import com.google.inject.name.Named;
 import com.google.inject.util.ReferenceMap;
 import com.google.inject.util.ReferenceType;
 
+import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.RequiresStop;
 import org.sakaiproject.kernel.api.ShutdownService;
 import org.sakaiproject.kernel.api.memory.Cache;
@@ -44,7 +45,6 @@ public class ScopedEntityManager implements EntityManager, RequiresStop {
 
   private static final String JPA_CACHE = "jpa.cache";
   private static final String ENTITY_MANAGER = "em";
-  private static final String ENTITY_MANAGER_SCOPE = "jpa.entitymanager.scope";
   private EntityManagerFactory entityManagerFactory;
   private CacheManagerService cacheManagerService;
   private ReferenceMap<String, EntityManagerHolder> entityManagerReferenceMap = new ReferenceMap<String, EntityManagerHolder>(
@@ -55,7 +55,7 @@ public class ScopedEntityManager implements EntityManager, RequiresStop {
   @Inject
   public ScopedEntityManager(EntityManagerFactory entityManagerFactory,
       CacheManagerService cacheManagerService,
-      @Named(ENTITY_MANAGER_SCOPE) String entityManagerScope,
+      @Named(KernelConstants.ENTITY_MANAGER_SCOPE) String entityManagerScope,
       ShutdownService shutdownService) {
     this.entityManagerFactory = entityManagerFactory;
     this.cacheManagerService = cacheManagerService;
