@@ -489,7 +489,7 @@ public class RestFriendsProvider implements RestProvider {
         if (i != 0) {
           sb.append(",");
         }
-        sb.append(params.sort[i]);
+        sb.append(" s.").append(params.sort[i]);
         if (params.sortOrder != null
             && params.sortOrder.length == params.sort.length) {
           sb.append(" ").append(params.sortOrder[i]);
