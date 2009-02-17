@@ -41,6 +41,9 @@ public class FriendsIndexBean {
   public static final String FINDBY_FRIENDUUID = "FriendsIndex.FindByFriendUuid";
   public static final String PARAM_UUID = "uuid";
   public static final String FINDBY_UUID = "SubjectPermission.FindByUuid";
+  public static final String FINDBY_UUID_WITH_SORT = "select s from FriendsIndexBean s where s.uuid = :uuid ";
+  public static final String FRIENDS_STATUS_FIELD = "s.friendStatus";
+  public static final String PARAM_FRIENDSTATUS = "friendStatus";
 
   @SuppressWarnings("unused")
   @Id
@@ -69,6 +72,9 @@ public class FriendsIndexBean {
    */
   @Column(name = "lastName")
   private String lastName;
+  
+  @Column(name = "friendStatus")
+  private String friendStatus;
 
   /**
    * 
@@ -111,4 +117,19 @@ public class FriendsIndexBean {
   public String getFriendUuid() {
     return friendUuid;
   }
+  
+  /**
+   * @return the friendStatus
+   */
+  public String getFriendStatus() {
+    return friendStatus;
+  }
+  
+  /**
+   * @param friendStatus the friendStatus to set
+   */
+  public void setFriendStatus(String friendStatus) {
+    this.friendStatus = friendStatus;
+  }
+  
 }

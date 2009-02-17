@@ -132,6 +132,8 @@ public class RestFriendsProvider implements RestProvider {
     DESC.addParameter(FriendsParams.FRIENDUUID, "the UUID of the friend");
     DESC.addParameter(FriendsParams.FRIENDTYPE,
         "the type of the friend, a string associated with the connection.");
+    DESC.addParameter(FriendsParams.FRIENDSTATUS,
+        "filter a status request to only retrune the type requested.");
     DESC.addParameter(FriendsParams.MESSAGE,
         "the message associated with the request, required for requests");
     DESC.addParameter(FriendsParams.PAGE,
@@ -154,16 +156,13 @@ public class RestFriendsProvider implements RestProvider {
         " Any other error");
   }
 
-
   private BeanConverter beanConverter;
 
   private SessionManagerService sessionManagerService;
 
   private UserEnvironmentResolverService userEnvironmentResolverService;
 
-
   private Map<String, Object> OK = ImmutableMap.of("response", (Object) "OK");
-
 
   private EntityManager entityManager;
 
@@ -172,8 +171,7 @@ public class RestFriendsProvider implements RestProvider {
   private FriendsResolverService friendsResolverService;
 
   @Inject
-  public RestFriendsProvider(
-      RegistryService registryService,
+  public RestFriendsProvider(RegistryService registryService,
       SessionManagerService sessionManagerService,
       UserEnvironmentResolverService userEnvironmentResolverService,
       ProfileResolverService profileResolverService,
@@ -273,7 +271,8 @@ public class RestFriendsProvider implements RestProvider {
       HttpServletRequest request, HttpServletResponse response)
       throws JCRNodeFactoryServiceException, RepositoryException, IOException {
     FriendsBean myFriends = friendsResolverService.resolve(params.uuid);
-    FriendsBean friendFriends = friendsResolverService.resolve(params.friendUuid);
+    FriendsBean friendFriends = friendsResolverService
+        .resolve(params.friendUuid);
     if (!myFriends.hasFriend(params.friendUuid)
         || !friendFriends.hasFriend(params.uuid)) {
       throw new RestServiceFaultException(HttpServletResponse.SC_NOT_FOUND,
@@ -299,7 +298,8 @@ public class RestFriendsProvider implements RestProvider {
       HttpServletRequest request, HttpServletResponse response)
       throws JCRNodeFactoryServiceException, RepositoryException, IOException {
     FriendsBean myFriends = friendsResolverService.resolve(params.uuid);
-    FriendsBean friendFriends = friendsResolverService.resolve(params.friendUuid);
+    FriendsBean friendFriends = friendsResolverService
+        .resolve(params.friendUuid);
     if (myFriends.hasFriend(params.friendUuid)
         || friendFriends.hasFriend(params.uuid)) {
       throw new RestServiceFaultException(HttpServletResponse.SC_CONFLICT,
@@ -335,7 +335,8 @@ public class RestFriendsProvider implements RestProvider {
       HttpServletRequest request, HttpServletResponse response)
       throws JCRNodeFactoryServiceException, RepositoryException, IOException {
     FriendsBean myFriends = friendsResolverService.resolve(params.uuid);
-    FriendsBean friendFriends = friendsResolverService.resolve(params.friendUuid);
+    FriendsBean friendFriends = friendsResolverService
+        .resolve(params.friendUuid);
     if (!myFriends.hasFriend(params.friendUuid)
         || !friendFriends.hasFriend(params.uuid)) {
       throw new RestServiceFaultException(HttpServletResponse.SC_NOT_FOUND,
@@ -369,7 +370,8 @@ public class RestFriendsProvider implements RestProvider {
       HttpServletRequest request, HttpServletResponse response)
       throws JCRNodeFactoryServiceException, RepositoryException, IOException {
     FriendsBean myFriends = friendsResolverService.resolve(params.uuid);
-    FriendsBean friendFriends = friendsResolverService.resolve(params.friendUuid);
+    FriendsBean friendFriends = friendsResolverService
+        .resolve(params.friendUuid);
     if (!myFriends.hasFriend(params.friendUuid)
         || !friendFriends.hasFriend(params.uuid)) {
       throw new RestServiceFaultException(HttpServletResponse.SC_NOT_FOUND,
@@ -403,7 +405,8 @@ public class RestFriendsProvider implements RestProvider {
       HttpServletRequest request, HttpServletResponse response)
       throws JCRNodeFactoryServiceException, RepositoryException, IOException {
     FriendsBean myFriends = friendsResolverService.resolve(params.uuid);
-    FriendsBean friendFriends = friendsResolverService.resolve(params.friendUuid);
+    FriendsBean friendFriends = friendsResolverService
+        .resolve(params.friendUuid);
     if (!myFriends.hasFriend(params.friendUuid)
         || !friendFriends.hasFriend(params.uuid)) {
       throw new RestServiceFaultException(HttpServletResponse.SC_NOT_FOUND,
@@ -437,7 +440,8 @@ public class RestFriendsProvider implements RestProvider {
       HttpServletRequest request, HttpServletResponse response)
       throws JCRNodeFactoryServiceException, RepositoryException, IOException {
     FriendsBean myFriends = friendsResolverService.resolve(params.uuid);
-    FriendsBean friendFriends = friendsResolverService.resolve(params.friendUuid);
+    FriendsBean friendFriends = friendsResolverService
+        .resolve(params.friendUuid);
     if (!myFriends.hasFriend(params.friendUuid)
         || !friendFriends.hasFriend(params.uuid)) {
       throw new RestServiceFaultException(HttpServletResponse.SC_NOT_FOUND,
@@ -472,10 +476,34 @@ public class RestFriendsProvider implements RestProvider {
       throws UnsupportedEncodingException, RepositoryException, IOException {
     FriendsBean myFriends = friendsResolverService.resolve(params.uuid);
 
-    Query query = entityManager.createNamedQuery(FriendsIndexBean.FINDBY_UUID);
+    Query query = null;
+    StringBuilder sb = new StringBuilder();
+    sb.append(FriendsIndexBean.FINDBY_UUID_WITH_SORT);
+    if (params.filterStatus != null) {
+      sb.append(" and ").append(FriendsIndexBean.FRIENDS_STATUS_FIELD).append(
+          " = :").append(FriendsIndexBean.PARAM_FRIENDSTATUS);
+    }
+    if (params.sort != null && params.sort.length > 0) {
+      sb.append(" order by ");
+      for (int i = 0; i < params.sort.length; i++) {
+        if (i != 0) {
+          sb.append(",");
+        }
+        sb.append(params.sort[i]);
+        if (params.sortOrder != null
+            && params.sortOrder.length == params.sort.length) {
+          sb.append(" ").append(params.sortOrder[i]);
+        }
+      }
+    }
+    query = entityManager.createQuery(sb.toString());
+
     query.setFirstResult(params.start);
     query.setMaxResults(params.end);
     query.setParameter(FriendsIndexBean.PARAM_UUID, params.uuid);
+    if (params.filterStatus != null ) {
+      query.setParameter(FriendsIndexBean.PARAM_FRIENDSTATUS, params.filterStatus);
+    }
 
     List<?> results = query.getResultList();
 
@@ -502,7 +530,6 @@ public class RestFriendsProvider implements RestProvider {
   private void doRequestError() {
     throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST);
   }
-
 
   /**
    * {@inheritDoc}

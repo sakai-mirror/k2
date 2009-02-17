@@ -23,6 +23,7 @@ import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
+import org.sakaiproject.kernel.model.FriendStatus;
 import org.sakaiproject.kernel.util.StringUtils;
 import org.sakaiproject.kernel.webapp.RestServiceFaultException;
 
@@ -36,6 +37,7 @@ public class FriendsParams {
   static final String FRIENDUUID = "friendUuid";
 
   static final String FRIENDTYPE = "friendType";
+  static final String FRIENDSTATUS = "friendStatus";
 
   static final String MESSAGE = "message";
 
@@ -53,6 +55,7 @@ public class FriendsParams {
   int numberPerPage;
   FriendsSortField[] sort;
   FriendsSortOrder[] sortOrder;
+  FriendStatus filterStatus;
   PathElement major;
   PathElement minor;
 
@@ -123,6 +126,7 @@ public class FriendsParams {
 
     friendUuid = request.getParameter(FRIENDUUID);
     type = request.getParameter(FRIENDTYPE);
+    String friendStatusParam = request.getParameter(FRIENDSTATUS);
     message = request.getParameter(MESSAGE);
     String pageParam = request.getParameter(PAGE);
     String nperPageParam = request.getParameter(NRESUTS_PER_PAGE);
@@ -140,11 +144,20 @@ public class FriendsParams {
     } catch (Exception ex) {
       numberPerPage = 10;
     }
-    
-    start = page*numberPerPage;
-    end = (page+1)*numberPerPage;
-    
-    
+
+    start = page * numberPerPage;
+    end = (page + 1) * numberPerPage;
+
+    if (friendStatusParam != null && friendStatusParam.trim().length() > 0) {
+      try {
+        filterStatus = FriendStatus.valueOf(friendStatusParam);
+      } catch (IllegalArgumentException ex) {
+        throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
+            "Invalid friendStatus parameter " + friendStatusParam
+                + " should be one of " + Arrays.toString(FriendStatus.values()));
+      }
+    }
+
     if (sortParam != null && sortParam.length > 0) {
       sort = new FriendsSortField[sortParam.length];
       for (int i = 0; i < sortParam.length; i++) {

@@ -257,6 +257,7 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
 
     expect(request.getParameter("friendUuid")).andReturn("MyFriend");
     expect(request.getParameter("friendType")).andReturn(null);
+    expect(request.getParameter("friendStatus")).andReturn(null);
     expect(request.getParameter("message")).andReturn("hi");
     expect(request.getParameter("p")).andReturn(null);
     expect(request.getParameter("n")).andReturn(null);
@@ -594,6 +595,7 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
 
     expect(request.getParameter("friendUuid")).andReturn(friend);
     expect(request.getParameter("friendType")).andReturn("distant");
+    expect(request.getParameter("friendStatus")).andReturn(null);
     expect(request.getParameter("message")).andReturn(message);
     expect(request.getParameter("p")).andReturn(null);
     expect(request.getParameter("n")).andReturn(null);
@@ -633,6 +635,7 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
 
     expect(request.getParameter("friendUuid")).andReturn(null);
     expect(request.getParameter("friendType")).andReturn(null);
+    expect(request.getParameter("friendStatus")).andReturn(null);
     expect(request.getParameter("message")).andReturn(null);
     expect(request.getParameter("p")).andReturn(null);
     expect(request.getParameter("n")).andReturn(null);

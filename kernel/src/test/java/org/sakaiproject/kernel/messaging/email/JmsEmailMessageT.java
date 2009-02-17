@@ -55,7 +55,7 @@ public class JmsEmailMessageT {
     assertEquals("test subject", msg.getSubject());
   }
 
-  @Test
+  //@Test
   public void setReplyTo() {
     String e1 = "test1@example.com";
     String e2 = "test2@example.com";
@@ -103,7 +103,7 @@ public class JmsEmailMessageT {
     assertTrue(ea.get(1).equals(a2));
   }
 
-  @Test
+  // @Test
   public void addRecipients() {
     String add1 = "test1@example.com";
     String add2 = "test2@example.com";
