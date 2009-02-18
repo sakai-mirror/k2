@@ -28,40 +28,37 @@ import com.google.inject.name.Named;
  *
  */
 public class JmsMessagingService implements MessagingService {
-	public static final String PROP_ACTIVEMQ_BROKER_URL = "jms.brokerurl";
+  public static final String PROP_ACTIVEMQ_BROKER_URL = "jms.brokerurl";
 
+  protected ActiveMQConnectionFactory connectionFactory = null;
 
-	protected ActiveMQConnectionFactory connectionFactory = null;
+  public JmsMessagingService(@Named(PROP_ACTIVEMQ_BROKER_URL) String brokerUrl) {
+    connectionFactory = new ActiveMQConnectionFactory(brokerUrl);
+  }
 
-	public JmsMessagingService(@Named(PROP_ACTIVEMQ_BROKER_URL) String brokerUrl) {
-		connectionFactory = new ActiveMQConnectionFactory(brokerUrl);
-	}
-	
-	public JmsMessagingService(ActiveMQConnectionFactory connectionFactory) {
-		this.connectionFactory = connectionFactory;
-	}
-	
-	public JmsMessagingService(ConnectionFactory connectionFactory) {
-		this.connectionFactory = (ActiveMQConnectionFactory) connectionFactory;
-	}
+  public JmsMessagingService(ActiveMQConnectionFactory connectionFactory) {
+    this.connectionFactory = connectionFactory;
+  }
 
-	public ConnectionFactory getConnectionFactory() {
-		return (ConnectionFactory) connectionFactory;
-	}
+  public JmsMessagingService(ConnectionFactory connectionFactory) {
+    this.connectionFactory = (ActiveMQConnectionFactory) connectionFactory;
+  }
 
+  public ConnectionFactory getConnectionFactory() {
+    return (ConnectionFactory) connectionFactory;
+  }
 
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @see org.sakaiproject.kernel.api.messaging.MessagingService#send(javax.jms.Message)
-	 */
-	public void send(Message msg) {
-	}
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.kernel.api.messaging.MessagingService#send(javax.jms.Message)
+   */
+  public void send(Message msg) {
+  }
 
-	public ObjectMessage createObjectMessage() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+  public ObjectMessage createObjectMessage() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
 }

@@ -39,8 +39,6 @@ import org.sakaiproject.kernel.messaging.email.commons.SimpleEmail;
 import org.subethamail.wiser.Wiser;
 import org.subethamail.wiser.WiserMessage;
 
-
-
 public class ActiveMQEmailDeliveryT {
   private static final Log LOG = LogFactory
       .getLog(ActiveMQEmailDeliveryT.class);
@@ -63,9 +61,12 @@ public class ActiveMQEmailDeliveryT {
   private static final String TEST_EMAIL_FROM_ADDRESS = "postmaster@sakaiproject.org";
   private static final String TEST_EMAIL_FROM_LABEL = "KernelEmailBrokerTest";
   private static String TEST_EMAIL_BODY_PREFIX = "This is a Commons ";
-  private static String TEST_EMAIL_BODY_SIMPLEEMAIL = TEST_EMAIL_BODY_PREFIX + "SimpleEmail";
-  private static String TEST_EMAIL_BODY_HTMLEMAIL = TEST_EMAIL_BODY_PREFIX + "HtmlEmail";
-  private static String TEST_EMAIL_BODY_MULTIPARTEMAIL = TEST_EMAIL_BODY_PREFIX + "MultiPartEmail";
+  private static String TEST_EMAIL_BODY_SIMPLEEMAIL = TEST_EMAIL_BODY_PREFIX
+      + "SimpleEmail";
+  private static String TEST_EMAIL_BODY_HTMLEMAIL = TEST_EMAIL_BODY_PREFIX
+      + "HtmlEmail";
+  private static String TEST_EMAIL_BODY_MULTIPARTEMAIL = TEST_EMAIL_BODY_PREFIX
+      + "MultiPartEmail";
   private static String TEST_EMAIL_SUBJECT = "Test message";
   private static Properties props = new Properties();
 
@@ -119,14 +120,15 @@ public class ActiveMQEmailDeliveryT {
     ObjectMessage message;
     boolean received = false;
     // it is not necessary to use the Email interface here
-    // Email is used here just to allow for multiple types of emails to occupy
+    // Email is used here just to allow for multiple types of emails to
+    // occupy
     // the same varaible. SimpleEmail etc can each be used directly.
     List<Email> emails = new ArrayList<Email>();
     emails.add(new SimpleEmail());
     emails.add(new MultiPartEmail());
     emails.add(new HtmlEmail());
     try {
-      
+
       listenerSession = listenerConn.createSession(false,
           Session.AUTO_ACKNOWLEDGE);
       emailQueue = listenerSession
@@ -135,44 +137,41 @@ public class ActiveMQEmailDeliveryT {
       consumer = listenerSession.createConsumer(emailQueue);
 
       consumer.setMessageListener(new EmailListener());
-      
+
       listenerConn.start();
-      
+
       listenerSession.run();
-      
+
     } catch (JMSException e2) {
       e2.printStackTrace();
       Assert.assertTrue(false);
     }
-    
-	Wiser smtpServer = new Wiser();
-	smtpServer.setPort(smtpTestPort);
-	smtpServer.start();
 
-	try {
-		clientSession = clientConn.createSession(false,
-				Session.AUTO_ACKNOWLEDGE);
-		emailQueue = clientSession
-		.createQueue(EmailMessagingService.EMAIL_QUEUE_NAME);
-		producer = clientSession.createProducer(emailQueue);
+    Wiser smtpServer = new Wiser();
+    smtpServer.setPort(smtpTestPort);
+    smtpServer.start();
 
-		clientConn.start();
-		clientSession.run();
+    try {
+      clientSession = clientConn.createSession(false, Session.AUTO_ACKNOWLEDGE);
+      emailQueue = clientSession
+          .createQueue(EmailMessagingService.EMAIL_QUEUE_NAME);
+      producer = clientSession.createProducer(emailQueue);
 
-      } catch (JMSException e) {
-        e.printStackTrace();
-        Assert.assertTrue(false);
-      }
-      
+      clientConn.start();
+      clientSession.run();
+
+    } catch (JMSException e) {
+      e.printStackTrace();
+      Assert.assertTrue(false);
+    }
+
     for (Email em : emails) {
-
-      setReceived(false);// starting new email test
-      
 
       try {
         em.addTo(TEST_EMAIL_TO);
         em.setFrom(TEST_EMAIL_FROM_ADDRESS, TEST_EMAIL_FROM_LABEL);
-        // host and port will be ignored since the email session is established
+        // host and port will be ignored since the email session is
+        // established
         // by
         // the listener
         em.setHostName("localhost");
@@ -218,8 +217,6 @@ public class ActiveMQEmailDeliveryT {
 
         om.setJMSType(EmailMessagingService.EMAIL_JSMTYPE);
 
-        
-
         LOG.info("Client: Sending test message....");
         producer.send(om);
       } catch (JMSException e) {
@@ -228,114 +225,104 @@ public class ActiveMQEmailDeliveryT {
       }
 
     }
-    
-    
+
     long start = System.currentTimeMillis();
-    while (listenerMessagesProcessed<3 && System.currentTimeMillis() - start < 10000L) {
+    while (listenerMessagesProcessed < 3
+        && System.currentTimeMillis() - start < 10000L) {
       // wait for transport
     }
-    Assert.assertTrue(listenerMessagesProcessed==3);
-    
+    Assert.assertTrue(listenerMessagesProcessed == 3);
+
     List<WiserMessage> messages = smtpServer.getMessages();
-    Assert.assertTrue(messages.size()
-        + " != expected value of 3", messages.size() == 3);
+    Assert.assertTrue(messages.size() + " != expected value of 3", messages
+        .size() == 3);
 
-    for (WiserMessage wisermsg : messages){
-  	  String body = null;
-  	  String subject = null;
-  	  MimeMessage testmail = null;
+    for (WiserMessage wisermsg : messages) {
+      String body = null;
+      String subject = null;
+      MimeMessage testmail = null;
 
-  	  try {
-  		  testmail = wisermsg.getMimeMessage();
-  	  } catch (MessagingException e) {
-  		  Assert.assertTrue(false);
-  		  e.printStackTrace();
-  	  }
-
-  	  if (testmail != null) {
-  		  LOG.info("SMTP server: test email received: ");
-  		  try {
-  			  LOG.info("To: " + testmail.getHeader("To", ","));
-
-  			  LOG.info("Subject: " + testmail.getHeader("Subject", ","));
-  			  body = getBodyAsString(testmail.getContent());
-  			  subject = testmail.getHeader("Subject", ",");
-  		  } catch (MessagingException e) {
-  			  Assert.assertTrue(false);
-  			  e.printStackTrace();
-  		  } catch (IOException e) {
-  			  Assert.assertTrue(false);
-  			  e.printStackTrace();
-  		  }
-  		  LOG.info("Body: " + body);
-  		  Assert.assertTrue(subject.contains(
-  				  TEST_EMAIL_SUBJECT));
-  		  Assert.assertTrue(body.contains("This is a Commons"));
-  	  } else {
-  		  Assert.assertTrue(false);
-  	  }
-    }
-    
-    if (clientSession != null) {
-        try {
-          clientSession.close();
-        } catch (JMSException e) {
-          e.printStackTrace();
-          Assert.assertTrue(false);
-        }
-        clientSession = null;
+      try {
+        testmail = wisermsg.getMimeMessage();
+      } catch (MessagingException e) {
+        Assert.assertTrue(false);
+        e.printStackTrace();
       }
-    
+
+      if (testmail != null) {
+        LOG.info("SMTP server: test email received: ");
+        try {
+          LOG.info("To: " + testmail.getHeader("To", ","));
+
+          LOG.info("Subject: " + testmail.getHeader("Subject", ","));
+          body = getBodyAsString(testmail.getContent());
+          subject = testmail.getHeader("Subject", ",");
+        } catch (MessagingException e) {
+          Assert.assertTrue(false);
+          e.printStackTrace();
+        } catch (IOException e) {
+          Assert.assertTrue(false);
+          e.printStackTrace();
+        }
+        LOG.info("Body: " + body);
+        Assert.assertTrue(subject.contains(TEST_EMAIL_SUBJECT));
+        Assert.assertTrue(body.contains("This is a Commons"));
+      } else {
+        Assert.assertTrue(false);
+      }
+    }
+
+    if (clientSession != null) {
+      try {
+        clientSession.close();
+      } catch (JMSException e) {
+        e.printStackTrace();
+        Assert.assertTrue(false);
+      }
+      clientSession = null;
+    }
+
     if (listenerSession != null) {
       try {
         listenerSession.close();
       } catch (JMSException e) {
-    	  e.printStackTrace();
-    	  Assert.assertTrue(false);
+        e.printStackTrace();
+        Assert.assertTrue(false);
       }
       listenerSession = null;
     }
-    
+
     smtpServer.stop();
 
   }
 
   private String getBodyAsString(Object content) {
-	Multipart mime = null;
-	StringBuffer sb = new StringBuffer();
-	if(content instanceof String) {
-		return (String) content;
-	} else if (content instanceof Multipart) {
-		try {
-		    mime = (Multipart) content;
-			for (int i=0;i<mime.getCount();++i) {
-				Part p = mime.getBodyPart(i);
-				sb.append(p.getContent());
-			}
-		} catch (MessagingException e) {
-			e.printStackTrace();
-			Assert.assertTrue(false);
-		} catch (IOException e) {
-			e.printStackTrace();
-			Assert.assertTrue(false);
-		}
-	} else {
-		Assert.assertTrue(false);
-	}
-	return sb.toString();
-}
-  
-synchronized
-protected void setReceived(boolean b) {
-    received = b;
-
+    Multipart mime = null;
+    StringBuffer sb = new StringBuffer();
+    if (content instanceof String) {
+      return (String) content;
+    } else if (content instanceof Multipart) {
+      try {
+        mime = (Multipart) content;
+        for (int i = 0; i < mime.getCount(); ++i) {
+          Part p = mime.getBodyPart(i);
+          sb.append(p.getContent());
+        }
+      } catch (MessagingException e) {
+        e.printStackTrace();
+        Assert.assertTrue(false);
+      } catch (IOException e) {
+        e.printStackTrace();
+        Assert.assertTrue(false);
+      }
+    } else {
+      Assert.assertTrue(false);
+    }
+    return sb.toString();
   }
 
-	protected void setReceived() {
-    listenerMessagesProcessed ++;;
-	}
-  protected boolean isReceived() {
-    return received;
+  protected void setReceived() {
+    listenerMessagesProcessed++;
   }
 
   @AfterClass
@@ -363,14 +350,14 @@ protected void setReceived(boolean b) {
             && message instanceof ObjectMessage) {
           // avoiding selectors
           ObjectMessage m = (ObjectMessage) message;
-          
+
           Destination replyTo = null;
           String content = null;
           try {
             content = (String) m.getObject();
           } catch (JMSException e) {
-        	  e.printStackTrace();
-        	  Assert.assertTrue(false);
+            e.printStackTrace();
+            Assert.assertTrue(false);
           }
           if (content != null) {
             byte[] bytes = content.getBytes();
@@ -392,8 +379,8 @@ protected void setReceived(boolean b) {
           Assert.assertTrue(false);
         }
       } catch (JMSException e) {
-    	  e.printStackTrace();
-    	  Assert.assertTrue(false);
+        e.printStackTrace();
+        Assert.assertTrue(false);
       }
       setReceived();
     }
