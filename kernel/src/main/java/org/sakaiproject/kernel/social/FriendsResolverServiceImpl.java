@@ -73,7 +73,7 @@ public class FriendsResolverServiceImpl implements FriendsResolverService {
    * @see org.sakaiproject.kernel.api.social.FriendsResolverService#resolve(java.lang.String)
    */
   public FriendsBean resolve(String uuid) {
-    String userPath = userFactoryService.getUserEnvironmentBasePath(uuid);
+    String userPath = userFactoryService.getUserPathPrefix(uuid);
     userPath = privatePathBase + userPath + KernelConstants.FRIENDS_FILE;
     InputStream in = null;
     try {

@@ -137,7 +137,7 @@ public class FriendsBean {
   }
   
   public void save() throws JCRNodeFactoryServiceException, RepositoryException, UnsupportedEncodingException {
-    String userPath = userFactoryService.getUserEnvironmentBasePath(uuid);
+    String userPath = userFactoryService.getUserPathPrefix(uuid);
     userPath = privatePathBase + userPath + KernelConstants.FRIENDS_FILE;
 
     String json = beanConverter.convertToString(this);
