@@ -28,7 +28,7 @@ import javax.jms.Session;
 public class JmsSessionProviderT {
   @Test
   public void getSession() {
-    JmsSessionProvider prov = new JmsSessionProvider();
+    JmsSessionProvider prov = new JmsSessionProvider("failover://vm://localhost?broker.persistent=true");
     Session session = prov.get();
     assertNull(session);
   }

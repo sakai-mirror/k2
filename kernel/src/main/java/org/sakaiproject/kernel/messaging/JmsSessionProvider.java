@@ -17,19 +17,29 @@ package org.sakaiproject.kernel.messaging;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.google.inject.name.Named;
 
+import javax.jms.ConnectionFactory;
 import javax.jms.Session;
+
+import org.apache.activemq.ActiveMQConnectionFactory;
 
 /**
  * Provide a configured JMS Session for Guice.
  */
 public class JmsSessionProvider implements Provider<Session> {
+	
+	private ConnectionFactory connectionFactory;
   @Inject
-  public JmsSessionProvider() {
-
+  public JmsSessionProvider(@Named(JmsMessagingService.PROP_ACTIVEMQ_BROKER_URL) String url) {
+	  connectionFactory =  new ActiveMQConnectionFactory(url);
   }
 
-  public Session get() {
+  public JmsSessionProvider() {
+	// TODO Auto-generated constructor stub
+}
+
+public Session get() {
     return null;
   }
 }

@@ -18,10 +18,14 @@
 
 package org.sakaiproject.kernel;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Scopes;
-import com.google.inject.TypeLiteral;
-import com.google.inject.name.Names;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.jcr.Credentials;
+import javax.servlet.http.HttpSession;
 
 import net.sf.ezmorph.Morpher;
 import net.sf.json.JsonConfig;
@@ -35,6 +39,7 @@ import org.sakaiproject.kernel.api.ShutdownService;
 import org.sakaiproject.kernel.api.authz.ReferenceResolverService;
 import org.sakaiproject.kernel.api.jcr.EventRegistration;
 import org.sakaiproject.kernel.api.jcr.JCRService;
+import org.sakaiproject.kernel.api.messaging.MessagingService;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.site.SiteService;
@@ -53,6 +58,9 @@ import org.sakaiproject.kernel.jcr.jackrabbit.JcrSynchronousContentListenerAdapt
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiAccessManager;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.StartupActionProvider;
+import org.sakaiproject.kernel.messaging.JmsSessionProvider;
+import org.sakaiproject.kernel.messaging.email.EmailMessagingService;
+import org.sakaiproject.kernel.messaging.email.MailSessionProvider;
 import org.sakaiproject.kernel.serialization.json.BeanJsonLibConfig;
 import org.sakaiproject.kernel.serialization.json.BeanJsonLibConverter;
 import org.sakaiproject.kernel.serialization.json.BeanProcessor;
@@ -63,14 +71,10 @@ import org.sakaiproject.kernel.user.ProviderAuthenticationResolverService;
 import org.sakaiproject.kernel.user.UserFactoryService;
 import org.sakaiproject.kernel.user.jcr.JcrUserFactoryService;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.jcr.Credentials;
-import javax.servlet.http.HttpSession;
+import com.google.inject.AbstractModule;
+import com.google.inject.Scopes;
+import com.google.inject.TypeLiteral;
+import com.google.inject.name.Names;
 
 /**
  * A Guice module used to create the kernel component.
@@ -246,6 +250,15 @@ public class KernelModule extends AbstractModule {
     bind(integrationProviderList).annotatedWith(
         Names.named("forced-internal-1")).toProvider(
         IntegrationProviderListProvider.class).asEagerSingleton();
+    
+    bind(javax.mail.Session.class).toProvider(MailSessionProvider.class).in(
+            Scopes.SINGLETON);
+    
+    bind(MessagingService.class).to(EmailMessagingService.class).in(Scopes.SINGLETON);
+    
+    bind(javax.jms.Session.class).toProvider(JmsSessionProvider.class).in(
+            Scopes.SINGLETON);
+    
 
   }
 }

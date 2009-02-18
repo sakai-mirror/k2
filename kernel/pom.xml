@@ -25,6 +25,12 @@
     </plugins>
   </build>
   <dependencies>
+	<dependency>
+      <groupId>org.subethamail</groupId>
+      <artifactId>subethasmtp-wiser</artifactId>
+      <version>1.2</version>
+	  <scope>test</scope>
+	</dependency>
     <dependency>
       <groupId>org.sakaiproject.kernel2.agnostic</groupId>
       <artifactId>common</artifactId>
@@ -40,6 +46,18 @@
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-email</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-j2ee-management_1.1_spec</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-core</artifactId>
     </dependency>
     <dependency>
       <groupId>com.google.code.guice</groupId>

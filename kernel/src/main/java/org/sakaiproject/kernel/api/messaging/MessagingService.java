@@ -15,21 +15,17 @@
  ******************************************************************************/
 package org.sakaiproject.kernel.api.messaging;
 
-import org.sakaiproject.kernel.api.email.EmailMessage;
-
-import java.io.Serializable;
-
-import javax.jms.BytesMessage;
-import javax.jms.JMSException;
-import javax.jms.MapMessage;
 import javax.jms.Message;
 import javax.jms.ObjectMessage;
-import javax.jms.StreamMessage;
-import javax.jms.TextMessage;
+
+import org.sakaiproject.kernel.messaging.email.EmailMessagingService;
+
+import com.google.inject.ImplementedBy;
 
 /**
  *
  */
+@ImplementedBy(EmailMessagingService.class) 
 public interface MessagingService {
   /**
    * Send a given message.
@@ -38,76 +34,8 @@ public interface MessagingService {
    */
   void send(Message msg);
 
-  /**
-   * Creates a {@link javax.jms.BytesMessage} object.
-   *
-   * @return
-   * @throws JMSException
-   */
-  BytesMessage createBytesMessage() throws JMSException;
+ public ObjectMessage createObjectMessage();
 
-  /**
-   * Creates a {@link javax.jms.MapMessage} object.
-   *
-   * @return
-   * @throws JMSException
-   */
-  MapMessage createMapMessage() throws JMSException;
 
-  /**
-   * Creates a {@link javax.jms.Message} object.
-   *
-   * @return
-   * @throws JMSException
-   */
-  Message createMessage() throws JMSException;
 
-  /**
-   * Creates a {@link javax.jms.ObjectMessage} object.
-   *
-   * @return
-   * @throws JMSException
-   */
-  ObjectMessage createObjectMessage() throws JMSException;
-
-  /**
-   * Creates a initialized {@link javax.jms.ObjectMessage} object.
-   *
-   * @return
-   * @throws JMSException
-   */
-  ObjectMessage createObjectMessage(Serializable init)
-      throws JMSException;
-
-  /**
-   * Creates a {@link javax.jms.StreamMessage} object.
-   *
-   * @return
-   * @throws JMSException
-   */
-  StreamMessage createStreamMessage() throws JMSException;
-
-  /**
-   * Creates a {@link javax.jms.TextMessage} object.
-   *
-   * @return
-   * @throws JMSException
-   */
-  TextMessage createTextMessage() throws JMSException;
-
-  /**
-   * Creates a initialized {@link javax.jms.TextMessage} object.
-   *
-   * @return
-   * @throws JMSException
-   */
-  TextMessage createTextMessage(String text) throws JMSException;
-
-  /**
-   * Creates a {@link org.sakaiproject.kernel.api.email.EmailMessage} object.
-   *
-   * @return
-   * @throws JMSException
-   */
-  EmailMessage createEmailMessage() throws JMSException;
-}
+  }

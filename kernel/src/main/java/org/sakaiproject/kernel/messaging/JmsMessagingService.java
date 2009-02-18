@@ -15,122 +15,53 @@
  ******************************************************************************/
 package org.sakaiproject.kernel.messaging;
 
-import com.google.inject.Inject;
-
-import org.sakaiproject.kernel.api.email.EmailMessage;
-import org.sakaiproject.kernel.api.messaging.MessagingService;
-import org.sakaiproject.kernel.messaging.email.JmsEmailMessage;
-
-import java.io.Serializable;
-
-import javax.jms.BytesMessage;
-import javax.jms.JMSException;
-import javax.jms.MapMessage;
+import javax.jms.ConnectionFactory;
 import javax.jms.Message;
 import javax.jms.ObjectMessage;
-import javax.jms.Session;
-import javax.jms.StreamMessage;
-import javax.jms.TextMessage;
+
+import org.apache.activemq.ActiveMQConnectionFactory;
+import org.sakaiproject.kernel.api.messaging.MessagingService;
+
+import com.google.inject.name.Named;
 
 /**
  *
  */
 public class JmsMessagingService implements MessagingService {
-  private final Session session;
+	public static final String PROP_ACTIVEMQ_BROKER_URL = "jms.brokerurl";
 
-  @Inject
-  public JmsMessagingService(Session session) {
-    this.session = session;
-  }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @see org.sakaiproject.kernel.api.messaging.MessagingService#createBytesMessage()
-   */
-  public BytesMessage createBytesMessage() throws JMSException {
-    return session.createBytesMessage();
-  }
+	protected ActiveMQConnectionFactory connectionFactory = null;
 
-  /**
-   * {@inheritDoc}
-   *
-   * @see org.sakaiproject.kernel.api.messaging.MessagingService#createEmailMessage()
-   */
-  public EmailMessage createEmailMessage() throws JMSException {
-    return new JmsEmailMessage(this);
-  }
+	public JmsMessagingService(@Named(PROP_ACTIVEMQ_BROKER_URL) String brokerUrl) {
+		connectionFactory = new ActiveMQConnectionFactory(brokerUrl);
+	}
+	
+	public JmsMessagingService(ActiveMQConnectionFactory connectionFactory) {
+		this.connectionFactory = connectionFactory;
+	}
+	
+	public JmsMessagingService(ConnectionFactory connectionFactory) {
+		this.connectionFactory = (ActiveMQConnectionFactory) connectionFactory;
+	}
 
-  /**
-   * {@inheritDoc}
-   *
-   * @see org.sakaiproject.kernel.api.messaging.MessagingService#createMapMessage()
-   */
-  public MapMessage createMapMessage() throws JMSException {
-    return session.createMapMessage();
-  }
+	public ConnectionFactory getConnectionFactory() {
+		return (ConnectionFactory) connectionFactory;
+	}
 
-  /**
-   * {@inheritDoc}
-   *
-   * @see org.sakaiproject.kernel.api.messaging.MessagingService#createMessage()
-   */
-  public Message createMessage() throws JMSException {
-    return session.createMessage();
-  }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @see org.sakaiproject.kernel.api.messaging.MessagingService#createObjectMessage()
-   */
-  public ObjectMessage createObjectMessage() throws JMSException {
-    return session.createObjectMessage();
-  }
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.sakaiproject.kernel.api.messaging.MessagingService#send(javax.jms.Message)
+	 */
+	public void send(Message msg) {
+	}
 
-  /**
-   * {@inheritDoc}
-   *
-   * @see org.sakaiproject.kernel.api.messaging.MessagingService#createObjectMessage(java.io.Serializable)
-   */
-  public ObjectMessage createObjectMessage(Serializable init)
-      throws JMSException {
-    return session.createObjectMessage(init);
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * @see org.sakaiproject.kernel.api.messaging.MessagingService#createStreamMessage()
-   */
-  public StreamMessage createStreamMessage() throws JMSException {
-    return session.createStreamMessage();
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * @see org.sakaiproject.kernel.api.messaging.MessagingService#createTextMessage()
-   */
-  public TextMessage createTextMessage() throws JMSException {
-    return session.createTextMessage();
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * @see org.sakaiproject.kernel.api.messaging.MessagingService#createTextMessage(java.lang.String)
-   */
-  public TextMessage createTextMessage(String text) throws JMSException {
-    return session.createTextMessage(text);
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * @see org.sakaiproject.kernel.api.messaging.MessagingService#send(javax.jms.Message)
-   */
-  public void send(Message msg) {
-  }
+	public ObjectMessage createObjectMessage() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }
