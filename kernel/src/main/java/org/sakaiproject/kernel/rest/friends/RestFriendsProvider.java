@@ -509,7 +509,7 @@ public class RestFriendsProvider implements RestProvider {
     query.setMaxResults(params.end);
     query.setParameter(FriendsIndexBean.PARAM_UUID, params.uuid);
     if (params.filterStatus != null ) {
-      query.setParameter(FriendsIndexBean.PARAM_FRIENDSTATUS, params.filterStatus);
+      query.setParameter(FriendsIndexBean.PARAM_FRIENDSTATUS, params.filterStatus.toString());
     }
 
     List<?> results = query.getResultList();

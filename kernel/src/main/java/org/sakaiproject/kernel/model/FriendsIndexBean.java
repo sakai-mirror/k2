@@ -19,6 +19,10 @@ package org.sakaiproject.kernel.model;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
+import org.sakaiproject.kernel.api.user.UserProfile;
+
+import java.util.Map;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -75,21 +79,17 @@ public class FriendsIndexBean {
   
   @Column(name = "friendStatus")
   private String friendStatus;
+  
+  @Column(name = "lastUpdate")
+  private long lastUpdate;
 
-  /**
-   * 
-   */
   public FriendsIndexBean() {
   }
   /**
    * 
    */
-  public FriendsIndexBean(String uuid, String friendUuid, String firstName,
-      String lastName) {
-    this.uuid = uuid;
-    this.friendUuid = friendUuid;
-    this.firstName = firstName;
-    this.lastName = lastName;
+  public FriendsIndexBean(FriendBean friendBean, UserProfile userProfile) {
+    copy(friendBean,userProfile);
   }
 
   /**
@@ -130,6 +130,31 @@ public class FriendsIndexBean {
    */
   public void setFriendStatus(String friendStatus) {
     this.friendStatus = friendStatus;
+  }
+  /**
+   * @return
+   */
+  public long getLastUpdate() {
+    return lastUpdate;
+  }
+  /**
+   * @param lastUpdate2
+   */
+  public void setLastUpdate(long lastUpdate) {
+    this.lastUpdate = lastUpdate;
+    
+  }
+  /**
+   * @param friendBean
+   */
+  public void copy(FriendBean friendBean,UserProfile userProfile) {
+    Map<String,Object> p = userProfile.getProperties();
+    this.firstName = String.valueOf(p.get("firstName"));
+    this.lastName = String.valueOf(p.get("lastName"));
+    this.friendStatus = friendBean.getStatus();
+    this.friendUuid = friendBean.getFriendUuid();
+    this.uuid = friendBean.getPersonUuid();
+    this.lastUpdate = friendBean.getLastUpdate();
   }
   
 }

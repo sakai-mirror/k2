@@ -40,7 +40,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
-import java.util.Map;
 
 import javax.jcr.RepositoryException;
 import javax.persistence.EntityManager;
@@ -75,8 +74,7 @@ public class FriendsListener implements JcrContentListener {
       JCRNodeFactoryService jcrNodeFactoryService,
       @Named(KernelConstants.PRIVATE_PATH_BASE) String privatePathBase,
       @Named(KernelConstants.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
-      SessionManagerService sessionManagerService,
-      EntityManager entityManager) {
+      SessionManagerService sessionManagerService, EntityManager entityManager) {
     this.jcrNodeFactoryService = jcrNodeFactoryService;
     this.beanConverter = beanConverter;
     this.entityManager = entityManager;
@@ -92,7 +90,9 @@ public class FriendsListener implements JcrContentListener {
    */
   public void onEvent(int type, String userID, String filePath, String fileName) {
     if (filePath.startsWith(privatePathBase)) {
-      System.err.println("++++++++++++++++++++++++++ Checking event matches "+fileName+" "+KernelConstants.FRIENDS_FILE+" "+fileName.equals(KernelConstants.FRIENDS_FILE));
+      System.err.println("++++++++++++++++++++++++++ Checking event matches "
+          + fileName + " " + KernelConstants.FRIENDS_FILE + " "
+          + fileName.equals(KernelConstants.FRIENDS_FILE));
       if (fileName.equals(KernelConstants.FRIENDS_FILE)) {
         String friendsBody = null;
         InputStream in = null;
@@ -111,6 +111,7 @@ public class FriendsListener implements JcrContentListener {
             List<?> friendsIndexBeanList = query.getResultList();
             List<FriendsIndexBean> toAdd = Lists.newArrayList();
             List<FriendsIndexBean> toRemove = Lists.newArrayList();
+            List<FriendsIndexBean> toUpdate = Lists.newArrayList();
 
             for (Object o : friendsIndexBeanList) {
               FriendsIndexBean friendIndexBean = (FriendsIndexBean) o;
@@ -127,19 +128,22 @@ public class FriendsListener implements JcrContentListener {
                 String friendUuid = friendIndexBean.getFriendUuid();
                 if (newFriendUuid.equals(friendUuid)) {
                   found = true;
+                  if ( friendBean.getLastUpdate() > friendIndexBean.getLastUpdate() ) {
+                    UserProfile userProfile = profileResolverService
+                    .resolve(friendUuid);
+                    friendIndexBean.copy(friendBean,userProfile);
+                    
+                    toUpdate.add(friendIndexBean);
+                  }
                   break;
                 }
               }
               if (!found) {
                 UserProfile userProfile = profileResolverService
                     .resolve(newFriendUuid);
-                Map<String, Object> properties = userProfile.getProperties();
-                toAdd.add(new FriendsIndexBean(friendBean.getPersonUuid(),
-                    newFriendUuid, String.valueOf(properties.get("firstName")),
-                    String.valueOf(properties.get("lastName"))));
+                toAdd.add(new FriendsIndexBean(friendBean,userProfile));
               }
             }
-
 
             EntityTransaction transaction = entityManager.getTransaction();
             transaction.begin();
@@ -147,6 +151,9 @@ public class FriendsListener implements JcrContentListener {
               entityManager.remove(gm);
             }
             for (FriendsIndexBean gm : toAdd) {
+              entityManager.persist(gm);
+            }
+            for (FriendsIndexBean gm : toUpdate) {
               entityManager.persist(gm);
             }
             transaction.commit();

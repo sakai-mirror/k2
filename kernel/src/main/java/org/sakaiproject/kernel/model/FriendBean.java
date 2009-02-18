@@ -29,7 +29,7 @@ public class FriendBean {
   private String friendUuid;
   private String personUuid;
   private long lastUpdate;
-  private transient FriendStatus status ;
+  private FriendStatus status ;
   private transient Map<String, Object> profile;
   private Map<String,String> properties;
   
