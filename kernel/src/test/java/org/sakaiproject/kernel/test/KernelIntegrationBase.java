@@ -86,6 +86,7 @@ public class KernelIntegrationBase {
       System.err
           .println("==========================================================================");
 
+      KernelManager.setTestMode();
       System
           .setProperty("sakai.kernel.properties",
               "inline://core.component.locations=\ncomponent.locations=classpath:;\n");
@@ -108,6 +109,7 @@ public class KernelIntegrationBase {
     if (false) {
       try {
         kernelLifecycle.stop();
+        KernelManager.clearTestMode();
       } catch (Exception ex) {
         LOG.info("Failed to stop kernel ", ex);
       }

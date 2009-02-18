@@ -22,11 +22,24 @@ package org.sakaiproject.kernel.api;
  */
 public enum DependencyScope {
   /**
-   * Indicates that the dependency should be made available to shared space.
+   * Indicates that the dependency should be made available to shared space, in
+   * both test and runtime environments.
    */
   SHARE,
   /**
-   * Indicates that the dependency is only available in the current classloader.
+   * Indicates that the dependency should be made available to shared space, but
+   * only at runtime.
    */
-  LOCAL;
+  SHARE_RUNTIME,
+
+  /**
+   * Indicates that the dependency is only available in the current classloader
+   * at runtime and in test mode.
+   */
+  LOCAL,
+  /**
+   * Indicates that the dependency should only be available in the current
+   * classloader at runtime.
+   */
+  LOCAL_RUNTIME;
 }

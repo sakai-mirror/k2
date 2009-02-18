@@ -27,6 +27,7 @@ import org.sakaiproject.kernel.api.ClassLoaderService;
 import org.sakaiproject.kernel.api.ComponentLoaderService;
 import org.sakaiproject.kernel.api.ComponentManager;
 import org.sakaiproject.kernel.api.Kernel;
+import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.PackageRegistryService;
 import org.sakaiproject.kernel.api.ServiceManager;
 import org.sakaiproject.kernel.api.ShutdownService;
@@ -126,6 +127,9 @@ public class KernelBootstrapModule extends AbstractModule {
     bind(Artifact.class).annotatedWith(
         Names.named(SharedClassLoader.SHARED_CLASSLOADER_ARTIFACT)).to(
         SharedClassloaderArtifact.class);
+
+    bind(Boolean.class).annotatedWith(Names.named("kernel.testmode"))
+        .toInstance(KernelManager.isTestMode());
   }
 
   /**

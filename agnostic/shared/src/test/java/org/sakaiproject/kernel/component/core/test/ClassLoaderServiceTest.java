@@ -59,7 +59,7 @@ public class ClassLoaderServiceTest {
         dependencyResolver, new SharedClassloaderArtifact(), kernel);
 
     ClassLoaderServiceImpl cls = new ClassLoaderServiceImpl(sharedClassLoader,
-        prs, dependencyResolver,true);
+        prs, dependencyResolver,true,true);
 
     URLComponentSpecificationImpl componentSpec = new URLComponentSpecificationImpl(
         null, COMPONENT1);

@@ -49,6 +49,7 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
   private PackageRegistryService packageRegistryService;
   private ArtifactResolverService artifactResolverService;
   private boolean classloaderIsolation;
+  private boolean testMode;
 
   /**
    * @param artifactResolverService
@@ -58,11 +59,13 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
   public ClassLoaderServiceImpl(SharedClassLoader sharedClassLoader,
       PackageRegistryService packageRegistryService,
       ArtifactResolverService artifactResolverService,
-      @Named("kernel.classloaderIsolation") boolean classloaderIsolation) {
+      @Named("kernel.classloaderIsolation") boolean classloaderIsolation,
+      @Named("kernel.testmode") boolean testMode ) {
     this.sharedClassLoader = sharedClassLoader;
     this.packageRegistryService = packageRegistryService;
     this.artifactResolverService = artifactResolverService;
     this.classloaderIsolation = classloaderIsolation;
+    this.testMode = testMode;
   }
 
   /**
@@ -79,9 +82,16 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
     if (spec.getComponentClasspath() != null) {
       urls.add(spec.getComponentClasspath());
     }
+    
+    
+    
     for (Artifact artifact : spec.getDependencies()) {
-      if (artifact.getScope() == null
-          || DependencyScope.LOCAL.equals(artifact.getScope())) {
+      DependencyScope scope = artifact.getScope();
+      if ( scope == null ) {
+        scope = DependencyScope.LOCAL;
+      }
+      switch (scope) {
+      case LOCAL: {
         URL[] u = urls.toArray(new URL[0]);
         URL url = artifactResolverService.resolve(u, artifact);
         if (url != null) {
@@ -92,6 +102,24 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
           LOG.warn(spec.getName() + "::Did not add dependency " + artifact
               + " to local component classloader ");
         }
+      }
+        break;
+      case LOCAL_RUNTIME: {
+        if (!testMode) {
+          URL[] u = urls.toArray(new URL[0]);
+          URL url = artifactResolverService.resolve(u, artifact);
+          if (url != null) {
+            urls.add(url);
+            LOG.warn(spec.getName() + "::Added  " + artifact
+                + " to local component classloader ");
+          } else {
+            LOG.warn(spec.getName() + "::Did not add dependency " + artifact
+                + " to local component classloader ");
+          }
+        }
+      }
+        break;
+
       }
     }
     ClassLoader cl = null;
@@ -115,11 +143,24 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
 
           });
     }
+
     // add the shared dependencies
     for (Artifact artifact : spec.getDependencies()) {
-      if (DependencyScope.SHARE.equals(artifact.getScope())) {
+      DependencyScope scope = artifact.getScope();
+      if ( scope == null ) {
+        scope = DependencyScope.LOCAL;
+      }
+      switch (scope) {
+      case SHARE:
         LOG.info(spec.getName() + "::Adding Shared Artifact " + artifact);
         sharedClassLoader.addDependency(artifact);
+        break;
+      case SHARE_RUNTIME:
+        if (!testMode) {
+          LOG.info(spec.getName() + "::Adding Shared Artifact " + artifact);
+          sharedClassLoader.addDependency(artifact);
+        }
+        break;
       }
     }
 

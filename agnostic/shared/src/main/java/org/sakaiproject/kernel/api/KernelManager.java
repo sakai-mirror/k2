@@ -91,4 +91,29 @@ public class KernelManager {
     }
   }
 
+  
+  /**
+   * is the Kernel in unit test mode
+   * @return
+   */
+  public static Boolean isTestMode() {
+    return "true".equals(System.getProperty("kernel.testmode"));
+  }
+
+  /**
+   * Sets the test mode control on the kernel
+   * @return
+   */
+  public static void setTestMode() {
+    System.setProperty("kernel.testmode","true");
+  }
+
+  /**
+   * Clears the test mode control on the kernel.
+   * @return
+   */
+  public static void clearTestMode() {
+    System.clearProperty("kernel.testmode");
+  }
+
 }
