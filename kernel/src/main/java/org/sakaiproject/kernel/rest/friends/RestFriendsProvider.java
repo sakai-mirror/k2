@@ -41,6 +41,7 @@ import org.sakaiproject.kernel.model.FriendBean;
 import org.sakaiproject.kernel.model.FriendStatus;
 import org.sakaiproject.kernel.model.FriendsBean;
 import org.sakaiproject.kernel.model.FriendsIndexBean;
+import org.sakaiproject.kernel.user.UserFactoryService;
 import org.sakaiproject.kernel.util.StringUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.kernel.webapp.RestServiceFaultException;
@@ -172,6 +173,8 @@ public class RestFriendsProvider implements RestProvider {
 
   private FriendsResolverService friendsResolverService;
 
+  private UserFactoryService userFactoryService;
+
   @Inject
   public RestFriendsProvider(RegistryService registryService,
       SessionManagerService sessionManagerService,
@@ -179,6 +182,7 @@ public class RestFriendsProvider implements RestProvider {
       ProfileResolverService profileResolverService,
       EntityManager entityManager,
       FriendsResolverService friendsResolverService,
+      UserFactoryService userFactoryService,
       @Named(KernelConstants.REPOSITORY_BEANCONVETER) BeanConverter beanConverter) {
     Registry<String, RestProvider> registry = registryService
         .getRegistry(RestProvider.REST_REGISTRY);
@@ -189,6 +193,7 @@ public class RestFriendsProvider implements RestProvider {
     this.entityManager = entityManager;
     this.profileResolverService = profileResolverService;
     this.friendsResolverService = friendsResolverService;
+    this.userFactoryService = userFactoryService;
   }
 
   /**
@@ -520,7 +525,9 @@ public class RestFriendsProvider implements RestProvider {
         UserProfile profile = profileResolverService
             .resolve(fb.getFriendUuid());
         fb.setProfile(profile.getProperties());
-
+        Map<String, String> properties = fb.getProperties();
+        properties.put("userStoragePrefix", userFactoryService.getUserPathPrefix(fb.getFriendUuid()));
+        fb.setProperties(properties);
       }
     }
     myFriends.setFriends(Lists.newArrayList(sortedFriendMap.values()));

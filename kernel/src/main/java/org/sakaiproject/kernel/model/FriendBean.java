@@ -118,6 +118,8 @@ public class FriendBean {
   public Map<String, String> getProperties() {
     return Maps.newHashMap(properties);
   }
+  
+  
   /**
    * @return
    */

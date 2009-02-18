@@ -71,6 +71,8 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
     KernelIntegrationBase.afterClass(shutdown);
   }
 
+  private RestProvider rsp;
+
   /**
    * Test a bad request
    * 
@@ -95,11 +97,6 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
 
       String[] elements = new String[] { "friend", "bad", "request" };
 
-      RestFriendsProvider rsp = new RestFriendsProvider(registryService,
-          sessionManagerService, userEnvironmentResolverService,
-          profileResolverService, entityManager, friendsResolverService,
-          injector.getInstance(Key.get(BeanConverter.class, Names
-              .named(KernelConstants.REPOSITORY_BEANCONVETER))));
 
       try {
         rsp.dispatch(elements, request, response);
@@ -122,11 +119,6 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
 
       String[] elements = new String[] { "friend", "connect" };
 
-      RestFriendsProvider rsp = new RestFriendsProvider(registryService,
-          sessionManagerService, userEnvironmentResolverService,
-          profileResolverService, entityManager, friendsResolverService,
-          injector.getInstance(Key.get(BeanConverter.class, Names
-              .named(KernelConstants.REPOSITORY_BEANCONVETER))));
       try {
         rsp.dispatch(elements, request, response);
         fail();
@@ -148,11 +140,6 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
 
       String[] elements = new String[] { "friend", "connect", "badpathelement" };
 
-      RestFriendsProvider rsp = new RestFriendsProvider(registryService,
-          sessionManagerService, userEnvironmentResolverService,
-          profileResolverService, entityManager, friendsResolverService,
-          injector.getInstance(Key.get(BeanConverter.class, Names
-              .named(KernelConstants.REPOSITORY_BEANCONVETER))));
 
       try {
         rsp.dispatch(elements, request, response);
@@ -175,11 +162,6 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
 
       String[] elements = new String[] { "friend" };
 
-      RestFriendsProvider rsp = new RestFriendsProvider(registryService,
-          sessionManagerService, userEnvironmentResolverService,
-          profileResolverService, entityManager, friendsResolverService,
-          injector.getInstance(Key.get(BeanConverter.class, Names
-              .named(KernelConstants.REPOSITORY_BEANCONVETER))));
       try {
         rsp.dispatch(elements, request, response);
         fail();
@@ -199,6 +181,12 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
   public void setupServices() {
     super.setupServices();
     userFactoryService = injector.getInstance(UserFactoryService.class);
+
+    rsp = new RestFriendsProvider(registryService,
+        sessionManagerService, userEnvironmentResolverService,
+        profileResolverService, entityManager, friendsResolverService,userFactoryService,
+        injector.getInstance(Key.get(BeanConverter.class, Names
+            .named(KernelConstants.REPOSITORY_BEANCONVETER))));
   }
 
   /**
@@ -225,11 +213,6 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "friend", "connect", "request",
         "frienduserid" };
 
-    RestFriendsProvider rsp = new RestFriendsProvider(registryService,
-        sessionManagerService, userEnvironmentResolverService,
-        profileResolverService, entityManager, friendsResolverService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))));
     try {
       rsp.dispatch(elements, request, response);
       fail();
@@ -273,11 +256,6 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "friend", "connect", "request",
         "frienduserid" };
 
-    RestFriendsProvider rsp = new RestFriendsProvider(registryService,
-        sessionManagerService, userEnvironmentResolverService,
-        profileResolverService, entityManager, friendsResolverService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))));
     rsp.dispatch(elements, request, response);
 
     String op = baos.toString(StringUtils.UTF8);
@@ -299,11 +277,6 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
       RepositoryException, JCRNodeFactoryServiceException {
     setupServices();
 
-    RestFriendsProvider rsp = new RestFriendsProvider(registryService,
-        sessionManagerService, userEnvironmentResolverService,
-        profileResolverService, entityManager, friendsResolverService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))));
 
     // request a connection
     connect(rsp, "user2", "SESSION-2131asdassdfsdfaqwe", "request", "user1",
@@ -373,11 +346,6 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
       IOException, RepositoryException, JCRNodeFactoryServiceException {
     setupServices();
 
-    RestFriendsProvider rsp = new RestFriendsProvider(registryService,
-        sessionManagerService, userEnvironmentResolverService,
-        profileResolverService, entityManager, friendsResolverService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))));
 
     // request a connection
     connect(rsp, "user2", "SESSION-2131asdassdfsdfaqwe", "request", "user1",
@@ -428,11 +396,6 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
       IOException, RepositoryException, JCRNodeFactoryServiceException {
     setupServices();
 
-    RestFriendsProvider rsp = new RestFriendsProvider(registryService,
-        sessionManagerService, userEnvironmentResolverService,
-        profileResolverService, entityManager, friendsResolverService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))));
 
     // request a connection
     connect(rsp, "user2", "SESSION-2131asdassdfsdfaqwe", "request", "user1",
@@ -483,11 +446,6 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
       IOException, RepositoryException, JCRNodeFactoryServiceException {
     setupServices();
 
-    RestFriendsProvider rsp = new RestFriendsProvider(registryService,
-        sessionManagerService, userEnvironmentResolverService,
-        profileResolverService, entityManager, friendsResolverService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))));
 
     // request a connection
     connect(rsp, "user2", "SESSION-2131asdassdfsdfaqwe", "request", "user1",
@@ -586,7 +544,7 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
    * @param string3
    * @throws IOException
    */
-  private void connect(RestFriendsProvider rsp, String user, String session,
+  private void connect(RestProvider rsp, String user, String session,
       String action, String friend, String message) throws IOException {
     resetMocks();
 
@@ -625,7 +583,7 @@ public class RestFriendsProviderKernelUnitT extends BaseRestUnitT {
    * @param strings2
    * @throws IOException
    */
-  private void checkFriend(RestFriendsProvider rsp, String user,
+  private void checkFriend(RestProvider rsp, String user,
       String session, String[] friendUuids, String[] friendStatus)
       throws IOException {
     resetMocks();
