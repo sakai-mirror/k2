@@ -33,6 +33,7 @@ import org.sakaiproject.kernel.util.StringUtils;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -154,6 +155,21 @@ public class FriendsBean {
       } catch (Exception ex) {
       }
     }
+  }
+  
+  public Map<String, Integer> getSizes() {
+    Map<String, Integer> map = Maps.newHashMap();
+    for ( FriendStatus n : FriendStatus.values() ) {
+      map.put(n.toString(), 0);
+    }
+    Collection<FriendBean> friendsCollection = friends.values();
+    for ( FriendBean fb : friendsCollection ) {
+      int i = map.get(fb.getStatus());
+      i++;
+      map.put(fb.getStatus(), i);
+    }
+    map.put("total", friendsCollection.size());
+    return map;
   }
 
 }
