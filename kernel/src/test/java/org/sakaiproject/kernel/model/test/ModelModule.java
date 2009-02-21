@@ -34,13 +34,13 @@ import org.sakaiproject.kernel.KernelModule;
 import org.sakaiproject.kernel.ValueProcessorsProvider;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
+import org.sakaiproject.kernel.api.user.UserFactoryService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.authz.simple.NullUserEnvironment;
 import org.sakaiproject.kernel.serialization.json.BeanJsonLibConfig;
 import org.sakaiproject.kernel.serialization.json.BeanJsonLibConverter;
 import org.sakaiproject.kernel.serialization.json.BeanProcessor;
 import org.sakaiproject.kernel.serialization.json.ValueProcessor;
-import org.sakaiproject.kernel.user.UserFactoryService;
 import org.sakaiproject.kernel.util.PropertiesLoader;
 
 import java.util.ArrayList;
@@ -82,8 +82,7 @@ public class ModelModule extends AbstractModule {
   protected void configure() {
     Names.bindProperties(this.binder(), properties);
 
-    bind(BeanConverter.class).annotatedWith(
-        Names.named(KernelConstants.REPOSITORY_BEANCONVETER)).to(
+    bind(BeanConverter.class).to(
         BeanJsonLibConverter.class).in(Scopes.SINGLETON);
 
     // config for the bean converter

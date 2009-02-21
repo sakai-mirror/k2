@@ -7,27 +7,21 @@
     <artifactId>sdata-base</artifactId>
     <version>0.1-SNAPSHOT</version>
   </parent>
-  <name>Rest Container</name>
+  <name>Kernel Rest Services</name>
   <groupId>org.sakaiproject.kernel2.agnostic</groupId>
   <version>0.1-SNAPSHOT</version>
-  <artifactId>rest</artifactId>
+  <artifactId>kernelrest</artifactId>
   <organization>
-    <name>Timefields Ltd</name>
-    <url>http://www.tfd.co.uk/</url>
+    <name>University of Cambridge</name>
+    <url>http://www.cam.ac.uk/</url>
   </organization>
-  <inceptionYear>2008</inceptionYear>
-  <packaging>war</packaging>
+  <inceptionYear>2009</inceptionYear>
+  <packaging>jar</packaging>
     <dependencies>
-    <dependency>
-      <groupId>org.sakaiproject.kernel2.agnostic</groupId>
-      <artifactId>kernelrest</artifactId>
-      <version>${project.version}</version>
-    </dependency>
     <dependency>
       <groupId>org.sakaiproject.kernel2.agnostic</groupId>
       <artifactId>kernel</artifactId>
       <version>${project.version}</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.sakaiproject.kernel2.agnostic</groupId>
@@ -54,7 +48,10 @@
     <dependency>
       <groupId>com.google.code.guice</groupId>
       <artifactId>guice</artifactId>
-      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.collections</groupId>
+      <artifactId>google-collections</artifactId>
     </dependency>
     <dependency>
       <groupId>org.easymock</groupId>

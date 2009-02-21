@@ -22,7 +22,6 @@ package org.sakaiproject.kernel;
  */
 public class KernelConstants {
 
-  public static final String REPOSITORY_BEANCONVETER = "beanconverters.repository";
   public static final String JCR_USERENV_BASE = "jcruserenv.base";
   public static final String JCR_USERENV_TEMPLATES = "jcruserenv.templates";
   public static final String JCR_DEFAULT_TEMPLATE = "jcruserenv.templates.default";

@@ -18,9 +18,7 @@
 package org.sakaiproject.kernel.rest;
 
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 
-import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.rest.RestProvider;
@@ -75,7 +73,7 @@ public class RestSnoopProvider implements RestProvider {
    */
   @Inject
   public RestSnoopProvider(RegistryService registryService,
-      @Named(KernelConstants.REPOSITORY_BEANCONVETER) BeanConverter beanConverter) {
+      BeanConverter beanConverter) {
     Registry<String, RestProvider> registry = registryService
         .getRegistry(RestProvider.REST_REGISTRY);
     registry.add(this);

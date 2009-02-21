@@ -67,7 +67,7 @@ public class SubjectPermissionListener implements JcrContentListener {
   public SubjectPermissionListener(
       JCRNodeFactoryService jcrNodeFactoryService,
       @Named(KernelConstants.JCR_USERENV_BASE) String userEnvironmentBase,
-      @Named(KernelConstants.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
+      BeanConverter beanConverter,
       SessionManagerService sessionManagerService,
       SubjectPermissionService subjectPermissionService,
       EntityManager entityManager) {

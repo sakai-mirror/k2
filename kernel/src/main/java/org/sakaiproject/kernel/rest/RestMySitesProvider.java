@@ -82,7 +82,7 @@ public class RestMySitesProvider implements RestProvider {
       RegistryService registryService,
       SessionManagerService sessionManagerService,
       SimpleJcrUserEnvironmentResolverService simpleJcrUserEnvironmentResolverService,
-      @Named(KernelConstants.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
+      BeanConverter beanConverter,
       @Named(KernelConstants.JCR_USERENV_BASE) String userEnvironmentBase,
       SiteService siteService) {
     Registry<String, RestProvider> registry = registryService

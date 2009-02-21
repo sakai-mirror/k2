@@ -18,15 +18,14 @@
 package org.sakaiproject.kernel.user;
 
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.user.ProfileResolverService;
+import org.sakaiproject.kernel.api.user.UserFactoryService;
 import org.sakaiproject.kernel.api.user.UserProfile;
 import org.sakaiproject.kernel.util.IOUtils;
 
@@ -53,7 +52,7 @@ public class ProfileResolverServiceImpl implements ProfileResolverService {
    */
   @Inject
   public ProfileResolverServiceImpl(
-      @Named(KernelConstants.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
+      BeanConverter beanConverter,
       JCRNodeFactoryService jcrNodeFactoryService,
       UserFactoryService userFactoryService) {
     this.beanConverter = beanConverter;

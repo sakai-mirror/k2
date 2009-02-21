@@ -45,6 +45,7 @@ import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.site.SiteService;
 import org.sakaiproject.kernel.api.user.AuthenticationManagerService;
 import org.sakaiproject.kernel.api.user.AuthenticationResolverService;
+import org.sakaiproject.kernel.api.user.UserFactoryService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.authz.simple.JcrReferenceResolverService;
 import org.sakaiproject.kernel.authz.simple.NullUserEnvironment;
@@ -68,7 +69,6 @@ import org.sakaiproject.kernel.serialization.json.ValueProcessor;
 import org.sakaiproject.kernel.site.SiteServiceImpl;
 import org.sakaiproject.kernel.user.AuthenticationResolverServiceImpl;
 import org.sakaiproject.kernel.user.ProviderAuthenticationResolverService;
-import org.sakaiproject.kernel.user.UserFactoryService;
 import org.sakaiproject.kernel.user.jcr.JcrUserFactoryService;
 
 import com.google.inject.AbstractModule;
@@ -160,8 +160,7 @@ public class KernelModule extends AbstractModule {
         Names.named(PathReferenceResolverService.DEFAULT_RESOLVER)).to(
         JcrReferenceResolverService.class).in(Scopes.SINGLETON);
 
-    bind(BeanConverter.class).annotatedWith(
-        Names.named(KernelConstants.REPOSITORY_BEANCONVETER)).to(
+    bind(BeanConverter.class).to(
         BeanJsonLibConverter.class).in(Scopes.SINGLETON);
 
     // site service

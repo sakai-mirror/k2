@@ -29,8 +29,8 @@ import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.social.FriendsResolverService;
 import org.sakaiproject.kernel.api.user.ProfileResolverService;
+import org.sakaiproject.kernel.api.user.UserFactoryService;
 import org.sakaiproject.kernel.model.FriendsBean;
-import org.sakaiproject.kernel.user.UserFactoryService;
 import org.sakaiproject.kernel.util.IOUtils;
 import org.sakaiproject.kernel.util.StringUtils;
 
@@ -59,7 +59,7 @@ public class FriendsResolverServiceImpl implements FriendsResolverService {
       UserFactoryService userFactoryService,
       ProfileResolverService profileResolverService,
       Injector injector,
-      @Named(KernelConstants.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
+      BeanConverter beanConverter,
       @Named(KernelConstants.PRIVATE_PATH_BASE) String privatePathBase) {
     this.jcrNodeFactoryService = jcrNodeFactoryService;
     this.beanConverter = beanConverter;

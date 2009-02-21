@@ -38,6 +38,7 @@
         <module>webapps-assembly</module>
         <module>sdata</module>
         <module>rest</module>
+        <module>kernelrest</module>
 <!--        <module>orm-test</module> -->
       </modules>
     </profile>

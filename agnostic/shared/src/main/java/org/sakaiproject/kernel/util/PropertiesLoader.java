@@ -134,4 +134,33 @@ public final class PropertiesLoader {
     }
     return properties;
   }
+
+  /**
+   * @param classLoader
+   * @param defaultProperties
+   * @return
+   */
+  public static Properties load(ClassLoader classLoader, String defaultPropertiesLocation) {
+    InputStream is = null;
+    Properties properties;
+    try {
+      is = ResourceLoader.openResource(defaultPropertiesLocation, classLoader);
+      properties = new Properties();
+      properties.load(is);
+      log.info("Loaded " + properties.size() + " properties from "
+          + defaultPropertiesLocation);
+    } catch (IOException e) {
+      throw new CreationException(Arrays.asList(new Message(
+          "Unable to load properties: " + defaultPropertiesLocation)));
+    } finally {
+      try {
+        if (is != null) {
+          is.close();
+        }
+      } catch (IOException e) {
+        // dont care about this.
+      }
+    }
+    return properties;
+  }
 }

@@ -32,6 +32,7 @@ import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.user.AuthenticationManagerService;
 import org.sakaiproject.kernel.api.user.ProfileResolverService;
 import org.sakaiproject.kernel.api.user.User;
+import org.sakaiproject.kernel.api.user.UserFactoryService;
 import org.sakaiproject.kernel.api.user.UserProfile;
 import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
@@ -39,7 +40,6 @@ import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.JCRIdPwEvidence;
 import org.sakaiproject.kernel.model.UserEnvironmentBean;
 import org.sakaiproject.kernel.user.AnonUser;
-import org.sakaiproject.kernel.user.UserFactoryService;
 import org.sakaiproject.kernel.user.jcr.JcrAuthenticationResolverProvider;
 import org.sakaiproject.kernel.util.StringUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
@@ -89,7 +89,7 @@ public class RestUserProvider implements RestProvider {
   @Inject
   public RestUserProvider(
       RegistryService registryService,
-      @Named(KernelConstants.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
+      BeanConverter beanConverter,
       UserResolverService userResolverService,
       UserEnvironmentResolverService userEnvironmentResolverService,
       JCRNodeFactoryService jcrNodeFactoryService,

@@ -3,6 +3,16 @@
   xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
   <display-name>rest</display-name>
   <description>Sakai Rest</description>
+  <context-param>
+  <description>The modules to load</description>
+  <param-name>modules</param-name>
+  <param-value>org.sakaiproject.kernel.rest.RestModule</param-value>
+  </context-param>
+  <listener>
+    <listener-class>org.sakaiproject.kernel.rest.LoaderListener</listener-class>
+    <description>Starts up the guice module for this class</description>
+  </listener>
+  
   <filter>
     <filter-name>sakai.authn</filter-name>
     <filter-class>org.sakaiproject.kernel.webapp.filter.SakaiAuthenticationFilter </filter-class>

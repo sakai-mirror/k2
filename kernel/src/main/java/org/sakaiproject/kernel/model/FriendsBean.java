@@ -27,7 +27,7 @@ import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
-import org.sakaiproject.kernel.user.UserFactoryService;
+import org.sakaiproject.kernel.api.user.UserFactoryService;
 import org.sakaiproject.kernel.util.StringUtils;
 
 import java.io.ByteArrayInputStream;
@@ -56,7 +56,7 @@ public class FriendsBean {
   @Inject
   public FriendsBean(JCRNodeFactoryService jcrNodeFactoryService,
       UserFactoryService userFactoryService,
-      @Named(KernelConstants.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
+      BeanConverter beanConverter,
       @Named(KernelConstants.PRIVATE_PATH_BASE) String privatePathBase) {
     friends = Maps.newLinkedHashMap();
     this.jcrNodeFactoryService = jcrNodeFactoryService;

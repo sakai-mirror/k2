@@ -24,14 +24,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import com.google.inject.Injector;
-import com.google.inject.Key;
-import com.google.inject.name.Names;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sakaiproject.kernel.Activator;
-import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.rest.RestProvider;
@@ -105,9 +102,7 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "patch", "f", "a", "test", "file" };
 
     RestPatchProvider rsp = new RestPatchProvider(registryService,
-        jcrNodeFactoryService, injector.getInstance(Key.get(
-            BeanConverter.class, Names
-                .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        jcrNodeFactoryService, injector.getInstance(BeanConverter.class),
         PRIVATE_BASE_PATH);
     rsp.dispatch(elements, request, response);
 
@@ -157,15 +152,14 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
     ByteArrayInputStream in = new ByteArrayInputStream(
         "{\"a\":\"a1\",\"b\":\"b1\",\"c\":\"c3\",\"d\":\"d1\"}"
             .getBytes(StringUtils.UTF8));
-    Node n = jcrNodeFactoryService.setInputStream("/a/test/file2", in, RestProvider.CONTENT_TYPE);
+    Node n = jcrNodeFactoryService.setInputStream("/a/test/file2", in,
+        RestProvider.CONTENT_TYPE);
     n.save();
 
     String[] elements = new String[] { "patch", "f", "a", "test", "file2" };
 
     RestPatchProvider rsp = new RestPatchProvider(registryService,
-        jcrNodeFactoryService, injector.getInstance(Key.get(
-            BeanConverter.class, Names
-                .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        jcrNodeFactoryService, injector.getInstance(BeanConverter.class),
         PRIVATE_BASE_PATH);
     rsp.dispatch(elements, request, response);
 
@@ -215,9 +209,7 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "patch", "f", "a", "test", "file" };
 
     RestPatchProvider rsp = new RestPatchProvider(registryService,
-        jcrNodeFactoryService, injector.getInstance(Key.get(
-            BeanConverter.class, Names
-                .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        jcrNodeFactoryService, injector.getInstance(BeanConverter.class),
         PRIVATE_BASE_PATH);
     rsp.dispatch(elements, request, response);
 
@@ -267,15 +259,14 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
     ByteArrayInputStream in = new ByteArrayInputStream(
         "{\"a\":\"a1\",\"b\":\"b1\",\"c\":\"c3\",\"d\":\"d1\"}"
             .getBytes(StringUtils.UTF8));
-    Node n = jcrNodeFactoryService.setInputStream("/a/test/file2", in, RestProvider.CONTENT_TYPE);
+    Node n = jcrNodeFactoryService.setInputStream("/a/test/file2", in,
+        RestProvider.CONTENT_TYPE);
     n.save();
 
     String[] elements = new String[] { "patch", "f", "a", "test", "file2" };
 
     RestPatchProvider rsp = new RestPatchProvider(registryService,
-        jcrNodeFactoryService, injector.getInstance(Key.get(
-            BeanConverter.class, Names
-                .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        jcrNodeFactoryService, injector.getInstance(BeanConverter.class),
         PRIVATE_BASE_PATH);
     rsp.dispatch(elements, request, response);
 
@@ -324,9 +315,7 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "patch", "f", "a", "test", "file2" };
 
     RestPatchProvider rsp = new RestPatchProvider(registryService,
-        jcrNodeFactoryService, injector.getInstance(Key.get(
-            BeanConverter.class, Names
-                .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        jcrNodeFactoryService, injector.getInstance(BeanConverter.class),
         PRIVATE_BASE_PATH);
     try {
       rsp.dispatch(elements, request, response);

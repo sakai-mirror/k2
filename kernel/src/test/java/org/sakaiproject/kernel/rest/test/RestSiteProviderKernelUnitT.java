@@ -27,15 +27,12 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import com.google.inject.Injector;
-import com.google.inject.Key;
-import com.google.inject.name.Names;
 
 import org.easymock.Capture;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sakaiproject.kernel.Activator;
-import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.model.RoleBean;
@@ -98,8 +95,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "site", "create" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        injector.getInstance(BeanConverter.class),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -140,8 +136,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "site", "create" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        injector.getInstance(BeanConverter.class),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -188,8 +183,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "site", "get", "sitethatexists" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        injector.getInstance(BeanConverter.class),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -228,8 +222,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "site", "get", "sitethatdoesnotexist" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        injector.getInstance(BeanConverter.class),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -259,8 +252,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "site", "get" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        injector.getInstance(BeanConverter.class),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -294,8 +286,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "site", "addOwner" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        injector.getInstance(BeanConverter.class),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -329,8 +320,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "site", "removeOwner" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        injector.getInstance(BeanConverter.class),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -365,8 +355,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         "sitethatdoesntexist" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        injector.getInstance(BeanConverter.class),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -401,8 +390,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         "sitethatdoesntexist" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        injector.getInstance(BeanConverter.class),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -437,8 +425,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         "sitethatdoesntexist", "auser" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        injector.getInstance(BeanConverter.class),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -472,8 +459,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "site", "create" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        injector.getInstance(BeanConverter.class),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -507,8 +493,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "site", "create" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        injector.getInstance(BeanConverter.class),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -542,8 +527,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "site", "addOwner" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        injector.getInstance(BeanConverter.class),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -577,8 +561,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "site", "removeOwner" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        injector.getInstance(BeanConverter.class),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -612,8 +595,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "site", "removeOwner" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        injector.getInstance(BeanConverter.class),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -656,8 +638,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         "user2" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        injector.getInstance(BeanConverter.class),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -705,8 +686,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         "user2" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        injector.getInstance(BeanConverter.class),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -755,8 +735,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         "user8" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        injector.getInstance(BeanConverter.class),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -791,8 +770,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         "user8" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        injector.getInstance(BeanConverter.class),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -830,8 +808,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         "user2" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        injector.getInstance(BeanConverter.class),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     try {
@@ -874,8 +851,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         "user1" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        injector.getInstance(BeanConverter.class),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     try {
@@ -917,8 +893,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "site", "addOwner", "testSiteA", "user2" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        injector.getInstance(BeanConverter.class),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     try {
@@ -958,8 +933,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "site", "addOwner", "testSiteA", "user2" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        injector.getInstance(BeanConverter.class),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -1001,8 +975,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "site", "addOwner", "testSiteA", "user2" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        injector.getInstance(BeanConverter.class),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -1044,8 +1017,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "site", "addOwner", "testSiteA", "user2" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        injector.getInstance(BeanConverter.class),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -1073,8 +1045,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "site", "addOwner", "testSiteA", "user8" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        injector.getInstance(BeanConverter.class),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
@@ -1105,8 +1076,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "site", "addOwner", "testSiteA", "user2" };
 
     RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(Key.get(BeanConverter.class, Names
-            .named(KernelConstants.REPOSITORY_BEANCONVETER))),
+        injector.getInstance(BeanConverter.class),
         userEnvironmentResolverService, sessionManagerService,
         subjectPermissionService, userResolverService);
     try {

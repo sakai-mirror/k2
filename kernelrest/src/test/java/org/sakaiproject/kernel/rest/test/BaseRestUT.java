@@ -25,13 +25,13 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.reset;
 import static org.easymock.EasyMock.verify;
 
-import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.authz.SubjectPermissionService;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
-import org.sakaiproject.kernel.api.memory.CacheScope;
+import org.sakaiproject.kernel.api.serialization.BeanConverter;
+import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.site.SiteService;
 import org.sakaiproject.kernel.api.social.FriendsResolverService;
@@ -39,9 +39,10 @@ import org.sakaiproject.kernel.api.user.ProfileResolverService;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.user.UserFactoryService;
 import org.sakaiproject.kernel.api.user.UserResolverService;
+import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
+import org.sakaiproject.kernel.registry.RegistryServiceImpl;
 import org.sakaiproject.kernel.webapp.SakaiServletRequest;
-import org.sakaiproject.kernel.webapp.test.InternalUser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -56,8 +57,8 @@ import javax.servlet.http.HttpSession;
 /**
  * 
  */
-public class BaseRestUnitT {
-  
+public class BaseRestUT {
+
   protected RegistryService registryService;
   protected UserEnvironmentResolverService userEnvironmentResolverService;
   protected SessionManagerService sessionManagerService;
@@ -74,70 +75,92 @@ public class BaseRestUnitT {
   protected ProfileResolverService profileResolverService;
   protected EntityManager entityManager;
   protected FriendsResolverService friendsResolverService;
-
-
-
-  /**
-   * Set up the services and mocks.
-   */
-  public void setupServices() {
-    KernelManager km = new KernelManager();
-    registryService = km.getService(RegistryService.class);
-    userEnvironmentResolverService = km
-        .getService(UserEnvironmentResolverService.class);
-    sessionManagerService = km.getService(SessionManagerService.class);
-    subjectPermissionService = km.getService(SubjectPermissionService.class);
-    cacheManagerService = km.getService(CacheManagerService.class);
-    jcrNodeFactoryService = km.getService(JCRNodeFactoryService.class);
-    jcrService = km.getService(JCRService.class);
-    userFactoryService = km.getService(UserFactoryService.class);
-    profileResolverService = km.getService(ProfileResolverService.class);
-    entityManager = km.getService(EntityManager.class);
-    friendsResolverService = km.getService(FriendsResolverService.class);
-
-    siteService = createMock(SiteService.class);
-    userResolverService = createMock(UserResolverService.class);
-    request = createMock(HttpServletRequest.class);
-    response = createMock(HttpServletResponse.class);
-    session = createMock(HttpSession.class);
-  }
+  protected BeanConverter beanConverter;
+  protected Object[] mocks;
+  protected SakaiServletRequest sakaiServletRequest;
+  protected Session sakaiSession;
+  protected UserEnvironment userEnvironment;
 
   /**
-   * Reset mocks to have another go with the same setup.
-   */
-  public void resetMocks() {
-    reset(request, response, session, siteService, userResolverService);
-  }
-
-
-
-  public void verifyMocks() {
-    verify(request, response, session, siteService, userResolverService);
-    cacheManagerService.unbind(CacheScope.REQUEST);
-    cacheManagerService.unbind(CacheScope.THREAD);
-  }
-  
-  /**
-   * Replay mocks at the end of setup, and bind the request to the thread.
-   */
-  public void replayMocks() {
-    replay(request, response, session, siteService, userResolverService);
-    SakaiServletRequest sakaiServletRequest = new SakaiServletRequest(request,
-        response, userResolverService, sessionManagerService);
-    sessionManagerService.bindRequest(sakaiServletRequest);
-
-  }
-  
-  /**
-   * Setup mocks for any time execution.
    * 
+   */
+  protected void resetMocks(Object ... moreMocks) {
+    if (moreMocks != null) {
+      reset(join(mocks, moreMocks));
+    } else {
+      reset(mocks);
+    }
+  }
+
+  /**
+   * 
+   */
+  protected void verifyMocks(Object ... moreMocks) {
+    if (moreMocks != null) {
+      verify(join(mocks, moreMocks));
+    } else {
+      verify(mocks);
+    }
+  }
+
+  /**
+   * 
+   */
+  protected void replayMocks(Object... moreMocks) {
+
+    expect(sessionManagerService.getCurrentSession()).andReturn(sakaiSession)
+        .anyTimes();
+    expect(userEnvironmentResolverService.resolve(sakaiSession)).andReturn(
+        userEnvironment).anyTimes();
+
+    if (moreMocks != null) {
+      replay(join(mocks, moreMocks));
+    } else {
+      replay(mocks);
+    }
+    sakaiServletRequest = new SakaiServletRequest(request, response,
+        userResolverService, sessionManagerService);
+  }
+
+  /**
+   * @param mocks2
+   * @param moreMocks
+   * @return
+   */
+  @SuppressWarnings("unchecked")
+  private <T> T[] join(T[]... arrays) {
+    int size = 0;
+    for (T[] a : arrays) {
+      size += a.length;
+    }
+    T[] out = (T[]) new Object[size];
+    int i = 0;
+    for (T[] a : arrays) {
+      System.arraycopy(a, 0, out, i, a.length);
+      i += a.length;
+    }
+    return out;
+  }
+
+  /**
+   * @param string
+   * @param string2
    * @param baos
-   * @throws IOException
-   * 
    */
-  public void setupAnyTimes(String username, String sessionID,
+  public void setupAnyTimes(final String username, String sessionID,
       final ByteArrayOutputStream baos) throws IOException {
-    User user = new InternalUser(username); // this is a pre-loaded user.
+
+    User user = new User() {
+      /**
+       * 
+       */
+      private static final long serialVersionUID = -2124446523538688673L;
+
+      public String getUuid() {
+        return username;
+      }
+
+    };
 
     expect(request.getRemoteUser()).andReturn(user.getUuid()).anyTimes();
     expect(request.getAttribute("_no_session")).andReturn(null).anyTimes();
@@ -176,8 +199,40 @@ public class BaseRestUnitT {
 
   }
 
+  /**
+   * 
+   */
+  protected void setupServices() {
+    registryService = new RegistryServiceImpl();
+    userEnvironmentResolverService = createMock(UserEnvironmentResolverService.class);
+    sessionManagerService = createMock(SessionManagerService.class);
+    subjectPermissionService = createMock(SubjectPermissionService.class);
+    cacheManagerService = createMock(CacheManagerService.class);
+    jcrNodeFactoryService = createMock(JCRNodeFactoryService.class);
+    jcrService = createMock(JCRService.class);
+    userFactoryService = createMock(UserFactoryService.class);
+    profileResolverService = createMock(ProfileResolverService.class);
+    entityManager = createMock(EntityManager.class);
+    friendsResolverService = createMock(FriendsResolverService.class);
+    sakaiSession = createMock(Session.class);
+    beanConverter = createMock(BeanConverter.class);
 
 
 
+    siteService = createMock(SiteService.class);
+    userResolverService = createMock(UserResolverService.class);
+    request = createMock(HttpServletRequest.class);
+    response = createMock(HttpServletResponse.class);
+    session = createMock(HttpSession.class);
 
+    userEnvironment = createMock(UserEnvironment.class);
+
+    mocks = new Object[] { userEnvironmentResolverService,
+        sessionManagerService, subjectPermissionService, cacheManagerService,
+        jcrNodeFactoryService, jcrService, userFactoryService,
+        profileResolverService, entityManager, friendsResolverService,
+        siteService, userResolverService, request, response, session,
+        sakaiSession, userEnvironment, beanConverter };
+
+  }
 }

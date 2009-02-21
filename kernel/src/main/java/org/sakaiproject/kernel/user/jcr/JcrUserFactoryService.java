@@ -24,8 +24,8 @@ import com.google.inject.name.Named;
 
 import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.user.User;
+import org.sakaiproject.kernel.api.user.UserFactoryService;
 import org.sakaiproject.kernel.model.UserBean;
-import org.sakaiproject.kernel.user.UserFactoryService;
 import org.sakaiproject.kernel.util.PathUtils;
 import org.sakaiproject.kernel.util.StringUtils;
 
@@ -87,7 +87,7 @@ public class JcrUserFactoryService implements UserFactoryService {
   /**
    * {@inheritDoc}
    * 
-   * @see org.sakaiproject.kernel.user.UserFactoryService#createNewUser(java.lang.String)
+   * @see org.sakaiproject.kernel.api.user.UserFactoryService#createNewUser(java.lang.String)
    */
   public User createNewUser(String externalId) {
     try {
@@ -105,7 +105,7 @@ public class JcrUserFactoryService implements UserFactoryService {
   /**
    * {@inheritDoc}
    * 
-   * @see org.sakaiproject.kernel.user.UserFactoryService#getUserEnvPath(java.lang.String)
+   * @see org.sakaiproject.kernel.api.user.UserFactoryService#getUserEnvPath(java.lang.String)
    */
   public String getUserEnvPath(String uuid) {
     return getUserEnvironmentBasePath(uuid) + KernelConstants.USERENV;
@@ -123,7 +123,7 @@ public class JcrUserFactoryService implements UserFactoryService {
   /**
    * {@inheritDoc}
    * 
-   * @see org.sakaiproject.kernel.user.UserFactoryService#getUserEnvTemplate(java.lang.String)
+   * @see org.sakaiproject.kernel.api.user.UserFactoryService#getUserEnvTemplate(java.lang.String)
    */
   public String getUserEnvTemplate(String userType) {
     if (userType == null) {
@@ -138,7 +138,7 @@ public class JcrUserFactoryService implements UserFactoryService {
 
   /**
    * {@inheritDoc}
-   * @see org.sakaiproject.kernel.user.UserFactoryService#getUserPathPrefix(java.lang.String)
+   * @see org.sakaiproject.kernel.api.user.UserFactoryService#getUserPathPrefix(java.lang.String)
    */
   public String getUserPathPrefix(String uuid) {
     return PathUtils.getUserPrefix(uuid);
@@ -146,7 +146,7 @@ public class JcrUserFactoryService implements UserFactoryService {
 
   /**
    * {@inheritDoc}
-   * @see org.sakaiproject.kernel.user.UserFactoryService#getUserProfilePath(java.lang.String)
+   * @see org.sakaiproject.kernel.api.user.UserFactoryService#getUserProfilePath(java.lang.String)
    */
   public String getUserProfilePath(String uuid) {
     
@@ -155,7 +155,7 @@ public class JcrUserFactoryService implements UserFactoryService {
 
   /**
    * {@inheritDoc}
-   * @see org.sakaiproject.kernel.user.UserFactoryService#getUserProfileTempate(java.lang.String)
+   * @see org.sakaiproject.kernel.api.user.UserFactoryService#getUserProfileTempate(java.lang.String)
    */
   public String getUserProfileTempate(String userType) {
     if (userType == null) {

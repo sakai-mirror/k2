@@ -26,8 +26,6 @@ import static org.junit.Assert.fail;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Injector;
-import com.google.inject.Key;
-import com.google.inject.name.Names;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -36,7 +34,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sakaiproject.kernel.Activator;
-import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.rest.RestProvider;
@@ -183,8 +180,7 @@ public class RestSearchProviderKernelUnitT extends BaseRestUnitT {
       String[] elements = new String[] { "search" };
 
       RestSearchProvider rsp = new RestSearchProvider(registryService,
-          jcrService, injector.getInstance(Key.get(BeanConverter.class, Names
-              .named(KernelConstants.REPOSITORY_BEANCONVETER))));
+          jcrService, injector.getInstance(BeanConverter.class));
       rsp.dispatch(elements, request, response);
 
       String op = baos.toString(StringUtils.UTF8);
@@ -222,8 +218,7 @@ public class RestSearchProviderKernelUnitT extends BaseRestUnitT {
       String[] elements = new String[] { "search" };
 
       RestSearchProvider rsp = new RestSearchProvider(registryService,
-          jcrService, injector.getInstance(Key.get(BeanConverter.class, Names
-              .named(KernelConstants.REPOSITORY_BEANCONVETER))));
+          jcrService, injector.getInstance(BeanConverter.class));
       rsp.dispatch(elements, request, response);
 
       String op = baos.toString(StringUtils.UTF8);

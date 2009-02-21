@@ -1,9 +1,18 @@
 package org.sakaiproject.kernel.messaging.email;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.mail.Email;
+import org.sakaiproject.kernel.api.email.CommonsEmailHandler;
+import org.sakaiproject.kernel.api.messaging.MessagingException;
+import org.sakaiproject.kernel.messaging.JmsMessagingService;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jms.Connection;
@@ -12,19 +21,6 @@ import javax.jms.JMSException;
 import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
-
-import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.mail.Email;
-import org.sakaiproject.kernel.api.email.CommonsEmailHandler;
-import org.sakaiproject.kernel.api.messaging.MessagingException;
-import org.sakaiproject.kernel.messaging.JmsMessagingService;
-import org.sakaiproject.kernel.messaging.email.commons.HtmlEmail;
-import org.sakaiproject.kernel.messaging.email.commons.SimpleEmail;
-
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
 
 public class EmailMessagingService extends JmsMessagingService implements
     CommonsEmailHandler {

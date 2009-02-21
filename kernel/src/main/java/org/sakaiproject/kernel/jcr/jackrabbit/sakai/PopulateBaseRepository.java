@@ -26,9 +26,9 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
+import org.sakaiproject.kernel.api.user.UserFactoryService;
 import org.sakaiproject.kernel.jcr.api.internal.RepositoryStartupException;
 import org.sakaiproject.kernel.jcr.api.internal.StartupAction;
-import org.sakaiproject.kernel.user.UserFactoryService;
 import org.sakaiproject.kernel.util.ResourceLoader;
 import org.sakaiproject.kernel.util.StringUtils;
 

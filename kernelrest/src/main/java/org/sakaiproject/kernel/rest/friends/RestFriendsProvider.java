@@ -22,11 +22,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
 
-import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
@@ -35,19 +32,21 @@ import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.social.FriendsResolverService;
 import org.sakaiproject.kernel.api.user.ProfileResolverService;
+import org.sakaiproject.kernel.api.user.UserFactoryService;
 import org.sakaiproject.kernel.api.user.UserProfile;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.model.FriendBean;
 import org.sakaiproject.kernel.model.FriendStatus;
 import org.sakaiproject.kernel.model.FriendsBean;
 import org.sakaiproject.kernel.model.FriendsIndexBean;
-import org.sakaiproject.kernel.user.UserFactoryService;
 import org.sakaiproject.kernel.util.StringUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
+import org.sakaiproject.kernel.webapp.Initialisable;
 import org.sakaiproject.kernel.webapp.RestServiceFaultException;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -62,7 +61,7 @@ import javax.servlet.http.HttpServletResponse;
  * stored in a known place with metadata, as a json file. The service works on
  * the basis of adding and removing friends records from a json file.
  */
-public class RestFriendsProvider implements RestProvider {
+public class RestFriendsProvider implements RestProvider, Initialisable {
 
   private static final RestDescription DESC = new RestDescription();
 
@@ -175,6 +174,8 @@ public class RestFriendsProvider implements RestProvider {
 
   private UserFactoryService userFactoryService;
 
+  private Registry<String, RestProvider> registry;
+
   @Inject
   public RestFriendsProvider(RegistryService registryService,
       SessionManagerService sessionManagerService,
@@ -183,10 +184,10 @@ public class RestFriendsProvider implements RestProvider {
       EntityManager entityManager,
       FriendsResolverService friendsResolverService,
       UserFactoryService userFactoryService,
-      @Named(KernelConstants.REPOSITORY_BEANCONVETER) BeanConverter beanConverter) {
-    Registry<String, RestProvider> registry = registryService
+      BeanConverter beanConverter) {
+    this.registry = registryService
         .getRegistry(RestProvider.REST_REGISTRY);
-    registry.add(this);
+    this.registry.add(this);
     this.beanConverter = beanConverter;
     this.sessionManagerService = sessionManagerService;
     this.userEnvironmentResolverService = userEnvironmentResolverService;
@@ -194,6 +195,20 @@ public class RestFriendsProvider implements RestProvider {
     this.profileResolverService = profileResolverService;
     this.friendsResolverService = friendsResolverService;
     this.userFactoryService = userFactoryService;
+  }
+  
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.webapp.Initialisable#init()
+   */
+  public void init() {
+  }
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.webapp.Initialisable#destroy()
+   */
+  public void destroy() {
+    registry.remove(this);    
   }
 
   /**

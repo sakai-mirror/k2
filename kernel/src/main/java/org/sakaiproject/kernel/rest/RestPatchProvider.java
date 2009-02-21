@@ -157,7 +157,7 @@ public class RestPatchProvider implements RestProvider {
   public RestPatchProvider(
       RegistryService registryService,
       JCRNodeFactoryService jcrNodeFactoryService,
-      @Named(KernelConstants.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
+      BeanConverter beanConverter,
       @Named(KernelConstants.PRIVATE_SHARED_PATH_BASE) String privateSharedPathBase) {
     Registry<String, RestProvider> registry = registryService
         .getRegistry(RestProvider.REST_REGISTRY);

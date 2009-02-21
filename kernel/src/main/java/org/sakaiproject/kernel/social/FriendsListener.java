@@ -73,7 +73,7 @@ public class FriendsListener implements JcrContentListener {
       ProfileResolverService profileResolverService,
       JCRNodeFactoryService jcrNodeFactoryService,
       @Named(KernelConstants.PRIVATE_PATH_BASE) String privatePathBase,
-      @Named(KernelConstants.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
+      BeanConverter beanConverter,
       SessionManagerService sessionManagerService, EntityManager entityManager) {
     this.jcrNodeFactoryService = jcrNodeFactoryService;
     this.beanConverter = beanConverter;

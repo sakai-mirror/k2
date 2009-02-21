@@ -71,7 +71,7 @@ public class UserEnvironmentListener implements JcrContentListener {
   public UserEnvironmentListener(
       JCRNodeFactoryService jcrNodeFactoryService,
       @Named(KernelConstants.JCR_USERENV_BASE) String userEnvironmentBase,
-      @Named(KernelConstants.REPOSITORY_BEANCONVETER) BeanConverter beanConverter,
+      BeanConverter beanConverter,
       SessionManagerService sessionManagerService,
       UserEnvironmentResolverService userEnvironmentResolverService,
       EntityManager entityManager) {

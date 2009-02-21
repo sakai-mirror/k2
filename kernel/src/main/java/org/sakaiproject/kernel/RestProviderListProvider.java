@@ -31,7 +31,6 @@ import org.sakaiproject.kernel.rest.RestSearchProvider;
 import org.sakaiproject.kernel.rest.RestSiteProvider;
 import org.sakaiproject.kernel.rest.RestSnoopProvider;
 import org.sakaiproject.kernel.rest.RestUserProvider;
-import org.sakaiproject.kernel.rest.friends.RestFriendsProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,8 +52,7 @@ public class RestProviderListProvider implements Provider<List<RestProvider>> {
       RestUserProvider restUserProvider,
       RestMySitesProvider restMySitesProvider,
       RestPatchProvider restPatchProvider,
-      RestSearchProvider restSearchProvider,
-      RestFriendsProvider restFriendsProvider) {
+      RestSearchProvider restSearchProvider) {
     list.add(restAuthenticationProvider);
     list.add(defaultRestProvider);
     list.add(restMeProvider);
@@ -64,7 +62,6 @@ public class RestProviderListProvider implements Provider<List<RestProvider>> {
     list.add(restMySitesProvider);
     list.add(restPatchProvider);
     list.add(restSearchProvider);
-    list.add(restFriendsProvider);
   }
 
   /**
