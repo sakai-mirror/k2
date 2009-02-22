@@ -1,8 +1,8 @@
 /*
- * Licensed to the Sakai Foundation (SF) under one
+ * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
- * regarding copyright ownership. The SF licenses this file
+ * regarding copyright ownership. The ASF licenses this file
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
@@ -17,35 +17,11 @@
  */
 package org.sakaiproject.kernel.api;
 
-import java.util.List;
-import java.util.Map;
-
 /**
- * A registry for adding providers.
+ * 
  */
-public interface Registry<V,T extends Provider<V>> {
-
-  /**
-   * @param provider
-   *          the provider to be added.
-   */
-  void add(T provider);
-
-  /**
-   * @param provider
-   *          the provider to be removed, if it exists.
-   */
-  void remove(T provider);
-
-  /**
-   * @return
-   */
-  List<T> getList();
-  
-  Map<V,T> getMap();
-  
-  void addListener(RegistryListener<T> listener);
-  
-  void removeListener(RegistryListener<T> listener);
-
+public interface RegistryListener<T> {
+  void added(T wasAdded);
+  void removed(T wasRemoved);
+  void updated(T wasUpdated);
 }

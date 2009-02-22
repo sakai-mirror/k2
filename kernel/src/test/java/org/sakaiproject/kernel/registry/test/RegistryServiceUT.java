@@ -19,8 +19,12 @@ package org.sakaiproject.kernel.registry.test;
 
 
 import static org.junit.Assert.*;
+
+import com.google.common.collect.Lists;
+
 import org.junit.Test;
 import org.sakaiproject.kernel.api.Registry;
+import org.sakaiproject.kernel.api.RegistryListener;
 import org.sakaiproject.kernel.registry.RegistryServiceImpl;
 
 import java.util.List;
@@ -70,6 +74,101 @@ public class RegistryServiceUT {
     for ( int i = 0; i < 100; i++ ) {
       assertEquals(i, p.get(i).getPriority());
     }
+  }
+
+  @Test
+  public void testRegistryServiceRemoveAndListen() {
+    RegistryServiceImpl registryServiceImpl = new RegistryServiceImpl();
+    Registry<String,TProvider<String>> r = registryServiceImpl.getRegistry("testRegistry");
+    final List<TProvider<String>> added = Lists.newArrayList();
+    final List<TProvider<String>> removed = Lists.newArrayList();
+    final List<TProvider<String>> updated = Lists.newArrayList();
+    List<TProvider<String>> addedTest = Lists.newArrayList();
+    List<TProvider<String>> removedTest = Lists.newArrayList();
+    List<TProvider<String>> updatedTest = Lists.newArrayList();
+    RegistryListener<TProvider<String>> listener1 = new RegistryListener<TProvider<String>>() {
+
+      public void added(TProvider<String> wasAdded) {
+        added.add(wasAdded);
+      }
+
+      public void removed(TProvider<String> wasRemoved) {
+        removed.add(wasRemoved);
+      }
+
+      public void updated(TProvider<String> wasUpdated) {
+        updated.add(wasUpdated);
+      }
+    };
+    RegistryListener<TProvider<String>> listener2 = new RegistryListener<TProvider<String>>() {
+
+      public void added(TProvider<String> wasAdded) {
+        added.add(wasAdded);
+      }
+
+      public void removed(TProvider<String> wasRemoved) {
+        removed.add(wasRemoved);
+      }
+
+      public void updated(TProvider<String> wasUpdated) {
+        updated.add(wasUpdated);
+      }
+    };
+    r.addListener(listener1);
+    r.addListener(listener2);
+    TProvider<String> tp = new TProvider<String>(-2,String.valueOf(-2));
+    r.add(tp);
+    addedTest.add(tp);
+    addedTest.add(tp);
+    for ( int i = 99; i >= 0; i-- ) {
+      TProvider<String> tpa = new TProvider<String>(i,String.valueOf(i));
+      r.add(tpa);
+      addedTest.add(tpa);
+      addedTest.add(tpa);
+    }
+    r.add(tp);
+    updatedTest.add(tp);
+    updatedTest.add(tp);
+    r.remove(tp);
+    removedTest.add(tp);
+    removedTest.add(tp);
+    List<TProvider<String>> p = r.getList();
+    assertEquals(100, p.size());
+    for ( int i = 0; i < 100; i++ ) {
+      assertEquals(i, p.get(i).getPriority());
+    }
+    
+    assertArrayEquals(addedTest.toArray(),added.toArray());
+    assertArrayEquals(updatedTest.toArray(),updated.toArray());
+    assertArrayEquals(removedTest.toArray(),removed.toArray());
+    
+    r.removeListener(listener2);
+    
+    // check that the remove worked.
+    r.add(tp);
+    addedTest.add(tp);
+    for ( int i = 99; i >= 0; i-- ) {
+      TProvider<String> tpa = new TProvider<String>(i,String.valueOf(i));
+      r.add(tpa);
+      updatedTest.add(tpa);
+    }
+    r.add(tp);
+    updatedTest.add(tp);
+    r.remove(tp);
+    removedTest.add(tp);
+    p = r.getList();
+    assertEquals(100, p.size());
+    for ( int i = 0; i < 100; i++ ) {
+      assertEquals(i, p.get(i).getPriority());
+    }
+    
+    assertArrayEquals(addedTest.toArray(),added.toArray());
+    assertArrayEquals(updatedTest.toArray(),updated.toArray());
+    assertArrayEquals(removedTest.toArray(),removed.toArray());
+
+    
+    
+    
   }
 
 }
