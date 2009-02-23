@@ -80,6 +80,7 @@ public class BaseRestUT {
   protected SakaiServletRequest sakaiServletRequest;
   protected Session sakaiSession;
   protected UserEnvironment userEnvironment;
+  protected User user;
 
   /**
    * 
@@ -112,6 +113,8 @@ public class BaseRestUT {
         .anyTimes();
     expect(userEnvironmentResolverService.resolve(sakaiSession)).andReturn(
         userEnvironment).anyTimes();
+
+    expect(sakaiSession.getUser()).andReturn(user).anyTimes();
 
     if (moreMocks != null) {
       replay(join(mocks, moreMocks));
@@ -150,7 +153,7 @@ public class BaseRestUT {
   public void setupAnyTimes(final String username, String sessionID,
       final ByteArrayOutputStream baos) throws IOException {
 
-    User user = new User() {
+     user = new User() {
       /**
        * 
        */

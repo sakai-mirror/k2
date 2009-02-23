@@ -51,6 +51,7 @@ public class JcrUserFactoryService implements UserFactoryService {
   private String sharedPrivatePathBase;
   private String defaultProfileTemplate;
   private HashMap<String, String> profileTemplateMap;
+  private String privatePathBase;
 
   /**
    * 
@@ -61,6 +62,7 @@ public class JcrUserFactoryService implements UserFactoryService {
       @Named(KernelConstants.JCR_USERENV_TEMPLATES) String userTemplates,
       @Named(KernelConstants.JCR_DEFAULT_TEMPLATE) String defaultTemplate,
       @Named(KernelConstants.PRIVATE_SHARED_PATH_BASE) String sharedPrivatePathBase,
+      @Named(KernelConstants.PRIVATE_PATH_BASE) String privatePathBase,
       @Named(KernelConstants.JCR_PROFILE_TEMPLATES) String profileTemplates,
       @Named(KernelConstants.JCR_PROFILE_DEFAUT_TEMPLATES) String defaultProfileTemplate
 
@@ -69,6 +71,7 @@ public class JcrUserFactoryService implements UserFactoryService {
     this.defaultTemplate = defaultTemplate;
     this.defaultProfileTemplate = defaultProfileTemplate;
     this.userEnvironmentBase = userEnvironmentBase;
+    this.privatePathBase = privatePathBase;
     userTemplateMap = Maps.newHashMap();
     String[] templates = StringUtils.split(userTemplates, ';');
     for (String template : templates) {
@@ -150,7 +153,7 @@ public class JcrUserFactoryService implements UserFactoryService {
    */
   public String getUserProfilePath(String uuid) {
     
-    return sharedPrivatePathBase + PathUtils.getUserPrefix(uuid) + KernelConstants.PROFILE_JSON;
+    return getUserSharedPrivatePath(uuid) + KernelConstants.PROFILE_JSON;
   }
 
   /**
@@ -168,4 +171,21 @@ public class JcrUserFactoryService implements UserFactoryService {
     return template;
   }
 
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.user.UserFactoryService#getUserPrivatePath(java.lang.String)
+   */
+  public String getUserPrivatePath(String uuid) {
+    return privatePathBase + PathUtils.getUserPrefix(uuid);
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.user.UserFactoryService#getUserSharedPrivatePath(java.lang.String)
+   */
+  public String getUserSharedPrivatePath(String uuid) {
+    return sharedPrivatePathBase + PathUtils.getUserPrefix(uuid);
+  }
+
+  
 }

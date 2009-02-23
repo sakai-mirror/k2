@@ -19,6 +19,7 @@
 package org.sakaiproject.kernel.rest;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
 
@@ -26,11 +27,13 @@ import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.ServiceManager;
+import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.social.FriendsResolverService;
 import org.sakaiproject.kernel.api.user.ProfileResolverService;
 import org.sakaiproject.kernel.api.user.UserFactoryService;
+import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.component.core.guice.ServiceProvider;
 import org.sakaiproject.kernel.util.PropertiesLoader;
@@ -86,30 +89,36 @@ public class RestModule extends AbstractModule {
     // make some services available
     bind(RegistryService.class).toProvider(
         new ServiceProvider<RegistryService>(serviceManager,
-            RegistryService.class));
+            RegistryService.class)).in(Scopes.SINGLETON);
     bind(SessionManagerService.class).toProvider(
         new ServiceProvider<SessionManagerService>(serviceManager,
-            SessionManagerService.class));
+            SessionManagerService.class)).in(Scopes.SINGLETON);
     bind(UserEnvironmentResolverService.class).toProvider(
         new ServiceProvider<UserEnvironmentResolverService>(serviceManager,
-            UserEnvironmentResolverService.class));
+            UserEnvironmentResolverService.class)).in(Scopes.SINGLETON);
     bind(ProfileResolverService.class).toProvider(
         new ServiceProvider<ProfileResolverService>(serviceManager,
-            ProfileResolverService.class));
+            ProfileResolverService.class)).in(Scopes.SINGLETON);
     bind(EntityManager.class)
         .toProvider(
             new ServiceProvider<EntityManager>(serviceManager,
-                EntityManager.class));
+                EntityManager.class)).in(Scopes.SINGLETON);
     bind(FriendsResolverService.class).toProvider(
         new ServiceProvider<FriendsResolverService>(serviceManager,
-            FriendsResolverService.class));
+            FriendsResolverService.class)).in(Scopes.SINGLETON);
     bind(UserFactoryService.class).toProvider(
         new ServiceProvider<UserFactoryService>(serviceManager,
-            UserFactoryService.class));
+            UserFactoryService.class)).in(Scopes.SINGLETON);
+    bind(JCRNodeFactoryService.class).toProvider(
+        new ServiceProvider<JCRNodeFactoryService>(serviceManager,
+            JCRNodeFactoryService.class)).in(Scopes.SINGLETON);
+    bind(UserResolverService.class).toProvider(
+        new ServiceProvider<UserResolverService>(serviceManager,
+            UserResolverService.class)).in(Scopes.SINGLETON);
     bind(BeanConverter.class)
         .toProvider(
             new ServiceProvider<BeanConverter>(serviceManager,
-                BeanConverter.class));
+                BeanConverter.class)).in(Scopes.SINGLETON);
 
     // activate all the services
     TypeLiteral<List<Initialisable>> initType = new TypeLiteral<List<Initialisable>>() {

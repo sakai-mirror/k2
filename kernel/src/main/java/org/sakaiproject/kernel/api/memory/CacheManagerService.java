@@ -17,17 +17,11 @@
  */
 package org.sakaiproject.kernel.api.memory;
 
-import com.google.inject.ImplementedBy;
-import com.google.inject.Singleton;
-
-import org.sakaiproject.kernel.memory.CacheManagerServiceImpl;
 
 /**
  * The Cache manager provides access to all caches in the system. Caches are
  * scoped by CacheScope and those that are bound can be unbound.
  */
-@ImplementedBy(CacheManagerServiceImpl.class)
-@Singleton
 public interface CacheManagerService {
 
   /**

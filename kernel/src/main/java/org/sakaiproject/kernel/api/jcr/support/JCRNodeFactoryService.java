@@ -18,11 +18,6 @@
 
 package org.sakaiproject.kernel.api.jcr.support;
 
-import com.google.inject.ImplementedBy;
-import com.google.inject.Singleton;
-
-import org.sakaiproject.kernel.jcr.support.JCRNodeFactoryServiceImpl;
-
 import java.io.InputStream;
 
 import javax.jcr.Node;
@@ -32,8 +27,6 @@ import javax.jcr.RepositoryException;
  * The JCRNodeFactoryService provides simplified content methods to deal with
  * File and Folders.
  */
-@ImplementedBy(JCRNodeFactoryServiceImpl.class)
-@Singleton
 public interface JCRNodeFactoryService {
 
   /**

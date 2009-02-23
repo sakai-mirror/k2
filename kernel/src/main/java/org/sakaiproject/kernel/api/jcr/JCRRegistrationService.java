@@ -18,11 +18,6 @@
 
 package org.sakaiproject.kernel.api.jcr;
 
-import com.google.inject.ImplementedBy;
-import com.google.inject.Singleton;
-
-import org.sakaiproject.kernel.jcr.jackrabbit.JCRRegistrationServiceImpl;
-
 import java.io.InputStream;
 
 /**
@@ -31,8 +26,6 @@ import java.io.InputStream;
  * namespaces.
  * 
  */
-@ImplementedBy(JCRRegistrationServiceImpl.class)
-@Singleton
 public interface JCRRegistrationService
 {
 

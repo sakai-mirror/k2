@@ -18,7 +18,6 @@
 package org.sakaiproject.kernel.authz.simple;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 import org.sakaiproject.kernel.api.authz.SubjectPermissionService;
 import org.sakaiproject.kernel.api.authz.SubjectPermissions;
@@ -36,7 +35,6 @@ import javax.persistence.Query;
 /**
  * 
  */
-@Singleton
 public class SubjectPermissionServiceImpl implements SubjectPermissionService {
 
   private Cache<SubjectPermissions> subjectPermissionCache;

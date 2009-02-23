@@ -22,7 +22,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.sakaiproject.kernel.api.user.User;
-import org.sakaiproject.kernel.user.AnonUser;
+import org.sakaiproject.kernel.util.user.AnonUser;
 
 /**
  * 

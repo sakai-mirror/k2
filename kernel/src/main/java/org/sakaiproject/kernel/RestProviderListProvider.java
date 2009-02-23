@@ -21,15 +21,12 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 import org.sakaiproject.kernel.api.rest.RestProvider;
-import org.sakaiproject.kernel.rest.DefaultRestProvider;
 import org.sakaiproject.kernel.rest.RestAuthenticationProvider;
 import org.sakaiproject.kernel.rest.RestLogoutProvider;
-import org.sakaiproject.kernel.rest.RestMeProvider;
 import org.sakaiproject.kernel.rest.RestMySitesProvider;
 import org.sakaiproject.kernel.rest.RestPatchProvider;
 import org.sakaiproject.kernel.rest.RestSearchProvider;
 import org.sakaiproject.kernel.rest.RestSiteProvider;
-import org.sakaiproject.kernel.rest.RestSnoopProvider;
 import org.sakaiproject.kernel.rest.RestUserProvider;
 
 import java.util.ArrayList;
@@ -45,18 +42,15 @@ public class RestProviderListProvider implements Provider<List<RestProvider>> {
    *
    */
   @Inject
-  public RestProviderListProvider(DefaultRestProvider defaultRestProvider,
+  public RestProviderListProvider(
       RestAuthenticationProvider restAuthenticationProvider,
-      RestMeProvider restMeProvider, RestSiteProvider siteProvider, 
-      RestSnoopProvider restSnoopProvider, RestLogoutProvider restLogoutProvider,
+       RestSiteProvider siteProvider, 
+       RestLogoutProvider restLogoutProvider,
       RestUserProvider restUserProvider,
       RestMySitesProvider restMySitesProvider,
       RestPatchProvider restPatchProvider,
       RestSearchProvider restSearchProvider) {
     list.add(restAuthenticationProvider);
-    list.add(defaultRestProvider);
-    list.add(restMeProvider);
-    list.add(restSnoopProvider);
     list.add(restLogoutProvider);
     list.add(restUserProvider);
     list.add(restMySitesProvider);

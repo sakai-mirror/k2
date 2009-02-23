@@ -15,32 +15,43 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.rest;
+package org.sakaiproject.kernel.util.user;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import org.sakaiproject.kernel.api.user.User;
 
-public class UserLocale {
-
-
+/**
+ * Represents an anonymous user.
+ */
+public class AnonUser implements User {
 
   /**
-   * @param locale
-   * @return
+   * 
    */
-  public Map<String, Object> localeToMap(Locale l) {
-    Map<String, Object> localeMap = new HashMap<String, Object>();
-    localeMap.put("country", l.getCountry());
-    localeMap.put("displayCountry", l.getDisplayCountry(l));
-    localeMap.put("displayLanguage", l.getDisplayLanguage(l));
-    localeMap.put("displayName", l.getDisplayName(l));
-    localeMap.put("displayVariant", l.getDisplayVariant(l));
-    localeMap.put("ISO3Country", l.getISO3Country());
-    localeMap.put("ISO3Language", l.getISO3Language());
-    localeMap.put("language", l.getLanguage());
-    localeMap.put("variant", l.getVariant());
-    return localeMap;
+  private static final long serialVersionUID = 5846119729685965996L;
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.user.User#getEid()
+   */
+  public String getEid() {
+    return "anon";
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.user.User#getUuid()
+   */
+  public String getUuid() {
+    return "anon";
+  }
+  
+  /**
+   * {@inheritDoc}
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return "anon";
   }
 
 }

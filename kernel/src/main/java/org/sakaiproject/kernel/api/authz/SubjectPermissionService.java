@@ -17,10 +17,6 @@
  */
 package org.sakaiproject.kernel.api.authz;
 
-import com.google.inject.ImplementedBy;
-
-import org.sakaiproject.kernel.authz.simple.SubjectPermissionServiceImpl;
-
 import java.util.Map;
 
 /**
@@ -31,7 +27,6 @@ import java.util.Map;
  * anon or auth. The group service need to provide intelligent caching of its
  * objects since it will be under heavy demand from the authz service.
  */
-@ImplementedBy(SubjectPermissionServiceImpl.class)
 public interface SubjectPermissionService {
 
   /**

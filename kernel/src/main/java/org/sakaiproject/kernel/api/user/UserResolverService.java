@@ -17,16 +17,10 @@
  */
 package org.sakaiproject.kernel.api.user;
 
-import com.google.inject.ImplementedBy;
-import com.google.inject.Singleton;
-
-import org.sakaiproject.kernel.user.ProviderUserResolverService;
 
 /**
  * The UserResolverService resolves users.
  */
-@ImplementedBy(ProviderUserResolverService.class)
-@Singleton
 public interface UserResolverService {
 
 

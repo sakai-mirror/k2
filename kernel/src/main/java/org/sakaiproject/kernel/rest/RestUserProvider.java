@@ -39,10 +39,10 @@ import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.JCRIdPwEvidence;
 import org.sakaiproject.kernel.model.UserEnvironmentBean;
-import org.sakaiproject.kernel.user.AnonUser;
 import org.sakaiproject.kernel.user.jcr.JcrAuthenticationResolverProvider;
 import org.sakaiproject.kernel.util.StringUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
+import org.sakaiproject.kernel.util.user.AnonUser;
 import org.sakaiproject.kernel.webapp.RestServiceFaultException;
 
 import java.io.IOException;

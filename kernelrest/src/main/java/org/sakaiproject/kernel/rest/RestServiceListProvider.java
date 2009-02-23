@@ -22,6 +22,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 import org.sakaiproject.kernel.rest.friends.RestFriendsProvider;
+import org.sakaiproject.kernel.rest.me.RestMeProvider;
 import org.sakaiproject.kernel.webapp.Initialisable;
 
 import java.util.List;
@@ -29,21 +30,24 @@ import java.util.List;
 /**
  * 
  */
-public class RestServiceListProvider implements Provider<List<Initialisable>>{
-  
-  
+public class RestServiceListProvider implements Provider<List<Initialisable>> {
+
   private List<Initialisable> list;
 
   /**
    * 
    */
   @Inject
-  public RestServiceListProvider(RestFriendsProvider restFriendsProvider) {
-   list = ImmutableList.of((Initialisable)restFriendsProvider);
+  public RestServiceListProvider(RestFriendsProvider restFriendsProvider,
+      DefaultRestProvider defaultRestProvider, RestMeProvider restMeProvider,
+      RestSnoopProvider restSnoopProvider) {
+    list = ImmutableList.of((Initialisable) restFriendsProvider,
+        defaultRestProvider, restMeProvider, restSnoopProvider);
   }
 
   /**
    * {@inheritDoc}
+   * 
    * @see com.google.inject.Provider#get()
    */
   public List<Initialisable> get() {

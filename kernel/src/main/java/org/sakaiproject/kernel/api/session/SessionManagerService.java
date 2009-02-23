@@ -17,11 +17,6 @@
  */
 package org.sakaiproject.kernel.api.session;
 
-import com.google.inject.ImplementedBy;
-import com.google.inject.Singleton;
-
-import org.sakaiproject.kernel.session.SessionManagerServiceImpl;
-
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,8 +25,6 @@ import javax.servlet.http.HttpSession;
 /**
  * The session manager service manages sessions
  */
-@ImplementedBy(SessionManagerServiceImpl.class)
-@Singleton
 public interface SessionManagerService {
 
 

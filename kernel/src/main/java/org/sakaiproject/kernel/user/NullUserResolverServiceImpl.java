@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.user.UserInfo;
 import org.sakaiproject.kernel.api.user.UserResolverService;
+import org.sakaiproject.kernel.util.user.NullUserInfo;
 
 /**
  * A Null User Resolver Service that just sets eid == uid. Not to be used in

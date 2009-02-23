@@ -34,7 +34,7 @@ import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.site.SiteService;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
-import org.sakaiproject.kernel.authz.simple.SimpleJcrUserEnvironmentResolverService;
+import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.model.SiteBean;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.kernel.webapp.RestServiceFaultException;
@@ -74,14 +74,14 @@ public class RestMySitesProvider implements RestProvider {
   private static final String OUTPUT_PARAM_NAME_TOTALRESULTS = "totalResults";
   private static final String OUTPUT_SITES_KEY = "entry";
 
-  private SimpleJcrUserEnvironmentResolverService simpleJcrUserEnvironmentResolverService;
+  private UserEnvironmentResolverService simpleJcrUserEnvironmentResolverService;
   private SiteService siteService;
 
   @Inject
   public RestMySitesProvider(
       RegistryService registryService,
       SessionManagerService sessionManagerService,
-      SimpleJcrUserEnvironmentResolverService simpleJcrUserEnvironmentResolverService,
+      UserEnvironmentResolverService simpleJcrUserEnvironmentResolverService,
       BeanConverter beanConverter,
       @Named(KernelConstants.JCR_USERENV_BASE) String userEnvironmentBase,
       SiteService siteService) {

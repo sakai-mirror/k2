@@ -18,14 +18,9 @@ package org.sakaiproject.kernel.api.messaging;
 import javax.jms.Message;
 import javax.jms.ObjectMessage;
 
-import org.sakaiproject.kernel.messaging.email.EmailMessagingService;
-
-import com.google.inject.ImplementedBy;
-
 /**
  *
  */
-@ImplementedBy(EmailMessagingService.class) 
 public interface MessagingService {
   /**
    * Send a given message.

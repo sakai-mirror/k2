@@ -17,14 +17,11 @@
  */
 package org.sakaiproject.kernel.api.userenv;
 
-import com.google.inject.ImplementedBy;
-
 import org.sakaiproject.kernel.api.Sealable;
 import org.sakaiproject.kernel.api.authz.SubjectStatement;
 import org.sakaiproject.kernel.api.authz.UserSubjects;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.user.UserInfo;
-import org.sakaiproject.kernel.model.UserEnvironmentBean;
 
 /**
  * The UserEnvironment is a container for the users environment, this will
@@ -37,7 +34,6 @@ import org.sakaiproject.kernel.model.UserEnvironmentBean;
  * will be re-created. The aim here is not to put these objects into session
  * that will need to be replicated.
  */
-@ImplementedBy(UserEnvironmentBean.class)
 public interface UserEnvironment extends Sealable {
 
  

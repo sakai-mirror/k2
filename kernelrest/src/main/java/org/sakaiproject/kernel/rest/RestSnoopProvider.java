@@ -24,6 +24,7 @@ import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.util.rest.RestDescription;
+import org.sakaiproject.kernel.webapp.Initialisable;
 import org.sakaiproject.kernel.webapp.RestServiceFaultException;
 
 import java.util.Enumeration;
@@ -39,7 +40,7 @@ import javax.servlet.http.HttpSession;
 /**
  * 
  */
-public class RestSnoopProvider implements RestProvider {
+public class RestSnoopProvider implements RestProvider, Initialisable {
 
   private static final RestDescription DESCRIPTION = new RestDescription();
 
@@ -67,6 +68,7 @@ public class RestSnoopProvider implements RestProvider {
   }
 
   private BeanConverter beanConverter;
+  private Registry<String, RestProvider>  registry;
 
   /**
    * 
@@ -74,10 +76,24 @@ public class RestSnoopProvider implements RestProvider {
   @Inject
   public RestSnoopProvider(RegistryService registryService,
       BeanConverter beanConverter) {
-    Registry<String, RestProvider> registry = registryService
+    registry = registryService
         .getRegistry(RestProvider.REST_REGISTRY);
     registry.add(this);
     this.beanConverter = beanConverter;
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.webapp.Initialisable#init()
+   */
+  public void init() {
+  }
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.webapp.Initialisable#destroy()
+   */
+  public void destroy() {
+    registry.remove(this);    
   }
 
   /**

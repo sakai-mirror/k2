@@ -18,14 +18,10 @@
 
 package org.sakaiproject.kernel;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.jcr.Credentials;
-import javax.servlet.http.HttpSession;
+import com.google.inject.AbstractModule;
+import com.google.inject.Scopes;
+import com.google.inject.TypeLiteral;
+import com.google.inject.name.Names;
 
 import net.sf.ezmorph.Morpher;
 import net.sf.json.JsonConfig;
@@ -34,47 +30,79 @@ import org.apache.jackrabbit.core.security.AccessManager;
 import org.sakaiproject.kernel.api.ComponentManager;
 import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.Provider;
+import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.ServiceManager;
 import org.sakaiproject.kernel.api.ShutdownService;
+import org.sakaiproject.kernel.api.authz.AuthzResolverService;
+import org.sakaiproject.kernel.api.authz.PermissionQueryService;
 import org.sakaiproject.kernel.api.authz.ReferenceResolverService;
+import org.sakaiproject.kernel.api.authz.SubjectPermissionService;
 import org.sakaiproject.kernel.api.jcr.EventRegistration;
+import org.sakaiproject.kernel.api.jcr.JCRRegistrationService;
 import org.sakaiproject.kernel.api.jcr.JCRService;
+import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
+import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.messaging.MessagingService;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
+import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.site.SiteService;
+import org.sakaiproject.kernel.api.social.FriendsResolverService;
 import org.sakaiproject.kernel.api.user.AuthenticationManagerService;
 import org.sakaiproject.kernel.api.user.AuthenticationResolverService;
+import org.sakaiproject.kernel.api.user.ProfileResolverService;
 import org.sakaiproject.kernel.api.user.UserFactoryService;
+import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
+import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
+import org.sakaiproject.kernel.authz.minimal.MinimalPermissionQueryServiceImpl;
 import org.sakaiproject.kernel.authz.simple.JcrReferenceResolverService;
-import org.sakaiproject.kernel.authz.simple.NullUserEnvironment;
 import org.sakaiproject.kernel.authz.simple.PathReferenceResolverService;
+import org.sakaiproject.kernel.authz.simple.SimpleAuthzResolverService;
+import org.sakaiproject.kernel.authz.simple.SimpleJcrUserEnvironmentResolverService;
+import org.sakaiproject.kernel.authz.simple.SubjectPermissionServiceImpl;
 import org.sakaiproject.kernel.component.core.guice.ServiceProvider;
 import org.sakaiproject.kernel.initialization.InitializationActionProvider;
+import org.sakaiproject.kernel.initialization.KernelInitializationImpl;
 import org.sakaiproject.kernel.internal.api.InitializationAction;
+import org.sakaiproject.kernel.internal.api.KernelInitialization;
 import org.sakaiproject.kernel.jcr.api.JcrContentListener;
 import org.sakaiproject.kernel.jcr.api.internal.StartupAction;
+import org.sakaiproject.kernel.jcr.jackrabbit.JCRRegistrationServiceImpl;
+import org.sakaiproject.kernel.jcr.jackrabbit.JCRServiceImpl;
 import org.sakaiproject.kernel.jcr.jackrabbit.JcrSynchronousContentListenerAdapter;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiAccessManager;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.StartupActionProvider;
+import org.sakaiproject.kernel.jcr.support.JCRNodeFactoryServiceImpl;
+import org.sakaiproject.kernel.memory.CacheManagerServiceImpl;
 import org.sakaiproject.kernel.messaging.JmsSessionProvider;
 import org.sakaiproject.kernel.messaging.email.EmailMessagingService;
 import org.sakaiproject.kernel.messaging.email.MailSessionProvider;
+import org.sakaiproject.kernel.model.UserEnvironmentBean;
+import org.sakaiproject.kernel.registry.RegistryServiceImpl;
 import org.sakaiproject.kernel.serialization.json.BeanJsonLibConfig;
 import org.sakaiproject.kernel.serialization.json.BeanJsonLibConverter;
 import org.sakaiproject.kernel.serialization.json.BeanProcessor;
 import org.sakaiproject.kernel.serialization.json.ValueProcessor;
+import org.sakaiproject.kernel.session.SessionManagerServiceImpl;
 import org.sakaiproject.kernel.site.SiteServiceImpl;
+import org.sakaiproject.kernel.social.FriendsResolverServiceImpl;
 import org.sakaiproject.kernel.user.AuthenticationResolverServiceImpl;
+import org.sakaiproject.kernel.user.ProfileResolverServiceImpl;
 import org.sakaiproject.kernel.user.ProviderAuthenticationResolverService;
+import org.sakaiproject.kernel.user.ProviderUserResolverService;
 import org.sakaiproject.kernel.user.jcr.JcrUserFactoryService;
+import org.sakaiproject.kernel.util.user.NullUserEnvironment;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Scopes;
-import com.google.inject.TypeLiteral;
-import com.google.inject.name.Names;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.jcr.Credentials;
+import javax.servlet.http.HttpSession;
 
 /**
  * A Guice module used to create the kernel component.
@@ -135,10 +163,62 @@ public class KernelModule extends AbstractModule {
         new ServiceProvider<ShutdownService>(serviceManager,
             ShutdownService.class));
 
+    bind(AuthzResolverService.class).to(SimpleAuthzResolverService.class).in(
+        Scopes.SINGLETON);
+
+    bind(PermissionQueryService.class).to(
+        MinimalPermissionQueryServiceImpl.class).in(Scopes.SINGLETON);
+
+    bind(ReferenceResolverService.class).to(PathReferenceResolverService.class)
+        .in(Scopes.SINGLETON);
+
+    bind(SubjectPermissionService.class).to(SubjectPermissionServiceImpl.class)
+        .in(Scopes.SINGLETON);
+
+    bind(JCRNodeFactoryService.class).to(JCRNodeFactoryServiceImpl.class).in(
+        Scopes.SINGLETON);
+
+    bind(JCRRegistrationService.class).to(JCRRegistrationServiceImpl.class).in(
+        Scopes.SINGLETON);
+
+    bind(JCRService.class).to(JCRServiceImpl.class).in(Scopes.SINGLETON);
+
+    bind(CacheManagerService.class).to(CacheManagerServiceImpl.class).in(
+        Scopes.SINGLETON);
+
+    bind(MessagingService.class).to(EmailMessagingService.class).in(
+        Scopes.SINGLETON);
+
+    bind(SessionManagerService.class).to(SessionManagerServiceImpl.class).in(
+        Scopes.SINGLETON);
+
+    bind(FriendsResolverService.class).to(FriendsResolverServiceImpl.class).in(
+        Scopes.SINGLETON);
+
+    bind(ProfileResolverService.class).to(ProfileResolverServiceImpl.class).in(
+        Scopes.SINGLETON);
+
+    bind(UserResolverService.class).to(ProviderUserResolverService.class).in(
+        Scopes.SINGLETON);
+
+    
+    
+    bind(UserEnvironmentResolverService.class).to(
+        SimpleJcrUserEnvironmentResolverService.class).in(Scopes.SINGLETON);
+
+    bind(RegistryService.class).to(RegistryServiceImpl.class).in(
+        Scopes.SINGLETON);
+
+    bind(KernelInitialization.class).to(KernelInitializationImpl.class).in(
+        Scopes.SINGLETON);
+
+    bind(UserEnvironment.class).to(UserEnvironmentBean.class);
+
     // JCR setup
     TypeLiteral<List<StartupAction>> startupActionType = new TypeLiteral<List<StartupAction>>() {
     };
-    bind(startupActionType).toProvider(StartupActionProvider.class).in(Scopes.SINGLETON);
+    bind(startupActionType).toProvider(StartupActionProvider.class).in(
+        Scopes.SINGLETON);
 
     bind(Credentials.class).annotatedWith(
         Names.named(JCRService.NAME_CREDENTIALS)).to(SakaiJCRCredentials.class);
@@ -154,14 +234,15 @@ public class KernelModule extends AbstractModule {
 
     TypeLiteral<Map<String, ReferenceResolverService>> resolverMap = new TypeLiteral<Map<String, ReferenceResolverService>>() {
     };
-    bind(resolverMap).toProvider(ReferenceResolverServiceProvider.class).in(Scopes.SINGLETON);
+    bind(resolverMap).toProvider(ReferenceResolverServiceProvider.class).in(
+        Scopes.SINGLETON);
 
     bind(ReferenceResolverService.class).annotatedWith(
         Names.named(PathReferenceResolverService.DEFAULT_RESOLVER)).to(
         JcrReferenceResolverService.class).in(Scopes.SINGLETON);
 
-    bind(BeanConverter.class).to(
-        BeanJsonLibConverter.class).in(Scopes.SINGLETON);
+    bind(BeanConverter.class).to(BeanJsonLibConverter.class).in(
+        Scopes.SINGLETON);
 
     // site service
     bind(SiteService.class).to(SiteServiceImpl.class).in(Scopes.SINGLETON);
@@ -187,11 +268,13 @@ public class KernelModule extends AbstractModule {
     // event registration
     TypeLiteral<List<EventRegistration>> eventList = new TypeLiteral<List<EventRegistration>>() {
     };
-    bind(eventList).toProvider(EventRegistrationProvider.class).in(Scopes.SINGLETON);
+    bind(eventList).toProvider(EventRegistrationProvider.class).in(
+        Scopes.SINGLETON);
 
     TypeLiteral<List<JcrContentListener>> contentListeners = new TypeLiteral<List<JcrContentListener>>() {
     };
-    bind(contentListeners).toProvider(JcrContentListenerProvider.class).in(Scopes.SINGLETON);
+    bind(contentListeners).toProvider(JcrContentListenerProvider.class).in(
+        Scopes.SINGLETON);
 
     TypeLiteral<List<JcrContentListener>> syncContentListeners = new TypeLiteral<List<JcrContentListener>>() {
     };
@@ -199,25 +282,29 @@ public class KernelModule extends AbstractModule {
         .annotatedWith(
             Names
                 .named(JcrSynchronousContentListenerAdapter.SYNCHRONOUS_LISTENERS))
-        .toProvider(JcrSynchronousContentListenerProvider.class).in(Scopes.SINGLETON);
+        .toProvider(JcrSynchronousContentListenerProvider.class).in(
+            Scopes.SINGLETON);
 
     TypeLiteral<List<ValueProcessor>> valueProcessors = new TypeLiteral<List<ValueProcessor>>() {
     };
-    bind(valueProcessors).toProvider(ValueProcessorsProvider.class).in(Scopes.SINGLETON);
+    bind(valueProcessors).toProvider(ValueProcessorsProvider.class).in(
+        Scopes.SINGLETON);
 
     TypeLiteral<List<BeanProcessor>> beanProcessors = new TypeLiteral<List<BeanProcessor>>() {
     };
-    bind(beanProcessors).toProvider(BeanProcessorProvider.class).in(Scopes.SINGLETON);
+    bind(beanProcessors).toProvider(BeanProcessorProvider.class).in(
+        Scopes.SINGLETON);
 
     TypeLiteral<Map<String, Object>> jsonClassMap = new TypeLiteral<Map<String, Object>>() {
     };
-    bind(jsonClassMap).annotatedWith(
-        Names.named(KernelConstants.JSON_CLASSMAP)).toProvider(
-        JsonClassMapProvider.class).in(Scopes.SINGLETON);
+    bind(jsonClassMap)
+        .annotatedWith(Names.named(KernelConstants.JSON_CLASSMAP)).toProvider(
+            JsonClassMapProvider.class).in(Scopes.SINGLETON);
 
     TypeLiteral<List<Morpher>> jsonMorpherList = new TypeLiteral<List<Morpher>>() {
     };
-    bind(jsonMorpherList).toProvider(JsonMorpherListProvider.class).in(Scopes.SINGLETON);
+    bind(jsonMorpherList).toProvider(JsonMorpherListProvider.class).in(
+        Scopes.SINGLETON);
 
     // bind in the cached version
     bind(AuthenticationResolverService.class).to(
@@ -249,15 +336,12 @@ public class KernelModule extends AbstractModule {
     bind(integrationProviderList).annotatedWith(
         Names.named("forced-internal-1")).toProvider(
         IntegrationProviderListProvider.class).asEagerSingleton();
-    
+
     bind(javax.mail.Session.class).toProvider(MailSessionProvider.class).in(
-            Scopes.SINGLETON);
-    
-    bind(MessagingService.class).to(EmailMessagingService.class).in(Scopes.SINGLETON);
-    
+        Scopes.SINGLETON);
+
     bind(javax.jms.Session.class).toProvider(JmsSessionProvider.class).in(
-            Scopes.SINGLETON);
-    
+        Scopes.SINGLETON);
 
   }
 }

@@ -17,15 +17,11 @@
  */
 package org.sakaiproject.kernel.api.social;
 
-import com.google.inject.ImplementedBy;
-
 import org.sakaiproject.kernel.model.FriendsBean;
-import org.sakaiproject.kernel.social.FriendsResolverServiceImpl;
 
 /**
  * The Friends resolver service resolves a FriendsBean from a user id.
  */
-@ImplementedBy(FriendsResolverServiceImpl.class)
 public interface FriendsResolverService {
 
   

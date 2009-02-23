@@ -17,13 +17,9 @@
  */
 package org.sakaiproject.kernel.api.userenv;
 
-import com.google.inject.ImplementedBy;
-import com.google.inject.Singleton;
-
 import org.sakaiproject.kernel.api.UpdateFailedException;
 import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.user.User;
-import org.sakaiproject.kernel.authz.simple.SimpleJcrUserEnvironmentResolverService;
 
 import java.util.Locale;
 
@@ -31,8 +27,6 @@ import java.util.Locale;
  * The UserEnvironmentResolverService resolves {@link UserEnvironment} based on
  * {@link Session} objects.
  */
-@ImplementedBy(SimpleJcrUserEnvironmentResolverService.class)
-@Singleton
 public interface UserEnvironmentResolverService {
 
 

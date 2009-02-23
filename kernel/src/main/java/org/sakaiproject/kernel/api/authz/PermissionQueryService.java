@@ -17,14 +17,10 @@
  */
 package org.sakaiproject.kernel.api.authz;
 
-import com.google.inject.ImplementedBy;
-
-import org.sakaiproject.kernel.authz.minimal.MinimalPermissionQueryServiceImpl;
 
 /**
  * This service gives the caller access to permission queries by name.
  */
-@ImplementedBy(MinimalPermissionQueryServiceImpl.class)
 public interface PermissionQueryService {
 
   /**

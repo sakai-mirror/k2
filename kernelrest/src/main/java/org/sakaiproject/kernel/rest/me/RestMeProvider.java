@@ -15,7 +15,7 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.rest;
+package org.sakaiproject.kernel.rest.me;
 
 import com.google.inject.Inject;
 
@@ -32,10 +32,12 @@ import org.sakaiproject.kernel.api.user.UserFactoryService;
 import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
-import org.sakaiproject.kernel.authz.simple.NullUserEnvironment;
-import org.sakaiproject.kernel.user.AnonUser;
 import org.sakaiproject.kernel.util.IOUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
+import org.sakaiproject.kernel.util.user.AnonUser;
+import org.sakaiproject.kernel.util.user.NullUserEnvironment;
+import org.sakaiproject.kernel.util.user.UserLocale;
+import org.sakaiproject.kernel.webapp.Initialisable;
 import org.sakaiproject.kernel.webapp.RestServiceFaultException;
 
 import java.io.IOException;
@@ -52,17 +54,17 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Implements the Me service.
  */
-public class RestMeProvider implements RestProvider {
+public class RestMeProvider implements RestProvider, Initialisable {
 
   private static final String ANON_UE_FILE = "/configuration/defaults/anonue.json";
   private static RestDescription DESCRIPTION = new RestDescription();
   private JCRNodeFactoryService jcrNodeFactoryService;
   private SessionManagerService sessionManagerService;
-  private UserLocale userLocale;
   private BeanConverter beanConverter;
   private UserEnvironmentResolverService userEnvironmentResolverService;
   private UserResolverService userResolverService;
   private UserFactoryService userFactoryService;
+  private Registry<String, RestProvider> registry;
 
   @Inject
   public RestMeProvider(
@@ -71,19 +73,31 @@ public class RestMeProvider implements RestProvider {
       JCRNodeFactoryService jcrNodeFactoryService,
       UserResolverService userResolverService,
       UserFactoryService userFactoryService,
-      UserLocale userLocale,
       BeanConverter beanConverter,
       UserEnvironmentResolverService userEnvironmentResolverService) {
-    Registry<String, RestProvider> registry = registryService
+    registry = registryService
         .getRegistry(RestProvider.REST_REGISTRY);
     registry.add(this);
+   
     this.sessionManagerService = sessionManagerService;
     this.jcrNodeFactoryService = jcrNodeFactoryService;
-    this.userLocale = userLocale;
     this.beanConverter = beanConverter;
     this.userEnvironmentResolverService = userEnvironmentResolverService;
     this.userResolverService = userResolverService;
     this.userFactoryService = userFactoryService;
+  }
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.webapp.Initialisable#init()
+   */
+  public void init() {
+  }
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.webapp.Initialisable#destroy()
+   */
+  public void destroy() {
+    registry.remove(this);    
   }
 
   static {
@@ -248,7 +262,7 @@ public class RestMeProvider implements RestProvider {
     response.setContentType(RestProvider.CONTENT_TYPE);
     ServletOutputStream outputStream = response.getOutputStream();
     outputStream.print("{ \"locale\" :");
-    outputStream.print(beanConverter.convertToString(userLocale
+    outputStream.print(beanConverter.convertToString(UserLocale
         .localeToMap(locale)));
     outputStream.print(", \"preferences\" :");
     userEnvironment.setProtected(true);
@@ -273,7 +287,7 @@ public class RestMeProvider implements RestProvider {
     response.setContentType(RestProvider.CONTENT_TYPE);
     ServletOutputStream outputStream = response.getOutputStream();
     outputStream.print("{ \"locale\" :");
-    outputStream.print(beanConverter.convertToString(userLocale
+    outputStream.print(beanConverter.convertToString(UserLocale
         .localeToMap(locale)));
     sendFile("preferences", path, outputStream);
     outputPathPrefix(user.getUuid(), outputStream);
@@ -328,7 +342,7 @@ public class RestMeProvider implements RestProvider {
     response.setContentType(RestProvider.CONTENT_TYPE);
     ServletOutputStream outputStream = response.getOutputStream();
     outputStream.print("{ \"locale\" :");
-    outputStream.print(beanConverter.convertToString(userLocale
+    outputStream.print(beanConverter.convertToString(UserLocale
         .localeToMap(locale)));
     outputStream.print(", \"preferences\" :");
     Map<String, Object> m = new HashMap<String, Object>();
@@ -387,5 +401,6 @@ public class RestMeProvider implements RestProvider {
   public int getPriority() {
     return 0;
   }
+
 
 }

@@ -15,7 +15,7 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.rest.test;
+package org.sakaiproject.kernel.rest.friends.test;
 
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.capture;
@@ -34,8 +34,8 @@ import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.model.FriendsBean;
 import org.sakaiproject.kernel.model.FriendsIndexBean;
 import org.sakaiproject.kernel.rest.friends.RestFriendsProvider;
+import org.sakaiproject.kernel.rest.test.BaseRestUT;
 import org.sakaiproject.kernel.util.StringUtils;
-import org.sakaiproject.kernel.webapp.Initialisable;
 import org.sakaiproject.kernel.webapp.RestServiceFaultException;
 
 import java.io.ByteArrayOutputStream;

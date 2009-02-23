@@ -17,14 +17,10 @@
  */
 package org.sakaiproject.kernel.internal.api;
 
-import com.google.inject.ImplementedBy;
-
-import org.sakaiproject.kernel.initialization.KernelInitializationImpl;
 
 /**
  * This interface defines the kernel initialization operation.
  */
-@ImplementedBy(KernelInitializationImpl.class)
 public interface KernelInitialization {
 
   /**

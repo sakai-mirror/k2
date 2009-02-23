@@ -103,7 +103,7 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
 
     RestPatchProvider rsp = new RestPatchProvider(registryService,
         jcrNodeFactoryService, injector.getInstance(BeanConverter.class),
-        PRIVATE_BASE_PATH);
+        userFactoryService);
     rsp.dispatch(elements, request, response);
 
     String op = baos.toString(StringUtils.UTF8);
@@ -160,7 +160,7 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
 
     RestPatchProvider rsp = new RestPatchProvider(registryService,
         jcrNodeFactoryService, injector.getInstance(BeanConverter.class),
-        PRIVATE_BASE_PATH);
+        userFactoryService);
     rsp.dispatch(elements, request, response);
 
     String op = baos.toString(StringUtils.UTF8);
@@ -210,7 +210,7 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
 
     RestPatchProvider rsp = new RestPatchProvider(registryService,
         jcrNodeFactoryService, injector.getInstance(BeanConverter.class),
-        PRIVATE_BASE_PATH);
+        userFactoryService);
     rsp.dispatch(elements, request, response);
 
     String op = baos.toString(StringUtils.UTF8);
@@ -267,7 +267,7 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
 
     RestPatchProvider rsp = new RestPatchProvider(registryService,
         jcrNodeFactoryService, injector.getInstance(BeanConverter.class),
-        PRIVATE_BASE_PATH);
+        userFactoryService);
     rsp.dispatch(elements, request, response);
 
     String op = baos.toString(StringUtils.UTF8);
@@ -316,7 +316,7 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
 
     RestPatchProvider rsp = new RestPatchProvider(registryService,
         jcrNodeFactoryService, injector.getInstance(BeanConverter.class),
-        PRIVATE_BASE_PATH);
+        userFactoryService);
     try {
       rsp.dispatch(elements, request, response);
       fail();

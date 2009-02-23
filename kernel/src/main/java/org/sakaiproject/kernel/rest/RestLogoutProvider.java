@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
- * Logout Rest Provider
+ * Logout Rest Provider, internal to the kernel
  */
 public class RestLogoutProvider implements RestProvider {
 

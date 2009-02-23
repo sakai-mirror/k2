@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
- * 
+ * Authentication, this is an RestProvider is internal to the kernel.
  */
 public class RestAuthenticationProvider implements RestProvider {
 

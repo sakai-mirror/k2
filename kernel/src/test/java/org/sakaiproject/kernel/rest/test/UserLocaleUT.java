@@ -19,7 +19,7 @@ package org.sakaiproject.kernel.rest.test;
 
 
 import org.junit.Test;
-import org.sakaiproject.kernel.rest.UserLocale;
+import org.sakaiproject.kernel.util.user.UserLocale;
 
 import java.util.Locale;
 
@@ -30,8 +30,8 @@ public class UserLocaleUT {
   
   @Test
   public void testUserLocaleToMap() {
-    UserLocale ul = new UserLocale();
-    System.err.println(ul.localeToMap(new Locale("")));
-    System.err.println(ul.localeToMap(new Locale("en","US")));
+    
+    System.err.println(UserLocale.localeToMap(new Locale("")));
+    System.err.println(UserLocale.localeToMap(new Locale("en","US")));
   }
 }

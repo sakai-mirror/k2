@@ -15,7 +15,7 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.user;
+package org.sakaiproject.kernel.util.user;
 
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.user.UserInfo;

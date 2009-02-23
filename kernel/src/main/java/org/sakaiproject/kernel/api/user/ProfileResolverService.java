@@ -17,15 +17,11 @@
  */
 package org.sakaiproject.kernel.api.user;
 
-import com.google.inject.ImplementedBy;
-
-import org.sakaiproject.kernel.user.ProfileResolverServiceImpl;
 
 
 /**
  * Resolves profiles
  */
-@ImplementedBy(ProfileResolverServiceImpl.class)
 public interface ProfileResolverService {
 
   /**

@@ -32,16 +32,48 @@ import org.sakaiproject.kernel.JsonMorpherListProvider;
 import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.KernelModule;
 import org.sakaiproject.kernel.ValueProcessorsProvider;
+import org.sakaiproject.kernel.api.RegistryService;
+import org.sakaiproject.kernel.api.authz.AuthzResolverService;
+import org.sakaiproject.kernel.api.authz.PermissionQueryService;
+import org.sakaiproject.kernel.api.authz.ReferenceResolverService;
+import org.sakaiproject.kernel.api.authz.SubjectPermissionService;
+import org.sakaiproject.kernel.api.jcr.JCRRegistrationService;
+import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
+import org.sakaiproject.kernel.api.memory.CacheManagerService;
+import org.sakaiproject.kernel.api.messaging.MessagingService;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
+import org.sakaiproject.kernel.api.session.SessionManagerService;
+import org.sakaiproject.kernel.api.social.FriendsResolverService;
+import org.sakaiproject.kernel.api.user.ProfileResolverService;
 import org.sakaiproject.kernel.api.user.UserFactoryService;
+import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
-import org.sakaiproject.kernel.authz.simple.NullUserEnvironment;
+import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
+import org.sakaiproject.kernel.authz.minimal.MinimalPermissionQueryServiceImpl;
+import org.sakaiproject.kernel.authz.simple.PathReferenceResolverService;
+import org.sakaiproject.kernel.authz.simple.SimpleAuthzResolverService;
+import org.sakaiproject.kernel.authz.simple.SimpleJcrUserEnvironmentResolverService;
+import org.sakaiproject.kernel.authz.simple.SubjectPermissionServiceImpl;
+import org.sakaiproject.kernel.initialization.KernelInitializationImpl;
+import org.sakaiproject.kernel.internal.api.KernelInitialization;
+import org.sakaiproject.kernel.jcr.jackrabbit.JCRRegistrationServiceImpl;
+import org.sakaiproject.kernel.jcr.jackrabbit.JCRServiceImpl;
+import org.sakaiproject.kernel.jcr.support.JCRNodeFactoryServiceImpl;
+import org.sakaiproject.kernel.memory.CacheManagerServiceImpl;
+import org.sakaiproject.kernel.messaging.email.EmailMessagingService;
+import org.sakaiproject.kernel.model.UserEnvironmentBean;
+import org.sakaiproject.kernel.registry.RegistryServiceImpl;
 import org.sakaiproject.kernel.serialization.json.BeanJsonLibConfig;
 import org.sakaiproject.kernel.serialization.json.BeanJsonLibConverter;
 import org.sakaiproject.kernel.serialization.json.BeanProcessor;
 import org.sakaiproject.kernel.serialization.json.ValueProcessor;
+import org.sakaiproject.kernel.session.SessionManagerServiceImpl;
+import org.sakaiproject.kernel.social.FriendsResolverServiceImpl;
+import org.sakaiproject.kernel.user.ProfileResolverServiceImpl;
+import org.sakaiproject.kernel.user.ProviderUserResolverService;
 import org.sakaiproject.kernel.util.PropertiesLoader;
+import org.sakaiproject.kernel.util.user.NullUserEnvironment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -82,6 +114,34 @@ public class ModelModule extends AbstractModule {
   protected void configure() {
     Names.bindProperties(this.binder(), properties);
 
+    
+
+
+    bind(PermissionQueryService.class).to(
+        MinimalPermissionQueryServiceImpl.class).in(Scopes.SINGLETON);
+
+
+    bind(SubjectPermissionService.class).to(SubjectPermissionServiceImpl.class)
+        .in(Scopes.SINGLETON);
+
+
+    bind(CacheManagerService.class).to(CacheManagerServiceImpl.class).in(
+        Scopes.SINGLETON);
+
+
+    bind(UserResolverService.class).to(ProviderUserResolverService.class).in(
+        Scopes.SINGLETON);
+
+    bind(UserEnvironment.class).to(UserEnvironmentBean.class).in(
+        Scopes.SINGLETON);
+
+    bind(UserEnvironmentResolverService.class).to(
+        SimpleJcrUserEnvironmentResolverService.class).in(Scopes.SINGLETON);
+
+    bind(RegistryService.class).to(RegistryServiceImpl.class).in(
+        Scopes.SINGLETON);
+
+ 
     bind(BeanConverter.class).to(
         BeanJsonLibConverter.class).in(Scopes.SINGLETON);
 

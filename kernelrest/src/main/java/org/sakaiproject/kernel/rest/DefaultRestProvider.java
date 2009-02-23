@@ -23,6 +23,7 @@ import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.util.rest.RestDescription;
+import org.sakaiproject.kernel.webapp.Initialisable;
 import org.sakaiproject.kernel.webapp.RestServiceFaultException;
 
 import java.util.Map;
@@ -34,7 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * 
  */
-public class DefaultRestProvider implements RestProvider {
+public class DefaultRestProvider implements RestProvider, Initialisable {
 
   private Registry<String, RestProvider> registry;
 
@@ -45,6 +46,19 @@ public class DefaultRestProvider implements RestProvider {
   public DefaultRestProvider(RegistryService registryService) {
     registry = registryService.getRegistry(REST_REGISTRY);
     registry.add(this);
+  }
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.webapp.Initialisable#init()
+   */
+  public void init() {
+  }
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.webapp.Initialisable#destroy()
+   */
+  public void destroy() {
+    registry.remove(this);    
   }
 
   /**
@@ -107,5 +121,6 @@ public class DefaultRestProvider implements RestProvider {
   public int getPriority() {
     return 0;
   }
+
 
 }

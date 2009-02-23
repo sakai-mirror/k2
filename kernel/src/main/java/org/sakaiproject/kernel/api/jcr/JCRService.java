@@ -18,11 +18,6 @@
 
 package org.sakaiproject.kernel.api.jcr;
 
-import com.google.inject.ImplementedBy;
-import com.google.inject.Singleton;
-
-import org.sakaiproject.kernel.jcr.jackrabbit.JCRServiceImpl;
-
 import javax.jcr.LoginException;
 import javax.jcr.Node;
 import javax.jcr.Repository;
@@ -34,8 +29,6 @@ import javax.jcr.observation.ObservationManager;
  * The base JCR Service, containing the methods necessary to interact with a JCR
  * implementation.
  */
-@ImplementedBy(JCRServiceImpl.class)
-@Singleton
 public interface JCRService {
   public static final String NT_FOLDER = "nt:folder";
 

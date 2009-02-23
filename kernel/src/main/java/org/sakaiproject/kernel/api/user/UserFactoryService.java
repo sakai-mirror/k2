@@ -85,5 +85,20 @@ public interface UserFactoryService {
    * @return
    */
   String getUserProfileTempate(String userType);
+  
+  
+  /**
+   * Get the users private path that will not be shared with other users.
+   * @param uuid the user UUID
+   * @return the absolute path into storage.
+   */
+  String getUserPrivatePath(String uuid);
+  
+  /**
+   * Get the users shared private path that may be shared with other users.
+   * @param uuid the user UUID
+   * @return the absolute path into storage.
+   */
+  String getUserSharedPrivatePath(String uuid);
 
 }

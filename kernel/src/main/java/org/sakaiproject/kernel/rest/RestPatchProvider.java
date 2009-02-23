@@ -19,17 +19,15 @@
 package org.sakaiproject.kernel.rest;
 
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 
-import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
+import org.sakaiproject.kernel.api.user.UserFactoryService;
 import org.sakaiproject.kernel.util.IOUtils;
-import org.sakaiproject.kernel.util.PathUtils;
 import org.sakaiproject.kernel.util.StringUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.kernel.webapp.RestServiceFaultException;
@@ -151,20 +149,20 @@ public class RestPatchProvider implements RestProvider {
 
   private BeanConverter beanConverter;
 
-  private String privateSharedPathBase;
+  private UserFactoryService userFactoryService;
 
   @Inject
   public RestPatchProvider(
       RegistryService registryService,
       JCRNodeFactoryService jcrNodeFactoryService,
       BeanConverter beanConverter,
-      @Named(KernelConstants.PRIVATE_SHARED_PATH_BASE) String privateSharedPathBase) {
+      UserFactoryService userFactoryService) {
     Registry<String, RestProvider> registry = registryService
         .getRegistry(RestProvider.REST_REGISTRY);
     registry.add(this);
     this.jcrNodeFactoryService = jcrNodeFactoryService;
     this.beanConverter = beanConverter;
-    this.privateSharedPathBase = privateSharedPathBase;
+    this.userFactoryService = userFactoryService;
   }
 
   /**
@@ -242,7 +240,7 @@ public class RestPatchProvider implements RestProvider {
     String user = request.getRemoteUser();
 
     String path = StringUtils.join(elements, 2, '/');
-    path = privateSharedPathBase + PathUtils.getUserPrefix(user) + path;
+    path = userFactoryService.getUserSharedPrivatePath(user) + path;
     return saveProperties(path, new MapParams(request));
   }
 

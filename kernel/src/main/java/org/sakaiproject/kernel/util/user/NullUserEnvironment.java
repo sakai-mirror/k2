@@ -15,7 +15,7 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.authz.simple;
+package org.sakaiproject.kernel.util.user;
 
 import org.sakaiproject.kernel.api.authz.SubjectPermissions;
 import org.sakaiproject.kernel.api.authz.SubjectStatement;
@@ -23,8 +23,6 @@ import org.sakaiproject.kernel.api.authz.UserSubjects;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.user.UserInfo;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
-import org.sakaiproject.kernel.user.AnonUser;
-import org.sakaiproject.kernel.user.NullUserInfo;
 
 /**
  * 

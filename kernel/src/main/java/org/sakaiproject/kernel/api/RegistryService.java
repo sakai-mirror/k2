@@ -17,16 +17,10 @@
  */
 package org.sakaiproject.kernel.api;
 
-import com.google.inject.ImplementedBy;
-import com.google.inject.Singleton;
-
-import org.sakaiproject.kernel.registry.RegistryServiceImpl;
 
 /**
  * The registry service manages registries that are used to register providers
  */
-@ImplementedBy(RegistryServiceImpl.class)
-@Singleton
 public interface RegistryService {
   /**
    * @param type
