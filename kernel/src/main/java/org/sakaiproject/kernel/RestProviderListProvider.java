@@ -44,7 +44,7 @@ public class RestProviderListProvider implements Provider<List<RestProvider>> {
   @Inject
   public RestProviderListProvider(
       RestAuthenticationProvider restAuthenticationProvider,
-       RestSiteProvider siteProvider, 
+       RestSiteProvider restSiteProvider, 
        RestLogoutProvider restLogoutProvider,
       RestUserProvider restUserProvider,
       RestMySitesProvider restMySitesProvider,
@@ -56,6 +56,7 @@ public class RestProviderListProvider implements Provider<List<RestProvider>> {
     list.add(restMySitesProvider);
     list.add(restPatchProvider);
     list.add(restSearchProvider);
+    list.add(restSiteProvider);
   }
 
   /**
