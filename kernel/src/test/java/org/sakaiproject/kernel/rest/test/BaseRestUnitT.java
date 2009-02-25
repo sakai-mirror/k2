@@ -25,7 +25,6 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.reset;
 import static org.easymock.EasyMock.verify;
 
-import org.apache.derby.iapi.util.StringUtil;
 import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.authz.SubjectPermissionService;
@@ -48,7 +47,6 @@ import org.sakaiproject.kernel.webapp.test.InternalUser;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import javax.persistence.EntityManager;
