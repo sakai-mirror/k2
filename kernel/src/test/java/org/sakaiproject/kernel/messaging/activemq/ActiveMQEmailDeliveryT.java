@@ -1,28 +1,5 @@
 package org.sakaiproject.kernel.messaging.activemq;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-
-import javax.jms.Connection;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageListener;
-import javax.jms.MessageProducer;
-import javax.jms.ObjectMessage;
-import javax.jms.Queue;
-import javax.jms.Session;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.Part;
-import javax.mail.Transport;
-import javax.mail.internet.MimeMessage;
-
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,6 +15,28 @@ import org.sakaiproject.kernel.messaging.email.commons.MultiPartEmail;
 import org.sakaiproject.kernel.messaging.email.commons.SimpleEmail;
 import org.subethamail.wiser.Wiser;
 import org.subethamail.wiser.WiserMessage;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
+import javax.jms.Connection;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.MessageListener;
+import javax.jms.MessageProducer;
+import javax.jms.ObjectMessage;
+import javax.jms.Queue;
+import javax.jms.Session;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.Part;
+import javax.mail.Transport;
+import javax.mail.internet.MimeMessage;
 
 public class ActiveMQEmailDeliveryT {
   private static final Log LOG = LogFactory
@@ -117,16 +116,15 @@ public class ActiveMQEmailDeliveryT {
     MessageProducer producer = null;
     Session clientSession = null;
     Session listenerSession = null;
-    ObjectMessage message;
-    boolean received = false;
     // it is not necessary to use the Email interface here
     // Email is used here just to allow for multiple types of emails to
     // occupy
     // the same varaible. SimpleEmail etc can each be used directly.
     List<Email> emails = new ArrayList<Email>();
-    emails.add(new SimpleEmail());
-    emails.add(new MultiPartEmail());
-    emails.add(new HtmlEmail());
+    EmailMessagingService messagingService = new EmailMessagingService(vmURL);
+    emails.add(new SimpleEmail(messagingService));
+    emails.add(new MultiPartEmail(messagingService));
+    emails.add(new HtmlEmail(messagingService));
     try {
 
       listenerSession = listenerConn.createSession(false,
@@ -351,7 +349,6 @@ public class ActiveMQEmailDeliveryT {
           // avoiding selectors
           ObjectMessage m = (ObjectMessage) message;
 
-          Destination replyTo = null;
           String content = null;
           try {
             content = (String) m.getObject();
