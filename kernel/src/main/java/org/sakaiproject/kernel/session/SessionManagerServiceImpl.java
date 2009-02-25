@@ -51,6 +51,7 @@ public class SessionManagerServiceImpl implements SessionManagerService {
   private CacheManagerService cacheManagerService;
   private Map<String, HttpSession> sessionMap;
   private String cookieName;
+  private Session anonSession = new AnonSession();
 
   @Inject
   public SessionManagerServiceImpl(CacheManagerService cacheManagerService,
@@ -72,11 +73,14 @@ public class SessionManagerServiceImpl implements SessionManagerService {
     SakaiServletRequest request = (SakaiServletRequest) requestScope
         .get(CURRENT_REQUEST);
     if (request == null) {
+      return anonSession;
+      /*
       throw new RuntimeException(
           "No Request Object has been bound to the request thread\n"
               + "   Please ensure that the Sakai Request Filter is active in web.xml\n"
               + "   or if in a test, perform a SessionManager.bindRequest as part of\n"
               + "   the invocation of the test.");
+              */
     }
     return request.getSakaiSession();
   }

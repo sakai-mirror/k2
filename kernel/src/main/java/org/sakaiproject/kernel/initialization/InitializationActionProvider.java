@@ -17,19 +17,22 @@
  */
 package org.sakaiproject.kernel.initialization;
 
+import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 import org.sakaiproject.kernel.internal.api.InitializationAction;
+import org.sakaiproject.kernel.jcr.jackrabbit.KernelSessionStart;
+import org.sakaiproject.kernel.jcr.jackrabbit.KernelSessionStop;
+import org.sakaiproject.kernel.jcr.jackrabbit.RepositoryBuilder;
 import org.sakaiproject.kernel.jcr.jackrabbit.RepositoryInitializationAction;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This is a list of initialization actions to perform when the kernel starts. To
- * add more, edit this file (which is configuration) and add more actions to the
- * constructor.
+ * This is a list of initialization actions to perform when the kernel starts.
+ * To add more, edit this file (which is configuration) and add more actions to
+ * the constructor.
  */
 public class InitializationActionProvider implements
     Provider<List<InitializationAction>> {
@@ -43,10 +46,12 @@ public class InitializationActionProvider implements
    * create the list of actions for the provider.
    */
   @Inject
-  public InitializationActionProvider(
-      RepositoryInitializationAction repositoryInitialization) {
-    actions = new ArrayList<InitializationAction>();
-    actions.add(repositoryInitialization);
+  public InitializationActionProvider(RepositoryBuilder repositoryBuilder,
+      KernelSessionStart kernelSessionStart,
+      RepositoryInitializationAction repositoryInitialization,
+      KernelSessionStop kernelSessionStop) {
+    actions = ImmutableList.of(repositoryBuilder, kernelSessionStart,
+        repositoryInitialization, kernelSessionStop);
   }
 
   /**

@@ -129,4 +129,11 @@ public interface JCRService {
    */
   ObservationManager getObservationManager();
 
+  /**
+   * Login a system user
+   * @throws RepositoryException 
+   * @throws LoginException 
+   */
+  Session loginSystem() throws LoginException, RepositoryException;
+
 }

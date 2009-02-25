@@ -22,6 +22,8 @@ import net.sf.ehcache.Element;
 
 import org.sakaiproject.kernel.api.memory.Cache;
 
+import java.util.List;
+
 /**
  * 
  */
@@ -108,6 +110,23 @@ public class CacheImpl<V> implements Cache<V> {
    */
   public void remove(String key) {
     cache.remove(key);
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.memory.Cache#removeChildren(java.lang.String)
+   */
+  public void removeChildren(String key) {
+    cache.remove(key);
+    if ( !key.endsWith("/") ) {
+      key = key + "/";
+    }
+    List<?> keys = cache.getKeys();
+    for ( Object k : keys) {
+      if ( ((String) k).startsWith(key) ) {
+        cache.remove(k);
+      }
+    }
   }
 
 }

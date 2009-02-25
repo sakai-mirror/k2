@@ -24,8 +24,10 @@ import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.user.Authentication;
 import org.sakaiproject.kernel.api.user.AuthenticationResolverService;
+import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.jcr.jackrabbit.JCRAnonymousPrincipal;
 import org.sakaiproject.kernel.jcr.jackrabbit.JCRSystemPrincipal;
+import org.sakaiproject.kernel.util.user.AnonUser;
 
 import java.security.Principal;
 import java.util.HashSet;
@@ -120,11 +122,16 @@ public class SakaiLoginModule implements LoginModule {
         }
       } else {
         // authenticated via Session or Sakai Wrapper
-        String userId = sessionManagerService.getCurrentSession().getUser().getUuid();
-        if (userId == null) {
+        User user = sessionManagerService.getCurrentSession().getUser();
+        if (user == null || user instanceof AnonUser  ) {
           principals.add(new JCRAnonymousPrincipal(SAKAI_ANON_USER));
         } else {
-          principals.add(new SakaiUserPrincipalImpl(userId));
+          String userId = user.getUuid();
+          if ( userId == null ) {
+            principals.add(new JCRAnonymousPrincipal(SAKAI_ANON_USER));       
+          } else {
+            principals.add(new SakaiUserPrincipalImpl(userId));
+          }
         }
         authenticated = true;
       }

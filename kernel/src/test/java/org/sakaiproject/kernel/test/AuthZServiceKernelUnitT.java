@@ -219,7 +219,7 @@ public class AuthZServiceKernelUnitT extends KernelIntegrationBase {
     // create an ACL at the parent that will allow those read permission in
     // group1:maintain to perform httpget, make it apply ot all subnodes
     SubjectStatement subjectStatement = new JcrSubjectStatement(
-        SubjectType.GROUP, "group1:maintain", "read");
+        SubjectType.GR, "group1:maintain", "read");
     AccessControlStatement grantReadToHttpGetInheritable = new JcrAccessControlStatementImpl(
         subjectStatement, "httpget", true, true);
     parent.addAccessControlStatement(grantReadToHttpGetInheritable);

@@ -18,6 +18,7 @@
 package org.sakaiproject.kernel.api.userenv;
 
 import org.sakaiproject.kernel.api.Sealable;
+import org.sakaiproject.kernel.api.authz.ReferencedObject;
 import org.sakaiproject.kernel.api.authz.SubjectStatement;
 import org.sakaiproject.kernel.api.authz.UserSubjects;
 import org.sakaiproject.kernel.api.user.User;
@@ -43,9 +44,11 @@ public interface UserEnvironment extends Sealable {
    * 
    * @param subject
    *          the subject statement
+   * @param referencedObject
+   *          the object being evaluated
    * @return true is there is a match
    */
-  boolean matches(SubjectStatement subject);
+  boolean matches(ReferencedObject referencedObject, SubjectStatement subject);
 
   /**
    * @return true if the UserEnvironment has expired and should not be used.

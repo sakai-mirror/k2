@@ -19,6 +19,7 @@ package org.sakaiproject.kernel.authz.simple;
 
 import com.google.inject.Inject;
 
+import org.sakaiproject.kernel.api.authz.AuthzResolverService;
 import org.sakaiproject.kernel.api.authz.ReferenceResolverService;
 import org.sakaiproject.kernel.api.authz.ReferencedObject;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
@@ -35,12 +36,14 @@ public class JcrReferenceResolverService implements ReferenceResolverService{
   
   
   private JCRNodeFactoryService jcrNodeFactoryService;
+  private AuthzResolverService authzResolverService;
   /**
    * 
    */
   @Inject
-  public JcrReferenceResolverService(JCRNodeFactoryService jcrNodeFactoryService) {
+  public JcrReferenceResolverService(JCRNodeFactoryService jcrNodeFactoryService, AuthzResolverService authzResolverService) {
     this.jcrNodeFactoryService = jcrNodeFactoryService;
+    this.authzResolverService = authzResolverService;
   }
   /**
    * {@inheritDoc}
@@ -52,7 +55,7 @@ public class JcrReferenceResolverService implements ReferenceResolverService{
       if ( n == null ) {
         return new EmptyReferenceObject(resourceReference,null,this);
       }
-      return new JcrReferenceObject(n);
+      return new JcrReferenceObject(n, authzResolverService);
     } catch (RepositoryException e) {
       return new EmptyReferenceObject(resourceReference,e,this);
     } catch (JCRNodeFactoryServiceException e) {

@@ -24,7 +24,6 @@ import org.sakaiproject.kernel.api.authz.ReferencedObject;
 import org.sakaiproject.kernel.util.PathUtils;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -63,7 +62,7 @@ public class EmptyReferenceObject implements ReferencedObject {
    * 
    * @see org.sakaiproject.kernel.api.authz.ReferencedObject#getAccessControlList()
    */
-  public Collection<? extends AccessControlStatement> getAccessControlList() {
+  public List<AccessControlStatement> getAccessControlList() {
     return acl;
   }
 
@@ -72,7 +71,7 @@ public class EmptyReferenceObject implements ReferencedObject {
    * 
    * @see org.sakaiproject.kernel.api.authz.ReferencedObject#getInheritableAccessControlList()
    */
-  public Collection<? extends AccessControlStatement> getInheritableAccessControlList() {
+  public List<AccessControlStatement> getInheritableAccessControlList() {
     return acl;
   }
 
@@ -111,7 +110,8 @@ public class EmptyReferenceObject implements ReferencedObject {
   public void addAccessControlStatement(AccessControlStatement newAcs)
       throws UpdateFailedException {
     throw new UpdateFailedException(
-        "Reference Object is an empty object and as such has no acl :"+resourceReference);
+        "Reference Object is an empty object and as such has no acl :"
+            + resourceReference);
   }
 
   /**
@@ -122,7 +122,8 @@ public class EmptyReferenceObject implements ReferencedObject {
   public void removeAccessControlStatement(AccessControlStatement removeAcs)
       throws UpdateFailedException {
     throw new UpdateFailedException(
-        "Reference Object is an empty object and as such has no acl :"+resourceReference);
+        "Reference Object is an empty object and as such has no acl :"
+            + resourceReference);
   }
 
   /**
@@ -131,5 +132,33 @@ public class EmptyReferenceObject implements ReferencedObject {
   public Exception getCause() {
     return cause;
   }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.kernel.api.authz.ReferencedObject#setAccessControlList(java.util.List)
+   */
+  public void setAccessControlList(List<AccessControlStatement> value) {
+    throw new UpdateFailedException(
+        "Reference Object is an empty object and as such has no acl :"
+            + resourceReference);
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.authz.ReferencedObject#getOwner()
+   */
+  public String getOwner() {
+    return null;
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.authz.ReferencedObject#isPermanent()
+   */
+  public boolean isPermanent() {
+    return false;
+  }
+  
 
 }

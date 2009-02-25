@@ -37,40 +37,24 @@ import org.sakaiproject.kernel.api.authz.AuthzResolverService;
 import org.sakaiproject.kernel.api.authz.PermissionQueryService;
 import org.sakaiproject.kernel.api.authz.ReferenceResolverService;
 import org.sakaiproject.kernel.api.authz.SubjectPermissionService;
-import org.sakaiproject.kernel.api.jcr.JCRRegistrationService;
-import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
-import org.sakaiproject.kernel.api.messaging.MessagingService;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
-import org.sakaiproject.kernel.api.social.FriendsResolverService;
-import org.sakaiproject.kernel.api.user.ProfileResolverService;
 import org.sakaiproject.kernel.api.user.UserFactoryService;
 import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.authz.minimal.MinimalPermissionQueryServiceImpl;
-import org.sakaiproject.kernel.authz.simple.PathReferenceResolverService;
-import org.sakaiproject.kernel.authz.simple.SimpleAuthzResolverService;
 import org.sakaiproject.kernel.authz.simple.SimpleJcrUserEnvironmentResolverService;
 import org.sakaiproject.kernel.authz.simple.SubjectPermissionServiceImpl;
-import org.sakaiproject.kernel.initialization.KernelInitializationImpl;
-import org.sakaiproject.kernel.internal.api.KernelInitialization;
-import org.sakaiproject.kernel.jcr.jackrabbit.JCRRegistrationServiceImpl;
-import org.sakaiproject.kernel.jcr.jackrabbit.JCRServiceImpl;
-import org.sakaiproject.kernel.jcr.support.JCRNodeFactoryServiceImpl;
 import org.sakaiproject.kernel.memory.CacheManagerServiceImpl;
-import org.sakaiproject.kernel.messaging.email.EmailMessagingService;
 import org.sakaiproject.kernel.model.UserEnvironmentBean;
 import org.sakaiproject.kernel.registry.RegistryServiceImpl;
 import org.sakaiproject.kernel.serialization.json.BeanJsonLibConfig;
 import org.sakaiproject.kernel.serialization.json.BeanJsonLibConverter;
 import org.sakaiproject.kernel.serialization.json.BeanProcessor;
 import org.sakaiproject.kernel.serialization.json.ValueProcessor;
-import org.sakaiproject.kernel.session.SessionManagerServiceImpl;
-import org.sakaiproject.kernel.social.FriendsResolverServiceImpl;
-import org.sakaiproject.kernel.user.ProfileResolverServiceImpl;
 import org.sakaiproject.kernel.user.ProviderUserResolverService;
 import org.sakaiproject.kernel.util.PropertiesLoader;
 import org.sakaiproject.kernel.util.user.NullUserEnvironment;
@@ -182,6 +166,10 @@ public class ModelModule extends AbstractModule {
     // add some mocks
     bind(JCRNodeFactoryService.class).toInstance(EasyMock.createMock(JCRNodeFactoryService.class));
     bind(UserFactoryService.class).toInstance(EasyMock.createMock(UserFactoryService.class));
+    bind(AuthzResolverService.class).toInstance(EasyMock.createMock(AuthzResolverService.class));
+    bind(ReferenceResolverService.class).toInstance(EasyMock.createMock(ReferenceResolverService.class));
+    bind(SessionManagerService.class).toInstance(EasyMock.createMock(SessionManagerService.class));
+  
 
   }
 }

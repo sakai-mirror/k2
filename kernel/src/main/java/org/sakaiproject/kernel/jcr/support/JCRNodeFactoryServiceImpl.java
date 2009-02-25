@@ -23,6 +23,7 @@ import com.google.inject.Singleton;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.api.authz.PermissionDeniedException;
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
@@ -31,6 +32,7 @@ import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import java.io.InputStream;
 import java.util.GregorianCalendar;
 
+import javax.jcr.AccessDeniedException;
 import javax.jcr.Item;
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
@@ -58,7 +60,8 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
     this.jcrService = jcrService;
   }
 
-  private void populateFile(Node node, String mimeType) throws RepositoryException {
+  private void populateFile(Node node, String mimeType)
+      throws RepositoryException {
     // JCR Types
     if (jcrService.needsMixin(node, JCRConstants.MIX_REFERENCEABLE)) {
       node.addMixin(JCRConstants.MIX_REFERENCEABLE);
@@ -76,7 +79,8 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
         JCRConstants.NT_UNSTRUCTURED);
     resource
         .setProperty(JCRConstants.JCR_LASTMODIFIED, new GregorianCalendar());
-    resource.setProperty(JCRConstants.JCR_MIMETYPE, mimeType==null?"application/octet-stream":mimeType);
+    resource.setProperty(JCRConstants.JCR_MIMETYPE,
+        mimeType == null ? "application/octet-stream" : mimeType);
     resource.setProperty(JCRConstants.JCR_DATA, "");
     resource.setProperty(JCRConstants.JCR_ENCODING, "UTF-8");
 
@@ -109,7 +113,8 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
    * org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService#createFile
    * (java.lang.String)
    */
-  public Node createFile(String filePath, String mimeType) throws JCRNodeFactoryServiceException {
+  public Node createFile(String filePath, String mimeType)
+      throws JCRNodeFactoryServiceException {
     return createNode(filePath, mimeType, JCRConstants.NT_FILE);
   }
 
@@ -131,7 +136,7 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
    * have properties nt:files have a nt:resource subnode
    * 
    * @param id
-   * @param string 
+   * @param string
    * @param collection
    * @return
    * @throws NodeFactoryServiceException
@@ -205,7 +210,7 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
                   + " to " + currentNode.getPath());
             Node newNode = currentNode.addNode(pathElements[i],
                 JCRConstants.NT_FILE);
-            populateFile(newNode,mimeType);
+            populateFile(newNode, mimeType);
             currentNode.save();
             currentNode = newNode;
             if (log.isDebugEnabled())
@@ -229,6 +234,8 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
             + " got " + node.getPath());
       }
 
+    } catch (AccessDeniedException ax) {
+      throw new PermissionDeniedException(ax.getMessage(), ax);
     } catch (RepositoryException rex) {
       log.warn("Unspecified Repository Failiure ", rex);
       log.error("Unspecified Repository Failiure " + rex.getMessage());
@@ -296,22 +303,30 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
 
   public InputStream getInputStream(String id) throws RepositoryException,
       JCRNodeFactoryServiceException {
-    Session session = jcrService.getSession();
-    Node n = getNodeFromSession(session, id);
-    if (n != null) {
-      Node contentNode = n.getNode(JCRConstants.JCR_CONTENT);
-      Property property = contentNode.getProperty(JCRConstants.JCR_DATA);
-      return property.getStream();
+    try {
+      Session session = jcrService.getSession();
+      Node n = getNodeFromSession(session, id);
+      if (n != null) {
+        Node contentNode = n.getNode(JCRConstants.JCR_CONTENT);
+        Property property = contentNode.getProperty(JCRConstants.JCR_DATA);
+        return property.getStream();
+      }
+      throw new JCRNodeFactoryServiceException(
+          "Failed to open input stream for node, " + id
+              + " as it does not exist");
+    } catch (AccessDeniedException ax) {
+      throw new PermissionDeniedException(ax.getMessage(), ax);
     }
-    throw new JCRNodeFactoryServiceException(
-        "Failed to open input stream for node, " + id + " as it does not exist");
   }
 
   public Node getNode(String id) throws RepositoryException,
       JCRNodeFactoryServiceException {
-    Session session = jcrService.getSession();
-    return getNodeFromSession(session, id);
+    try {
+      Session session = jcrService.getSession();
+      return getNodeFromSession(session, id);
+    } catch (AccessDeniedException ax) {
+      throw new PermissionDeniedException(ax.getMessage(), ax);
+    }
   }
-
 
 }

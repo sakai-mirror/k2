@@ -25,6 +25,7 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.reset;
 import static org.easymock.EasyMock.verify;
 
+import org.apache.derby.iapi.util.StringUtil;
 import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.authz.SubjectPermissionService;
@@ -40,11 +41,15 @@ import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.user.UserFactoryService;
 import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
+import org.sakaiproject.kernel.util.StringUtils;
 import org.sakaiproject.kernel.webapp.SakaiServletRequest;
 import org.sakaiproject.kernel.webapp.test.InternalUser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import javax.persistence.EntityManager;
 import javax.servlet.ServletOutputStream;
@@ -74,6 +79,7 @@ public class BaseRestUnitT {
   protected ProfileResolverService profileResolverService;
   protected EntityManager entityManager;
   protected FriendsResolverService friendsResolverService;
+  private String sessionID;
 
 
 
@@ -128,6 +134,16 @@ public class BaseRestUnitT {
 
   }
   
+  public void newSession() {
+    try {
+      sessionID = StringUtils.sha1Hash(String.valueOf(System.currentTimeMillis()));
+    } catch (UnsupportedEncodingException e) {
+      sessionID = String.valueOf(System.currentTimeMillis());
+    } catch (NoSuchAlgorithmException e) {
+      sessionID = String.valueOf(System.currentTimeMillis());
+    }
+  }
+  
   /**
    * Setup mocks for any time execution.
    * 
@@ -135,7 +151,7 @@ public class BaseRestUnitT {
    * @throws IOException
    * 
    */
-  public void setupAnyTimes(String username, String sessionID,
+  public void setupAnyTimes(String username, 
       final ByteArrayOutputStream baos) throws IOException {
     User user = new InternalUser(username); // this is a pre-loaded user.
 

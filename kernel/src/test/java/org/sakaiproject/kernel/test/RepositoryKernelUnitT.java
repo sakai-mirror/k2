@@ -65,7 +65,7 @@ public class RepositoryKernelUnitT extends KernelIntegrationBase {
     JCRNodeFactoryService jcrNodeFactoryService = kernel
         .getService(JCRNodeFactoryService.class);
     JCRService jcrService = kernel.getService(JCRService.class);
-    Session session = jcrService.login();
+    Session session = jcrService.loginSystem();
     jcrNodeFactoryService.createFile("/test/test.txt",
         RestProvider.CONTENT_TYPE);
     session.save();

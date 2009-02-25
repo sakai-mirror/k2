@@ -25,59 +25,50 @@ import java.security.Principal;
  * A system principal is a low level principal that gives the session the
  * ability to do anything unchecked.
  * 
- * @author ieb
  */
-public class JCRSystemPrincipal implements Principal, Serializable
-{
+public class JCRSystemPrincipal implements Principal, Serializable {
 
-	/**
+  /**
 	 * 
 	 */
-	private static final long serialVersionUID = 6346392695482119713L;
+  private static final long serialVersionUID = 6346392695482119713L;
 
-	private String name;
+  private String name;
 
-	/**
-	 * Creates a <code>SystemPrincipal</code>.
-	 */
-	public JCRSystemPrincipal(String name)
-	{
-		this.name = name;
-	}
+  /**
+   * Creates a <code>SystemPrincipal</code>.
+   */
+  public JCRSystemPrincipal(String name) {
+    this.name = name;
+  }
 
-	@Override
-	public String toString()
-	{
-		return ("SystemPrincipal");
-	}
+  @Override
+  public String toString() {
+    return ("SystemPrincipal");
+  }
 
-	@Override
-	public boolean equals(Object obj)
-	{
-		if (this == obj)
-		{
-			return true;
-		}
-		if (obj instanceof JCRSystemPrincipal)
-		{
-			return true;
-		}
-		return false;
-	}
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj instanceof JCRSystemPrincipal) {
+      return true;
+    }
+    return false;
+  }
 
-	@Override
-	public int hashCode()
-	{
-		return name.hashCode();
-	}
+  @Override
+  public int hashCode() {
+    return name.hashCode();
+  }
 
-	// ------------------------------------------------------------< Principal >
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getName()
-	{
-		return name;
-	}
+  // ------------------------------------------------------------< Principal >
+  /**
+   * {@inheritDoc}
+   */
+  public String getName() {
+    return name;
+  }
 
 }

@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.UpdateFailedException;
+import org.sakaiproject.kernel.api.authz.AuthzResolverService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.memory.Cache;
@@ -69,20 +70,23 @@ public class SimpleJcrUserEnvironmentResolverService implements
   private Cache<UserEnvironment> cache;
   private UserFactoryService userFactoryService;
 
+  private AuthzResolverService authzResolverService;
+
   /**
  * 
  */
   @Inject
   public SimpleJcrUserEnvironmentResolverService(
       JCRNodeFactoryService jcrNodeFactoryService,
-      CacheManagerService cacheManagerService,
-      BeanConverter beanConverter,
+      CacheManagerService cacheManagerService, BeanConverter beanConverter,
       @Named(KernelConstants.NULLUSERENV) UserEnvironment nullUserEnv,
-      UserFactoryService userFactoryService) {
+      UserFactoryService userFactoryService,
+      AuthzResolverService authzResolverService) {
     this.jcrNodeFactoryService = jcrNodeFactoryService;
     this.nullUserEnv = nullUserEnv;
     this.beanConverter = beanConverter;
     this.userFactoryService = userFactoryService;
+    this.authzResolverService = authzResolverService;
     cache = cacheManagerService.getCache("userenv",
         CacheScope.CLUSTERINVALIDATED);
     cache.put("test", null);
@@ -103,12 +107,14 @@ public class SimpleJcrUserEnvironmentResolverService implements
           return ue;
         }
       }
-
-      String userEnv = userFactoryService.getUserEnvPath(user.getUuid());
-      UserEnvironment ue = loadUserEnvironmentBean(userEnv);
-      if (ue != null) {
-        cache.put(user.getUuid(), ue);
-        return ue;
+      String userId = user.getUuid();
+      if (userId != null) {
+        String userEnv = userFactoryService.getUserEnvPath(userId);
+        UserEnvironment ue = loadUserEnvironmentBean(userEnv);
+        if (ue != null) {
+          cache.put(user.getUuid(), ue);
+          return ue;
+        }
       }
     }
     return nullUserEnv;
@@ -136,6 +142,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
    * @throws UnsupportedEncodingException
    */
   private UserEnvironment loadUserEnvironmentBean(String userEnvPath) {
+    authzResolverService.setRequestGrant("Loading UserEnvironment");
     InputStream in = null;
     try {
       in = jcrNodeFactoryService.getInputStream(userEnvPath);
@@ -159,18 +166,20 @@ public class SimpleJcrUserEnvironmentResolverService implements
       LOG.debug(e);
     } catch (JCRNodeFactoryServiceException e) {
       LOG.warn("Failed to read userenv for " + userEnvPath + " cause :"
-          + e.getMessage());
+          + e.getMessage(), e);
       LOG.debug(e);
     } finally {
       try {
         in.close();
       } catch (Exception ex) {
       }
+      authzResolverService.clearRequestGrant();
     }
     return null;
   }
 
   private Map<String, Object> loadUserMap(String userEnvPath) {
+    authzResolverService.setRequestGrant("Loading User Map");
     try {
       String userEnvBody = IOUtils.readFully(jcrNodeFactoryService
           .getInputStream(userEnvPath), "UTF-8");
@@ -192,6 +201,8 @@ public class SimpleJcrUserEnvironmentResolverService implements
       LOG.warn("Failed to read userenv for " + userEnvPath + " cause :"
           + e.getMessage());
       LOG.debug(e);
+    } finally {
+      authzResolverService.clearRequestGrant();
     }
     return null;
   }
@@ -248,7 +259,9 @@ public class SimpleJcrUserEnvironmentResolverService implements
    */
   public void save(UserEnvironment userEnvironment)
       throws UpdateFailedException {
+    authzResolverService.setRequestGrant("Saving User Environment");
     InputStream bais = null;
+
     try {
       String userEnvironmentPath = userFactoryService
           .getUserEnvPath(userEnvironment.getUser().getUuid());
@@ -274,6 +287,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
         bais.close();
       } catch (Exception ex) {
       }
+      authzResolverService.clearRequestGrant();
     }
 
   }
@@ -286,6 +300,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
    */
   public UserEnvironment create(User u, String externalId, String password,
       String userType) {
+    authzResolverService.setRequestGrant("Creating User Environment");
     String userEnvironmentPath = userFactoryService.getUserEnvPath(u.getUuid());
 
     ByteArrayInputStream bais = null;
@@ -325,7 +340,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
               .sha1Hash(password));
 
       userEnvNode.save();
-      
+
       userEnvironmentBean.seal();
       return userEnvironmentBean;
 
@@ -350,6 +365,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
       } catch (Exception ex) {
         // not interested
       }
+      authzResolverService.clearRequestGrant();
     }
     return null;
 

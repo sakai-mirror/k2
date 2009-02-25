@@ -46,9 +46,9 @@ public class RepositoryInitializationAction implements InitializationAction, Req
 
   private static final Log LOG = LogFactory
       .getLog(RepositoryInitializationAction.class);
-  private Repository repository;
   private List<StartupAction> startupActions;
   private List<Session> activeSessions = new ArrayList<Session>();
+  private JCRService jcrService;
 
   /**
    * Create the repository initialization action.
@@ -56,7 +56,7 @@ public class RepositoryInitializationAction implements InitializationAction, Req
   @Inject
   public RepositoryInitializationAction(JCRService jcrService,
       List<StartupAction> startupActions, ShutdownService shutdownService) {
-    this.repository = jcrService.getRepository();
+    this.jcrService = jcrService;
     this.startupActions = startupActions;
     shutdownService.register(this);
 
@@ -69,7 +69,7 @@ public class RepositoryInitializationAction implements InitializationAction, Req
    * @see org.sakaiproject.kernel.internal.api.InitializationAction#init()
    */
   public void init() throws RepositoryStartupException {
-
+    Repository repository = jcrService.getRepository();
     SakaiJCRCredentials ssp = new SakaiJCRCredentials();
     Session s = null;
     try {

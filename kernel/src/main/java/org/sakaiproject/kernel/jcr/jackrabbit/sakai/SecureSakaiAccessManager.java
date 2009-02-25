@@ -57,13 +57,12 @@ import javax.jcr.Session;
 import javax.security.auth.Subject;
 
 /**
- * @author ieb
  */
 public class SecureSakaiAccessManager implements AccessManager {
   private static final Log log = LogFactory
       .getLog(SecureSakaiAccessManager.class);
 
-  private static final SimplePermissionQuery[] PERMISSION_QUERIES = new SimplePermissionQuery[READ&WRITE&REMOVE];
+  private static final SimplePermissionQuery[] PERMISSION_QUERIES = new SimplePermissionQuery[READ|WRITE|REMOVE];
   
   static {
     for ( int i = 0; i < PERMISSION_QUERIES.length; i++ ) {
@@ -146,13 +145,22 @@ public class SecureSakaiAccessManager implements AccessManager {
     }
   };
 
+  private JCRService jcrService;
+
+  private CacheManagerService cacheManagerService;
+
+  private Object sessionLock = new Object();
+
+  private long total;
+
+  private long ntime;
+
   @Inject
   public SecureSakaiAccessManager(JCRService jcrService, AuthzResolverService authzResolverService, CacheManagerService cacheManagerService) throws ComponentActivatorException,
       RepositoryException {
     this.authzResolverService = authzResolverService;
-    session = jcrService.getSession();
-    cache = cacheManagerService.getCache("jcr-accessmanager",
-        CacheScope.REQUEST);
+    this.jcrService = jcrService;
+    this.cacheManagerService = cacheManagerService;
   }
 
   /*
@@ -167,6 +175,9 @@ public class SecureSakaiAccessManager implements AccessManager {
     if (initialized) {
       throw new IllegalStateException("already initialized");
     }
+    
+    cache = cacheManagerService.getCache("jcr-accessmanager",
+        CacheScope.REQUEST);
         
 
     subject = context.getSubject();
@@ -224,9 +235,11 @@ public class SecureSakaiAccessManager implements AccessManager {
       throw new RepositoryException("Access Manager is not initialized ");
     }
     if (!isGranted(item, permission)) {
-      throw new AccessDeniedException("Permission deined to "
-          + PERMISSION_QUERIES[permission] + "on" + item);
+      log.info("Denied "+permission+" on "+item);
+      throw new AccessDeniedException("Permission deined to " + sakaiUserId + " to "
+          + PERMISSION_QUERIES[permission] + "on" + item );
     }
+    log.info("Granted "+permission+" on "+item);
   }
 
 
@@ -247,7 +260,14 @@ public class SecureSakaiAccessManager implements AccessManager {
     if (sakaisystem) {
       return true;
     }
+    if ( session == null ) {
+      synchronized (sessionLock ) {
+        session = jcrService.getSession();       
+      }
+    }
     if (!checking.get()) {
+      long start = System.currentTimeMillis();
+      
       try {
         // in checking so dont recurse.
         checking.set(true);
@@ -261,7 +281,9 @@ public class SecureSakaiAccessManager implements AccessManager {
         }
         // find the first NT_FILE or NT_FOLDER parent
         String nodeType = node.getPrimaryNodeType().getName();
-        while (!JCRConstants.NT_FILE.equals(nodeType)
+        Node rootNode = session.getRootNode();
+        while (node != rootNode 
+            && !JCRConstants.NT_FILE.equals(nodeType)
             && !JCRConstants.NT_FOLDER.equals(nodeType)) {
           Node parent = node.getParent();
           if (parent == null) {
@@ -285,15 +307,24 @@ public class SecureSakaiAccessManager implements AccessManager {
           // potentially expensive call.
           authzResolverService.check(resourceReference, spq);
           cache.put(queryKey, true);
+          log.info("Permission Granted "+resourceReference);
           return true;
         } catch (PermissionDeniedException denied) {
           cache.put(queryKey, false);
+          log.info("Permission Denied for "+sakaiUserId+" on "+resourceReference+":"+denied.getMessage());
           return false;
         }
 
       } finally {
         // out of checking
         checking.set(false);
+        long end = System.currentTimeMillis();
+        total += end - start;
+        ntime++;
+        if ( ntime%100 == 0 ) {
+          double dtotal = total;
+          log.info("AuthZ "+dtotal/ntime+" ms ");
+        }
       }
     } else {
       // internal just exit with granted

@@ -252,6 +252,9 @@ public class RestSiteProvider implements RestProvider {
     } else {
       
       Session session = sessionManagerService.getCurrentSession();
+      if ( session == null || session.getUser() == null ) {
+        throw new RestServiceFaultException(HttpServletResponse.SC_UNAUTHORIZED,"Login to create site");
+      }
       UserEnvironmentBean userEnv = (UserEnvironmentBean) userEnvironmentResolverService.resolve(session);
       
             // get the rest of the site info

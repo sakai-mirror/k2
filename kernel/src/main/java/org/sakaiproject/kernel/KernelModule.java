@@ -71,8 +71,7 @@ import org.sakaiproject.kernel.jcr.api.internal.StartupAction;
 import org.sakaiproject.kernel.jcr.jackrabbit.JCRRegistrationServiceImpl;
 import org.sakaiproject.kernel.jcr.jackrabbit.JCRServiceImpl;
 import org.sakaiproject.kernel.jcr.jackrabbit.JcrSynchronousContentListenerAdapter;
-import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiAccessManager;
-import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
+import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SecureSakaiAccessManager;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.StartupActionProvider;
 import org.sakaiproject.kernel.jcr.support.JCRNodeFactoryServiceImpl;
 import org.sakaiproject.kernel.memory.CacheManagerServiceImpl;
@@ -101,7 +100,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.jcr.Credentials;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -220,8 +218,8 @@ public class KernelModule extends AbstractModule {
     bind(startupActionType).toProvider(StartupActionProvider.class).in(
         Scopes.SINGLETON);
 
-    bind(Credentials.class).annotatedWith(
-        Names.named(JCRService.NAME_CREDENTIALS)).to(SakaiJCRCredentials.class);
+//    bind(Credentials.class).annotatedWith(
+//        Names.named(JCRService.NAME_CREDENTIALS)).to(SakaiJCRCredentials.class);
 
     // Kernel initialization
     TypeLiteral<List<InitializationAction>> initializationActionType = new TypeLiteral<List<InitializationAction>>() {
@@ -229,8 +227,8 @@ public class KernelModule extends AbstractModule {
     bind(initializationActionType).toProvider(
         InitializationActionProvider.class).in(Scopes.SINGLETON);
 
-    bind(AccessManager.class).to(SakaiAccessManager.class);
-    // Secure bind(AccessManager.class).to(SecureSakaiAccessManager.class);
+    //bind(AccessManager.class).to(SakaiAccessManager.class);
+    bind(AccessManager.class).to(SecureSakaiAccessManager.class);
 
     TypeLiteral<Map<String, ReferenceResolverService>> resolverMap = new TypeLiteral<Map<String, ReferenceResolverService>>() {
     };

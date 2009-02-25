@@ -50,6 +50,7 @@ import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
+import org.sakaiproject.kernel.authz.simple.JcrReferenceObject;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
 import org.sakaiproject.kernel.model.UserEnvironmentBean;
 import org.sakaiproject.kernel.session.SessionImpl;
@@ -118,11 +119,12 @@ public class ObservationKernelUnitT extends KernelIntegrationBase {
       String prefix = PathUtils.getUserPrefix(userName);
       String userEnvironmentPath = "/userenv" + prefix + "userenv";
 
-      LOG.info("Saving " + userEnvironmentPath);
+      LOG.info("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++Saving " + userEnvironmentPath);
       InputStream in = ResourceLoader.openResource(TEST_USERENV + userName
           + ".json", ObservationKernelUnitT.class.getClassLoader());
       Node n = jcrNodeFactoryService.setInputStream(userEnvironmentPath, in,
           RestProvider.CONTENT_TYPE);
+      n.setProperty(JcrReferenceObject.OWNER_PROPERTY, userName);
       n.save();
       session.save();
       in.close();

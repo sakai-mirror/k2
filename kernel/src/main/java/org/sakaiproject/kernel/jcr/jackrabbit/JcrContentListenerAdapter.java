@@ -23,12 +23,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.jcr.EventRegistration;
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
+import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
 import org.sakaiproject.kernel.jcr.api.JcrContentListener;
 
 import java.util.List;
 
+import javax.jcr.LoginException;
 import javax.jcr.RepositoryException;
 import javax.jcr.observation.Event;
 import javax.jcr.observation.EventIterator;
@@ -48,6 +50,7 @@ public class JcrContentListenerAdapter implements EventListener,
   private List<JcrContentListener> listeners;
   private CacheManagerService cacheManager;
   protected boolean unbind = true;
+  private JCRService jcrService;
 
   /**
    * @param listeners
@@ -56,9 +59,11 @@ public class JcrContentListenerAdapter implements EventListener,
    */
   @Inject
   public JcrContentListenerAdapter(List<JcrContentListener> listeners,
-      CacheManagerService cacheManager) throws RepositoryException {
+      CacheManagerService cacheManager, JCRService jcrService)
+      throws RepositoryException {
     this.listeners = listeners;
     this.cacheManager = cacheManager;
+    this.jcrService = jcrService;
   }
 
   /**
@@ -84,10 +89,13 @@ public class JcrContentListenerAdapter implements EventListener,
    */
   public void onEvent(EventIterator events) {
     try {
+      if (unbind) {
+        jcrService.loginSystem();
+      }
+      LOG.info("Firing event set ");
       for (; events.hasNext();) {
         try {
           Event event = events.nextEvent();
-          LOG.info("Firing event " + event);
           String path = event.getPath();
           if (path.endsWith(DATA_NODE)) {
             String filePath = path.substring(0, path.length()
@@ -102,8 +110,20 @@ public class JcrContentListenerAdapter implements EventListener,
           rex.printStackTrace();
         }
       }
+
+    } catch (LoginException e) {
+      LOG.warn("Cant Login to JCR " + e.getMessage(), e);
+    } catch (RepositoryException e) {
+      LOG.warn("Cant Login to JCR " + e.getMessage(), e);
     } finally {
       if (unbind) {
+        try {
+          jcrService.logout();
+        } catch (LoginException e) {
+          LOG.warn("Cant Logout of JCR " + e.getMessage(), e);
+        } catch (RepositoryException e) {
+          LOG.warn("Cant Logout of JCR " + e.getMessage(), e);
+        }
         try {
           cacheManager.unbind(CacheScope.REQUEST);
         } catch (Exception ex) {

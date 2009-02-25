@@ -17,12 +17,14 @@
  */
 package org.sakaiproject.kernel.authz.simple;
 
+import com.google.common.collect.Lists;
+
 import org.sakaiproject.kernel.api.UpdateFailedException;
 import org.sakaiproject.kernel.api.authz.AccessControlStatement;
+import org.sakaiproject.kernel.api.authz.AuthzResolverService;
 import org.sakaiproject.kernel.api.authz.ReferencedObject;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.jcr.AccessDeniedException;
@@ -39,19 +41,23 @@ import javax.jcr.Value;
 public class JcrReferenceObject implements ReferencedObject {
 
   private static final String ACL_PROPERTY = "acl:acl";
+  public static final String OWNER_PROPERTY = "acl:owner";
   private List<AccessControlStatement> acl;
   private List<AccessControlStatement> inheritableAcl;
   private String path;
   private boolean rootReference = false;
   private JcrReferenceObject parentReference;
   private Node node;
+  private String owner;
+  private AuthzResolverService authzResolverService;
 
   /**
    * @param n
    * @throws RepositoryException
    */
-  public JcrReferenceObject(Node node) throws RepositoryException {
+  public JcrReferenceObject(Node node, AuthzResolverService authzResolverService) throws RepositoryException {
     this.node = node;
+    this.authzResolverService = authzResolverService;
     path = node.getPath();
     acl = new ArrayList<AccessControlStatement>();
     inheritableAcl = new ArrayList<AccessControlStatement>();
@@ -66,11 +72,22 @@ public class JcrReferenceObject implements ReferencedObject {
         acl.add(acs);
       }
     } catch (PathNotFoundException pnfe) {
-      
+
       // no acl on this node
-    } catch ( Exception ex ) {
+    } catch (Exception ex) {
       ex.printStackTrace();
     }
+    
+    try {
+      Property property = node.getProperty(OWNER_PROPERTY);
+      owner = property.getString();
+    } catch (PathNotFoundException pnfe) {
+
+      // no acl on this node
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
+
     Node parent = null;
     try {
       parent = node.getParent();
@@ -82,14 +99,13 @@ public class JcrReferenceObject implements ReferencedObject {
       e.printStackTrace();
     }
     if (parent != null) {
-      parentReference = new JcrReferenceObject(parent);
+      parentReference = new JcrReferenceObject(parent, authzResolverService);
       if (parentReference.getInheritableAccessControlList().size() == 0) {
         rootReference = true;
       }
     } else {
       rootReference = true;
     }
-    
 
   }
 
@@ -98,7 +114,7 @@ public class JcrReferenceObject implements ReferencedObject {
    * 
    * @see org.sakaiproject.kernel.api.authz.ReferencedObject#getAccessControlList()
    */
-  public Collection<? extends AccessControlStatement> getAccessControlList() {
+  public List<AccessControlStatement> getAccessControlList() {
     return acl;
   }
 
@@ -107,7 +123,7 @@ public class JcrReferenceObject implements ReferencedObject {
    * 
    * @see org.sakaiproject.kernel.api.authz.ReferencedObject#getInheritableAccessControlList()
    */
-  public Collection<? extends AccessControlStatement> getInheritableAccessControlList() {
+  public List<AccessControlStatement> getInheritableAccessControlList() {
     return inheritableAcl;
   }
 
@@ -135,8 +151,10 @@ public class JcrReferenceObject implements ReferencedObject {
    * @see org.sakaiproject.kernel.api.authz.ReferencedObject#isRoot()
    */
   public boolean isRoot() {
-    // see of this is a root, which means that all parent objects are also root, this will recurse up the tree.
-    boolean rootRef =  rootReference && (parentReference == null || parentReference.isRoot());
+    // see of this is a root, which means that all parent objects are also root,
+    // this will recurse up the tree.
+    boolean rootRef = rootReference
+        && (parentReference == null || parentReference.isRoot());
     return rootRef;
   }
 
@@ -167,6 +185,7 @@ public class JcrReferenceObject implements ReferencedObject {
         inheritableAcl.add(newAcs);
       }
 
+      authzResolverService.invalidateAcl(this);
     } catch (NumberFormatException e) {
       throw new UpdateFailedException("Unable to update ACL in node " + path
           + " :" + e.getMessage());
@@ -200,9 +219,59 @@ public class JcrReferenceObject implements ReferencedObject {
 
       acl.removeAll(toRemove);
       inheritableAcl.removeAll(toRemove);
+      
+      authzResolverService.invalidateAcl(this);
+
     } catch (RepositoryException e) {
       throw new UpdateFailedException("Unable to update ACL in node " + path
           + " :" + e.getMessage());
     }
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.kernel.api.authz.ReferencedObject#setAccessControlList(java.util.List)
+   */
+  public void setAccessControlList(List<AccessControlStatement> newAcl) {
+    try {
+      String[] values = new String[newAcl.size()];
+      int i = 0;
+      for (AccessControlStatement acs : newAcl) {
+        values[i++] = acs.toString();
+      }
+      node.setProperty(ACL_PROPERTY, values);
+      node.save();
+
+      acl = Lists.newArrayList(newAcl);
+      inheritableAcl = Lists.newArrayList();
+      for (AccessControlStatement acs : acl) {
+        if (acs.isPropagating()) {
+          inheritableAcl.add(acs);
+        }
+      }
+      authzResolverService.invalidateAcl(this);
+
+    } catch (RepositoryException e) {
+      throw new UpdateFailedException("Unable to update ACL in node " + path
+          + " :" + e.getMessage());
+    }
+
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.authz.ReferencedObject#getOwner()
+   */
+  public String getOwner() {
+    return owner;
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.authz.ReferencedObject#isPermanent()
+   */
+  public boolean isPermanent() {
+    return true;
   }
 }

@@ -161,9 +161,11 @@ public class KernelIntegrationBase {
       RepositoryException, JCRNodeFactoryServiceException,
       InterruptedException, NoSuchAlgorithmException {
     KernelManager km = new KernelManager();
+
     JCRNodeFactoryService jcrNodeFactoryService = km
         .getService(JCRNodeFactoryService.class);
     JCRService jcrService = km.getService(JCRService.class);
+    jcrService.loginSystem();
     for (String user : USERS) {
       InputStream in = ResourceLoader.openResource(USERBASE + user + ".json",
           SakaiAuthenticationFilter.class.getClassLoader());
@@ -176,8 +178,10 @@ public class KernelIntegrationBase {
       in.close();
     }
     jcrService.getSession().save();
+    jcrService.logout();
     Thread.yield();
     Thread.sleep(1000);
+    
 
   }
 
@@ -188,6 +192,7 @@ public class KernelIntegrationBase {
     JCRNodeFactoryService jcrNodeFactoryService = km
         .getService(JCRNodeFactoryService.class);
     JCRService jcrService = km.getService(JCRService.class);
+    jcrService.loginSystem();
     for (String siteName : SITES) {
       InputStream in = ResourceLoader.openResource(SITEBASE + siteName
           + "/groupdef.json", KernelIntegrationBase.class.getClassLoader());
@@ -205,6 +210,7 @@ public class KernelIntegrationBase {
     Thread.yield();
     Thread.sleep(1000);
     LOG.info("test sites loaded.");
+    jcrService.logout();
   }
 
   protected static String buildUsersOwnedSitesFilePath(String userId,

@@ -119,9 +119,9 @@ public class RestSearchProviderKernelUnitT extends BaseRestUnitT {
       new QueryPattern(new String[] { "q", "somethingthatwillnerverexist", "n",
           null, "p", null }, "\"size\":0"),
       new QueryPattern(new String[] { "q", "admin", "n", null, "p", null },
-          "\"size\":7"),
+          "\"size\":8"),
       new QueryPattern(new String[] { "q", "admin", "n", null, "p", null, "s",
-          "sakai:firstName", "s", "sakai:lastName" }, "\"size\":7"),
+          "sakai:firstName", "s", "sakai:lastName" }, "\"size\":8"),
       new QueryPattern(new String[] { "q", "admin", "n", null, "p", null, "s",
           "sakai:firstName", "s", "sakai:lastName", "path", "/xyz" }, "\"size\":0"),
       new QueryPattern(new String[] { "q", "admin", "n", null, "p", null, "s",
@@ -158,9 +158,10 @@ public class RestSearchProviderKernelUnitT extends BaseRestUnitT {
       RepositoryException, JCRNodeFactoryServiceException, InterruptedException {
     setupServices();
 
+    newSession();
     for (QueryPattern testQuery : TESTPATTERN) {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      setupAnyTimes("user1", "SESSION-21312312", baos);
+      setupAnyTimes("admin",  baos);
       expect(request.getMethod()).andReturn("POST").anyTimes();
 
       expect(request.getParameter("q")).andReturn(testQuery.getParameter("q"));
@@ -185,7 +186,7 @@ public class RestSearchProviderKernelUnitT extends BaseRestUnitT {
 
       String op = baos.toString(StringUtils.UTF8);
       
-      assertTrue(op,op.indexOf(testQuery.getResponse()) > 0);
+      assertTrue("Expected to find "+testQuery.getResponse()+"\nin "+op,op.indexOf(testQuery.getResponse()) > 0);
 
       verifyMocks();
       resetMocks();
@@ -198,7 +199,8 @@ public class RestSearchProviderKernelUnitT extends BaseRestUnitT {
     QueryPattern testQuery = new QueryPattern(new String[] { "q", "user", "n", null, "p", null, "s",
         "sakai:firstName", "s", "sakai:lastName", "path", "/_private/", "mimetype", "text/plain" }, "\"size\":7");
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      setupAnyTimes("user1", "SESSION-21312312", baos);
+      newSession();
+      setupAnyTimes("user1", baos);
       expect(request.getMethod()).andReturn("POST").anyTimes();
 
       expect(request.getParameter("q")).andReturn(testQuery.getParameter("q"));

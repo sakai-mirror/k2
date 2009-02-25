@@ -34,7 +34,6 @@ import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
 
 import java.util.List;
 
-import javax.jcr.Credentials;
 import javax.jcr.LoginException;
 import javax.jcr.Node;
 import javax.jcr.Repository;
@@ -57,7 +56,7 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
    */
   private RepositoryBuilder repositoryBuilder = null;
 
-  private Credentials repositoryCredentials;
+//  private Credentials repositoryCredentialsX;
 
   private boolean requestScope = true;
 
@@ -71,13 +70,11 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
    */
   @Inject
   public JCRServiceImpl(RepositoryBuilder repositoryBuilder,
-      @Named(JCRService.NAME_CREDENTIALS) Credentials repositoryCredentials,
       CacheManagerService cacheManager,
       @Named(JCRService.NAME_REQUEST_SCOPE) boolean requestScope,
       List<EventRegistration> registrations,
       Injector injector) throws RepositoryException {
     this.repositoryBuilder = repositoryBuilder;
-    this.repositoryCredentials = repositoryCredentials;
     this.cacheManager = cacheManager;
     this.requestScope = requestScope;
     this.injector = injector;
@@ -102,7 +99,24 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
     SessionHolder sh = getSessionHolder();
     if (sh == null) {
       long t1 = System.currentTimeMillis();
-      sh = new SessionHolder(repositoryBuilder, repositoryCredentials,
+      sh = new SessionHolder(repositoryBuilder, null,
+          DEFAULT_WORKSPACE);
+      setSesssionHolder(sh);
+      if (LOG.isDebugEnabled())
+        LOG.debug("Session Start took " + (System.currentTimeMillis() - t1)
+            + "ms");
+    }
+    session = sh.getSession();
+    return session;
+  }
+
+  public Session loginSystem() throws LoginException, RepositoryException {
+    Session session = null;
+    SessionHolder sh = getSessionHolder();
+    if (sh == null) {
+      long t1 = System.currentTimeMillis();
+      
+      sh = new SessionHolder(repositoryBuilder, new SakaiJCRCredentials(),
           DEFAULT_WORKSPACE);
       setSesssionHolder(sh);
       if (LOG.isDebugEnabled())

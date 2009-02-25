@@ -50,4 +50,10 @@ public interface AuthzResolverService {
    */
   void setRequestGrant(String reason);
 
+  /**
+   * Invalidate ACLs associated with the Reference Object.
+   * @param referencedObject
+   */
+  void invalidateAcl(ReferencedObject referencedObject);
+
 }

@@ -25,33 +25,46 @@ package org.sakaiproject.kernel.api.authz;
  */
 public interface SubjectStatement {
 
+  /**
+   * 
+   */
   public enum SubjectType {
     /**
      * The subject represents a user, the permission token will be ignored and
      * the subject token will be used for matching.
      */
-    USERID(),
+    US(),
+    /**
+     * The subject represents any super user, the permission token will be ignored and
+     * the subject token will be used for matching.
+     */
+    SU(),
+    
+    /**
+     * Owner of the node 
+     */
+    OW(),
     /**
      * The subject represents a group, the subject token and the permission
      * token will be consulted during resolution.
      */
-    GROUP(),
+    GR(),
     /**
      * Indicates the statement represents all users in all contexts.
      */
-    ANON(),
+    AN(),
     /**
      * Indicates the statement represents all authenticated users.
      */
-    AUTHENTICATED(), 
+    AU(), 
     /**
      * Indicates and undefined subject statement that should be ignored.
      */
-    UNDEFINED(), 
+    UN(), 
     /**
      * Provided come from external providers.
      */
-    PROVIDED();
+    PR();
   }
 
   public static final String PROVIDER_REGISTRY = "subjectstatement.provider";

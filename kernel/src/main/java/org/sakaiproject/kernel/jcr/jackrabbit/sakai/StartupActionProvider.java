@@ -42,13 +42,15 @@ public class StartupActionProvider implements Provider<List<StartupAction>> {
   @Inject
   public StartupActionProvider(SakaiRepositoryStartup repositoryStartup,
       RegisterEventListeners registerEventListeners,
-      PopulateBaseRepository populateBaseRepository) {
+      PopulateBaseRepository populateBaseRepository,
+      PopulateBaseRepositoryAcls populateBaseRepositoryAcls) {
     startupActions = new ArrayList<StartupAction>();
     startupActions.add(repositoryStartup);
     // we must register the event listeners before we populate the repository
     // so that all the events fire.
     startupActions.add(registerEventListeners);
     startupActions.add(populateBaseRepository);
+    startupActions.add(populateBaseRepositoryAcls);
     
   }
 

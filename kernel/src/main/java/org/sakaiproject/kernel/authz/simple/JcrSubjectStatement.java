@@ -17,6 +17,7 @@
  */
 package org.sakaiproject.kernel.authz.simple;
 
+import org.sakaiproject.kernel.api.UpdateFailedException;
 import org.sakaiproject.kernel.api.authz.SubjectStatement;
 import org.sakaiproject.kernel.util.StringUtils;
 
@@ -34,14 +35,80 @@ public class JcrSubjectStatement implements SubjectStatement {
    * @param substring
    */
   public JcrSubjectStatement(String subjectStatement) {
+    subjectToken = "";
+    permissionToken = "";
     String[] parts = StringUtils.split(subjectStatement, ':');
+    if (parts.length == 0) {
+      throw new UpdateFailedException("The subject Statement ["
+          + subjectStatement + "] is not a valid subject statement");
+    }
     try {
       subjectType = SubjectType.valueOf(parts[0]);
-    } catch ( IllegalArgumentException e ) {
-      subjectType = SubjectType.UNDEFINED;
+    } catch (IllegalArgumentException e) {
+      subjectType = SubjectType.UN;
     }
-    subjectToken = parts[1];
-    permissionToken = parts[2];
+    switch (subjectType) {
+    case AN:
+      if (parts.length != 1) {
+        throw new UpdateFailedException("The subject Statement "
+            + subjectStatement
+            + " is not a valid anon user statement, extra data, expected AN");
+      }
+      break;
+    case AU:
+      if (parts.length != 1) {
+        throw new UpdateFailedException(
+            "The subject Statement "
+                + subjectStatement
+                + " is not a valid authenticated user statement, extra data, expected AU");
+      }
+      break;
+    case OW:
+      if (parts.length != 1) {
+        throw new UpdateFailedException("The subject Statement "
+            + subjectStatement
+            + " is not a valid owner statement, extra data, expected OW");
+      }
+      break;
+    case GR:
+      if (parts.length != 3) {
+        throw new UpdateFailedException("The subject Statement "
+            + subjectStatement
+            + " is not a valid owner statement, extra data, expected OW");
+      }
+      subjectToken = parts[1];
+      permissionToken = parts[2];
+      break;
+    case PR:
+      if (parts.length < 3) {
+        throw new UpdateFailedException(
+            "The subject Statement "
+                + subjectStatement
+                + " is not a valid provided statement, extra data, expected PR:key:data");
+      }
+      subjectToken = parts[1];
+      permissionToken = subjectStatement;
+      break;
+    case SU:
+      if (parts.length != 1) {
+        throw new UpdateFailedException("The subject Statement "
+            + subjectStatement
+            + " is not a valid super user statement, extra data, expected SU");
+      }
+      break;
+    case UN:
+      throw new UpdateFailedException("The subject Statement "
+          + subjectStatement
+          + " is not a valid subject statement, unrecognised type");
+    case US:
+      if (parts.length != 2) {
+        throw new UpdateFailedException("The subject Statement "
+            + subjectStatement
+            + " is not a valid user statement, expected UN:userid");
+      }
+      subjectToken = parts[1];
+      break;
+    }
   }
 
   public JcrSubjectStatement(SubjectType subjectType, String subjectToken,
@@ -55,7 +122,7 @@ public class JcrSubjectStatement implements SubjectStatement {
    * 
    */
   private JcrSubjectStatement() {
-    subjectType = SubjectType.UNDEFINED;
+    subjectType = SubjectType.UN;
     subjectToken = "none";
     permissionToken = "none";
   }
@@ -113,15 +180,26 @@ public class JcrSubjectStatement implements SubjectStatement {
     }
     return false;
   }
-  
-  
+
   /**
    * {@inheritDoc}
+   * 
    * @see java.lang.Object#toString()
    */
   @Override
   public String toString() {
-    return subjectType+":"+subjectToken+":"+permissionToken;
+    switch (subjectType) {
+    case GR:
+      return SubjectType.GR.toString() + ":" + subjectToken + ":"
+          + permissionToken;
+    case PR:
+      return permissionToken;
+    case US:
+      return SubjectType.US.toString() + ":" + subjectToken;
+    default:
+      return subjectType.toString();
+
+    }
   }
 
 }

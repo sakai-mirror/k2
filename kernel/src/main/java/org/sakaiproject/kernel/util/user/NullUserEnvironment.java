@@ -17,6 +17,7 @@
  */
 package org.sakaiproject.kernel.util.user;
 
+import org.sakaiproject.kernel.api.authz.ReferencedObject;
 import org.sakaiproject.kernel.api.authz.SubjectPermissions;
 import org.sakaiproject.kernel.api.authz.SubjectStatement;
 import org.sakaiproject.kernel.api.authz.UserSubjects;
@@ -30,10 +31,11 @@ import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 public class NullUserEnvironment implements UserEnvironment {
 
   private User user = new AnonUser();
-  private UserInfo userInfo  = new NullUserInfo(user);
+  private UserInfo userInfo = new NullUserInfo(user);
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#hasExpired()
    */
   public boolean hasExpired() {
@@ -42,15 +44,22 @@ public class NullUserEnvironment implements UserEnvironment {
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#matches(org.sakaiproject.kernel.api.authz.SubjectStatement)
    */
-  public boolean matches(SubjectStatement subject) {
-    // this might not be right, but at the moment I dont know.
+  public boolean matches(ReferencedObject referencedObject,
+      SubjectStatement subject) {
+    switch (subject.getSubjectType()) {
+    case AN:
+      // Anon
+      return true;
+    }
     return false;
   }
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#isSuperUser()
    */
   public boolean isSuperUser() {
@@ -59,13 +68,15 @@ public class NullUserEnvironment implements UserEnvironment {
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.Sealable#seal()
    */
-  public void seal() {    
+  public void seal() {
   }
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#getUser()
    */
   public User getUser() {
@@ -74,6 +85,7 @@ public class NullUserEnvironment implements UserEnvironment {
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#getSubjects()
    */
   public String[] getSubjects() {
@@ -82,10 +94,11 @@ public class NullUserEnvironment implements UserEnvironment {
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#getUserSubjects()
    */
   public UserSubjects getUserSubjects() {
-    return new UserSubjects(){
+    return new UserSubjects() {
 
       public void addSubjectPermissions(SubjectPermissions subjectPermissions) {
       }
@@ -97,12 +110,13 @@ public class NullUserEnvironment implements UserEnvironment {
       public boolean hasSubject(String groupToken) {
         return false;
       }
-      
+
     };
   }
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#getLocale()
    */
   public String getLocale() {
@@ -111,25 +125,28 @@ public class NullUserEnvironment implements UserEnvironment {
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#getUserInfo()
    */
   public UserInfo getUserInfo() {
     return userInfo;
   }
-  
+
   /**
    * {@inheritDoc}
+   * 
    * @see java.lang.Object#toString()
    */
   @Override
   public String toString() {
-    return "User: "+getUser();
+    return "User: " + getUser();
   }
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#setProtected(boolean)
    */
-  public void setProtected(boolean b) {    
+  public void setProtected(boolean b) {
   }
 }

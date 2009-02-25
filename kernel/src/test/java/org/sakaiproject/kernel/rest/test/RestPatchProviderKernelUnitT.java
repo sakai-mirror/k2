@@ -30,9 +30,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sakaiproject.kernel.Activator;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
+import org.sakaiproject.kernel.api.KernelManager;
+import org.sakaiproject.kernel.api.authz.ReferenceResolverService;
+import org.sakaiproject.kernel.api.authz.ReferencedObject;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
+import org.sakaiproject.kernel.authz.simple.JcrAccessControlStatementImpl;
 import org.sakaiproject.kernel.rest.RestPatchProvider;
 import org.sakaiproject.kernel.test.KernelIntegrationBase;
 import org.sakaiproject.kernel.util.IOUtils;
@@ -53,7 +57,6 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
 
-  private static final String PRIVATE_BASE_PATH = "/_private";
   private static boolean shutdown;
   private static Injector injector;
 
@@ -61,6 +64,7 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
   public static void beforeThisClass() throws ComponentActivatorException {
     shutdown = KernelIntegrationBase.beforeClass();
     injector = Activator.getInjector();
+
   }
 
   @AfterClass
@@ -81,8 +85,20 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
       RepositoryException, JCRNodeFactoryServiceException {
     setupServices();
 
+    KernelManager km = new KernelManager();
+    // grant permission to user 1 to do anything
+    jcrService.logout();
+    jcrService.loginSystem();
+    ReferenceResolverService referenceResolverService = km
+        .getService(ReferenceResolverService.class);
+    ReferencedObject ro = referenceResolverService.resolve("/");
+    ro.addAccessControlStatement(new JcrAccessControlStatementImpl(
+        "k:*,s:US:user1,g:1,p:1"));
+    jcrService.logout();
+
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes("user1", "SESSION-21312312", baos);
+    newSession();
+    setupAnyTimes("user1", baos);
 
     expect(request.getMethod()).andReturn("POST").anyTimes();
 
@@ -131,8 +147,21 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
       IOException, RepositoryException, JCRNodeFactoryServiceException {
     setupServices();
 
+    KernelManager km = new KernelManager();
+    // grant permission to user 1 to do anything
+    jcrService.logout();
+    jcrService.loginSystem();
+    ReferenceResolverService referenceResolverService = km
+        .getService(ReferenceResolverService.class);
+    ReferencedObject ro = referenceResolverService.resolve("/");
+    ro.addAccessControlStatement(new JcrAccessControlStatementImpl(
+        "k:*,s:US:user1,g:1,p:1"));
+    jcrService.logout();
+
+    
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes("user1", "SESSION-21312312", baos);
+    newSession();
+    setupAnyTimes("user1", baos);
 
     expect(request.getMethod()).andReturn("POST").anyTimes();
 
@@ -189,7 +218,8 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes(null, "SESSION-21312312-nouser1", baos);
+    newSession();
+    setupAnyTimes(null, baos);
 
     expect(request.getMethod()).andReturn("POST").anyTimes();
 
@@ -201,9 +231,6 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
         new String[] { "u", "r", "u", "r" });
     expect(request.getParameterValues("i")).andReturn(null);
 
-    response.setContentType(RestProvider.CONTENT_TYPE);
-    expectLastCall();
-
     replayMocks();
 
     String[] elements = new String[] { "patch", "f", "a", "test", "file" };
@@ -211,16 +238,13 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
     RestPatchProvider rsp = new RestPatchProvider(registryService,
         jcrNodeFactoryService, injector.getInstance(BeanConverter.class),
         userFactoryService);
-    rsp.dispatch(elements, request, response);
-
-    String op = baos.toString(StringUtils.UTF8);
-    assertEquals("{\"response\":\"OK\"}", op);
-
-    Node n = jcrNodeFactoryService.getNode("/a/test/file");
-    assertNotNull(n);
-    String result = IOUtils.readFully(jcrNodeFactoryService
-        .getInputStream("/a/test/file"), StringUtils.UTF8);
-    assertEquals("{\"a\":\"a1\",\"c\":\"c3\"}", result);
+    try {
+      rsp.dispatch(elements, request, response);
+      fail();
+    } catch (RestServiceFaultException ex) {
+      ex.printStackTrace();
+      assertEquals(HttpServletResponse.SC_FORBIDDEN, ex.getStatusCode());
+    }
 
     verifyMocks();
   }
@@ -238,8 +262,19 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
       IOException, RepositoryException, JCRNodeFactoryServiceException {
     setupServices();
 
+    jcrService.logout();
+    jcrService.loginSystem();
+    ByteArrayInputStream in = new ByteArrayInputStream(
+        "{\"a\":\"a1\",\"b\":\"b1\",\"c\":\"c3\",\"d\":\"d1\"}"
+            .getBytes(StringUtils.UTF8));
+    Node n = jcrNodeFactoryService.setInputStream("/a/test/file2", in,
+        RestProvider.CONTENT_TYPE);
+    n.save();
+    jcrService.logout();
+
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes(null, "SESSION-21312312-nouser2", baos);
+    newSession();
+    setupAnyTimes(null, baos);
 
     expect(request.getMethod()).andReturn("POST").anyTimes();
 
@@ -251,33 +286,20 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
         new String[] { "u", "r", "u", "r" });
     expect(request.getParameterValues("i")).andReturn(null);
 
-    response.setContentType(RestProvider.CONTENT_TYPE);
-    expectLastCall();
 
     replayMocks();
-
-    ByteArrayInputStream in = new ByteArrayInputStream(
-        "{\"a\":\"a1\",\"b\":\"b1\",\"c\":\"c3\",\"d\":\"d1\"}"
-            .getBytes(StringUtils.UTF8));
-    Node n = jcrNodeFactoryService.setInputStream("/a/test/file2", in,
-        RestProvider.CONTENT_TYPE);
-    n.save();
 
     String[] elements = new String[] { "patch", "f", "a", "test", "file2" };
 
     RestPatchProvider rsp = new RestPatchProvider(registryService,
         jcrNodeFactoryService, injector.getInstance(BeanConverter.class),
         userFactoryService);
-    rsp.dispatch(elements, request, response);
-
-    String op = baos.toString(StringUtils.UTF8);
-    assertEquals("{\"response\":\"OK\"}", op);
-
-    n = jcrNodeFactoryService.getNode("/a/test/file2");
-    assertNotNull(n);
-    String result = IOUtils.readFully(jcrNodeFactoryService
-        .getInputStream("/a/test/file"), StringUtils.UTF8);
-    assertEquals("{\"a\":\"a1\",\"c\":\"c3\"}", result);
+    try {
+      rsp.dispatch(elements, request, response);
+      fail();
+    } catch (RestServiceFaultException ex) {
+      assertEquals(HttpServletResponse.SC_FORBIDDEN, ex.getStatusCode());
+    }
 
     verifyMocks();
   }
@@ -296,7 +318,8 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes(null, "SESSION-21312312-nouser2", baos);
+    newSession();
+    setupAnyTimes(null,  baos);
 
     expect(request.getMethod()).andReturn("POST").anyTimes();
 

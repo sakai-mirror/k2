@@ -39,6 +39,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.jcr.AccessDeniedException;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.servlet.http.HttpServletRequest;
@@ -194,6 +195,8 @@ public class RestPatchProvider implements RestProvider {
           response.getOutputStream().print(responseBody);
         }
       }
+    } catch ( AccessDeniedException ex) {
+      throw new RestServiceFaultException(HttpServletResponse.SC_FORBIDDEN,ex.getMessage(),ex);
     } catch (SecurityException ex) {
       throw ex;
     } catch (RestServiceFaultException ex) {
@@ -258,7 +261,7 @@ public class RestPatchProvider implements RestProvider {
       throws RepositoryException, JCRNodeFactoryServiceException,
       UnsupportedEncodingException, IOException {
     InputStream in = null;
-
+    
     try {
       Node n = jcrNodeFactoryService.getNode(path);
       Map<String, Object> map = null;

@@ -21,6 +21,7 @@ import org.sakaiproject.kernel.api.memory.Cache;
 import org.sakaiproject.kernel.api.memory.ThreadBound;
 
 import java.util.HashMap;
+import java.util.Set;
 
 /**
  * 
@@ -74,6 +75,23 @@ public class MapCacheImpl<V> extends HashMap<String, V>implements Cache<V>  {
       }
     }
     super.clear();
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.memory.Cache#removeChildren(java.lang.String)
+   */
+  public void removeChildren(String key) {
+    super.remove(key);
+    if ( !key.endsWith("/") ) {
+      key = key + "/";
+    }
+    Set<String> keys = super.keySet();
+    for ( String k : keys) {
+      if ( ((String) k).startsWith(key) ) {
+        super.remove(k);
+      }
+    }
   }
   
 

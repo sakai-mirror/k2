@@ -19,7 +19,7 @@ package org.sakaiproject.kernel.api.authz;
 
 import org.sakaiproject.kernel.api.UpdateFailedException;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * A reference object contains the metadata associated with authz for an object.
@@ -29,7 +29,7 @@ public interface ReferencedObject {
   /**
    * @return the full access control list for the object.
    */
-  Collection<? extends AccessControlStatement> getAccessControlList();
+  List<AccessControlStatement> getAccessControlList();
 
   /**
    * @return the parent object, null if there is no reasonable parent.
@@ -45,7 +45,7 @@ public interface ReferencedObject {
   /**
    * @return a collection of Access controls that may be inherited.
    */
-  Collection<? extends AccessControlStatement> getInheritableAccessControlList();
+  List<AccessControlStatement> getInheritableAccessControlList();
 
   /**
    * @return a unique key for referencing object in caches and maps.
@@ -67,5 +67,22 @@ public interface ReferencedObject {
    */
   void addAccessControlStatement(AccessControlStatement newAcs)
       throws UpdateFailedException;
+
+  /**
+   * Set the ACL on the object, wiping out any other ACL.
+   * @param value the new ACL
+   */
+  void setAccessControlList(List<AccessControlStatement> value);
+
+  /**
+   * The owner of the object
+   * @return
+   */
+  String getOwner();
+  
+  /**
+   * @return true if the object is a permananet object.
+   */
+  boolean isPermanent();
 
 }

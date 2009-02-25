@@ -103,7 +103,7 @@ public class AclListenerT {
     parent = parent.getParent();
 
     SubjectStatement subjectStatement = new JcrSubjectStatement(
-        SubjectType.GROUP, "group1:maintain", "read");
+        SubjectType.GR, "group1:maintain", "read");
     AccessControlStatement grantReadToHttpGetInheritable = new JcrAccessControlStatementImpl(
         subjectStatement, "httpget", true, true);
     parent.addAccessControlStatement(grantReadToHttpGetInheritable);

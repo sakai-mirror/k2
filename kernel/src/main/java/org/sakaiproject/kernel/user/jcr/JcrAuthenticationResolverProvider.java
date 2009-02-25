@@ -23,6 +23,7 @@ import com.google.inject.name.Named;
 import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
+import org.sakaiproject.kernel.api.authz.AuthzResolverService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
@@ -58,6 +59,7 @@ public class JcrAuthenticationResolverProvider implements
   private UserResolverService userResolverService;
   private SessionManagerService sessionManagerService;
   private UserEnvironmentResolverService userEnvironmentResolverService;
+  private AuthzResolverService authzResolverService;
 
   /**
    * @param userResolverService
@@ -69,12 +71,14 @@ public class JcrAuthenticationResolverProvider implements
       @Named(KernelConstants.JCR_USERENV_BASE) String userEnvironmentBase,
       UserResolverService userResolverService, RegistryService registryService,
       SessionManagerService sessionManagerService,
-      UserEnvironmentResolverService userEnvironmentResolverService) {
+      UserEnvironmentResolverService userEnvironmentResolverService,
+      AuthzResolverService authzResolverService) {
     this.jcrNodeFactoryService = jcrNodeFactoryService;
     this.userEnvironmentBase = userEnvironmentBase;
     this.userResolverService = userResolverService;
     this.sessionManagerService = sessionManagerService;
     this.userEnvironmentResolverService = userEnvironmentResolverService;
+    this.authzResolverService = authzResolverService;
     // register as a resolver and a manager
     Registry<String, AuthenticationResolverProvider> authResolverRegistry = registryService
         .getRegistry(KernelConstants.AUTHENTICATION_PROVIDER_REGISTRY);
@@ -95,10 +99,12 @@ public class JcrAuthenticationResolverProvider implements
     if (principal instanceof IdPwPrincipal) {
       // resolve the location of the users security file, which is the Userenv
       // file
+
       IdPwPrincipal idPwPrincipal = (IdPwPrincipal) principal;
       User user = userResolverService.resolve(idPwPrincipal.getIdentifier());
       if (user != null) {
         try {
+          authzResolverService.setRequestGrant("Authenticating user ");
           String userEnvPath = getUserEnvPath(user.getUuid());
           Node n = jcrNodeFactoryService.getNode(userEnvPath);
           if (n != null) {
@@ -112,6 +118,8 @@ public class JcrAuthenticationResolverProvider implements
         } catch (Exception ex) {
           throw new SecurityException("Authentication Failed for user "
               + idPwPrincipal.getIdentifier(), ex);
+        } finally {
+          authzResolverService.clearRequestGrant();
         }
       }
       throw new SecurityException("Authentication Failed for user "
@@ -163,6 +171,7 @@ public class JcrAuthenticationResolverProvider implements
 
         String userEnvPath = getUserEnvPath(user.getUuid());
         try {
+          authzResolverService.setRequestGrant("Setting passsword ");
           Node n = jcrNodeFactoryService.getNode(userEnvPath);
           if (n == null) {
             throw new SecurityException(
@@ -184,6 +193,8 @@ public class JcrAuthenticationResolverProvider implements
         } catch (Exception ex) {
           throw new SecurityException("Failed to set password :"
               + ex.getMessage(), ex);
+        } finally {
+          authzResolverService.clearRequestGrant();
         }
       } else {
         throw new SecurityException(

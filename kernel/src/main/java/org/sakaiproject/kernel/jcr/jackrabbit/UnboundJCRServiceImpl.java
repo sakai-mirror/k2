@@ -94,6 +94,11 @@ public class UnboundJCRServiceImpl implements JCRService {
 
   public Session login() throws LoginException, RepositoryException {
     Repository repository = repositoryBuilder.getInstance();
+    return repository.login();
+  }
+  
+  public Session loginSystem() throws LoginException, RepositoryException {
+    Repository repository = repositoryBuilder.getInstance();
     return repository.login(repositoryCredentials);
   }
 

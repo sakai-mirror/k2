@@ -80,7 +80,8 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes("user1", "SESSION-21312312", baos);
+    newSession();
+    setupAnyTimes("user1", baos);
 
     expect(request.getMethod()).andReturn("POST").anyTimes();
     expect(request.getParameter("id")).andReturn("sitethatexists");
@@ -115,7 +116,8 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes("user1", "SESSION-21312312", baos);
+    newSession();
+    setupAnyTimes("user1", baos);
 
     expect(request.getMethod()).andReturn("POST").anyTimes();
     expect(request.getParameter("id")).andReturn("sitethatdoesnotexist");
@@ -168,7 +170,8 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes("user1", "SESSION-21312312", baos);
+    newSession();
+    setupAnyTimes("user1", baos);
 
     SiteBean siteBean = new SiteBean();
     siteBean.setId("sitethatexists");
@@ -210,7 +213,8 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes("user1", "SESSION-21312312", baos);
+    newSession();
+    setupAnyTimes("user1", baos);
 
     expect(siteService.getSite("sitethatdoesnotexist")).andReturn(null);
     response.reset();
@@ -241,7 +245,8 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes("user1", "SESSION-21312312", baos);
+    newSession();
+    setupAnyTimes("user1", baos);
 
     response.reset();
     expectLastCall();
@@ -272,7 +277,8 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes("user1", "SESSION-21312312", baos);
+    newSession();
+    setupAnyTimes("user1", baos);
 
     expect(request.getMethod()).andReturn("POST").anyTimes();
     // check for a bad method
@@ -306,7 +312,8 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes("user1", "SESSION-21312312", baos);
+    newSession();
+    setupAnyTimes("user1", baos);
 
     expect(request.getMethod()).andReturn("POST").anyTimes();
     // check for a bad method
@@ -340,7 +347,8 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes("user1", "SESSION-21312312", baos);
+    newSession();
+    setupAnyTimes("user1", baos);
 
     expect(request.getMethod()).andReturn("POST").anyTimes();
     // check for a bad method
@@ -375,7 +383,8 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes("user1", "SESSION-21312312", baos);
+    newSession();
+    setupAnyTimes("user1", baos);
 
     expect(request.getMethod()).andReturn("POST").anyTimes();
     // check for a bad method
@@ -410,7 +419,8 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes(null, "sdsdfsdfs", baos);
+    newSession();
+    setupAnyTimes(null, baos);
 
     expect(request.getMethod()).andReturn("POST").anyTimes();
     // check for a bad method
@@ -445,7 +455,8 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes(null, "sdsdfsdfs", baos);
+    newSession();
+    setupAnyTimes(null, baos);
 
     expect(request.getMethod()).andReturn("POST").anyTimes();
     // check for a bad method
@@ -479,7 +490,8 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes(null, "sdsdfsdfs", baos);
+    newSession();
+    setupAnyTimes(null, baos);
 
     expect(request.getMethod()).andReturn("GET").anyTimes();
     // check for a bad method
@@ -513,7 +525,8 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes(null, "sdsdfsdfs", baos);
+    newSession();
+    setupAnyTimes(null, baos);
 
     expect(request.getMethod()).andReturn("GET").anyTimes();
     // check for a bad method
@@ -547,7 +560,8 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes(null, "sdsdfsdfs", baos);
+    newSession();
+    setupAnyTimes(null, baos);
 
     expect(request.getMethod()).andReturn("GET").anyTimes();
     // check for a bad method
@@ -581,7 +595,8 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes(null, "sdsdfsdfs", baos);
+    newSession();
+    setupAnyTimes(null, baos);
 
     expect(request.getMethod()).andReturn("POST").anyTimes();
     // check for a bad method
@@ -614,7 +629,8 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes("user1", "assfsadfsdf", baos);
+    newSession();
+    setupAnyTimes("user1", baos);
 
     expect(request.getMethod()).andReturn("POST").anyTimes();
     SiteBean siteBean = new SiteBean();
@@ -662,7 +678,8 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes("user1", "assfsadfsdf", baos);
+    newSession();
+    setupAnyTimes("user1", baos);
 
     expect(request.getMethod()).andReturn("POST").anyTimes();
     SiteBean siteBean = new SiteBean();
@@ -711,7 +728,8 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes("user1", "assfsadfsdf", baos);
+    newSession();
+    setupAnyTimes("user1", baos);
 
     expect(request.getMethod()).andReturn("POST").anyTimes();
     SiteBean siteBean = new SiteBean();
@@ -754,7 +772,8 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes("user1", "assfsadfsdf", baos);
+    newSession();
+    setupAnyTimes("user1", baos);
 
     expect(request.getMethod()).andReturn("POST").anyTimes();
     expect(siteService.getSite("testSiteA")).andReturn(null);
@@ -789,7 +808,8 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes("user1", "assfsadfsdf", baos);
+    newSession();
+    setupAnyTimes("user1", baos);
 
     expect(request.getMethod()).andReturn("POST").anyTimes();
     SiteBean siteBean = new SiteBean();
@@ -832,7 +852,8 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes("user1", "assfsadfsdf", baos);
+    newSession();
+    setupAnyTimes("user1", baos);
 
     expect(request.getMethod()).andReturn("POST").anyTimes();
     SiteBean siteBean = new SiteBean();
@@ -875,7 +896,8 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes("user1", "assfsadfsdf", baos);
+    newSession();
+    setupAnyTimes("user1", baos);
 
     expect(request.getMethod()).andReturn("POST").anyTimes();
     SiteBean siteBean = new SiteBean();
@@ -910,7 +932,8 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes("user1", "assfsadfsdf", baos);
+    newSession();
+    setupAnyTimes("user1",baos);
 
     expect(request.getMethod()).andReturn("POST").anyTimes();
     SiteBean siteBean = new SiteBean();
@@ -952,7 +975,8 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes("user1", "assfsadfsdf", baos);
+    newSession();
+    setupAnyTimes("user1", baos);
 
     expect(request.getMethod()).andReturn("POST").anyTimes();
     SiteBean siteBean = new SiteBean();
@@ -994,7 +1018,8 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes("user1", "assfsadfsdf", baos);
+    newSession();
+    setupAnyTimes("user1", baos);
 
     expect(request.getMethod()).andReturn("POST").anyTimes();
     SiteBean siteBean = new SiteBean();
@@ -1030,7 +1055,8 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes("user1", "assfsadfsdf", baos);
+    newSession();
+    setupAnyTimes("user1", baos);
 
     expect(request.getMethod()).andReturn("POST").anyTimes();
     expect(siteService.getSite("testSiteA")).andReturn(null);
@@ -1058,7 +1084,8 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes("user1", "assfsadfsdf", baos);
+    newSession();
+    setupAnyTimes("user1", baos);
 
     expect(request.getMethod()).andReturn("POST").anyTimes();
     SiteBean siteBean = new SiteBean();

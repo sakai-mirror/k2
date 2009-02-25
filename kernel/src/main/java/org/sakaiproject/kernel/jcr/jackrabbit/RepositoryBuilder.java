@@ -28,8 +28,12 @@ import com.thoughtworks.xstream.XStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.core.RepositoryImpl;
+import org.apache.jackrabbit.core.config.ConfigurationException;
 import org.apache.jackrabbit.core.config.RepositoryConfig;
 import org.apache.jackrabbit.core.nodetype.NodeTypeManagerImpl;
+import org.sakaiproject.kernel.api.KernelConfigurationException;
+import org.sakaiproject.kernel.internal.api.InitializationAction;
+import org.sakaiproject.kernel.internal.api.KernelInitializtionException;
 import org.sakaiproject.kernel.jcr.jackrabbit.persistance.BundleDbSharedPersistenceManager;
 import org.sakaiproject.kernel.jcr.jackrabbit.persistance.DerbySharedPersistenceManager;
 import org.sakaiproject.kernel.jcr.jackrabbit.persistance.MSSqlSharedPersistenceManager;
@@ -57,7 +61,7 @@ import javax.jcr.Session;
 import javax.jcr.Workspace;
 
 @Singleton
-public class RepositoryBuilder {
+public class RepositoryBuilder implements InitializationAction {
 
   private static final Log log = LogFactory.getLog(RepositoryBuilder.class);
 
@@ -144,6 +148,20 @@ public class RepositoryBuilder {
 
   private RepositoryImpl repository;
 
+  private String contentStr;
+
+  private Injector injector;
+
+  private String sharedFSBlobLocation;
+
+  private String journalLocation;
+
+  private String repositoryHome;
+
+  private String namespacesConfiguration;
+
+  private String nodeTypeConfiguration;
+
   // private String repositoryConfig;
 
   // private String repositoryHome;
@@ -219,8 +237,8 @@ public class RepositoryBuilder {
         repositoryConfigTemplate, dbURL, dbUser, dbPass, dbDriver, dbDialect,
         repositoryHome, contentOnFilesystem, persistanceManagerClass }));
 
-    String contentStr = ResourceLoader.readResource(repositoryConfigTemplate,
-        this.getClass().getClassLoader());
+    contentStr = ResourceLoader.readResource(repositoryConfigTemplate, this
+        .getClass().getClassLoader());
 
     contentStr = contentStr.replaceAll(DB_URL, dbURL);
     contentStr = contentStr.replaceAll(DB_USER, dbUser);
@@ -239,6 +257,22 @@ public class RepositoryBuilder {
 
     if (log.isDebugEnabled())
       log.debug("Repositroy Config is \n" + contentStr);
+
+    this.injector = injector;
+    this.sharedFSBlobLocation = sharedFSBlobLocation;
+    this.journalLocation = journalLocation;
+    this.repositoryHome = repositoryHome;
+    this.namespacesConfiguration = namespacesConfiguration;
+    this.nodeTypeConfiguration = nodeTypeConfiguration;
+
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.kernel.internal.api.InitializationAction#init()
+   */
+  public void init() throws KernelInitializtionException {
 
     ByteArrayInputStream bais = new ByteArrayInputStream(contentStr.getBytes());
     try {
@@ -268,8 +302,17 @@ public class RepositoryBuilder {
         }
       });
       setup(namespacesConfiguration, nodeTypeConfiguration);
+    } catch (ConfigurationException e) {
+      throw new KernelConfigurationException(e.getMessage(), e);
+    } catch (RepositoryException e) {
+      throw new KernelConfigurationException(e.getMessage(), e);
+    } catch (IOException e) {
+      throw new KernelConfigurationException(e.getMessage(), e);
     } finally {
-      bais.close();
+      try {
+        bais.close();
+      } catch (Exception ex) {
+      }
     }
 
     log.info("Repository Builder passed init ");

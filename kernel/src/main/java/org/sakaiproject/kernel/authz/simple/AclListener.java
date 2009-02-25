@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.authz.AccessControlStatement;
 import org.sakaiproject.kernel.api.jcr.EventRegistration;
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
+import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
@@ -34,6 +35,7 @@ import org.sakaiproject.kernel.model.AclIndexBean;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.jcr.LoginException;
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
@@ -56,27 +58,31 @@ public class AclListener implements EventListener, EventRegistration {
   private final JCRNodeFactoryService jcrNodeFactoryService;
   private final EntityManager entityManager;
   private CacheManagerService cacheManagerService;
-
+  private JCRService jcrService;
 
   @Inject
   public AclListener(JCRNodeFactoryService jcrNodeFactoryService,
-      EntityManager entityManager, CacheManagerService cacheManagerService ) {
+      EntityManager entityManager, CacheManagerService cacheManagerService,
+      JCRService jcrService) {
     this.jcrNodeFactoryService = jcrNodeFactoryService;
     this.entityManager = entityManager;
     this.cacheManagerService = cacheManagerService;
+    this.jcrService = jcrService;
+
   }
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.jcr.EventRegistration#register(javax.jcr.observation.ObservationManager)
    */
   public void register(ObservationManager observationManager)
-  throws RepositoryException {
-observationManager.addEventListener(this, Event.PROPERTY_ADDED
-    | Event.PROPERTY_CHANGED | Event.PROPERTY_REMOVED, "/", false, null,
-    new String[] { JCRConstants.NT_FILE, JCRConstants.NT_FOLDER }, false);
+      throws RepositoryException {
+    observationManager.addEventListener(this, Event.PROPERTY_ADDED
+        | Event.PROPERTY_CHANGED | Event.PROPERTY_REMOVED, "/", false, null,
+        new String[] { JCRConstants.NT_FILE, JCRConstants.NT_FOLDER }, false);
 
-}
+  }
 
   /**
    * {@inheritDoc}
@@ -86,87 +92,87 @@ observationManager.addEventListener(this, Event.PROPERTY_ADDED
    */
   public void handleEvent(int type, String userID, String filePath) {
     try {
-    if ((type == Event.PROPERTY_ADDED || type == Event.PROPERTY_CHANGED || type == Event.PROPERTY_REMOVED)) {
+      if ((type == Event.PROPERTY_ADDED || type == Event.PROPERTY_CHANGED || type == Event.PROPERTY_REMOVED)) {
 
-      ArrayList<AclIndexBean> toCreate = new ArrayList<AclIndexBean>();
-      ArrayList<AclIndexBean> toUpdate = new ArrayList<AclIndexBean>();
-      ArrayList<AclIndexBean> toDelete = new ArrayList<AclIndexBean>();
+        ArrayList<AclIndexBean> toCreate = new ArrayList<AclIndexBean>();
+        ArrayList<AclIndexBean> toUpdate = new ArrayList<AclIndexBean>();
+        ArrayList<AclIndexBean> toDelete = new ArrayList<AclIndexBean>();
 
-      Query query = entityManager
-          .createNamedQuery(AclIndexBean.Queries.FINDBY_PATH);
-      query.setParameter(AclIndexBean.QueryParams.FINDBY_PATH_PATH, filePath);
-      List<?> currentIndex = query.getResultList();
+        Query query = entityManager
+            .createNamedQuery(AclIndexBean.Queries.FINDBY_PATH);
+        query.setParameter(AclIndexBean.QueryParams.FINDBY_PATH_PATH, filePath);
+        List<?> currentIndex = query.getResultList();
 
-      try {
-        Node node = jcrNodeFactoryService.getNode(filePath);
-        Property acl = node.getProperty(JCRConstants.MIX_ACL);
-        for (Value val : acl.getValues()) {
-          AccessControlStatement acs = new JcrAccessControlStatementImpl(val
-              .getString());
-
-          switch (type) {
-          case Event.PROPERTY_ADDED:
-            if (inList(acs, currentIndex) == null) {
-              toCreate.add(convert(acs));
-            }
-            break;
-          case Event.PROPERTY_CHANGED:
-            AclIndexBean indexBean = inList(acs, currentIndex);
-            if (indexBean != null) {
-              toUpdate.add(indexBean);
-            }
-            break;
-          case Event.PROPERTY_REMOVED:
-            if (inList(acs, currentIndex) == null) {
-              toDelete.add(convert(acs));
-            }
-            break;
-          }
-        }
-
-        EntityTransaction trans = entityManager.getTransaction();
-        trans.begin();
         try {
-          if (!toCreate.isEmpty()) {
-            for (AclIndexBean bean : toCreate) {
-              entityManager.persist(bean);
-            }
-          } else if (!toUpdate.isEmpty()) {
-            for (AclIndexBean bean : toUpdate) {
-              entityManager.persist(bean);
-            }
-          } else if (!toDelete.isEmpty()) {
-            for (AclIndexBean bean : toDelete) {
-              entityManager.remove(bean);
+          Node node = jcrNodeFactoryService.getNode(filePath);
+          Property acl = node.getProperty(JCRConstants.MIX_ACL);
+          for (Value val : acl.getValues()) {
+            AccessControlStatement acs = new JcrAccessControlStatementImpl(val
+                .getString());
+
+            switch (type) {
+            case Event.PROPERTY_ADDED:
+              if (inList(acs, currentIndex) == null) {
+                toCreate.add(convert(acs));
+              }
+              break;
+            case Event.PROPERTY_CHANGED:
+              AclIndexBean indexBean = inList(acs, currentIndex);
+              if (indexBean != null) {
+                toUpdate.add(indexBean);
+              }
+              break;
+            case Event.PROPERTY_REMOVED:
+              if (inList(acs, currentIndex) == null) {
+                toDelete.add(convert(acs));
+              }
+              break;
             }
           }
-          trans.commit();
-        } catch (Exception e) {
-          LOG.error(
-              "Transaction rolled back due to a problem when updating the ACL index: "
-                  + e.getMessage(), e);
-          trans.rollback();
+
+          EntityTransaction trans = entityManager.getTransaction();
+          trans.begin();
+          try {
+            if (!toCreate.isEmpty()) {
+              for (AclIndexBean bean : toCreate) {
+                entityManager.persist(bean);
+              }
+            } else if (!toUpdate.isEmpty()) {
+              for (AclIndexBean bean : toUpdate) {
+                entityManager.persist(bean);
+              }
+            } else if (!toDelete.isEmpty()) {
+              for (AclIndexBean bean : toDelete) {
+                entityManager.remove(bean);
+              }
+            }
+            trans.commit();
+          } catch (Exception e) {
+            LOG.error(
+                "Transaction rolled back due to a problem when updating the ACL index: "
+                    + e.getMessage(), e);
+            trans.rollback();
+          }
+        } catch (PathNotFoundException e) {
+          // nothing to care about. this happens when there is no ACL
+          // on the node
+        } catch (RepositoryException e) {
+          // nothing we can do
+          LOG.error(e.getMessage(), e);
+        } catch (JCRNodeFactoryServiceException e) {
+          // nothing we can do
+          LOG.error(e.getMessage(), e);
         }
-      } catch (PathNotFoundException e) {
-        // nothing to care about. this happens when there is no ACL
-        // on the node
-      } catch (RepositoryException e) {
-        // nothing we can do
-        LOG.error(e.getMessage(), e);
-      } catch (JCRNodeFactoryServiceException e) {
-        // nothing we can do
-        LOG.error(e.getMessage(), e);
       }
-    }
     } finally {
       try {
         cacheManagerService.unbind(CacheScope.REQUEST);
-      } catch ( Exception ex) {
+      } catch (Exception ex) {
         // not interested
       }
       try {
         cacheManagerService.unbind(CacheScope.THREAD);
-      } catch ( Exception ex ) {
+      } catch (Exception ex) {
         // not interested
       }
     }
@@ -208,18 +214,34 @@ observationManager.addEventListener(this, Event.PROPERTY_ADDED
   }
 
   public void onEvent(EventIterator events) {
-    for (; events.hasNext();) {
-      Event e = events.nextEvent();
+    try {
+      jcrService.loginSystem();
+      for (; events.hasNext();) {
+        Event e = events.nextEvent();
 
-      try {
-        String path = e.getPath();
-        if (path.endsWith(JCRConstants.MIX_ACL)) {
-          handleEvent(e.getType(), e.getUserID(), path);
+        try {
+          String path = e.getPath();
+          if (path.endsWith(JCRConstants.MIX_ACL)) {
+            handleEvent(e.getType(), e.getUserID(), path);
+          }
+        } catch (Exception e1) {
+          LOG.warn("Failed to process event " + e1.getMessage(), e1);
         }
-      } catch (Exception e1) {
-        // TODO Auto-generated catch block
-        e1.printStackTrace();
       }
+    } catch (LoginException e) {
+      LOG.warn("Failed to login to JCR " + e.getMessage(), e);
+    } catch (RepositoryException e) {
+      LOG.warn("Failed to login to JCR " + e.getMessage(), e);
+    } finally {
+      try {
+        jcrService.logout();
+      } catch (LoginException e) {
+        LOG.warn("Failed to logout from JCR " + e.getMessage(), e);
+      } catch (RepositoryException e) {
+        LOG.warn("Failed to logout from JCR " + e.getMessage(), e);
+      }
+      cacheManagerService.unbind(CacheScope.REQUEST);
+      cacheManagerService.unbind(CacheScope.THREAD);
     }
 
   }

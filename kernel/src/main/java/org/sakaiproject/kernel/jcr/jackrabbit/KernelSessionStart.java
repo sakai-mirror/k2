@@ -18,39 +18,41 @@
 package org.sakaiproject.kernel.jcr.jackrabbit;
 
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 
-import org.apache.jackrabbit.core.observation.SynchronousEventListener;
-import org.sakaiproject.kernel.api.jcr.JCRService;
-import org.sakaiproject.kernel.api.memory.CacheManagerService;
-import org.sakaiproject.kernel.jcr.api.JcrContentListener;
+import org.sakaiproject.kernel.internal.api.InitializationAction;
+import org.sakaiproject.kernel.internal.api.KernelInitializtionException;
 
-import java.util.List;
-
+import javax.jcr.LoginException;
 import javax.jcr.RepositoryException;
 
 /**
- * an adapter for synchronous listeners, that get called before save on a node
- * returns.
+ * 
  */
-public class JcrSynchronousContentListenerAdapter extends
-    JcrContentListenerAdapter implements SynchronousEventListener {
+public class KernelSessionStart implements InitializationAction {
 
-  public static final String SYNCHRONOUS_LISTENERS = "sychronous-listeners";
+  private JCRServiceImpl jcrService;
 
   /**
-   * @param listeners
-   * @param cacheManager
-   * @throws RepositoryException
+   * 
    */
   @Inject
-  public JcrSynchronousContentListenerAdapter(
-      @Named(SYNCHRONOUS_LISTENERS) List<JcrContentListener> listeners,
-      CacheManagerService cacheManager, JCRService jcrService) throws RepositoryException {
-    super(listeners, cacheManager, jcrService);
-    unbind = false;
+  public KernelSessionStart(JCRServiceImpl jcrService) {
+    this.jcrService = jcrService;
   }
 
-  
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.kernel.internal.api.InitializationAction#init()
+   */
+  public void init() throws KernelInitializtionException {
+    try {
+      jcrService.loginSystem();
+    } catch (LoginException e) {
+      throw new KernelInitializtionException(e.getMessage(), e);
+    } catch (RepositoryException e) {
+      throw new KernelInitializtionException(e.getMessage(), e);
+    }
+  }
 
 }

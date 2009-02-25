@@ -20,8 +20,11 @@ package org.sakaiproject.kernel.model;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
+import org.sakaiproject.kernel.api.authz.ReferencedObject;
 import org.sakaiproject.kernel.api.authz.SubjectPermissionService;
 import org.sakaiproject.kernel.api.authz.SubjectPermissions;
 import org.sakaiproject.kernel.api.authz.SubjectStatement;
@@ -42,6 +45,7 @@ import java.util.Map;
 public class UserEnvironmentBean implements UserEnvironment {
 
   private static final String USER_ENV_TTL = "userenvironment.ttl";
+  private static final Log LOG = LogFactory.getLog(UserEnvironmentBean.class);
   private transient long expiry;
   private transient SubjectsBean subjectsBean;
   private transient User user;
@@ -79,10 +83,11 @@ public class UserEnvironmentBean implements UserEnvironment {
    * 
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#matches(org.sakaiproject.kernel.api.authz.SubjectStatement)
    */
-  // TODO: No test coverage of this
-  public boolean matches(SubjectStatement subject) {
+  public boolean matches(ReferencedObject referencedObject, SubjectStatement subject) {
     switch (subject.getSubjectType()) {
-    case PROVIDED:
+    case PR:
+      LOG.info("Testing "+subject+" for "+uuid+" at "+referencedObject);
+      // provided
       List<SubjectTokenProvider<String>> providers = registry.getList();
       for (SubjectTokenProvider<String> provider : providers) {
         if (provider.matches(this, subject)) {
@@ -90,7 +95,9 @@ public class UserEnvironmentBean implements UserEnvironment {
         }
       }
       return false;
-    case GROUP:
+    case GR:
+      LOG.info("Testing "+subject+" for "+uuid+" at "+referencedObject);
+      // group/role
       String subjectToken = subject.getSubjectToken();
       loadSubjects();
       if (subjects != null && subjectsBean.hasSubject(subjectToken)) {
@@ -100,12 +107,28 @@ public class UserEnvironmentBean implements UserEnvironment {
         return subjectPermissions.hasPermission(subject.getPermissionToken());
       }
       return false;
-    case USERID:
+    case US:
+      LOG.info("Testing "+subject+" for "+uuid+" at "+referencedObject);
+      // Expliciy user
       return uuid.equals(subject.getSubjectToken());
-    case AUTHENTICATED:
+    case AU:
+      LOG.info("Testing "+subject+" for "+uuid+" at "+referencedObject);
+      // Authenticated
       return (uuid != null && uuid.trim().length() > 0);
-    case ANON:
+    case AN:
+      LOG.info("Testing "+subject+" for "+uuid+" at "+referencedObject);
+      // Anon
       return true;
+    case OW:
+      LOG.info("Testing "+subject+" for "+uuid+" at "+referencedObject+" owner "+referencedObject.getOwner());
+      return uuid.equals(referencedObject.getOwner());
+    case SU:
+      LOG.info("Testing "+subject+" for "+uuid+" at "+referencedObject+" superUser "+isSuperUser());
+      return isSuperUser();
+    case UN:
+      LOG.info("Testing "+subject+" for "+uuid+" at "+referencedObject);
+      // undefined
+      return false;
     }
     return false;
   }
