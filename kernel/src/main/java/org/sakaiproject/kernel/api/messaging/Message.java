@@ -15,8 +15,11 @@
  ******************************************************************************/
 package org.sakaiproject.kernel.api.messaging;
 
+import java.util.Map;
+
 /**
- * Base interface for all message objects.
+ * Base interface for all message objects. Can be used as a simple message
+ * itself or extended.
  */
 public interface Message {
   /**
@@ -33,7 +36,7 @@ public interface Message {
     /**
      * the name of the field.
      */
-    private final String jsonString;
+    private final String niceName;
 
     /**
      * Create a field based on a name.
@@ -42,7 +45,7 @@ public interface Message {
      *          the name of the field
      */
     private Field(String jsonString) {
-      this.jsonString = jsonString;
+      this.niceName = jsonString;
     }
 
     /**
@@ -50,7 +53,7 @@ public interface Message {
      */
     @Override
     public String toString() {
-      return this.jsonString;
+      return this.niceName;
     }
   }
 
@@ -70,7 +73,7 @@ public interface Message {
     /**
      * The type of message.
      */
-    private final String jsonString;
+    private final String niceName;
 
     /**
      * Create a message type based on a string token.
@@ -79,7 +82,7 @@ public interface Message {
      *          the type of message
      */
     private Type(String jsonString) {
-      this.jsonString = jsonString;
+      this.niceName = jsonString;
     }
 
     /**
@@ -87,7 +90,7 @@ public interface Message {
      */
     @Override
     public String toString() {
-      return this.jsonString;
+      return this.niceName;
     }
   }
 
@@ -102,11 +105,28 @@ public interface Message {
    */
   <T> T getField(String key);
 
-  <T> T getField(Enum key);
+  /**
+   * Generic getter for a field. Equivalent to getField(key.toString()).
+   *
+   * @param <T>
+   *          the type to be returned.
+   * @param key
+   *          the key of the field to get.
+   * @return the value found for the requested field. null if not found.
+   */
+  <T> T getField(Enum<?> key);
+
+  /**
+   * Retrieves all fields stored on the message.
+   * 
+   * @return {@link java.util.Map}<String, Object> of fields with non-null keys
+   *         and values.
+   */
+  Map<String, Object> getFields();
 
   /**
    * Generic setter for a field.
-   *
+   * 
    * @param <T>
    *          the type of the value being set.
    * @param key
@@ -116,7 +136,33 @@ public interface Message {
    */
   <T> void setField(String key, T value);
 
-  <T> void setField(Enum key, T value);
+  /**
+   * Generic setter for a field. Equivalent to setField(key.toString, value).
+   *
+   * @param <T>
+   *          the type of the value being set.
+   * @param key
+   *          the field to set a value to.
+   * @param value
+   *          the value to set.
+   */
+  <T> void setField(Enum<?> key, T value);
+
+  /**
+   * Removes a field from the message.
+   *
+   * @param key
+   *          the key of the field to be removed.
+   */
+  void removeField(String key);
+
+  /**
+   * Removes a field from the message.
+   *
+   * @param key
+   *          the key of the field to be removed.
+   */
+  void removeField(Enum<?> key);
 
   /**
    * Gets the main text of the message.
@@ -151,7 +197,7 @@ public interface Message {
   void setTitle(String newTitle);
 
   /**
-   * Gets the type of the message, as specified by opensocial.Message.Type.
+   * Gets the type of the message.
    *
    * @return the type of message
    * @see Type
@@ -159,7 +205,7 @@ public interface Message {
   String getType();
 
   /**
-   * Sets the type of the message, as specified by opensocial.Message.Type.
+   * Sets the type of the message.
    *
    * @param newType
    *          the type of message (enum Message.Type)

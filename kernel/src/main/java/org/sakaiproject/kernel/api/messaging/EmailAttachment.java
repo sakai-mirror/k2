@@ -13,32 +13,32 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package org.sakaiproject.kernel.messaging;
+package org.sakaiproject.kernel.api.messaging;
 
-import org.sakaiproject.kernel.api.messaging.Email;
+import java.io.File;
 
 /**
- *
+ * Container for email attachments.
  */
-public class EmailImpl extends MessageImpl implements Email {
-  /**
-   * {@inheritDoc}
-   *
-   * @see org.sakaiproject.kernel.api.messaging.Email#getAddress()
-   */
-  public String getAddress() {
-    return getField(Email.Field.ADDRESS.toString());
+public class EmailAttachment {
+  private final File file;
+  private final String mimeType;
+
+  public EmailAttachment(File file, String mimeType) {
+    this.file = file;
+    this.mimeType = mimeType;
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @see org.sakaiproject.kernel.api.messaging.Email#setAddress(java.lang.String)
-   */
-  public void setAddress(String address) {
-    setField(Email.Field.ADDRESS.toString(), address);
+  public EmailAttachment(File attachment) {
+    this.file = attachment;
+    mimeType = null;
   }
 
+  public File getFile() {
+    return file;
+  }
 
-
+  public String getMimeType() {
+    return mimeType;
+  }
 }

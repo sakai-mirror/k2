@@ -33,7 +33,7 @@ public interface EmailMessage {
    *
    * @return The sender of this message.
    */
-  EmailAddress getFrom();
+  String getFrom();
 
   /**
    * Set the sender of this message.
@@ -44,27 +44,11 @@ public interface EmailMessage {
   void setFrom(String email);
 
   /**
-   * Set the sender of this message.
-   *
-   * @param emailAddress
-   *          {@link EmailAddress} of message sender.
-   */
-  void setFrom(EmailAddress emailAddress);
-
-  /**
    * Get recipient for replies.
    *
    * @return {@link EmailAddress} of reply to recipient.
    */
-  List<EmailAddress> getReplyTo();
-
-  /**
-   * Add recipient for replies.
-   *
-   * @param email
-   *          EmailAddress of reply to recipient.
-   */
-  void addReplyTo(EmailAddress emailAddress);
+  List<String> getReplyTo();
 
   /**
    * Add recipient for replies.
@@ -73,14 +57,6 @@ public interface EmailMessage {
    *          Email string of reply to recipient.
    */
   void addReplyTo(String email);
-
-  /**
-   * Set recipient for replies.
-   *
-   * @param email
-   *          {@link EmailAddress} of reply to recipient.
-   */
-  void addReplyTo(List<EmailAddress> replyTo);
 
   /**
    * Get recipients of this message that are associated to a certain type
@@ -100,28 +76,6 @@ public interface EmailMessage {
    *          Email to send to.
    */
   void addRecipient(RecipientType type, String email);
-
-  /**
-   * Add a recipient to this message.
-   *
-   * @param type
-   *          How to address the recipient.
-   * @param name
-   *          Name of recipient.
-   * @param email
-   *          Email to send to.
-   */
-  void addRecipient(RecipientType type, EmailAddress address);
-
-  /**
-   * Add multiple recipients to this message.
-   *
-   * @param type
-   *          How to address the recipients.
-   * @param addresses
-   *          List of {@link EmailAddress} to add to this message.
-   */
-  void addRecipients(RecipientType type, List<EmailAddress> addresses);
 
   /**
    * Get all recipients as a flattened list. This is intended to be used for
@@ -200,8 +154,8 @@ public interface EmailMessage {
   String getHeader(String key);
 
   /**
-   * Flattens the headers down to "key: value" strings.
-   *
+   * Retrieves headers in a flattened pattern of "key: value".
+   * 
    * @return List of properly formatted headers. List will be 0 length if no
    *         headers found. Does not return null
    */

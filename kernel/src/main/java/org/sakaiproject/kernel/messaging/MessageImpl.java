@@ -21,10 +21,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
+ * Base implementation for messages
  */
 public class MessageImpl implements Message {
-  private final Map<String, Object> data;
+  private final HashMap<String, Object> data;
 
   public MessageImpl() {
     data = new HashMap<String, Object>();
@@ -49,9 +49,14 @@ public class MessageImpl implements Message {
     return (T) data.get(key);
   }
 
-  public <T> T getField(Enum key) {
+  public <T> T getField(Enum<?> key) {
     return getField(key.toString());
   }
+
+  public Map<String, Object> getFields() {
+    return data;
+  }
+
   /**
    * {@inheritDoc}
    *
@@ -73,6 +78,24 @@ public class MessageImpl implements Message {
   /**
    * {@inheritDoc}
    *
+   * @see org.sakaiproject.kernel.api.messaging.Message#removeField(Enum)
+   */
+  public void removeField(Enum<?> key) {
+    removeField(key.toString());
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @see org.sakaiproject.kernel.api.messaging.Message#removeField(String)
+   */
+  public void removeField(String key) {
+    data.remove(key);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
    * @see org.sakaiproject.kernel.api.messaging.Message#setBody(java.lang.String)
    */
   public void setBody(String newBody) {
@@ -89,7 +112,7 @@ public class MessageImpl implements Message {
     data.put(key, value);
   }
 
-  public <T> void setField(Enum key, T value) {
+  public <T> void setField(Enum<?> key, T value) {
     setField(key.toString(), value);
   }
 

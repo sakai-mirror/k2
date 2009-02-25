@@ -18,9 +18,6 @@
 
 package org.sakaiproject.kernel.api.messaging;
 
-import javax.jms.Message;
-import javax.jms.ObjectMessage;
-
 /**
  *
  */
@@ -32,8 +29,5 @@ public interface MessagingService {
    */
   void send(Message msg);
 
- public ObjectMessage createObjectMessage();
-
-
-
-  }
+  public ObjectMessage createObjectMessage();
+}

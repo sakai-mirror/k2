@@ -18,7 +18,7 @@
 
 package org.sakaiproject.kernel.messaging.email;
 
-import org.sakaiproject.kernel.api.email.CharacterSet;
+import org.apache.commons.lang.CharEncoding;
 import org.sakaiproject.kernel.api.email.ContentType;
 import org.sakaiproject.kernel.api.email.EmailAddress;
 import org.sakaiproject.kernel.api.email.EmailMessage;
@@ -120,7 +120,7 @@ public class JmsEmailMessage implements EmailMessage, Serializable {
    *
    * @see org.sakaiproject.kernel.api.CharacterSet
    */
-  private String characterSet = CharacterSet.UTF_8;
+  private String characterSet = CharEncoding.UTF_8;
 
   /**
    * Format of this message if in plain text.

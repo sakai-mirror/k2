@@ -21,9 +21,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import org.apache.commons.lang.CharEncoding;
 import org.junit.Before;
 import org.junit.Test;
-import org.sakaiproject.kernel.api.email.CharacterSet;
 import org.sakaiproject.kernel.api.email.ContentType;
 import org.sakaiproject.kernel.api.email.EmailAddress;
 import org.sakaiproject.kernel.api.email.PlainTextFormat;
@@ -140,7 +140,7 @@ public class EmailMessageListenerT {
     listener.handleMessage(email);
 
     int contentPos = emailString.indexOf("Content-Type: "
-        + ContentType.TEXT_PLAIN + "; charset=" + CharacterSet.US_ASCII);
+        + ContentType.TEXT_PLAIN + "; charset=" + CharEncoding.US_ASCII);
     assertTrue(contentPos > -1);
   }
 
@@ -163,7 +163,7 @@ public class EmailMessageListenerT {
     listener.handleMessage(email);
 
     int contentPos = emailString.indexOf("Content-Type: "
-        + ContentType.TEXT_PLAIN + "; charset=" + CharacterSet.UTF_8);
+        + ContentType.TEXT_PLAIN + "; charset=" + CharEncoding.UTF_8);
     assertTrue(contentPos > -1);
   }
 
@@ -177,7 +177,7 @@ public class EmailMessageListenerT {
     email.setBody("This is some test text.");
     email.setContentType(ContentType.TEXT_PLAIN);
     email.setFormat(PlainTextFormat.FLOWED);
-    email.setCharacterSet(CharacterSet.UTF_8);
+    email.setCharacterSet(CharEncoding.UTF_8);
 
     final StringBuilder emailString = new StringBuilder();
     listener.addObserver(new Observer() {
@@ -189,7 +189,7 @@ public class EmailMessageListenerT {
 
     int contentPos = emailString.indexOf("Content-Type: "
         + ContentType.TEXT_PLAIN + "; format=" + PlainTextFormat.FLOWED
-        + "; charset=" + CharacterSet.UTF_8);
+        + "; charset=" + CharEncoding.UTF_8);
     assertTrue(contentPos > -1);
   }
 
@@ -203,7 +203,7 @@ public class EmailMessageListenerT {
     email.setBody("This is some test text.");
     email.setContentType(ContentType.TEXT_HTML);
     email.setFormat(PlainTextFormat.FLOWED);
-    email.setCharacterSet(CharacterSet.UTF_8);
+    email.setCharacterSet(CharEncoding.UTF_8);
 
     final StringBuilder emailString = new StringBuilder();
     listener.addObserver(new Observer() {
@@ -214,7 +214,7 @@ public class EmailMessageListenerT {
     listener.handleMessage(email);
 
     int contentPos = emailString.indexOf("Content-Type: "
-        + ContentType.TEXT_HTML + "; charset=" + CharacterSet.UTF_8);
+        + ContentType.TEXT_HTML + "; charset=" + CharEncoding.UTF_8);
     assertTrue(contentPos > -1);
 
     int flowedPos = emailString.indexOf("; format=" + PlainTextFormat.FLOWED);

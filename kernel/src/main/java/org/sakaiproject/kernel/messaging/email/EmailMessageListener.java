@@ -22,10 +22,7 @@ import com.google.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.sakaiproject.kernel.api.email.ContentType;
-import org.sakaiproject.kernel.api.email.EmailAddress;
-import org.sakaiproject.kernel.api.email.EmailMessage;
-import org.sakaiproject.kernel.api.email.RecipientType;
+import org.sakaiproject.kernel.api.messaging.EmailMessage;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -118,7 +115,7 @@ public class EmailMessageListener implements MessageListener {
 
   public void handleMessage(EmailMessage email) throws AddressException,
       UnsupportedEncodingException, SendFailedException, MessagingException {
-    EmailAddress fromAddress = email.getFrom();
+    String fromAddress = email.getField(EmailMessage.Field.FROM);
     if (fromAddress == null) {
       throw new MessagingException("Unable to send without a 'from' address.");
     }
@@ -133,8 +130,8 @@ public class EmailMessageListener implements MessageListener {
     if (contentType != null) {
       // message format is only used when content type is text/plain as
       // specified in the rfc
-      if (ContentType.TEXT_PLAIN.equals(contentType) && format != null
-          && format.trim().length() != 0) {
+      if (EmailMessage.ContentType.TEXT_PLAIN.toString().equals(contentType)
+          && format != null && format.trim().length() != 0) {
         contentType += "; format=" + format;
       }
 
