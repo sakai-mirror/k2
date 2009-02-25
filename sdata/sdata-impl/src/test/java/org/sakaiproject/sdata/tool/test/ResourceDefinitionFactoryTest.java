@@ -43,9 +43,9 @@ public class ResourceDefinitionFactoryTest {
 
   private String[] basePaths = { "/", "/sakai", "/sakai/", null, "" };
 
-  private String[] testPaths = { "sdfsdfsdf", "sdfsdf/", "/",
-      "/sdfsdf/sdfsdf/sdfsdf/sdfssdf/12321",
-      "sdfsdfs/sdfsd/sdfsdf/sdfsdf/sdf/", "" };
+  private String[] testPaths = { "/f/sdfsdfsdf", "/f/sdfsdf/", "/f/",
+      "/f/sdfsdf/sdfsdf/sdfsdf/sdfssdf/12321",
+      "/f/sdfsdfs/sdfsd/sdfsdf/sdfsdf/sdf/", "/f" };
 
   /**
 	 * 
@@ -57,6 +57,7 @@ public class ResourceDefinitionFactoryTest {
     for (String basePath : basePaths) {
       ResourceDefinitionFactoryImpl rdf = new ResourceDefinitionFactoryImpl(
           basePath, new NullSecurityAssertion());
+      
       for (String testPath : testPaths) {
         reset(request);
         expect(request.getPathInfo()).andReturn(testPath).anyTimes();

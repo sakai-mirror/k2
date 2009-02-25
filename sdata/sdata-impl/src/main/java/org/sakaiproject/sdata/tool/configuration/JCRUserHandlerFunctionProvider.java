@@ -19,9 +19,7 @@ package org.sakaiproject.sdata.tool.configuration;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.google.inject.name.Named;
 
-import org.sakaiproject.sdata.tool.JCRUserStorageHandler;
 import org.sakaiproject.sdata.tool.api.SDataFunction;
 import org.sakaiproject.sdata.tool.functions.JCRCreateFolder;
 import org.sakaiproject.sdata.tool.functions.JCRMoveFunction;
@@ -46,18 +44,13 @@ public class JCRUserHandlerFunctionProvider implements
   @Inject
   public JCRUserHandlerFunctionProvider(JCRCreateFolder createFolder,
       JCRMoveFunction move, JCRNodeMetadata node,
-      JCRPermissionsFunction permission, JCRPropertiesFunction properties,
-      @Named(JCRUserStorageHandler.FUNCTION_CREATEFOLDER) String createFolderKey,
-      @Named(JCRUserStorageHandler.FUNCTION_MOVE) String moveKey,
-      @Named(JCRUserStorageHandler.FUNCTION_NODE) String nodeKey,
-      @Named(JCRUserStorageHandler.FUNCTION_PERMISSION) String permssionKey,
-      @Named(JCRUserStorageHandler.FUNCTION_PROPERTIES) String propertiesKey) {
+      JCRPermissionsFunction permission, JCRPropertiesFunction properties) {
 
-    functionMap.put(createFolderKey, createFolder);
-    functionMap.put(moveKey, move);
-    functionMap.put(nodeKey, node);
-    functionMap.put(permssionKey, permission);
-    functionMap.put(propertiesKey, properties);
+    functionMap.put(createFolder.getKey(), createFolder);
+    functionMap.put(move.getKey(), move);
+    functionMap.put(node.getKey(), node);
+    functionMap.put(permission.getKey(), permission);
+    functionMap.put(properties.getKey(), properties);
   }
 
   /**

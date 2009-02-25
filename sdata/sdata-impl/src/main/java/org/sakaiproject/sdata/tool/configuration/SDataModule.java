@@ -30,6 +30,7 @@ import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.ServiceManager;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
 import org.sakaiproject.kernel.api.authz.PermissionQueryService;
+import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.component.core.guice.ServiceProvider;
 import org.sakaiproject.kernel.util.ResourceLoader;
@@ -140,6 +141,9 @@ public class SDataModule extends AbstractModule {
     ServiceManager sm = k.getServiceManager();
 
     // get the services we depend on
+    bind(JCRService.class).toProvider(
+        new ServiceProvider<JCRService>(sm,
+            JCRService.class));
     bind(JCRNodeFactoryService.class).toProvider(
         new ServiceProvider<JCRNodeFactoryService>(sm,
             JCRNodeFactoryService.class));
