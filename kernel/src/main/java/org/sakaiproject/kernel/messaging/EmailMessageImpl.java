@@ -15,7 +15,6 @@
  ******************************************************************************/
 package org.sakaiproject.kernel.messaging;
 
-import java.io.Serializable;
 import org.sakaiproject.kernel.api.messaging.EmailMessage;
 import org.sakaiproject.kernel.api.messaging.MessagingService;
 
@@ -27,6 +26,8 @@ import java.util.List;
  */
 public class EmailMessageImpl extends MultipartMessageImpl implements
     EmailMessage {
+
+  private static final long serialVersionUID = 1L;
 
   public EmailMessageImpl(MessagingService messagingService) {
     super(messagingService);

@@ -4,20 +4,20 @@
  */
 package org.sakaiproject.kernel.messaging;
 
-import java.io.Serializable;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Map;
 import org.sakaiproject.kernel.api.messaging.Message;
 import org.sakaiproject.kernel.api.messaging.MessagingService;
 import org.sakaiproject.kernel.api.messaging.MultipartMessage;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+
 /**
  *
- * @author chall39
  */
 public class MultipartMessageImpl extends MessageImpl implements
     MultipartMessage {
+
+  private static final long serialVersionUID = 1L;
 
   public MultipartMessageImpl(MessagingService messagingService) {
     super(messagingService);
@@ -28,7 +28,7 @@ public class MultipartMessageImpl extends MessageImpl implements
    *
    * @param mimeType
    * @param attachment
-   * @see MultipartMessage#addAttachment(java.lang.String, java.io.Serializable) 
+   * @see MultipartMessage#addAttachment(java.lang.String, java.io.Serializable)
    */
   public void addAttachment(String mimeType, Serializable attachment) {
     MessageImpl msg = new MessageImpl(null);
@@ -39,7 +39,7 @@ public class MultipartMessageImpl extends MessageImpl implements
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @param message
    * @see MultipartMessage#addPart(org.sakaiproject.kernel.api.messaging.Message)
    */

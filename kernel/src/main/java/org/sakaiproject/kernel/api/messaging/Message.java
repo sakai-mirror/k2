@@ -22,7 +22,7 @@ import java.util.Map;
  * Base interface for all message objects. Can be used as a simple message
  * itself or extended.
  */
-public interface Message extends Serializable {
+public interface Message {
 
   /**
    * An enumeration of field names in a message.
@@ -122,7 +122,7 @@ public interface Message extends Serializable {
 
   /**
    * Retrieves all fields stored on the message.
-   * 
+   *
    * @return {@link java.util.Map}<String, Object> of fields with non-null keys
    *         and values.
    */
@@ -130,7 +130,7 @@ public interface Message extends Serializable {
 
   /**
    * Generic setter for a field.
-   * 
+   *
    * @param <T>
    *          the type of the value being set.
    * @param key
@@ -152,7 +152,7 @@ public interface Message extends Serializable {
 
   /**
    * Add a header to the message.
-   * 
+   *
    * @param key key of the header.
    * @param value value of the header.
    */

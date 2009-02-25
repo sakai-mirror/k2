@@ -15,18 +15,19 @@
  ******************************************************************************/
 package org.sakaiproject.kernel.messaging;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import org.sakaiproject.kernel.api.messaging.Message;
+import org.sakaiproject.kernel.api.messaging.MessagingService;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import org.sakaiproject.kernel.api.messaging.MessagingService;
 
 /**
  * Base implementation for messages
  */
-public class MessageImpl implements Message {
+public class MessageImpl implements Message, Serializable {
+
+  private static final long serialVersionUID = 1L;
 
   private final MessagingService messagingService;
   private final HashMap<String, Serializable> data;
