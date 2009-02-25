@@ -17,25 +17,25 @@
     PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
     "http://java.sun.com/dtd/web-app_2_3.dtd">
 <web-app>
-  <!--
-    Bootstrap JAX-RS with this class (must extend JAX-RS Application).  The
-    Application class is the standard implementation-agnostic way to start up a
-    JAX-RS app.
-  -->
   <context-param>
-    <param-name>javax.ws.rs.core.Application</param-name>
-    <param-value>org.sakaiproject.webappsample.SampleJaxRsApplication</param-value>
+    <param-name>resteasy.providers</param-name>
+    <param-value>
+    	org.sakaiproject.resteasy.DefaultXmlProvider,
+    	org.sakaiproject.resteasy.DefaultJsonProvider,
+    	org.sakaiproject.resteasy.InputStreamProvider
+    </param-value>
   </context-param>
   <listener>
-    <listener-class>org.sakaiproject.kernel.webapp.JaxRsApplicationListener</listener-class>
+      <listener-class>org.sakaiproject.resteasy.ResteasyK2Bootstrap</listener-class>
   </listener>
+
   <servlet>
-    <servlet-name>hello</servlet-name>
-    <servlet-class>org.sakaiproject.webappsample.HelloWorldServlet</servlet-class>
+    <servlet-name>resteasy</servlet-name>
+    <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet-mapping>
-    <servlet-name>hello</servlet-name>
-    <url-pattern>/hello</url-pattern>
+    <servlet-name>resteasy</servlet-name>
+    <url-pattern>/*</url-pattern>
   </servlet-mapping>
 </web-app>

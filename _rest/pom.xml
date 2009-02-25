@@ -7,32 +7,16 @@
     <artifactId>base</artifactId>
     <version>0.1-SNAPSHOT</version>
   </parent>
-  <name>component-sample</name>
+  <name>JAXRS Webapp</name>
   <groupId>org.sakaiproject.kernel2.agnostic</groupId>
-  <artifactId>component-sample</artifactId>
+  <artifactId>_rest</artifactId>
   <version>0.1-SNAPSHOT</version>
-  <packaging>jar</packaging>
+  <packaging>war</packaging>
   <dependencies>
     <dependency>
       <groupId>org.sakaiproject.kernel2.agnostic</groupId>
-      <artifactId>shared</artifactId>
+      <artifactId>jaxrs</artifactId>
       <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.sakaiproject.kernel2.agnostic</groupId>
-      <artifactId>kernel</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>jaxrs-api</artifactId>
-      <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>

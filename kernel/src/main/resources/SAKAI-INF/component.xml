@@ -259,6 +259,13 @@
       <artifactId>commons-email</artifactId>
       <version>1.1</version>
     </dependency>
+<!-- JAX-RS -->
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>jaxrs-api</artifactId>
+      <version>1.0.2.GA</version>
+      <scope>SHARE</scope>
+    </dependency>
    
 
   </dependencies>

@@ -19,14 +19,20 @@ package org.sakaiproject.componentsample.api;
 
 import java.util.Map;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+
 /**
  * This is a simple service interface, it will say HelloWorld
  */
+@Path("/hello")
 public interface HelloWorldService {
 
   /**
    * @return a greeting.
    */
+	@GET
+	@Path("/greeting")
   String getGreeting();
   
   /*

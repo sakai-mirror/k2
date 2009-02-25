@@ -21,7 +21,11 @@ import com.google.inject.Inject;
 
 import org.sakaiproject.componentsample.api.HelloWorldService;
 import org.sakaiproject.componentsample.api.InternalDateService;
+import org.sakaiproject.kernel.api.KernelManager;
+import org.sakaiproject.kernel.api.Registry;
+import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.jcr.JCRService;
+import org.sakaiproject.kernel.api.rest.JaxRsSingletonProvider;
 import org.sakaiproject.kernel.model.GroupMembershipBean;
 
 import java.util.HashMap;
@@ -43,7 +47,8 @@ public class HelloWorldServiceGuicedImpl implements HelloWorldService {
   private InternalDateService internalDateService;
   private JCRService jcrService;
   private EntityManager entityManager;
-  
+  private JaxRsSingletonProvider provider;
+
   /**
    * A constructor that supports injection, so I know that when the class is
    * created, it is complete and ready for use.
@@ -60,6 +65,25 @@ public class HelloWorldServiceGuicedImpl implements HelloWorldService {
     this.internalDateService = internalDateService;
     this.jcrService = jcrService;
     this.entityManager = entityManager;
+    Registry<Class<?>, JaxRsSingletonProvider> jaxRsSingletonRegistry =
+    	new KernelManager().getService(RegistryService.class).
+    	getRegistry(JaxRsSingletonProvider.JAXRS_SINGLETON_REGISTRY);
+    final HelloWorldServiceGuicedImpl service = this;
+    provider = new JaxRsSingletonProvider() {
+		public Object getJaxRsSingleton() {
+			return service;
+		}
+		public Class<?> getKey() {
+			return service.getClass();
+		}
+		public int getPriority() {
+			return 0;
+		}
+		public String toString() {
+			return "Provider for: " + service.toString();
+		}
+	};
+	jaxRsSingletonRegistry.add(provider);
   }
 
   /**
