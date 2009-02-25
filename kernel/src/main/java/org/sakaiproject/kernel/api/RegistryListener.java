@@ -18,10 +18,38 @@
 package org.sakaiproject.kernel.api;
 
 /**
- * 
+ * A listener interface that users of a registry can implement to be notified of
+ * changes in the registry. The registry must be added to the Registry in
+ * question to be notified of changes.
  */
 public interface RegistryListener<T> {
+  /**
+   * Invoked when an element is added to the registry. Implementors should not
+   * throw any exception, the item has already been added and this is not an
+   * opportunity to veto the addition.
+   * 
+   * @param wasAdded
+   *          the element that was added to the registry.
+   */
   void added(T wasAdded);
+
+  /**
+   * Invoked when an element is removed from the registry. Implementors should
+   * not throw any exception, the item has already been removed and this is not
+   * an opportunity to veto the removal.
+   * 
+   * @param wasRemoved
+   *          the element that was removed from the registry.
+   */
   void removed(T wasRemoved);
+
+  /**
+   * Invoked when an element is updated in the registry. Implementors should not
+   * throw any exception, the item has already been updated and this is not an
+   * opportunity to veto the update.
+   * 
+   * @param wasUpdated
+   *          the element that was updated in the registry.
+   */
   void updated(T wasUpdated);
 }

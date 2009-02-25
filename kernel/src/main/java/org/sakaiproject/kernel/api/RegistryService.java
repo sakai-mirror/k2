@@ -19,7 +19,7 @@ package org.sakaiproject.kernel.api;
 
 
 /**
- * The registry service manages registries that are used to register providers
+ * The registry service manages registers that are used to register providers.
  */
 public interface RegistryService {
   /**
