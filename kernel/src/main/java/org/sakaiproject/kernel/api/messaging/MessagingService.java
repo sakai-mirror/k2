@@ -19,7 +19,13 @@
 package org.sakaiproject.kernel.api.messaging;
 
 /**
+ * Service to send messages in the system.  Each message is generic but can be
+ * handled different depending on properties and which queue/topc the message is
+ * directed to.
  *
+ * @see Message
+ * @see MultipartMessage
+ * @see EmailMessage
  */
 public interface MessagingService {
   /**
@@ -28,6 +34,4 @@ public interface MessagingService {
    * @param msg
    */
   void send(Message msg);
-
-  public ObjectMessage createObjectMessage();
 }

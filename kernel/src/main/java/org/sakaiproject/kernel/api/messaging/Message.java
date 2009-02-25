@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.sakaiproject.kernel.api.messaging;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -26,12 +27,14 @@ public interface Message {
    * An enumeration of field names in a message.
    */
   public static enum Field {
+    /** the field name for the sender. */
+    FROM("From"),
     /** the field name for body. */
-    BODY("body"),
+    BODY("Body"),
     /** the field name for title. */
-    TITLE("title"),
+    TITLE("Title"),
     /** the field name for type. */
-    TYPE("type");
+    TYPE("Type");
 
     /**
      * the name of the field.
@@ -122,7 +125,7 @@ public interface Message {
    * @return {@link java.util.Map}<String, Object> of fields with non-null keys
    *         and values.
    */
-  Map<String, Object> getFields();
+  Map<String, Serializable> getFields();
 
   /**
    * Generic setter for a field.
@@ -134,7 +137,7 @@ public interface Message {
    * @param value
    *          the value to set.
    */
-  <T> void setField(String key, T value);
+  void setField(String key, Serializable value);
 
   /**
    * Generic setter for a field. Equivalent to setField(key.toString, value).
@@ -146,7 +149,7 @@ public interface Message {
    * @param value
    *          the value to set.
    */
-  <T> void setField(Enum<?> key, T value);
+  void setField(Enum<?> key, Serializable value);
 
   /**
    * Removes a field from the message.
@@ -169,7 +172,7 @@ public interface Message {
    *
    * @return the main text of the message
    */
-  String getBody();
+  <T> T getBody();
 
   /**
    * Sets the main text of the message. HTML attributes are allowed and are
@@ -178,7 +181,7 @@ public interface Message {
    * @param newBody
    *          the main text of the message
    */
-  void setBody(String newBody);
+  void setBody(Serializable newBody);
 
   /**
    * Gets the title of the message.
@@ -212,4 +215,6 @@ public interface Message {
    * @see Type
    */
   void setType(String newType);
+
+  void send();
 }

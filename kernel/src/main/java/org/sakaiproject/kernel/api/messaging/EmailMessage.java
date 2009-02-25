@@ -48,8 +48,8 @@ public interface EmailMessage extends Message {
   }
 
   public static enum Field {
-    FROM("From"), TO("To"), CC("Cc"), BCC("Bcc"), REPLY_TO("Reply-To"), SUBJECT(
-        "Subject"), DATE("Date"), CONTENT_TYPE("Content-Type");
+    FROM("From"), TO("To"), CC("Cc"), BCC("Bcc"), REPLY_TO("Reply-To"),
+    SUBJECT("Subject"), DATE("Date"), CONTENT_TYPE("Content-Type");
 
     /**
      * the name of the header associated to the field.
@@ -135,21 +135,6 @@ public interface EmailMessage extends Message {
    * @return the subject of the message.
    */
   String getSubject();
-
-  /**
-   * Get the attachments on the message
-   *
-   * @return List of {@link EmailAttachment} attached to the message.
-   */
-  List<EmailAttachment> getAttachments();
-
-  /**
-   * Add an attachment to the message.
-   *
-   * @param attachment
-   *          EmailAttachment to include with the message.
-   */
-  void addAttachment(EmailAttachment attachment);
 
   /**
    * Remove a header from the message. Does nothing if header is not found.

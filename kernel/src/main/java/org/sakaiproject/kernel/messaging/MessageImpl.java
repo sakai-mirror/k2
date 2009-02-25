@@ -15,19 +15,23 @@
  ******************************************************************************/
 package org.sakaiproject.kernel.messaging;
 
+import java.io.Serializable;
 import org.sakaiproject.kernel.api.messaging.Message;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.sakaiproject.kernel.api.messaging.MessagingService;
 
 /**
  * Base implementation for messages
  */
 public class MessageImpl implements Message {
-  private final HashMap<String, Object> data;
+  private final MessagingService messagingService;
+  private final HashMap<String, Serializable> data;
 
-  public MessageImpl() {
-    data = new HashMap<String, Object>();
+  public MessageImpl(MessagingService messagingService) {
+    this.messagingService = messagingService;
+    data = new HashMap<String, Serializable>();
   }
 
   /**
@@ -35,7 +39,7 @@ public class MessageImpl implements Message {
    *
    * @see org.sakaiproject.kernel.api.messaging.Message#getBody()
    */
-  public String getBody() {
+  public <T> T getBody() {
     return getField(Message.Field.BODY.toString());
   }
 
@@ -44,7 +48,6 @@ public class MessageImpl implements Message {
    *
    * @see org.sakaiproject.kernel.api.messaging.Message#getField(java.lang.String)
    */
-  @SuppressWarnings("unchecked")
   public <T> T getField(String key) {
     return (T) data.get(key);
   }
@@ -53,7 +56,7 @@ public class MessageImpl implements Message {
     return getField(key.toString());
   }
 
-  public Map<String, Object> getFields() {
+  public Map<String, Serializable> getFields() {
     return data;
   }
 
@@ -98,7 +101,7 @@ public class MessageImpl implements Message {
    *
    * @see org.sakaiproject.kernel.api.messaging.Message#setBody(java.lang.String)
    */
-  public void setBody(String newBody) {
+  public void setBody(Serializable newBody) {
     setField(Message.Field.BODY.toString(), newBody);
   }
 
@@ -108,11 +111,11 @@ public class MessageImpl implements Message {
    * @see org.sakaiproject.kernel.api.messaging.Message#setField(java.lang.String,
    *      java.lang.Object)
    */
-  public <T> void setField(String key, T value) {
+  public void setField(String key, Serializable value) {
     data.put(key, value);
   }
 
-  public <T> void setField(Enum<?> key, T value) {
+  public void setField(Enum<?> key, Serializable value) {
     setField(key.toString(), value);
   }
 
@@ -134,4 +137,7 @@ public class MessageImpl implements Message {
     setField(Message.Field.TYPE.toString(), newType);
   }
 
+  public void send() {
+    messagingService.send(this);
+  }
 }

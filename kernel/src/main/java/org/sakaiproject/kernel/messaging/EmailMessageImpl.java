@@ -15,9 +15,7 @@
  ******************************************************************************/
 package org.sakaiproject.kernel.messaging;
 
-import org.sakaiproject.kernel.api.messaging.EmailAttachment;
 import org.sakaiproject.kernel.api.messaging.EmailMessage;
-import org.sakaiproject.kernel.api.messaging.MessagingException;
 import org.sakaiproject.kernel.api.messaging.MessagingService;
 
 import java.util.ArrayList;
@@ -26,23 +24,9 @@ import java.util.List;
 /**
  * Implementation of Email messages.
  */
-public class EmailMessageImpl extends MessageImpl implements EmailMessage {
-  private final MessagingService messagingService;
-  private final ArrayList<EmailAttachment> attachments;
-
+public class EmailMessageImpl extends MultipartMessageImpl implements EmailMessage {
   public EmailMessageImpl(MessagingService messagingService) {
-    this.messagingService = messagingService;
-    attachments = new ArrayList<EmailAttachment>();
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * @see org.sakaiproject.kernel.api.messaging.EmailMessage#addAttachment(org.sakaiproject.kernel.api.messaging.EmailAttachment)
-   *      )
-   */
-  public void addAttachment(EmailAttachment attachment) {
-    attachments.add(attachment);
+    super(messagingService);
   }
 
   /**
@@ -51,7 +35,7 @@ public class EmailMessageImpl extends MessageImpl implements EmailMessage {
    * @see org.sakaiproject.kernel.api.messaging.EmailMessage#addReplyTo(java.lang.String)
    */
   public void addReplyTo(String email) {
-    List<String> replyTos = getField(EmailMessage.Field.REPLY_TO);
+    ArrayList<String> replyTos = getField(EmailMessage.Field.REPLY_TO);
     if (replyTos == null) {
       replyTos = new ArrayList<String>();
     }
@@ -67,7 +51,7 @@ public class EmailMessageImpl extends MessageImpl implements EmailMessage {
    * @see org.sakaiproject.kernel.api.messaging.EmailMessage#addTo(java.lang.String)
    */
   public void addTo(String email) {
-    List<String> replyTos = getField(EmailMessage.Field.TO);
+    ArrayList<String> replyTos = getField(EmailMessage.Field.TO);
     if (replyTos == null) {
       replyTos = new ArrayList<String>();
     }
@@ -80,28 +64,10 @@ public class EmailMessageImpl extends MessageImpl implements EmailMessage {
   /**
    * {@inheritDoc}
    *
-   * @see org.sakaiproject.kernel.api.messaging.EmailMessage#getAttachments()
-   */
-  public List<EmailAttachment> getAttachments() {
-    return attachments;
-  }
-
-  /**
-   * {@inheritDoc}
-   *
    * @see org.sakaiproject.kernel.api.messaging.EmailMessage#removeHeader(java.lang.String)
    */
   public void removeHeader(String key) {
     removeField(key);
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * @see org.sakaiproject.kernel.api.messaging.EmailMessage#send()
-   */
-  public void send() throws MessagingException {
-    messagingService.send(this);
   }
 
   /**
