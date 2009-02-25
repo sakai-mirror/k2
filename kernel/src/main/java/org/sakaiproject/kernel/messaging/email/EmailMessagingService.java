@@ -28,7 +28,7 @@ public class EmailMessagingService extends JmsMessagingService implements
   private static final Log LOG = LogFactory.getLog(EmailMessagingService.class);
   public static final String EMAIL_JSMTYPE = "kernel.jms.email";
   public static final String EMAIL_QUEUE_NAME = "kernel.email";
-  private Long clientId = new Long(1L); // /always use the synchronized getters
+  private Long clientId = Long.valueOf(1L); // /always use the synchronized getters
                                         // and setters
 
   private ArrayList<Connection> connections = new ArrayList<Connection>();

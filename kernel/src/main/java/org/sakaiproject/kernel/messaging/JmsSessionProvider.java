@@ -31,18 +31,20 @@ import org.apache.activemq.ActiveMQConnectionFactory;
  * Provide a configured JMS Session for Guice.
  */
 public class JmsSessionProvider implements Provider<Session> {
-	
-	private ConnectionFactory connectionFactory;
+
+  private ConnectionFactory connectionFactory;
+
   @Inject
-  public JmsSessionProvider(@Named(JmsMessagingService.PROP_ACTIVEMQ_BROKER_URL) String url) {
-	  connectionFactory =  new ActiveMQConnectionFactory(url);
+  public JmsSessionProvider(
+      @Named(JmsMessagingService.PROP_ACTIVEMQ_BROKER_URL) String url) {
+    connectionFactory = new ActiveMQConnectionFactory(url);
   }
 
   public JmsSessionProvider() {
-	// TODO Auto-generated constructor stub
-}
+    // TODO Auto-generated constructor stub
+  }
 
-public Session get() {
+  public Session get() {
     return null;
   }
 }

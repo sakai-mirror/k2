@@ -1,23 +1,30 @@
 package org.sakaiproject.kernel.messaging.email.commons;
 
-import java.io.Serializable;
-
-import javax.jms.JMSException;
+import com.google.inject.Inject;
 
 import org.sakaiproject.kernel.api.messaging.MessagingException;
 import org.sakaiproject.kernel.messaging.email.EmailMessagingService;
 
-import com.google.inject.Inject;
+import java.io.Serializable;
+
+import javax.jms.JMSException;
 
 public class SimpleEmail extends org.apache.commons.mail.SimpleEmail implements
 		Serializable {
 
 	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	@Inject
-	private EmailMessagingService messagingService;
+   * 
+   */
+  private static final long serialVersionUID = -1268416437690324620L;
+  private transient EmailMessagingService messagingService;
+  
+  /**
+   * 
+   */
+  @Inject
+  public SimpleEmail(EmailMessagingService messagingService) {
+    this.messagingService = messagingService;
+  }
 
 	/**
 	 * Does the work of actually sending the email.

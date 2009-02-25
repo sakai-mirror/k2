@@ -47,6 +47,7 @@ import javax.jms.ObjectMessage;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.SendFailedException;
+import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -61,7 +62,7 @@ import javax.mail.internet.MimePart;
 public class EmailMessageListener implements MessageListener {
   private static final Log log = LogFactory.getLog(EmailMessageListener.class);
 
-  private final javax.mail.Session session;
+  private final Session session;
 
   /**
    * Testing variable to enable/disable the calling of Transport.send
@@ -75,7 +76,7 @@ public class EmailMessageListener implements MessageListener {
   private Observable observable;
 
   @Inject
-  public EmailMessageListener(javax.mail.Session session) {
+  public EmailMessageListener(Session session) {
     this.session = session;
     observable = new EmailMessageObservable();
   }
