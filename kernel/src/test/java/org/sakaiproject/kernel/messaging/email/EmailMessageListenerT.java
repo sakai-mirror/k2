@@ -17,16 +17,15 @@
  */
 package org.sakaiproject.kernel.messaging.email;
 
-import org.junit.Ignore;
-import org.sakaiproject.kernel.api.messaging.EmailMessage;
-import org.sakaiproject.kernel.messaging.EmailMessageImpl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import org.apache.commons.lang.CharEncoding;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.sakaiproject.kernel.api.messaging.EmailMessage;
+import org.sakaiproject.kernel.messaging.EmailMessageImpl;
 
 import java.io.File;
 import java.io.Serializable;

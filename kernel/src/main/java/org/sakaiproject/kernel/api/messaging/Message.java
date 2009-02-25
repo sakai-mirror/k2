@@ -22,7 +22,7 @@ import java.util.Map;
  * Base interface for all message objects. Can be used as a simple message
  * itself or extended.
  */
-public interface Message {
+public interface Message extends Serializable {
 
   /**
    * An enumeration of field names in a message.

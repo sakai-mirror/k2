@@ -25,7 +25,7 @@ import java.util.Map;
 /**
  * Base implementation for messages
  */
-public class MessageImpl implements Message, Serializable {
+public class MessageImpl implements Message {
 
   private static final long serialVersionUID = 1L;
 
