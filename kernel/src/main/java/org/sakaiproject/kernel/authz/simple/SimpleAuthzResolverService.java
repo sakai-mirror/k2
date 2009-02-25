@@ -238,9 +238,10 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
             addAcs(acl, e.getKey(), e.getValue());
           }
         } else {
-          // it should not be possible to reach this code.
-          // the acl was empty so we can just use this one.
-          acl = parentAcl;
+          throw new IllegalStateException("If a cached parent ACL was going "
+              + "to be used, it should have been detected earlier when "
+              + "prepopulating with keys, theoretically this exception "
+              + "should never be thrown.");
         }
         break;
       } else {
@@ -411,7 +412,7 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
     }
     LOG.warn("Request Granted Removed ");
   }
-  
+
   public void invalidateAcl(ReferencedObject referencedObject) {
     cachedAcl.removeChildren(referencedObject.getKey());
   }
