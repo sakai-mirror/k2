@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations under the License.
  */
 
-
 package org.sakaiproject.sdata.tool.functions;
 
 import com.google.inject.Inject;
@@ -41,6 +40,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class JCRCreateFolder implements SDataFunction {
 
+  private static final String KEY = "c";
   private JCRNodeFactoryService jcrNodeFactory;
 
   @Inject
@@ -81,6 +81,15 @@ public class JCRCreateFolder implements SDataFunction {
   }
 
   public void destroy() {
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.sdata.tool.api.SDataFunction#getKey()
+   */
+  public String getKey() {
+    return KEY;
   }
 
 }

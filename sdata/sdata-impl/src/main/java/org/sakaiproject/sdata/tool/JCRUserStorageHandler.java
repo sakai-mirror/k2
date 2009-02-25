@@ -50,10 +50,6 @@ public class JCRUserStorageHandler extends JCRHandler {
   public static final String BASE_REPOSITORY_PATH = BASE_NAME
       + ".baseRepositoryPath";
 
-  public static final String BASE_URL = BASE_NAME + ".baseURL";
-
-  public static final String HANDLER_KEY = BASE_NAME + ".handlerKey";
-
   public static final String RESOURCE_DEFINITION_FACTORY = BASE_NAME
       + ".resourceDefinitionFactory";
 
@@ -80,6 +76,8 @@ public class JCRUserStorageHandler extends JCRHandler {
 
   public static final String LOCK_DEFINITION = BASE_NAME + ".lockDefinition";
 
+  private static final String KEY = "p";
+
   /**
    * Construct a JCRUserStorageHandler, and use a Resource Definition factory to
    * translate the request URL into the repository location.
@@ -98,6 +96,15 @@ public class JCRUserStorageHandler extends JCRHandler {
         serializer);
     
     System.err.println(this+" Resource Defintion Factory is "+resourceDefinitionFactory);
+  }
+  
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.sdata.tool.JCRHandler#getKey()
+   */
+  @Override
+  public String getKey() {
+    return KEY;
   }
 
 }

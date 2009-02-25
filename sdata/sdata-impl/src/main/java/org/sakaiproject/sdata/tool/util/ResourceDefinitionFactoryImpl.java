@@ -36,19 +36,17 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class ResourceDefinitionFactoryImpl implements ResourceDefinitionFactory {
 
-  private String basePath;
+  private static final String BASE_URL = "/f";
 
-  private String baseUrl;
+  private String basePath;
 
   private SecurityAssertion securityAssertion;
 
   @Inject
   public ResourceDefinitionFactoryImpl(
       @Named(JCRHandler.BASE_REPOSITORY_PATH) String basePath,
-      @Named(JCRHandler.BASE_URL) String baseUrl,
       @Named(JCRHandler.SECURITY_ASSERTION) SecurityAssertion securityAssertion) {
     this.basePath = basePath;
-    this.baseUrl = baseUrl;
     this.securityAssertion = securityAssertion;
     
   }
@@ -64,7 +62,7 @@ public class ResourceDefinitionFactoryImpl implements ResourceDefinitionFactory 
       throws SDataException {
 
     String path = request.getPathInfo();
-    path = path.substring(baseUrl.length());
+    path = path.substring(BASE_URL.length());
 
     if (path.endsWith("/")) {
       path = path.substring(0, path.length() - 1);

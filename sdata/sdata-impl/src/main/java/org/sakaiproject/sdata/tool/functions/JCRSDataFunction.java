@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations under the License.
  */
 
-
 package org.sakaiproject.sdata.tool.functions;
 
 import org.apache.commons.logging.Log;
@@ -28,26 +27,20 @@ import org.sakaiproject.sdata.tool.api.SDataFunction;
  * 
  * @author ieb
  */
-public abstract class JCRSDataFunction implements SDataFunction
-{
+public abstract class JCRSDataFunction implements SDataFunction {
 
-	private static final Log log = LogFactory.getLog(JCRSDataFunction.class);
+  private static final Log log = LogFactory.getLog(JCRSDataFunction.class);
 
-	/**
-	 * @param string
-	 * @param e
-	 */
-	protected void logException(String string, Exception e)
-	{
-		if (log.isDebugEnabled())
-		{
-			log.warn("Type missmatch ", e);
-		}
-		else
-		{
-			log.warn("Type missmatch " + e.getMessage());
-		}
-	}
+  /**
+   * @param string
+   * @param e
+   */
+  protected void logException(String string, Exception e) {
+    if (log.isDebugEnabled()) {
+      log.warn("Type missmatch ", e);
+    } else {
+      log.warn("Type missmatch " + e.getMessage());
+    }
+  }
 
-	
 }

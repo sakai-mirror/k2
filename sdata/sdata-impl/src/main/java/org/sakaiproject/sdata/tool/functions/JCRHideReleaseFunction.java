@@ -16,40 +16,49 @@
  * specific language governing permissions and limitations under the License.
  */
 
-
 package org.sakaiproject.sdata.tool.functions;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.sakaiproject.sdata.tool.api.Handler;
 import org.sakaiproject.sdata.tool.api.ResourceDefinition;
 import org.sakaiproject.sdata.tool.api.SDataException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * This has not been implemented as yet.
  * 
  * @author ieb
  */
-public class JCRHideReleaseFunction extends JCRSDataFunction
-{
+public class JCRHideReleaseFunction extends JCRSDataFunction {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sakaiproject.sdata.tool.api.SDataFunction#call(org.sakaiproject.sdata.tool.api.Handler,
-	 *      javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
-	 *      org.sakaiproject.sdata.tool.api.ResourceDefinition)
-	 */
-	public void call(Handler handler, HttpServletRequest request,
-			HttpServletResponse response, Object target, ResourceDefinition rp)
-			throws SDataException
-	{
-		SDataFunctionUtil.checkMethod(request.getMethod(), "POST");
-		// TODO To Be implemented
-		throw new SDataException(HttpServletResponse.SC_NOT_IMPLEMENTED,
-				" Hide Release is not implemented in JCR at the moment ");
-	}
+  private static final String KEY = "h";
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.sakaiproject.sdata.tool.api.SDataFunction#call(org.sakaiproject.sdata
+   * .tool.api.Handler, javax.servlet.http.HttpServletRequest,
+   * javax.servlet.http.HttpServletResponse, java.lang.Object,
+   * org.sakaiproject.sdata.tool.api.ResourceDefinition)
+   */
+  public void call(Handler handler, HttpServletRequest request,
+      HttpServletResponse response, Object target, ResourceDefinition rp)
+      throws SDataException {
+    SDataFunctionUtil.checkMethod(request.getMethod(), "POST");
+    // TODO To Be implemented
+    throw new SDataException(HttpServletResponse.SC_NOT_IMPLEMENTED,
+        " Hide Release is not implemented in JCR at the moment ");
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.sdata.tool.api.SDataFunction#getKey()
+   */
+  public String getKey() {
+    return KEY;
+  }
 
 }

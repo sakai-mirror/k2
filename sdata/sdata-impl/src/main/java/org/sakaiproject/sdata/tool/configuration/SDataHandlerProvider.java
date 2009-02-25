@@ -19,7 +19,6 @@ package org.sakaiproject.sdata.tool.configuration;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.google.inject.name.Named;
 
 import org.sakaiproject.sdata.tool.JCRHandler;
 import org.sakaiproject.sdata.tool.JCRUserStorageHandler;
@@ -42,13 +41,11 @@ public class SDataHandlerProvider implements Provider<Map<String, Handler>> {
   @Inject
   public SDataHandlerProvider(JCRHandler jcrHandler,
       JCRUserStorageHandler jcrUserStorageHandler,
-      SnoopHandler snoopHandler,
-      @Named(JCRHandler.HANDLER_KEY) String jcrKey,
-      @Named(JCRUserStorageHandler.HANDLER_KEY) String jcrUserKey) {
+      SnoopHandler snoopHandler) {
     handlerMap = new HashMap<String, Handler>();
-    handlerMap.put(jcrKey, jcrHandler);
-    handlerMap.put(jcrUserKey, jcrUserStorageHandler);
-    handlerMap.put("snoop", snoopHandler);
+    handlerMap.put(jcrHandler.getKey(), jcrHandler);
+    handlerMap.put(jcrUserStorageHandler.getKey(), jcrUserStorageHandler);
+    handlerMap.put(snoopHandler.getKey(), snoopHandler);
   }
 
   /**

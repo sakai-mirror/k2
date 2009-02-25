@@ -35,5 +35,10 @@ public interface SDataFunction {
   void call(Handler handler, HttpServletRequest request,
       HttpServletResponse response, Object target, ResourceDefinition rp)
       throws SDataException;
+  
+  /**
+   * @return get the Key.
+   */
+  String getKey();
 
 }

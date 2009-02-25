@@ -19,9 +19,7 @@ package org.sakaiproject.sdata.tool.configuration;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.google.inject.name.Named;
 
-import org.sakaiproject.sdata.tool.JCRHandler;
 import org.sakaiproject.sdata.tool.api.SDataFunction;
 import org.sakaiproject.sdata.tool.functions.JCRCreateFolder;
 import org.sakaiproject.sdata.tool.functions.JCRHideReleaseFunction;
@@ -49,22 +47,15 @@ public class JCRHandlerFunctionProvider implements
   public JCRHandlerFunctionProvider(JCRCreateFolder createFolder,
       JCRHideReleaseFunction hideRelease, JCRMoveFunction move,
       JCRNodeMetadata node, JCRPermissionsFunction permission,
-      JCRPropertiesFunction properties, JCRTaggingFunction tagging,
-      @Named(JCRHandler.FUNCTION_CREATEFOLDER) String createFolderKey,
-      @Named(JCRHandler.FUNCTION_HIDE_RELEASE) String hideReleaseKey,
-      @Named(JCRHandler.FUNCTION_MOVE) String moveKey,
-      @Named(JCRHandler.FUNCTION_NODE) String nodeKey,
-      @Named(JCRHandler.FUNCTION_PERMISSION) String permssionKey,
-      @Named(JCRHandler.FUNCTION_PROPERTIES) String propertiesKey,
-      @Named(JCRHandler.FUNCTION_TAG) String taggingKey) {
+      JCRPropertiesFunction properties, JCRTaggingFunction tagging) {
 
-    functionMap.put(createFolderKey, createFolder);
-    functionMap.put(hideReleaseKey, hideRelease);
-    functionMap.put(moveKey, move);
-    functionMap.put(nodeKey, node);
-    functionMap.put(permssionKey, permission);
-    functionMap.put(propertiesKey, properties);
-    functionMap.put(taggingKey, tagging);
+    functionMap.put(createFolder.getKey(), createFolder);
+    functionMap.put(hideRelease.getKey(), hideRelease);
+    functionMap.put(move.getKey(), move);
+    functionMap.put(node.getKey(), node);
+    functionMap.put(permission.getKey(), permission);
+    functionMap.put(properties.getKey(), properties);
+    functionMap.put(tagging.getKey(), tagging);
   }
 
   /**

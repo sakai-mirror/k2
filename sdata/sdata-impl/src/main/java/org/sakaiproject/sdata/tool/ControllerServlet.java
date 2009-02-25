@@ -164,6 +164,10 @@ public class ControllerServlet extends HttpServlet {
 
     }
 
+    public String getKey() {
+      return null;
+    }
+
   };
 
   private SDataConfiguration configuration;

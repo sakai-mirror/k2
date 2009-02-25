@@ -106,10 +106,6 @@ public class JCRHandler extends AbstractHandler {
   public static final String BASE_REPOSITORY_PATH = BASE_NAME
       + ".baseRepositoryPath";
 
-  public static final String BASE_URL = BASE_NAME + ".baseURL";
-
-  public static final String HANDLER_KEY = BASE_NAME + ".handlerKey";
-
   public static final String RESOURCE_DEFINITION_FACTORY = BASE_NAME
       + ".resourceDefinitionFactory";
 
@@ -122,21 +118,11 @@ public class JCRHandler extends AbstractHandler {
   public static final String SECURITY_ASSERTION = BASE_NAME
       + ".securityAssertion";
 
-  public static final String FUNCTION_CREATEFOLDER = BASE_NAME
-      + ".function.createfolder";
-  public static final String FUNCTION_MOVE = BASE_NAME + ".function.move";
-  public static final String FUNCTION_NODE = BASE_NAME + ".function.node";
-  public static final String FUNCTION_PERMISSION = BASE_NAME
-      + ".function.permission";
-  public static final String FUNCTION_PROPERTIES = BASE_NAME
-      + ".function.properties";
-  public static final String FUNCTION_TAG = BASE_NAME + ".function.tag";
-  public static final String FUNCTION_HIDE_RELEASE = BASE_NAME
-      + ".function.hiderelease";
-
   public static final String LOCK_DEFINITION = BASE_NAME + ".lockDefinition";
 
   public static final String BASE_SECURED_PATH = BASE_NAME + ".securedPath";
+
+  private static final String KEY = "f";
 
   private transient JCRNodeFactoryService jcrNodeFactory;
 
@@ -895,5 +881,12 @@ public class JCRHandler extends AbstractHandler {
       HttpServletResponse response) {
     response.setHeader("x-sdata-handler", this.getClass().getName());
     response.setHeader("x-sdata-url", request.getPathInfo());
+  }
+
+  /**
+   * @return
+   */
+  public String getKey() {
+    return KEY;
   }
 }

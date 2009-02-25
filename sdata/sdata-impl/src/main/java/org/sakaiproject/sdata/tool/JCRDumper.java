@@ -177,4 +177,13 @@ public class JCRDumper implements Handler
 	{
 	}
 
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.sdata.tool.api.Handler#getKey()
+   */
+  public String getKey() {
+    return "dump";
+  }
+
 }

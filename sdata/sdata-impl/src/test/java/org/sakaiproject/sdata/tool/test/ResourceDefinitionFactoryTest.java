@@ -56,7 +56,7 @@ public class ResourceDefinitionFactoryTest {
 
     for (String basePath : basePaths) {
       ResourceDefinitionFactoryImpl rdf = new ResourceDefinitionFactoryImpl(
-          basePath, "", new NullSecurityAssertion());
+          basePath, new NullSecurityAssertion());
       for (String testPath : testPaths) {
         reset(request);
         expect(request.getPathInfo()).andReturn(testPath).anyTimes();

@@ -42,6 +42,7 @@ public class SnoopHandler implements Handler {
    */
   private static final long serialVersionUID = -936439457646310920L;
   private static final Log log = LogFactory.getLog(SnoopHandler.class);
+  private static final String KEY = "snoop";
 
   /*
    * (non-Javadoc)
@@ -182,6 +183,14 @@ public class SnoopHandler implements Handler {
    */
   public void sendMap(HttpServletRequest request, HttpServletResponse response,
       Map<String, Object> contetMap) throws IOException {
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.sdata.tool.api.Handler#getkey()
+   */
+  public String getKey() {
+    return KEY;
   }
 
 }

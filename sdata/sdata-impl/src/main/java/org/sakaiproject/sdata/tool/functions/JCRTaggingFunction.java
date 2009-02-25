@@ -62,6 +62,7 @@ public class JCRTaggingFunction extends JCRSDataFunction {
   private static final String ALL_TAGS = "a";
   private static final String LIST_TAGS = "l";
   private static final Log LOG = LogFactory.getLog(JCRTaggingFunction.class);
+  private static final String KEY = "t";
 
   private JCRTagging jcrTagging;
   private JCRNodeFactoryService jcrNodeFactoryService;
@@ -160,5 +161,13 @@ public class JCRTaggingFunction extends JCRSDataFunction {
           "IO Error " + e.getMessage());
     }
 
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.sdata.tool.api.SDataFunction#getKey()
+   */
+  public String getKey() {
+    return KEY;
   }
 }
