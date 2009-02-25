@@ -19,10 +19,10 @@
 package org.sakaiproject.kernel.messaging;
 
 import javax.jms.ConnectionFactory;
-import javax.jms.Message;
 import javax.jms.ObjectMessage;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.sakaiproject.kernel.api.messaging.Message;
 import org.sakaiproject.kernel.api.messaging.MessagingService;
 
 import com.google.inject.name.Named;

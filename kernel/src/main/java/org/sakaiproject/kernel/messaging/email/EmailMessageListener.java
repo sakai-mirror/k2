@@ -121,24 +121,9 @@ public class EmailMessageListener implements MessageListener {
     }
 
     String content = email.getBody();
-    String charset = email.getCharacterSet();
-    String format = email.getFormat();
-    List<File> attachments = email.getAttachments();
 
     // build the content type
     String contentType = email.getContentType();
-    if (contentType != null) {
-      // message format is only used when content type is text/plain as
-      // specified in the rfc
-      if (EmailMessage.ContentType.TEXT_PLAIN.toString().equals(contentType)
-          && format != null && format.trim().length() != 0) {
-        contentType += "; format=" + format;
-      }
-
-      if (charset != null && charset.trim().length() != 0) {
-        contentType += "; charset=" + charset;
-      }
-    }
 
     // transform to a MimeMessage
     ArrayList<EmailAddress> invalids = new ArrayList<EmailAddress>();
