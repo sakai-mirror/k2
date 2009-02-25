@@ -163,7 +163,7 @@ public class EmailMessageListener implements MessageListener {
     // add in any additional headers
     Map<String, Serializable> headers = (Map<String, Serializable>) email.
         getField(Message.Field.HEADERS);
-    if (!headers.isEmpty()) {
+    if (headers != null && !headers.isEmpty()) {
       for (Entry<String, Serializable> header : headers.entrySet()) {
         mimeMsg.setHeader(header.getKey(), (String) header.getValue());
       }
@@ -171,7 +171,7 @@ public class EmailMessageListener implements MessageListener {
 
     List<Message> parts = (List<Message>) email.getField(
         MultipartMessage.Field.PARTS);
-    if (parts.size() == 0) {
+    if (parts == null || parts.size() == 0) {
       setContent(mimeMsg, content, contentType);
     } else {
       // create a multipart container
