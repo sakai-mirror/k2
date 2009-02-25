@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.sakaiproject.kernel.messaging;
 
+import java.io.Serializable;
 import org.sakaiproject.kernel.api.messaging.EmailMessage;
 import org.sakaiproject.kernel.api.messaging.MessagingService;
 
@@ -24,7 +25,9 @@ import java.util.List;
 /**
  * Implementation of Email messages.
  */
-public class EmailMessageImpl extends MultipartMessageImpl implements EmailMessage {
+public class EmailMessageImpl extends MultipartMessageImpl implements
+    EmailMessage {
+
   public EmailMessageImpl(MessagingService messagingService) {
     super(messagingService);
   }
@@ -34,8 +37,10 @@ public class EmailMessageImpl extends MultipartMessageImpl implements EmailMessa
    *
    * @see org.sakaiproject.kernel.api.messaging.EmailMessage#addReplyTo(java.lang.String)
    */
+  @SuppressWarnings("unchecked")
   public void addReplyTo(String email) {
-    ArrayList<String> replyTos = getField(EmailMessage.Field.REPLY_TO);
+    ArrayList<String> replyTos = (ArrayList<String>) getField(
+        EmailMessage.Field.REPLY_TO);
     if (replyTos == null) {
       replyTos = new ArrayList<String>();
     }
@@ -50,8 +55,10 @@ public class EmailMessageImpl extends MultipartMessageImpl implements EmailMessa
    *
    * @see org.sakaiproject.kernel.api.messaging.EmailMessage#addTo(java.lang.String)
    */
+  @SuppressWarnings("unchecked")
   public void addTo(String email) {
-    ArrayList<String> replyTos = getField(EmailMessage.Field.TO);
+    ArrayList<String> replyTos = (ArrayList<String>) getField(
+        EmailMessage.Field.TO);
     if (replyTos == null) {
       replyTos = new ArrayList<String>();
     }
@@ -59,15 +66,6 @@ public class EmailMessageImpl extends MultipartMessageImpl implements EmailMessa
       replyTos.add(email);
     }
     setField(EmailMessage.Field.TO, replyTos);
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * @see org.sakaiproject.kernel.api.messaging.EmailMessage#removeHeader(java.lang.String)
-   */
-  public void removeHeader(String key) {
-    removeField(key);
   }
 
   /**
@@ -94,10 +92,6 @@ public class EmailMessageImpl extends MultipartMessageImpl implements EmailMessa
    * @see org.sakaiproject.kernel.api.messaging.EmailMessage#setHeader(java.lang.String,
    *      java.lang.String)
    */
-  public void setHeader(String key, String value) {
-    setField(key, value);
-  }
-
   /**
    * {@inheritDoc}
    *
@@ -113,7 +107,7 @@ public class EmailMessageImpl extends MultipartMessageImpl implements EmailMessa
    * @see org.sakaiproject.kernel.api.messaging.EmailMessage#getContentType()
    */
   public String getContentType() {
-    return getField(EmailMessage.Field.CONTENT_TYPE);
+    return (String) getField(EmailMessage.Field.CONTENT_TYPE);
   }
 
   /**
@@ -122,7 +116,7 @@ public class EmailMessageImpl extends MultipartMessageImpl implements EmailMessa
    * @see org.sakaiproject.kernel.api.messaging.EmailMessage#getFrom()
    */
   public String getFrom() {
-    return getField(EmailMessage.Field.FROM);
+    return (String) getField(EmailMessage.Field.FROM);
   }
 
   /**
@@ -131,7 +125,7 @@ public class EmailMessageImpl extends MultipartMessageImpl implements EmailMessa
    * @see org.sakaiproject.kernel.api.messaging.EmailMessage#getHeader(java.lang.String)
    */
   public String getHeader(String key) {
-    return getField(key);
+    return (String) getField(key);
   }
 
   /**
@@ -139,8 +133,9 @@ public class EmailMessageImpl extends MultipartMessageImpl implements EmailMessa
    *
    * @see org.sakaiproject.kernel.api.messaging.EmailMessage#getReplyTo()
    */
+  @SuppressWarnings("unchecked")
   public List<String> getReplyTo() {
-    return getField(EmailMessage.Field.REPLY_TO);
+    return (List<String>) getField(EmailMessage.Field.REPLY_TO);
   }
 
   /**
@@ -148,8 +143,9 @@ public class EmailMessageImpl extends MultipartMessageImpl implements EmailMessa
    *
    * @see org.sakaiproject.kernel.api.messaging.EmailMessage#getSubject()
    */
+  @SuppressWarnings("unchecked")
   public String getSubject() {
-    return getField(EmailMessage.Field.SUBJECT);
+    return (String) getField(EmailMessage.Field.SUBJECT);
   }
 
   /**
@@ -157,7 +153,8 @@ public class EmailMessageImpl extends MultipartMessageImpl implements EmailMessa
    *
    * @see org.sakaiproject.kernel.api.messaging.EmailMessage#getTo()
    */
+  @SuppressWarnings("unchecked")
   public List<String> getTo() {
-    return getField(EmailMessage.Field.TO);
+    return (List<String>) getField(EmailMessage.Field.TO);
   }
 }

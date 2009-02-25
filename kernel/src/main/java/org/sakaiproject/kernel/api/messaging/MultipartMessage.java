@@ -22,7 +22,20 @@ public interface MultipartMessage extends Message {
     }
   }
 
+  /**
+   * Add an attachment to the message.  Convenience method for adding a part to
+   * the message.  This constructs a new message and adds it to the message
+   * being called.
+   * 
+   * @param mimeType
+   * @param attachment
+   */
   void addAttachment(String mimeType, Serializable attachment);
 
+  /**
+   * Add a message as a part of the calling message.
+   *
+   * @param message
+   */
   void addPart(Message message);
 }

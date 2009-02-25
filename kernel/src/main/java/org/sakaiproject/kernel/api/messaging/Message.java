@@ -22,11 +22,13 @@ import java.util.Map;
  * Base interface for all message objects. Can be used as a simple message
  * itself or extended.
  */
-public interface Message {
+public interface Message extends Serializable {
+
   /**
    * An enumeration of field names in a message.
    */
   public static enum Field {
+
     /** the field name for the sender. */
     FROM("From"),
     /** the field name for body. */
@@ -34,8 +36,9 @@ public interface Message {
     /** the field name for title. */
     TITLE("Title"),
     /** the field name for type. */
-    TYPE("Type");
-
+    TYPE("Type"),
+    /** headers for the message */
+    HEADERS("Headers");
     /**
      * the name of the field.
      */
@@ -64,6 +67,7 @@ public interface Message {
    * The type of a message.
    */
   public static enum Type {
+
     /** An email. */
     EMAIL("email"),
     /** A short private message. */
@@ -72,7 +76,6 @@ public interface Message {
     PRIVATE_MESSAGE("privateMessage"),
     /** A message to a specific user that can be seen by more than that user. */
     PUBLIC_MESSAGE("publicMessage");
-
     /**
      * The type of message.
      */
@@ -100,13 +103,11 @@ public interface Message {
   /**
    * Generic getter for a field.
    *
-   * @param <T>
-   *          the type to be returned.
    * @param key
    *          the key of the field to get.
    * @return the value found for the requested field. null if not found.
    */
-  <T> T getField(String key);
+  Serializable getField(String key);
 
   /**
    * Generic getter for a field. Equivalent to getField(key.toString()).
@@ -117,7 +118,7 @@ public interface Message {
    *          the key of the field to get.
    * @return the value found for the requested field. null if not found.
    */
-  <T> T getField(Enum<?> key);
+  Serializable getField(Enum<?> key);
 
   /**
    * Retrieves all fields stored on the message.
@@ -142,14 +143,27 @@ public interface Message {
   /**
    * Generic setter for a field. Equivalent to setField(key.toString, value).
    *
-   * @param <T>
-   *          the type of the value being set.
    * @param key
    *          the field to set a value to.
    * @param value
    *          the value to set.
    */
   void setField(Enum<?> key, Serializable value);
+
+  /**
+   * Add a header to the message.
+   * 
+   * @param key key of the header.
+   * @param value value of the header.
+   */
+  void setHeader(String key, String value);
+
+  /**
+   * Remove a header from the message.
+   *
+   * @param key key of header to remove.
+   */
+  void removeHeader(String key);
 
   /**
    * Removes a field from the message.
@@ -172,7 +186,7 @@ public interface Message {
    *
    * @return the main text of the message
    */
-  <T> T getBody();
+  Serializable getBody();
 
   /**
    * Sets the main text of the message. HTML attributes are allowed and are

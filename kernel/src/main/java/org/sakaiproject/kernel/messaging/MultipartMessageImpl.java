@@ -16,12 +16,20 @@ import org.sakaiproject.kernel.api.messaging.MultipartMessage;
  *
  * @author chall39
  */
-public class MultipartMessageImpl extends MessageImpl implements MultipartMessage {
+public class MultipartMessageImpl extends MessageImpl implements
+    MultipartMessage {
 
   public MultipartMessageImpl(MessagingService messagingService) {
     super(messagingService);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @param mimeType
+   * @param attachment
+   * @see MultipartMessage#addAttachment(java.lang.String, java.io.Serializable) 
+   */
   public void addAttachment(String mimeType, Serializable attachment) {
     MessageImpl msg = new MessageImpl(null);
     msg.setType(mimeType);
@@ -29,8 +37,16 @@ public class MultipartMessageImpl extends MessageImpl implements MultipartMessag
     addPart(msg);
   }
 
+  /**
+   * {@inheritDoc}
+   * 
+   * @param message
+   * @see MultipartMessage#addPart(org.sakaiproject.kernel.api.messaging.Message)
+   */
+  @SuppressWarnings("unchecked")
   public void addPart(Message message) {
-    ArrayList<Message> parts = (ArrayList<Message>) getField(MultipartMessage.Field.PARTS);
+    ArrayList<Message> parts = (ArrayList<Message>) getField(
+        MultipartMessage.Field.PARTS);
     if (parts == null || parts.isEmpty()) {
       parts = new ArrayList<Message>();
     }

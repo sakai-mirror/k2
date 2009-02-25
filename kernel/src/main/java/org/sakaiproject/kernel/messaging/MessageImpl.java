@@ -16,6 +16,7 @@
 package org.sakaiproject.kernel.messaging;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import org.sakaiproject.kernel.api.messaging.Message;
 
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import org.sakaiproject.kernel.api.messaging.MessagingService;
  * Base implementation for messages
  */
 public class MessageImpl implements Message {
+
   private final MessagingService messagingService;
   private final HashMap<String, Serializable> data;
 
@@ -37,9 +39,41 @@ public class MessageImpl implements Message {
   /**
    * {@inheritDoc}
    *
+   * @param key
+   * @param value
+   * @see Message#setHeader(java.lang.String, java.lang.String)
+   */
+  @SuppressWarnings("unchecked")
+  public void setHeader(String key, String value) {
+    HashMap<String, String> headers = (HashMap<String, String>) getField(
+        Message.Field.HEADERS);
+    if (headers == null) {
+      headers = new HashMap<String, String>();
+    }
+    headers.put(key, value);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @param key
+   * @see Message#removeField(java.lang.String)
+   */
+  @SuppressWarnings("unchecked")
+  public void removeHeader(String key) {
+    HashMap<String, String> headers = (HashMap<String, String>) getField(
+        Message.Field.HEADERS);
+    if (headers != null) {
+      headers.remove(key);
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   *
    * @see org.sakaiproject.kernel.api.messaging.Message#getBody()
    */
-  public <T> T getBody() {
+  public Serializable getBody() {
     return getField(Message.Field.BODY.toString());
   }
 
@@ -48,11 +82,18 @@ public class MessageImpl implements Message {
    *
    * @see org.sakaiproject.kernel.api.messaging.Message#getField(java.lang.String)
    */
-  public <T> T getField(String key) {
-    return (T) data.get(key);
+  public Serializable getField(String key) {
+    return data.get(key);
   }
 
-  public <T> T getField(Enum<?> key) {
+  /**
+   * {@inheritDoc}
+   * @param <T>
+   * @param key
+   * @return
+   * @see Message#getField(java.lang.Enum)
+   */
+  public Serializable getField(Enum<?> key) {
     return getField(key.toString());
   }
 
@@ -66,7 +107,7 @@ public class MessageImpl implements Message {
    * @see org.sakaiproject.kernel.api.messaging.Message#getTitle()
    */
   public String getTitle() {
-    return getField(Message.Field.TITLE.toString());
+    return (String) getField(Message.Field.TITLE.toString());
   }
 
   /**
@@ -75,7 +116,7 @@ public class MessageImpl implements Message {
    * @see org.sakaiproject.kernel.api.messaging.Message#getType()
    */
   public String getType() {
-    return getField(Message.Field.TYPE.toString());
+    return (String) getField(Message.Field.TYPE.toString());
   }
 
   /**
@@ -115,6 +156,13 @@ public class MessageImpl implements Message {
     data.put(key, value);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @param key
+   * @param value
+   * @see Message#setField(java.lang.Enum, java.io.Serializable)
+   */
   public void setField(Enum<?> key, Serializable value) {
     setField(key.toString(), value);
   }
@@ -137,6 +185,11 @@ public class MessageImpl implements Message {
     setField(Message.Field.TYPE.toString(), newType);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @see Message#send()
+   */
   public void send() {
     messagingService.send(this);
   }

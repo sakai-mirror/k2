@@ -20,12 +20,13 @@ package org.sakaiproject.kernel.messaging.email;
 
 import com.google.inject.Inject;
 
+import java.io.Serializable;
+import javax.mail.Message.RecipientType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.messaging.EmailMessage;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -35,10 +36,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Map.Entry;
 
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
 import javax.jms.JMSException;
-import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 import javax.mail.MessagingException;
@@ -52,20 +50,20 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimePart;
+import org.sakaiproject.kernel.api.messaging.Message;
+import org.sakaiproject.kernel.api.messaging.MultipartMessage;
 
 /**
  *
  */
 public class EmailMessageListener implements MessageListener {
+
   private static final Log log = LogFactory.getLog(EmailMessageListener.class);
-
-  private final Session session;
-
+  private final javax.mail.Session session;
   /**
    * Testing variable to enable/disable the calling of Transport.send
    */
   private boolean allowTransport = true;
-
   /**
    * Object to notify observers of changes in this class. This should be
    * considered a testing instrumentation.
@@ -87,12 +85,12 @@ public class EmailMessageListener implements MessageListener {
    *
    * @see javax.jms.MessageListener#onMessage(javax.jms.Message)
    */
-  public void onMessage(Message jmsMsg) {
+  public void onMessage(javax.jms.Message jmsMsg) {
     if (jmsMsg instanceof ObjectMessage) {
       ObjectMessage objMsg = (ObjectMessage) jmsMsg;
       try {
         // get the email message and break out the parts
-        EmailMessage email = (EmailMessage) objMsg.getObject();
+        Message email = (Message) objMsg.getObject();
         handleMessage(email);
       } catch (JMSException e) {
         // log for now. We need to return a message to the sender that something
@@ -113,94 +111,91 @@ public class EmailMessageListener implements MessageListener {
     }
   }
 
-  public void handleMessage(EmailMessage email) throws AddressException,
+  @SuppressWarnings("unchecked")
+  public void handleMessage(Message email) throws AddressException,
       UnsupportedEncodingException, SendFailedException, MessagingException {
-    String fromAddress = email.getField(EmailMessage.Field.FROM);
+    String fromAddress = (String) email.getField(EmailMessage.Field.FROM);
     if (fromAddress == null) {
       throw new MessagingException("Unable to send without a 'from' address.");
     }
 
-    String content = email.getBody();
+    String content = (String) email.getBody();
 
     // build the content type
-    String contentType = email.getContentType();
+    String contentType =
+        (String) email.getField(EmailMessage.Field.CONTENT_TYPE);
 
     // transform to a MimeMessage
-    ArrayList<EmailAddress> invalids = new ArrayList<EmailAddress>();
+    ArrayList<String> invalids = new ArrayList<String>();
 
     // convert and validate the 'from' address
-    InternetAddress from = new InternetAddress(fromAddress.getAddress(), true);
-    from.setPersonal(fromAddress.getPersonal());
+    InternetAddress from = new InternetAddress(fromAddress, true);
 
     // convert and validate reply to addresses
-    InternetAddress[] replyTo = emails2Internets(email.getReplyTo(), invalids);
+    List<String> replyTos = (List<String>) email.getField(
+        EmailMessage.Field.REPLY_TO);
+    InternetAddress[] replyTo = emails2Internets(replyTos, invalids);
 
     // convert and validate the 'to' addresses
-    InternetAddress[] to = emails2Internets(email
-        .getRecipients(RecipientType.TO), invalids);
+    List<String> tos = (List<String>) email.getField(EmailMessage.Field.TO);
+    InternetAddress[] to = emails2Internets(tos, invalids);
 
     // convert and validate 'cc' addresses
-    InternetAddress[] cc = emails2Internets(email
-        .getRecipients(RecipientType.CC), invalids);
+    List<String> cs = (List<String>) email.getField(EmailMessage.Field.CC);
+    InternetAddress[] cc = emails2Internets(cs, invalids);
 
     // convert and validate 'bcc' addresses
-    InternetAddress[] bcc = emails2Internets(email
-        .getRecipients(RecipientType.BCC), invalids);
-
-    // convert and validate actual email addresses
-    InternetAddress[] actual = emails2Internets(email
-        .getRecipients(RecipientType.ACTUAL), invalids);
+    List<String> bccs = (List<String>) email.getField(EmailMessage.Field.BCC);
+    InternetAddress[] bcc = emails2Internets(tos, invalids);
 
     int totalRcpts = to.length + cc.length + bcc.length;
-    if (totalRcpts == 0 && actual.length == 0) {
+    if (totalRcpts == 0) {
       throw new MessagingException("No recipients to send to.");
     }
 
     MimeMessage mimeMsg = new MimeMessage(session);
     mimeMsg.setFrom(from);
     mimeMsg.setReplyTo(replyTo);
-    mimeMsg.setRecipients(javax.mail.Message.RecipientType.TO, to);
-    mimeMsg.setRecipients(javax.mail.Message.RecipientType.CC, cc);
-    mimeMsg.setRecipients(javax.mail.Message.RecipientType.BCC, bcc);
+    mimeMsg.setRecipients(RecipientType.TO, to);
+    mimeMsg.setRecipients(RecipientType.CC, cc);
+    mimeMsg.setRecipients(RecipientType.BCC, bcc);
 
-    if (attachments.size() == 0) {
-      setContent(mimeMsg, content, charset, contentType);
+    // add in any additional headers
+    Map<String, Serializable> headers = (Map<String, Serializable>) email.
+        getField(Message.Field.HEADERS);
+    if (!headers.isEmpty()) {
+      for (Entry<String, Serializable> header : headers.entrySet()) {
+        mimeMsg.setHeader(header.getKey(), (String) header.getValue());
+      }
+    }
+
+    List<Message> parts = (List<Message>) email.getField(
+        MultipartMessage.Field.PARTS);
+    if (parts.size() == 0) {
+      setContent(mimeMsg, content, contentType);
     } else {
       // create a multipart container
       Multipart multipart = new MimeMultipart();
 
       // create a body part for the message text
       MimeBodyPart msgBodyPart = new MimeBodyPart();
-      setContent(msgBodyPart, content, charset, contentType);
+      setContent(msgBodyPart, content, contentType);
 
       // add the message part to the container
       multipart.addBodyPart(msgBodyPart);
 
       // add attachments
-      for (File attachment : attachments) {
-        MimeBodyPart attachPart = createAttachmentPart(attachment);
-        multipart.addBodyPart(attachPart);
+      for (Message part : parts) {
+        addPart(multipart, part);
       }
 
       // set the multipart container as the content of the message
       mimeMsg.setContent(multipart);
     }
 
-    // add in any additional headers
-    Map<String, String> headers = email.getHeaders();
-    if (!headers.isEmpty()) {
-      for (Entry<String, String> header : headers.entrySet()) {
-        mimeMsg.setHeader(header.getKey(), header.getValue());
-      }
-    }
-
     if (allowTransport) {
       // send
-      if (actual.length == 0) {
-        Transport.send(mimeMsg);
-      } else {
-        Transport.send(mimeMsg, actual);
-      }
+      Transport.send(mimeMsg);
     } else {
       try {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -209,18 +204,16 @@ public class EmailMessageListener implements MessageListener {
         log.info(emailString);
         observable.notifyObservers(emailString);
       } catch (IOException e) {
-        log.info("Transport disabled and unable to write message to log: "
-            + e.getMessage(), e);
+        log.info("Transport disabled and unable to write message to log: " + e.
+            getMessage(), e);
       }
     }
   }
 
-  private void setContent(MimePart mimePart, String content, String charset,
-      String contentType) throws MessagingException {
-    if (charset == null && contentType == null) {
+  private void setContent(MimePart mimePart, String content, String contentType)
+      throws MessagingException {
+    if (contentType == null) {
       mimePart.setText(content);
-    } else if (contentType == null) {
-      mimePart.setText(content, charset);
     } else {
       mimePart.setContent(content, contentType);
     }
@@ -233,13 +226,11 @@ public class EmailMessageListener implements MessageListener {
    * @param attachment
    * @throws MessagingException
    */
-  private MimeBodyPart createAttachmentPart(File attachment)
-      throws MessagingException {
-    FileDataSource source = new FileDataSource(attachment);
-    MimeBodyPart attachPart = new MimeBodyPart();
-    attachPart.setDataHandler(new DataHandler(source));
-    attachPart.setFileName(attachment.getPath());
-    return attachPart;
+  private void addPart(Multipart multipart, Message msg) throws
+      MessagingException {
+    MimeBodyPart part = new MimeBodyPart();
+    part.setContent((Serializable) msg.getBody(), msg.getType());
+    multipart.addBodyPart(part);
   }
 
   /**
@@ -252,22 +243,19 @@ public class EmailMessageListener implements MessageListener {
    * @throws AddressException
    * @throws UnsupportedEncodingException
    */
-  protected InternetAddress[] emails2Internets(List<EmailAddress> emails,
-      List<EmailAddress> invalids) {
+  protected InternetAddress[] emails2Internets(List<String> emails,
+      List<String> invalids) {
     // set the default return value
     InternetAddress[] addrs = new InternetAddress[0];
 
     if (emails != null && !emails.isEmpty()) {
       ArrayList<InternetAddress> laddrs = new ArrayList<InternetAddress>();
       for (int i = 0; i < emails.size(); i++) {
-        EmailAddress email = emails.get(i);
+        String email = emails.get(i);
         try {
-          InternetAddress ia = new InternetAddress(email.getAddress(), true);
-          ia.setPersonal(email.getPersonal());
+          InternetAddress ia = new InternetAddress(email, true);
           laddrs.add(ia);
         } catch (AddressException e) {
-          invalids.add(email);
-        } catch (UnsupportedEncodingException e) {
           invalids.add(email);
         }
       }
@@ -284,6 +272,7 @@ public class EmailMessageListener implements MessageListener {
   }
 
   static class EmailMessageObservable extends Observable {
+
     @Override
     public void notifyObservers(Object o) {
       setChanged();

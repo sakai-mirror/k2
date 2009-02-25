@@ -20,8 +20,10 @@ import java.util.List;
 /**
  * Base interface for all email objects.
  */
-public interface EmailMessage extends Message {
+public interface EmailMessage extends MultipartMessage {
+
   public static enum ContentType {
+
     /**
      * Plain message with no formatting
      */
@@ -34,7 +36,6 @@ public interface EmailMessage extends Message {
      * Rich text formatted message
      */
     TEXT_RICH("text/richtext");
-
     private final String rfcName;
 
     ContentType(String header) {
@@ -48,9 +49,9 @@ public interface EmailMessage extends Message {
   }
 
   public static enum Field {
+
     FROM("From"), TO("To"), CC("Cc"), BCC("Bcc"), REPLY_TO("Reply-To"),
     SUBJECT("Subject"), DATE("Date"), CONTENT_TYPE("Content-Type");
-
     /**
      * the name of the header associated to the field.
      */
