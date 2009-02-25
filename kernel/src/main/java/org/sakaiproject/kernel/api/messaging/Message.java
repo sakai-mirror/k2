@@ -1,0 +1,169 @@
+/*******************************************************************************
+ * Copyright 2008 Sakai Foundation
+ *
+ * Licensed under the Educational Community License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.osedu.org/licenses/ECL-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************/
+package org.sakaiproject.kernel.api.messaging;
+
+/**
+ * Base interface for all message objects.
+ */
+public interface Message {
+  /**
+   * An enumeration of field names in a message.
+   */
+  public static enum Field {
+    /** the field name for body. */
+    BODY("body"),
+    /** the field name for title. */
+    TITLE("title"),
+    /** the field name for type. */
+    TYPE("type");
+
+    /**
+     * the name of the field.
+     */
+    private final String jsonString;
+
+    /**
+     * Create a field based on a name.
+     *
+     * @param jsonString
+     *          the name of the field
+     */
+    private Field(String jsonString) {
+      this.jsonString = jsonString;
+    }
+
+    /**
+     * @return a string representation of the enum.
+     */
+    @Override
+    public String toString() {
+      return this.jsonString;
+    }
+  }
+
+  /**
+   * The type of a message.
+   */
+  public static enum Type {
+    /** An email. */
+    EMAIL("email"),
+    /** A short private message. */
+    NOTIFICATION("notification"),
+    /** A message to a specific user that can be seen only by that user. */
+    PRIVATE_MESSAGE("privateMessage"),
+    /** A message to a specific user that can be seen by more than that user. */
+    PUBLIC_MESSAGE("publicMessage");
+
+    /**
+     * The type of message.
+     */
+    private final String jsonString;
+
+    /**
+     * Create a message type based on a string token.
+     *
+     * @param jsonString
+     *          the type of message
+     */
+    private Type(String jsonString) {
+      this.jsonString = jsonString;
+    }
+
+    /**
+     * @return a string representation of the enum.
+     */
+    @Override
+    public String toString() {
+      return this.jsonString;
+    }
+  }
+
+  /**
+   * Generic getter for a field.
+   *
+   * @param <T>
+   *          the type to be returned.
+   * @param key
+   *          the key of the field to get.
+   * @return the value found for the requested field. null if not found.
+   */
+  <T> T getField(String key);
+
+  <T> T getField(Enum key);
+
+  /**
+   * Generic setter for a field.
+   *
+   * @param <T>
+   *          the type of the value being set.
+   * @param key
+   *          the field to set a value to.
+   * @param value
+   *          the value to set.
+   */
+  <T> void setField(String key, T value);
+
+  <T> void setField(Enum key, T value);
+
+  /**
+   * Gets the main text of the message.
+   *
+   * @return the main text of the message
+   */
+  String getBody();
+
+  /**
+   * Sets the main text of the message. HTML attributes are allowed and are
+   * sanitized by the container
+   *
+   * @param newBody
+   *          the main text of the message
+   */
+  void setBody(String newBody);
+
+  /**
+   * Gets the title of the message.
+   *
+   * @return the title of the message
+   */
+  String getTitle();
+
+  /**
+   * Sets the title of the message. HTML attributes are allowed and are
+   * sanitized by the container.
+   *
+   * @param newTitle
+   *          the title of the message
+   */
+  void setTitle(String newTitle);
+
+  /**
+   * Gets the type of the message, as specified by opensocial.Message.Type.
+   *
+   * @return the type of message
+   * @see Type
+   */
+  String getType();
+
+  /**
+   * Sets the type of the message, as specified by opensocial.Message.Type.
+   *
+   * @param newType
+   *          the type of message (enum Message.Type)
+   * @see Type
+   */
+  void setType(String newType);
+}
