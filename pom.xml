@@ -43,6 +43,38 @@
         <module>jaxrs</module>
         <module>_rest</module>
       </modules>
+      <build>
+        <plugins>
+         <plugin>
+            <groupId>com.google.code.maven-license-plugin</groupId>
+            <artifactId>maven-license-plugin</artifactId>
+            <version>1.4.0</version>
+            <configuration>
+              <basedir>${basedir}</basedir>
+              <header>src/etc/header.txt</header>
+              <quiet>false</quiet>
+              <failIfMissing>true</failIfMissing>
+              <includes>
+                <include>**/src/**/*.java</include>
+              </includes>
+              <excludes>
+                <exclude>**/commons-fileupload-sdata/**</exclude>
+              </excludes>
+              <aggregate>true</aggregate>
+              <useDefaultExcludes>true</useDefaultExcludes>
+              <useDefaultMapping>true</useDefaultMapping>
+              <encoding>UTF-8</encoding>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
     <profile>
       <id>run</id>
@@ -191,34 +223,6 @@
             <goals>
               <goal>instrument</goal>
               <goal>cobertura</goal>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>com.google.code.maven-license-plugin</groupId>
-        <artifactId>maven-license-plugin</artifactId>
-        <version>1.4.0</version>
-        <configuration>
-          <basedir>${basedir}</basedir>
-          <header>src/etc/header.txt</header>
-          <quiet>false</quiet>
-          <failIfMissing>true</failIfMissing>
-	  <includes>
-	    <include>**/src/**/*.java</include>
-	  </includes>
-          <excludes>
-            <exclude>**/commons-fileupload-sdata/**</exclude>
-          </excludes>
-          <aggregate>true</aggregate>
-          <useDefaultExcludes>true</useDefaultExcludes>
-          <useDefaultMapping>true</useDefaultMapping>
-          <encoding>UTF-8</encoding>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
               <goal>check</goal>
             </goals>
           </execution>
