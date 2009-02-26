@@ -133,6 +133,32 @@
 					</archive>
 				</configuration>
 			</plugin>
+      <plugin>
+        <groupId>com.google.code.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+        <version>1.4.0</version>
+        <inherited>true</inherited>
+        <configuration>
+          <quiet>true</quiet>
+          <failIfMissing>false</failIfMissing>
+          <includes>
+            <include>src/**/*.java</include>
+          </includes>
+          <useDefaultExcludes>true</useDefaultExcludes>
+          <useDefaultMapping>true</useDefaultMapping>
+          <encoding>UTF-8</encoding>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>disabled</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+
+      </plugin>
+
 		</plugins>
 	</build>
 	<dependencies>
