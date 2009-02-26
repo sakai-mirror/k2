@@ -76,7 +76,7 @@ public class JCRMoveFunction extends JCRSDataFunction {
    * org.sakaiproject.sdata.tool.api.ResourceDefinition)
    */
   public void call(Handler handler, HttpServletRequest request,
-      HttpServletResponse response, Object target, ResourceDefinition rp)
+      HttpServletResponse response, Node target, ResourceDefinition rp)
       throws SDataException {
     try {
       SDataFunctionUtil.checkMethod(request.getMethod(), "POST");

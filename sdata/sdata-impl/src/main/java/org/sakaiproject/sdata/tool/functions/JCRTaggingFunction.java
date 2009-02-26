@@ -84,7 +84,7 @@ public class JCRTaggingFunction extends JCRSDataFunction {
    * org.sakaiproject.sdata.tool.api.ResourceDefinition)
    */
   public void call(Handler handler, HttpServletRequest request,
-      HttpServletResponse response, Object target, ResourceDefinition rp)
+      HttpServletResponse response, Node target, ResourceDefinition rp)
       throws SDataException {
     SDataFunctionUtil.checkMethod(request.getMethod(), "GET");
 

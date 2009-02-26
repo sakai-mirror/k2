@@ -48,7 +48,7 @@ public class JCRNodeMetadata extends JCRSDataFunction {
    * javax.servlet.http.HttpServletResponse, java.lang.Object)
    */
   public void call(Handler handler, HttpServletRequest request,
-      HttpServletResponse response, Object target, ResourceDefinition rp)
+      HttpServletResponse response, Node target, ResourceDefinition rp)
       throws SDataException {
     SDataFunctionUtil.checkMethod(request.getMethod(), "GET");
     try {

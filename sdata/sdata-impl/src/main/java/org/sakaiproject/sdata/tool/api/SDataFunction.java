@@ -18,6 +18,7 @@
 
 package org.sakaiproject.sdata.tool.api;
 
+import javax.jcr.Node;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -33,7 +34,7 @@ public interface SDataFunction {
    * @throws SDataException
    */
   void call(Handler handler, HttpServletRequest request,
-      HttpServletResponse response, Object target, ResourceDefinition rp)
+      HttpServletResponse response, Node target, ResourceDefinition rp)
       throws SDataException;
   
   /**

@@ -18,20 +18,84 @@
 
 package org.sakaiproject.sdata.tool.functions;
 
+import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.sdata.tool.api.Handler;
 import org.sakaiproject.sdata.tool.api.ResourceDefinition;
 import org.sakaiproject.sdata.tool.api.SDataException;
+import org.sakaiproject.sdata.tool.model.JCRNodeMap;
 
+import java.io.IOException;
+
+import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.Property;
+import javax.jcr.RepositoryException;
+import javax.jcr.UnsupportedRepositoryOperationException;
+import javax.jcr.Value;
+import javax.jcr.ValueFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * This has not been implemented as yet.
+ * <p>
+ * Set properties on the jcrnode.
+ * </p>
+ * <p>
+ * Properties are specified in 4 request arrays associated in order. name,
+ * value, action. These arrays must all be specified and the same length.
+ * </p>
+ * <p>
+ * <b>item (optional)</b>: A list of item names, if this parameter is present on
+ * a ContentCollection, the item specifies the target item as a child of the
+ * ContentCollection. A blank string identifies the ContentCollection itself.
+ * </p>
+ * <p>
+ * <b>name</b>: A list of request parameters of name <b>name</b> that specify
+ * the name of each property in the value and action parameters.
+ * </p>
+ * <p>
+ * <b>value</b>: A list of request parameters of name <b>value</b> that specify
+ * the value of each property named in the name parameter.
+ * </p>
+ * <p>
+ * <b>action</b>: A list of request parameters of name <b>acrtion</b> that
+ * specifies what should be done with each name value pair. Action can be
+ * <b>a</a> for add, <b>d</b> for remove or <b>r</b> for replace.
+ * </p>
+ * <ul>
+ * <li><b>add</b>: To add a property or to create a new property.</li>
+ * <li><b>remove</b>: To remove the property.</li>
+ * <li><b>replace</b>: To replace the property with the value specified, this
+ * will be a single value property to start with, but if later (including in the
+ * same request) it is converted into a list.</li>
+ * </ul>
  * 
- * @author ieb
  */
 public class JCRPropertiesFunction extends JCRSDataFunction {
   private static final String KEY = "pr";
+
+  public static enum Action {
+    /**
+     * Add
+     */
+    a(),
+    /**
+     * delete
+     */
+    d(),
+    /**
+     * replace
+     */
+    r();
+  }
+
+  public static final String NAME = "name";
+
+  public static final String VALUE = "value";
+
+  public static final String ACTION = "action";
+
+  private static final String ITEM = "item";
 
   /*
    * (non-Javadoc)
@@ -43,16 +107,110 @@ public class JCRPropertiesFunction extends JCRSDataFunction {
    * org.sakaiproject.sdata.tool.api.ResourceDefinition)
    */
   public void call(Handler handler, HttpServletRequest request,
-      HttpServletResponse response, Object target, ResourceDefinition rp)
+      HttpServletResponse response, Node target, ResourceDefinition rp)
       throws SDataException {
     SDataFunctionUtil.checkMethod(request.getMethod(), "POST");
-    // TODO To Be implemented
-    throw new SDataException(HttpServletResponse.SC_NOT_IMPLEMENTED,
-        " Properties is not implemented in JCR at the moment ");
+    try {
+
+      String[] items = request.getParameterValues(ITEM);
+      String[] names = request.getParameterValues(NAME);
+      String[] values = request.getParameterValues(VALUE);
+      String[] actions = request.getParameterValues(ACTION);
+
+      if (names == null || values == null || actions == null
+          || names.length != values.length || names.length != actions.length) {
+        throw new SDataException(HttpServletResponse.SC_BAD_REQUEST,
+            "Request must contain the same number of name, value, and action parameters ");
+      }
+
+      for (int i = 0; i < names.length; i++) {
+        try {
+          Action.valueOf(actions[i]);
+        } catch (IllegalArgumentException e) {
+          throw new SDataException(HttpServletResponse.SC_BAD_REQUEST,
+              " Action of type " + actions[i] + " is invalid at location " + i);
+
+        }
+      }
+      ValueFactory valueFactory = target.getSession().getValueFactory();
+      for (int i = 0; i < names.length; i++) {
+        Node node = target;
+        if (items.length == names.length
+            && JCRConstants.NT_FOLDER.equals(target.getPrimaryNodeType())) {
+          node = node.getNode(items[i]);
+        }
+        switch (Action.valueOf(actions[i])) {
+        case a: // add
+          try {
+            Property p = node.getProperty(names[i]);
+            if (p.getDefinition().isMultiple()) {
+              Value[] v = p.getValues();
+              Value[] vnew = new Value[v.length + 1];
+              System.arraycopy(v, 0, vnew, 0, v.length);
+              vnew[v.length] = valueFactory.createValue(values[i]);
+              p.setValue(vnew);
+            } else {
+              p.setValue(values[i]);
+            }
+          } catch (PathNotFoundException e) {
+            node.setProperty(names[i], values[i]);
+          }
+          break;
+        case d: // remove
+          try {
+            Property p = node.getProperty(names[i]);
+            if (p.getDefinition().isMultiple()) {
+              Value[] v = p.getValues();
+              if (v.length > 1) {
+                Value[] vnew = new Value[v.length - 1];
+                System.arraycopy(v, 0, vnew, 0, v.length);
+                p.setValue(vnew);
+              } else {
+                p.remove();
+              }
+            } else {
+              p.remove();
+            }
+          } catch (PathNotFoundException e) {
+            // not there so no action required.
+          }
+          break;
+        case r: // replace
+          try {
+            Property p = node.getProperty(names[i]);
+            if (p.getDefinition().isMultiple()) {
+              Value[] vnew = new Value[1];
+              vnew[0] = valueFactory.createValue(values[i]);
+              p.setValue(vnew);
+            } else {
+              p.setValue(values[i]);
+            }
+          } catch (PathNotFoundException e) {
+            node.setProperty(names[i], values[i]);
+          }
+          break;
+
+        }
+      }
+
+      JCRNodeMap nm = new JCRNodeMap(target, rp.getDepth(), rp);
+      handler.sendMap(request, response, nm);
+    } catch (IOException e) {
+      throw new SDataException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+          "IO Error " + e.getMessage());
+    } catch (UnsupportedRepositoryOperationException e) {
+      throw new SDataException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e
+          .getMessage());
+    } catch (RepositoryException e) {
+      throw new SDataException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e
+          .getMessage());
+    }
+
   }
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.sdata.tool.api.SDataFunction#getKey()
    */
   public String getKey() {

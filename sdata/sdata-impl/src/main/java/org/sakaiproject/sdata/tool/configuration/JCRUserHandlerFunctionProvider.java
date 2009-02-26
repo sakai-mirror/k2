@@ -21,7 +21,6 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 import org.sakaiproject.sdata.tool.api.SDataFunction;
-import org.sakaiproject.sdata.tool.functions.JCRCreateFolder;
 import org.sakaiproject.sdata.tool.functions.JCRMoveFunction;
 import org.sakaiproject.sdata.tool.functions.JCRNodeMetadata;
 import org.sakaiproject.sdata.tool.functions.JCRPermissionsFunction;
@@ -42,11 +41,10 @@ public class JCRUserHandlerFunctionProvider implements
    * 
    */
   @Inject
-  public JCRUserHandlerFunctionProvider(JCRCreateFolder createFolder,
+  public JCRUserHandlerFunctionProvider(
       JCRMoveFunction move, JCRNodeMetadata node,
       JCRPermissionsFunction permission, JCRPropertiesFunction properties) {
 
-    functionMap.put(createFolder.getKey(), createFolder);
     functionMap.put(move.getKey(), move);
     functionMap.put(node.getKey(), node);
     functionMap.put(permission.getKey(), permission);

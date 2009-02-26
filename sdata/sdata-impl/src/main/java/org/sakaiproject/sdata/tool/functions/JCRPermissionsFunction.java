@@ -22,6 +22,7 @@ import org.sakaiproject.sdata.tool.api.Handler;
 import org.sakaiproject.sdata.tool.api.ResourceDefinition;
 import org.sakaiproject.sdata.tool.api.SDataException;
 
+import javax.jcr.Node;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -43,9 +44,14 @@ public class JCRPermissionsFunction extends JCRSDataFunction {
    * org.sakaiproject.sdata.tool.api.ResourceDefinition)
    */
   public void call(Handler handler, HttpServletRequest request,
-      HttpServletResponse response, Object target, ResourceDefinition rp)
+      HttpServletResponse response, Node target, ResourceDefinition rp)
       throws SDataException {
     SDataFunctionUtil.checkMethod(request.getMethod(), "POST|GET");
+    
+    
+    
+    
+    
     // TODO To Be implemented
     throw new SDataException(HttpServletResponse.SC_NOT_IMPLEMENTED,
         " Permissions is not implemented in JCR at the moment ");

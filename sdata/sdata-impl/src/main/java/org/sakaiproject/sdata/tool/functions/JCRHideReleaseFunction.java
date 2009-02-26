@@ -22,6 +22,7 @@ import org.sakaiproject.sdata.tool.api.Handler;
 import org.sakaiproject.sdata.tool.api.ResourceDefinition;
 import org.sakaiproject.sdata.tool.api.SDataException;
 
+import javax.jcr.Node;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -44,12 +45,20 @@ public class JCRHideReleaseFunction extends JCRSDataFunction {
    * org.sakaiproject.sdata.tool.api.ResourceDefinition)
    */
   public void call(Handler handler, HttpServletRequest request,
-      HttpServletResponse response, Object target, ResourceDefinition rp)
+      HttpServletResponse response, Node target, ResourceDefinition rp)
       throws SDataException {
     SDataFunctionUtil.checkMethod(request.getMethod(), "POST");
-    // TODO To Be implemented
+    // TODO To Be implemented, hide release should be implemented as a 
+    // provider ACL on the node. There are also 
+    // some additional ACL'S that will be required, 
+    // who are we hiding from ?
+    // who are we releasing to ?
+    // what do we do about other nodes ?
+    // I am not convinced that this is the right function and we may
+    // be better using the permissions function.
     throw new SDataException(HttpServletResponse.SC_NOT_IMPLEMENTED,
         " Hide Release is not implemented in JCR at the moment ");
+    
   }
 
   /**

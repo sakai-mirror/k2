@@ -21,7 +21,6 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 import org.sakaiproject.sdata.tool.api.SDataFunction;
-import org.sakaiproject.sdata.tool.functions.JCRCreateFolder;
 import org.sakaiproject.sdata.tool.functions.JCRHideReleaseFunction;
 import org.sakaiproject.sdata.tool.functions.JCRMoveFunction;
 import org.sakaiproject.sdata.tool.functions.JCRNodeMetadata;
@@ -44,12 +43,11 @@ public class JCRHandlerFunctionProvider implements
    * 
    */
   @Inject
-  public JCRHandlerFunctionProvider(JCRCreateFolder createFolder,
+  public JCRHandlerFunctionProvider(
       JCRHideReleaseFunction hideRelease, JCRMoveFunction move,
       JCRNodeMetadata node, JCRPermissionsFunction permission,
       JCRPropertiesFunction properties, JCRTaggingFunction tagging) {
 
-    functionMap.put(createFolder.getKey(), createFolder);
     functionMap.put(hideRelease.getKey(), hideRelease);
     functionMap.put(move.getKey(), move);
     functionMap.put(node.getKey(), node);
