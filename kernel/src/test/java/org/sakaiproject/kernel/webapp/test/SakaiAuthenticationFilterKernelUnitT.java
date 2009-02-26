@@ -82,6 +82,7 @@ public class SakaiAuthenticationFilterKernelUnitT extends KernelIntegrationBase 
     HttpServletResponse response = createMock(HttpServletResponse.class);
     FilterChain chain = createMock(FilterChain.class);
 
+    expect(request.getHeader("Authorization")).andReturn(null).anyTimes();
     expect(request.getParameter("l")).andReturn(null).anyTimes();
     chain.doFilter(request, response);
     expectLastCall().atLeastOnce();
@@ -155,6 +156,7 @@ public class SakaiAuthenticationFilterKernelUnitT extends KernelIntegrationBase 
     HttpServletRequest request = createMock(HttpServletRequest.class);
     HttpServletResponse response = createMock(HttpServletResponse.class);
     FilterChain chain = createMock(FilterChain.class);
+    expect(request.getHeader("Authorization")).andReturn(null).anyTimes();
     expect(request.getParameter("l")).andReturn("1").atLeastOnce();
     expect(request.getParameter("a")).andReturn("FORM").atLeastOnce();
     expect(request.getMethod()).andReturn("POST").atLeastOnce();
@@ -184,6 +186,7 @@ public class SakaiAuthenticationFilterKernelUnitT extends KernelIntegrationBase 
     HttpServletRequest request = createMock(HttpServletRequest.class);
     HttpServletResponse response = createMock(HttpServletResponse.class);
     FilterChain chain = createMock(FilterChain.class);
+    expect(request.getHeader("Authorization")).andReturn(null).anyTimes();
     expect(request.getParameter("l")).andReturn("1").anyTimes();
     expect(request.getParameter("a")).andReturn("TRUSTED").anyTimes();
     expect(request.getRemoteUser()).andReturn("ieb").anyTimes();
@@ -213,6 +216,7 @@ public class SakaiAuthenticationFilterKernelUnitT extends KernelIntegrationBase 
     HttpServletRequest request = createMock(HttpServletRequest.class);
     HttpServletResponse response = createMock(HttpServletResponse.class);
     FilterChain chain = createMock(FilterChain.class);
+    expect(request.getHeader("Authorization")).andReturn(null).anyTimes();
     expect(request.getParameter("l")).andReturn("1").anyTimes();
     expect(request.getParameter("a")).andReturn("sdfsdfds").anyTimes();
     chain.doFilter(request, response);

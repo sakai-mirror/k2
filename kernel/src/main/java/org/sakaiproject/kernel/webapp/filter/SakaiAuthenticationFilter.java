@@ -49,7 +49,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class SakaiAuthenticationFilter implements Filter {
 
-  private static final Log LOG = LogFactory.getLog(SakaiAuthenticationFilter.class);
+  private static final Log LOG = LogFactory
+      .getLog(SakaiAuthenticationFilter.class);
   private AuthenticationResolverService authenticationResolverService;
 
   /**
@@ -70,32 +71,47 @@ public class SakaiAuthenticationFilter implements Filter {
       FilterChain chain) throws IOException, ServletException {
     HttpServletRequest hrequest = (HttpServletRequest) request;
     HttpServletResponse hresponse = (HttpServletResponse) response;
-    if ("1".equals(hrequest.getParameter("l"))) {
+    if (hrequest.getHeader("Authorization") != null) {
       try {
-        AuthenticationType authNType = AuthenticationType.valueOf(request
-            .getParameter("a"));
-        LOG.info("Authentication Filter: "+authNType);
-        switch (authNType) {
-        case BASIC:
-          doBasicAuth(hrequest);
-          break;
-        case FORM:
-          doForm(hrequest);
-          break;
-        case TRUSTED:
-          doTrusted(hrequest);
-          break;
-        }
-      } catch ( SecurityException se ) {
+        doBasicAuth(hrequest);
+      } catch (SecurityException se) {
         // catch any Security exceptions and send a 401
-        LOG.info("Login Failed "+se.getMessage());
+        LOG.info("Login Failed " + se.getMessage());
         hresponse.reset();
-        hresponse
-            .sendError(HttpServletResponse.SC_UNAUTHORIZED, se.getMessage());
+        hresponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, se
+            .getMessage());
         return;
-      } catch (IllegalArgumentException e) {
-        LOG.info("Authentication type " + request.getParameter("a")
-            + " is not supported by this filter");
+      }
+    } else {
+      if ("1".equals(hrequest.getParameter("l"))) {
+        try {
+          AuthenticationType authNType = AuthenticationType.valueOf(request
+              .getParameter("a"));
+          if (LOG.isDebugEnabled()) {
+            LOG.debug("Authentication Filter: " + authNType);
+          }
+          switch (authNType) {
+          case BASIC:
+            doBasicAuth(hrequest);
+            break;
+          case FORM:
+            doForm(hrequest);
+            break;
+          case TRUSTED:
+            doTrusted(hrequest);
+            break;
+          }
+        } catch (SecurityException se) {
+          // catch any Security exceptions and send a 401
+          LOG.info("Login Failed " + se.getMessage());
+          hresponse.reset();
+          hresponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, se
+              .getMessage());
+          return;
+        } catch (IllegalArgumentException e) {
+          LOG.info("Authentication type " + request.getParameter("a")
+              + " is not supported by this filter");
+        }
       }
     }
 
@@ -151,14 +167,19 @@ public class SakaiAuthenticationFilter implements Filter {
           }
 
         };
-        LOG.info("Performing authentication for "+eid+" with "+principal);
+        if (LOG.isDebugEnabled()) {
+          LOG.debug("Performing authentication for " + eid + " with "
+              + principal);
+        }
         Authentication a = authenticationResolverService
             .authenticate(principal);
         if (a != null) {
-          LOG.info("Sucess for "+eid+" with "+a);
+          if (LOG.isDebugEnabled()) {
+            LOG.debug("Sucess for " + eid + " with " + a);
+          }
           hrequest.setAttribute(Authentication.REQUESTTOKEN, a);
         } else {
-          throw new SecurityException("Failed to perform Form login for "+eid);
+          throw new SecurityException("Failed to perform Form login for " + eid);
         }
 
       }
@@ -200,7 +221,8 @@ public class SakaiAuthenticationFilter implements Filter {
           if (a != null) {
             hrequest.setAttribute(Authentication.REQUESTTOKEN, a);
           } else {
-            throw new SecurityException("Failed to perform Form login for "+unpw[0]);
+            throw new SecurityException("Failed to perform Form login for "
+                + unpw[0]);
           }
         }
       }

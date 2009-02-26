@@ -224,7 +224,6 @@ public class IntegrationTest {
 
     response.setHeader("x-sdata-url", "/f/test34a/sas/info.txt");
     response.reset();
-    response.sendError(404);
     replay(config, request, response, session);
 
     SakaiServletRequest srequest = new SakaiServletRequest(request, response,
@@ -239,6 +238,7 @@ public class IntegrationTest {
 
     cacheManagerService.unbind(CacheScope.REQUEST);
 
+    assertEquals(404, sresponse.getStatusCode());
     verify(config, request, response, session);
 
   }
@@ -259,7 +259,6 @@ public class IntegrationTest {
         new StringBuffer("http://localhost:8080/sdata")).anyTimes();
 
     response.reset();
-    response.sendError(404, "No Handler Found");
 
     replay(config, request, response, session);
     SakaiServletRequest srequest = new SakaiServletRequest(request, response,
@@ -271,6 +270,9 @@ public class IntegrationTest {
     controllerServlet.init(config);
     controllerServlet.service(srequest, sresponse);
     cacheManagerService.unbind(CacheScope.REQUEST);
+    
+    
+    assertEquals(404, sresponse.getStatusCode());
     verify(config, request, response, session);
 
   }
@@ -292,7 +294,6 @@ public class IntegrationTest {
         new StringBuffer("http://localhost:8080/sdata")).anyTimes();
 
     response.reset();
-    response.sendError(404, "No Handler Found");
 
     replay(config, request, response, session);
     SakaiServletRequest srequest = new SakaiServletRequest(request, response,
@@ -304,6 +305,8 @@ public class IntegrationTest {
     controllerServlet.init(config);
     controllerServlet.service(srequest, sresponse);
     cacheManagerService.unbind(CacheScope.REQUEST);
+    assertEquals(404, sresponse.getStatusCode());
+
     verify(config, request, response, session);
 
   }
@@ -343,7 +346,6 @@ public class IntegrationTest {
     response.setHeader("x-sdata-url", "/checkRunning");
     response.setContentType("application/octet-stream");
     response.setContentLength(10);
-    response.setStatus(200);
 
     replay(config, request, response, session);
     SakaiServletRequest srequest = new SakaiServletRequest(request, response,
@@ -355,6 +357,7 @@ public class IntegrationTest {
     controllerServlet.init(config);
     controllerServlet.service(srequest, sresponse);
     cacheManagerService.unbind(CacheScope.REQUEST);
+    assertEquals(200, sresponse.getStatusCode());
     verify(config, request, response, session);
 
   }

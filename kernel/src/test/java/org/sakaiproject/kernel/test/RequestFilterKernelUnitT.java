@@ -71,6 +71,8 @@ public class RequestFilterKernelUnitT extends KernelIntegrationBase {
     response.addCookie((Cookie) anyObject());
     expectLastCall().anyTimes();
 
+    EasyMock.expect(request.getRequestURI()).andReturn("xyz").anyTimes();
+    EasyMock.expect(request.getMethod()).andReturn("GET").anyTimes();
     EasyMock.expect(request.getPathInfo()).andReturn("/sdata/f");
     EasyMock.expect(request.getRemoteUser()).andReturn("ib236").anyTimes();
     EasyMock.expect(filterConfig.getInitParameter("no-session")).andReturn(null).anyTimes();
@@ -97,6 +99,8 @@ public class RequestFilterKernelUnitT extends KernelIntegrationBase {
     HttpServletResponse response = EasyMock.createMock(HttpServletResponse.class);
     FilterChain chain = EasyMock.createMock(FilterChain.class);
   
+    EasyMock.expect(request.getRequestURI()).andReturn("xyz").anyTimes();
+    EasyMock.expect(request.getMethod()).andReturn("GET").anyTimes();
     EasyMock.expect(filterConfig.getInitParameter("time-requests")).andReturn(null);
     EasyMock.expect(request.getRemoteUser()).andReturn("ib236").anyTimes();
     response.addCookie((Cookie) anyObject());

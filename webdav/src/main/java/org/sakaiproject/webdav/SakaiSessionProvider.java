@@ -45,6 +45,10 @@ public class SakaiSessionProvider implements SessionProvider {
 
   public Session getSession(HttpServletRequest request, Repository rep,
       String workspace) throws LoginException {
+    String user = request.getRemoteUser();
+    if ( user == null || "anon".equals(user) ) {
+      throw new LoginException("Authentication Required");
+    }
 
     try {
       return jcrService.login();

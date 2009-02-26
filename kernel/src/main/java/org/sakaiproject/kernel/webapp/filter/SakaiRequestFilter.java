@@ -101,7 +101,8 @@ public class SakaiRequestFilter implements Filter {
     if (noSession) {
       request.setAttribute(SakaiServletRequest.NO_SESSION_USE, "true");
     }
-    SakaiServletRequest wrequest = new SakaiServletRequest(request, response, userResolverService, sessionManagerService);
+    SakaiServletRequest wrequest = new SakaiServletRequest(request, response,
+        userResolverService, sessionManagerService);
     SakaiServletResponse wresponse = new SakaiServletResponse(response);
     sessionManagerService.bindRequest(wrequest);
     try {
@@ -119,11 +120,11 @@ public class SakaiRequestFilter implements Filter {
       } else {
         chain.doFilter(wrequest, wresponse);
       }
+
     } catch (SecurityException se) {
       // catch any Security exceptions and send a 401
       wresponse.reset();
-      wresponse
-          .sendError(HttpServletResponse.SC_UNAUTHORIZED, se.getMessage());
+      wresponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, se.getMessage());
     } catch (UnauthorizedException ape) {
       // catch any Unauthorized exceptions and send a 401
       wresponse.reset();
@@ -134,11 +135,14 @@ public class SakaiRequestFilter implements Filter {
       wresponse.reset();
       wresponse.sendError(HttpServletResponse.SC_FORBIDDEN, pde.getMessage());
     } finally {
+      wresponse.commitStatus(sessionManagerService);
       cacheManagerService.unbind(CacheScope.REQUEST);
     }
-    HttpSession hsession = hrequest.getSession(false);
-    if (hsession != null && !hsession.getId().equals(requestedSessionID)) {
-      LOG.info("New Session Created with ID " + hsession.getId());
+    if (LOG.isDebugEnabled()) {
+      HttpSession hsession = hrequest.getSession(false);
+      if (hsession != null && !hsession.getId().equals(requestedSessionID)) {
+        LOG.debug("New Session Created with ID " + hsession.getId());
+      }
     }
 
   }
