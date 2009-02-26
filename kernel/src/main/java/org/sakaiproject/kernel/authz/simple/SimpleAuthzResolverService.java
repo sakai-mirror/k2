@@ -110,8 +110,10 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
       }
     }
 
+    String userId = sessionManager.getCurrentUserId();
+    
     UserEnvironment userEnvironment = userEnvironmentResolverService
-        .resolve(sessionManager.getCurrentSession());
+        .resolve(userId);
     if (userEnvironment.isSuperUser()) {
       LOG.warn("SECURITY: SuperUser permission granted on:"
           + permissionQueryToken);

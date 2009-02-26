@@ -262,7 +262,7 @@ public class SecureSakaiAccessManager implements AccessManager {
     }
     if ( session == null ) {
       synchronized (sessionLock ) {
-        session = jcrService.getSession();       
+        session = jcrService.getSession(); 
       }
     }
     if (!checking.get()) {

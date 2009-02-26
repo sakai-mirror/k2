@@ -144,8 +144,11 @@ public class SessionManagerServiceImpl implements SessionManagerService {
         // that OK, but also set my cookie.
         session = request.getSession(create);
         if (session != null) {
+          Exception ex = new Exception("Session Created By:");
+          
           System.err.println("SessionManager (created): Got Sesssion "
               + session.getId() + " as " + session + " from " + sessionMap);
+          ex.printStackTrace();
           Cookie c = new Cookie(cookieName, session.getId());
           c.setPath("/");
           c.setMaxAge(-1);
@@ -175,6 +178,20 @@ public class SessionManagerServiceImpl implements SessionManagerService {
     } catch (IllegalStateException e) {
       return null;
     }
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.session.SessionManagerService#getCurrentUser()
+   */
+  public String getCurrentUserId() {
+    Cache<Object> requestScope = cacheManagerService.getCache(REQUEST_CACHE,
+        CacheScope.REQUEST);
+    SakaiServletRequest request = (SakaiServletRequest) requestScope.get(CURRENT_REQUEST);
+    if ( request == null ) {
+      return null;
+    }
+    return request.getRemoteUser();
   }
 
 }

@@ -27,28 +27,32 @@ import javax.servlet.http.HttpSession;
  */
 public interface SessionManagerService {
 
-
   /**
    * 
    * @return the current session bound to the thread.
    */
   Session getCurrentSession();
-  
-
-  /**
-   * @param request bind the current request to the thread
-   */
-  void bindRequest(ServletRequest request);
-
 
   /**
    * @param request
-   * @param response 
+   *          bind the current request to the thread
+   */
+  void bindRequest(ServletRequest request);
+
+  /**
+   * @param request
+   * @param response
    * @return
    */
-  HttpSession getSession(HttpServletRequest request, HttpServletResponse response, boolean create);
+  HttpSession getSession(HttpServletRequest request,
+      HttpServletResponse response, boolean create);
 
-  
-  
+  /**
+   * Get the current user, but dont create a session, if there isnt one there
+   * already.
+   * 
+   * @return
+   */
+  String getCurrentUserId();
 
 }

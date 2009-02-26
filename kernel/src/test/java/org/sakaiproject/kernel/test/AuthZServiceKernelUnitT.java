@@ -286,6 +286,7 @@ public class AuthZServiceKernelUnitT extends KernelIntegrationBase {
     User u = new InternalUser(userName);
     Random r = new Random();
     long sessionID = r.nextLong();
+    expect(request.getRemoteUser()).andReturn(userName).anyTimes();
     expect(request.getSession()).andReturn(session).anyTimes();
     expect(request.getSession(true)).andReturn(session).anyTimes();
     expect(request.getSession(false)).andReturn(session).anyTimes();

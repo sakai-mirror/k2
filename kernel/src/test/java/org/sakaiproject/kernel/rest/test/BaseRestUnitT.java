@@ -157,6 +157,7 @@ public class BaseRestUnitT {
     expect(request.getRemoteUser()).andReturn(user.getUuid()).anyTimes();
     expect(request.getAttribute("_no_session")).andReturn(null).anyTimes();
     expect(request.getSession(true)).andReturn(session).anyTimes();
+    expect(request.getSession(false)).andReturn(session).anyTimes();
     expect(request.getAttribute("_uuid")).andReturn(null).anyTimes();
     expect(session.getAttribute("_u")).andReturn(user).anyTimes();
     expect(session.getAttribute("_uu")).andReturn(user).anyTimes();

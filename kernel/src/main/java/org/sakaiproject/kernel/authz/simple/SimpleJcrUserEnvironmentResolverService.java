@@ -98,21 +98,20 @@ public class SimpleJcrUserEnvironmentResolverService implements
    * 
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService#resolve(org.sakaiproject.kernel.api.user.User)
    */
-  public UserEnvironment resolve(User user) {
-    if (user != null) {
-      if (cache.containsKey(user.getUuid())) {
-        UserEnvironment ue = cache.get(user.getUuid());
+  public UserEnvironment resolve(String userId) {
+    if (userId != null) {
+      if (cache.containsKey(userId)) {
+        UserEnvironment ue = cache.get(userId);
         if (ue != null && !ue.hasExpired()) {
           System.err.println("Loaded from Cache");
           return ue;
         }
       }
-      String userId = user.getUuid();
       if (userId != null) {
         String userEnv = userFactoryService.getUserEnvPath(userId);
         UserEnvironment ue = loadUserEnvironmentBean(userEnv);
         if (ue != null) {
-          cache.put(user.getUuid(), ue);
+          cache.put(userId, ue);
           return ue;
         }
       }
@@ -127,6 +126,18 @@ public class SimpleJcrUserEnvironmentResolverService implements
    */
   public UserEnvironment resolve(Session currentSession) {
     return resolve(currentSession.getUser());
+  }
+  
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService#resolve(org.sakaiproject.kernel.api.user.User)
+   */
+  public UserEnvironment resolve(User user) {
+    if ( user == null ) {
+      return resolve((String)null);
+    } else {
+      return resolve(user.getUuid());
+    }
   }
 
   public void expire(String userId) {
@@ -230,7 +241,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
     User user = session.getUser();
     UserEnvironment userEnvironment = null;
     if (user != null && user.getUuid() != null) {
-      userEnvironment = resolve(user);
+      userEnvironment = resolve(user.getUuid());
     }
     String localeKey = (String) session.getAttribute(LOCALE_SESSION_KEY);
     if (userEnvironment != null && localeKey == null) {

@@ -50,6 +50,17 @@ public interface UserEnvironmentResolverService {
   UserEnvironment resolve(User user);
 
   /**
+   * Resolve a User Environment for an arbritary user, probably not this user. This method avoids requiring a session.
+   * 
+   * @param user
+   *          the User that identifies the User environment
+   * @return the User Environment, or null if none is found.
+   */
+  UserEnvironment resolve(String userId);
+
+  
+
+  /**
    * Remove the userEnvironment bound to the sessionId from any caches.
    * 
    * @param sessionId

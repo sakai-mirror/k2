@@ -620,6 +620,7 @@ public class IntegrationTest {
     HttpServletResponse response = createMock(HttpServletResponse.class);
 
     HttpSession session = setupSession(request, response);
+    expect(request.getRemoteUser()).andReturn(null).anyTimes();
     expect(request.getPathInfo()).andReturn("/test/testfile.txt").anyTimes();
     expect(request.getMethod()).andReturn("GET").anyTimes();
 
