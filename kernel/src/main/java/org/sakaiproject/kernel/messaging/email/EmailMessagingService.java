@@ -19,6 +19,7 @@
 package org.sakaiproject.kernel.messaging.email;
 
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.google.inject.name.Named;
 
 import org.apache.commons.logging.Log;
@@ -71,8 +72,8 @@ public class EmailMessagingService extends JmsMessagingService implements
    */
   @Inject
   public EmailMessagingService(
-      @Named(JmsMessagingService.PROP_ACTIVEMQ_BROKER_URL) String brokerUrl) {
-    super(brokerUrl);
+      @Named(JmsMessagingService.PROP_ACTIVEMQ_BROKER_URL) String brokerUrl, Injector injector) {
+    super(brokerUrl, injector);
     try {
       Connection conn = connectionFactory.createTopicConnection();// / prob want
                                                                   // to use

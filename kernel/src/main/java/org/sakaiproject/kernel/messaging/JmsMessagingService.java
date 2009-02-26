@@ -27,6 +27,8 @@ import org.sakaiproject.kernel.api.messaging.Message;
 import org.sakaiproject.kernel.api.messaging.MessagingService;
 import org.sakaiproject.kernel.api.messaging.MultipartMessage;
 
+import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.google.inject.name.Named;
 
 /**
@@ -37,8 +39,12 @@ public class JmsMessagingService implements MessagingService {
 
   protected ActiveMQConnectionFactory connectionFactory = null;
 
-  public JmsMessagingService(@Named(PROP_ACTIVEMQ_BROKER_URL) String brokerUrl) {
+  private Injector injector = null;
+
+  @Inject
+  public JmsMessagingService(@Named(PROP_ACTIVEMQ_BROKER_URL) String brokerUrl, Injector injector) {
     connectionFactory = new ActiveMQConnectionFactory(brokerUrl);
+    this.injector = injector;
   }
 
   public JmsMessagingService(ActiveMQConnectionFactory connectionFactory) {
@@ -67,17 +73,17 @@ public class JmsMessagingService implements MessagingService {
   }
 
   public EmailMessage createEmailMessage() {
-    EmailMessage em = new EmailMessageImpl(this);
+    EmailMessage em = injector.getInstance(EmailMessageImpl.class);
     return em;
   }
 
   public Message createMessage() {
-    Message m = new MessageImpl(this);
+    Message m = injector.getInstance(MessageImpl.class);
     return m;
   }
 
   public MultipartMessage createMultipartMessage() {
-    MultipartMessage mm = new MultipartMessageImpl(this);
+    MultipartMessage mm = injector.getInstance(MultipartMessage.class);
     return mm;
   }
 
