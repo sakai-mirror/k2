@@ -22,8 +22,10 @@ import javax.jms.ConnectionFactory;
 import javax.jms.ObjectMessage;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.sakaiproject.kernel.api.messaging.EmailMessage;
 import org.sakaiproject.kernel.api.messaging.Message;
 import org.sakaiproject.kernel.api.messaging.MessagingService;
+import org.sakaiproject.kernel.api.messaging.MultipartMessage;
 
 import com.google.inject.name.Named;
 
@@ -62,6 +64,21 @@ public class JmsMessagingService implements MessagingService {
   public ObjectMessage createObjectMessage() {
     // TODO Auto-generated method stub
     return null;
+  }
+
+  public EmailMessage createEmailMessage() {
+    EmailMessage em = new EmailMessageImpl(this);
+    return em;
+  }
+
+  public Message createMessage() {
+    Message m = new MessageImpl(this);
+    return m;
+  }
+
+  public MultipartMessage createMultipartMessage() {
+    MultipartMessage mm = new MultipartMessageImpl(this);
+    return mm;
   }
 
 }
