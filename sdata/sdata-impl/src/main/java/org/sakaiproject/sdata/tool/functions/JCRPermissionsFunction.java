@@ -20,6 +20,7 @@ package org.sakaiproject.sdata.tool.functions;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.inject.Inject;
 
 import org.sakaiproject.kernel.api.authz.AccessControlStatement;
 import org.sakaiproject.kernel.api.authz.ReferenceResolverService;
@@ -117,6 +118,7 @@ public class JCRPermissionsFunction extends JCRSDataFunction {
   /**
    * 
    */
+  @Inject
   public JCRPermissionsFunction(
       ReferenceResolverService referenceResolverService) {
     this.referenceResolverService = referenceResolverService;

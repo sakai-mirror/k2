@@ -30,6 +30,7 @@ import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.ServiceManager;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
 import org.sakaiproject.kernel.api.authz.PermissionQueryService;
+import org.sakaiproject.kernel.api.authz.ReferenceResolverService;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.component.core.guice.ServiceProvider;
@@ -153,6 +154,9 @@ public class SDataModule extends AbstractModule {
     bind(AuthzResolverService.class).toProvider(
         new ServiceProvider<AuthzResolverService>(sm,
             AuthzResolverService.class));
+    bind(ReferenceResolverService.class).toProvider(
+        new ServiceProvider<ReferenceResolverService>(sm,
+            ReferenceResolverService.class));
     
 
   }
