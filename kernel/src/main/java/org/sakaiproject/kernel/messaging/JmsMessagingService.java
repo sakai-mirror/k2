@@ -29,6 +29,7 @@ import org.sakaiproject.kernel.api.messaging.MultipartMessage;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.Key;
 import com.google.inject.name.Named;
 
 /**
@@ -73,17 +74,17 @@ public class JmsMessagingService implements MessagingService {
   }
 
   public EmailMessage createEmailMessage() {
-    EmailMessage em = injector.getInstance(EmailMessageImpl.class);
+    EmailMessage em = injector.getInstance(Key.get(EmailMessage.class));
     return em;
   }
 
   public Message createMessage() {
-    Message m = injector.getInstance(MessageImpl.class);
+    Message m = injector.getInstance(Key.get(MessageImpl.class));
     return m;
   }
 
   public MultipartMessage createMultipartMessage() {
-    MultipartMessage mm = injector.getInstance(MultipartMessage.class);
+    MultipartMessage mm = injector.getInstance(Key.get(MultipartMessage.class));
     return mm;
   }
 

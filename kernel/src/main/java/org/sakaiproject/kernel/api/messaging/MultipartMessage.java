@@ -26,10 +26,13 @@ package org.sakaiproject.kernel.api.messaging;
 import java.io.Serializable;
 
 /**
- *
+ * 
  * @author chall39
  */
 public interface MultipartMessage extends Message {
+
+  public static final String TYPE = "MultipartMessage";
+
   static enum Field {
     PARTS("Parts");
 
@@ -41,9 +44,9 @@ public interface MultipartMessage extends Message {
   }
 
   /**
-   * Add an attachment to the message.  Convenience method for adding a part to
-   * the message.  This constructs a new message and adds it to the message
-   * being called.
+   * Add an attachment to the message. Convenience method for adding a part to
+   * the message. This constructs a new message and adds it to the message being
+   * called.
    * 
    * @param mimeType
    * @param attachment
@@ -52,7 +55,7 @@ public interface MultipartMessage extends Message {
 
   /**
    * Add a message as a part of the calling message.
-   *
+   * 
    * @param message
    */
   void addPart(Message message);

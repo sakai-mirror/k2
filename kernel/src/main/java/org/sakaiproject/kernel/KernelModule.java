@@ -42,7 +42,10 @@ import org.sakaiproject.kernel.api.jcr.JCRRegistrationService;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
+import org.sakaiproject.kernel.api.messaging.EmailMessage;
+import org.sakaiproject.kernel.api.messaging.Message;
 import org.sakaiproject.kernel.api.messaging.MessagingService;
+import org.sakaiproject.kernel.api.messaging.MultipartMessage;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
@@ -340,6 +343,11 @@ public class KernelModule extends AbstractModule {
 
     bind(javax.jms.Session.class).toProvider(JmsSessionProvider.class).in(
         Scopes.SINGLETON);
+
+    // Messaging
+    bind(Message.class).annotatedWith(Names.named(Message.TYPE)).to(Message.class);
+    bind(Message.class).annotatedWith(Names.named(MultipartMessage.TYPE)).to(MultipartMessage.class);
+    bind(Message.class).annotatedWith(Names.named(EmailMessage.TYPE)).to(EmailMessage.class);
 
   }
 }

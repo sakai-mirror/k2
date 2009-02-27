@@ -25,6 +25,8 @@ import java.util.List;
  */
 public interface EmailMessage extends MultipartMessage {
 
+  public static final String TYPE = "EmailMessage";
+
   public static enum ContentType {
 
     /**
@@ -53,8 +55,8 @@ public interface EmailMessage extends MultipartMessage {
 
   public static enum Field {
 
-    FROM("From"), TO("To"), CC("Cc"), BCC("Bcc"), REPLY_TO("Reply-To"),
-    SUBJECT("Subject"), DATE("Date"), CONTENT_TYPE("Content-Type");
+    FROM("From"), TO("To"), CC("Cc"), BCC("Bcc"), REPLY_TO("Reply-To"), SUBJECT(
+        "Subject"), DATE("Date"), CONTENT_TYPE("Content-Type");
     /**
      * the name of the header associated to the field.
      */
@@ -62,7 +64,7 @@ public interface EmailMessage extends MultipartMessage {
 
     /**
      * Create a field based on a header name.
-     *
+     * 
      * @param jsonString
      *          the name of the field
      */
@@ -81,7 +83,7 @@ public interface EmailMessage extends MultipartMessage {
 
   /**
    * Sets the address the message should be sent to.
-   *
+   * 
    * @param address
    *          the address for the message.
    */
@@ -89,14 +91,14 @@ public interface EmailMessage extends MultipartMessage {
 
   /**
    * Gets the address the message is sent from.
-   *
+   * 
    * @return the address for the message.
    */
   String getFrom();
 
   /**
    * Add recipient for replies.
-   *
+   * 
    * @param email
    *          Email string of reply to recipient.
    */
@@ -104,7 +106,7 @@ public interface EmailMessage extends MultipartMessage {
 
   /**
    * Get reply recipients.
-   *
+   * 
    * @return {@link java.util.List} of {@link java.lang.String} of reply
    *         recipients.
    */
@@ -112,7 +114,7 @@ public interface EmailMessage extends MultipartMessage {
 
   /**
    * Add a recipient to the message.
-   *
+   * 
    * @param email
    *          Email to send to.
    */
@@ -120,14 +122,14 @@ public interface EmailMessage extends MultipartMessage {
 
   /**
    * Get the recipients of the message.
-   *
+   * 
    * @return {@link java.util.List} of {@link java.lang.String}
    */
   List<String> getTo();
 
   /**
    * Set the subject of the message.
-   *
+   * 
    * @param subject
    *          Subject for the message. Empty and null values allowed.
    */
@@ -135,14 +137,14 @@ public interface EmailMessage extends MultipartMessage {
 
   /**
    * Get the subject of the message.
-   *
+   * 
    * @return the subject of the message.
    */
   String getSubject();
 
   /**
    * Remove a header from the message. Does nothing if header is not found.
-   *
+   * 
    * @param key
    */
   void removeHeader(String key);
@@ -151,7 +153,7 @@ public interface EmailMessage extends MultipartMessage {
    * Sets a header to the message. Any previous value for this key will be
    * replaced. If value is null, previous entries of the matching key will be
    * removed.
-   *
+   * 
    * @param key
    *          The key of the header.
    * @param value
@@ -161,7 +163,7 @@ public interface EmailMessage extends MultipartMessage {
 
   /**
    * Get a header from the message. null if key not found.
-   *
+   * 
    * @param key
    *          the value of header at key.
    */
@@ -169,7 +171,7 @@ public interface EmailMessage extends MultipartMessage {
 
   /**
    * Set the mime type of the message.
-   *
+   * 
    * @param mimeType
    *          The mime type to use for the message.
    * @see org.sakaiproject.email.api.ContentType
@@ -178,7 +180,7 @@ public interface EmailMessage extends MultipartMessage {
 
   /**
    * Get the mime type of the message.
-   *
+   * 
    * @return the mime type.
    *         <p>
    *         eg.
@@ -194,7 +196,7 @@ public interface EmailMessage extends MultipartMessage {
   /**
    * Send the message. The implementation by which this is sent depends on how
    * the class was created. The implementation shouldn't be a concern.
-   *
+   * 
    * @throws MessagingException
    */
   void send() throws MessagingException;
