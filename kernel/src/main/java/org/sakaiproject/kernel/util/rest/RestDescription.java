@@ -164,6 +164,16 @@ public class RestDescription {
     List<Object[]> m = getList(content, "sections");
     m.add(new Object[] { level, title, body, link });
   }
+  /**
+   * @param level
+   * @param title2
+   * @param body
+   * @param b
+   */
+  public void addSection(int level, String title, String body, boolean html) {
+    List<Object[]> m = getList(content, "sections");
+    m.add(new Object[] { level, title, body, null, html });  }
+
 
   /**
    * {@inheritDoc}
@@ -310,8 +320,8 @@ public class RestDescription {
     List<Object[]> sections = getList(content, "sections");
     for (Object[] section : sections) {
       boolean html = false;
-      if ( section.length > 3 ) {
-        html = (Boolean) section[3];
+      if ( section.length > 4 ) {
+        html = (Boolean) section[4];
       }
       int level = ((Integer) section[0]).intValue();
       String title = (String) section[1];
@@ -321,7 +331,7 @@ public class RestDescription {
       sb.append("<p class=\"section").append(level).append("\" >");
       sb.append(html?body:XmlUtils.encode(body));
       sb.append("</p>");
-      if (section.length > 3) {
+      if (section.length > 3 && section[3] != null) {
         sb.append("<p> <a href=\"").append(section[3]).append(
             "\" >More information</a> ");
       }
@@ -430,14 +440,5 @@ public class RestDescription {
     this.backUrl = backUrl;
   }
 
-  /**
-   * @param level
-   * @param title2
-   * @param body
-   * @param b
-   */
-  public void addSection(int level, String title2, String body, boolean html) {
-    List<Object[]> m = getList(content, "sections");
-    m.add(new Object[] { level, title, body, null, html });  }
 
 }
