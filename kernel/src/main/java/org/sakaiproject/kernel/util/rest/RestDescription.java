@@ -309,13 +309,17 @@ public class RestDescription {
     sb.append("<p>").append(XmlUtils.encode(shortDescription)).append("</p>");
     List<Object[]> sections = getList(content, "sections");
     for (Object[] section : sections) {
+      boolean html = false;
+      if ( section.length > 3 ) {
+        html = (Boolean) section[3];
+      }
       int level = ((Integer) section[0]).intValue();
       String title = (String) section[1];
       String body = (String) section[2];
-      sb.append("<h").append(level).append(">").append(XmlUtils.encode(title))
+      sb.append("<h").append(level).append(">").append(html?title:XmlUtils.encode(title))
           .append("</h").append(level).append(">");
       sb.append("<p class=\"section").append(level).append("\" >");
-      sb.append(XmlUtils.encode(body));
+      sb.append(html?body:XmlUtils.encode(body));
       sb.append("</p>");
       if (section.length > 3) {
         sb.append("<p> <a href=\"").append(section[3]).append(
@@ -425,5 +429,15 @@ public class RestDescription {
   public void setBackUrl(String backUrl) {
     this.backUrl = backUrl;
   }
+
+  /**
+   * @param level
+   * @param title2
+   * @param body
+   * @param b
+   */
+  public void addSection(int level, String title2, String body, boolean html) {
+    List<Object[]> m = getList(content, "sections");
+    m.add(new Object[] { level, title, body, null, html });  }
 
 }

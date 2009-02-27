@@ -20,6 +20,7 @@ package org.sakaiproject.kernel.authz.simple;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import org.sakaiproject.kernel.api.authz.AccessControlStatement;
 import org.sakaiproject.kernel.api.authz.ReferenceResolverService;
 import org.sakaiproject.kernel.api.authz.ReferencedObject;
 import org.sakaiproject.kernel.util.StringUtils;
@@ -64,6 +65,14 @@ public class PathReferenceResolverService implements ReferenceResolverService {
       }
     }
     return defaultResolver.resolve(resourceReference);
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.authz.ReferenceResolverService#newAccessControlStatement(java.lang.String)
+   */
+  public AccessControlStatement newAccessControlStatement(String acs) {
+    return defaultResolver.newAccessControlStatement(acs);
   }
 
 }

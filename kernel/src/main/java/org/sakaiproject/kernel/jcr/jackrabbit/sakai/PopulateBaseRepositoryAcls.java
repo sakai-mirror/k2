@@ -38,9 +38,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Map.Entry;
 
-import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.ValueFormatException;
 
 /**
  * 
@@ -107,10 +105,6 @@ public class PopulateBaseRepositoryAcls implements StartupAction {
     } catch (UpdateFailedException e) {
       throw new RepositoryStartupException(e.getMessage(), e);
     } catch (NumberFormatException e) {
-      throw new RepositoryStartupException(e.getMessage(), e);
-    } catch (ValueFormatException e) {
-      throw new RepositoryStartupException(e.getMessage(), e);
-    } catch (RepositoryException e) {
       throw new RepositoryStartupException(e.getMessage(), e);
     }
   }

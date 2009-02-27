@@ -15,30 +15,26 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.api.authz;
-
+package org.sakaiproject.sdata.tool.functions;
 
 /**
- * The Reference resolver server resolves reference URI's into ReferenceObjects.
+ * Things that can be done to ACL's on nodes
  */
-public interface ReferenceResolverService {
-
+public enum AclAction {
   /**
-   * Resolve the ReferenceObject.
-   * 
-   * @param resourceReference
-   *          the reference URI. If this is native, it will contain no domain.
-   * @return the ReferenceObject after resolution, null if no reference object
-   *         is present.
+   * Add a new ACS to the end of the list of ACS's. 
    */
-  ReferencedObject resolve(String resourceReference);
-
+  add(),
   /**
-   * Create an access control statement from a specification.
-   * @param acs The acs in string form
-   * @return an Acs
-   * @throws IllegalArgumentException if the acs is not parsable.
+   * Replace the ACL in the list with a new one
    */
-  AccessControlStatement newAccessControlStatement(String acs);
-
+  replace(),
+  /**
+   * Remove the acls from the list
+   */
+  remove(), 
+  /**
+   * clear the list completely.
+   */
+  clear();
 }

@@ -19,6 +19,7 @@ package org.sakaiproject.kernel.authz.simple;
 
 import com.google.inject.Inject;
 
+import org.sakaiproject.kernel.api.authz.AccessControlStatement;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
 import org.sakaiproject.kernel.api.authz.ReferenceResolverService;
 import org.sakaiproject.kernel.api.authz.ReferencedObject;
@@ -61,6 +62,13 @@ public class JcrReferenceResolverService implements ReferenceResolverService{
     } catch (JCRNodeFactoryServiceException e) {
       return new EmptyReferenceObject(resourceReference,e,this);
     }
+  }
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.authz.ReferenceResolverService#newAccessControlStatement(java.lang.String)
+   */
+  public AccessControlStatement newAccessControlStatement(String acs) {
+     return new JcrAccessControlStatementImpl(acs);
   }
 
 }
