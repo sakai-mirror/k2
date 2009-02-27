@@ -18,6 +18,7 @@
 
 package org.sakaiproject.sdata.tool.functions;
 
+import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.sdata.tool.api.Handler;
 import org.sakaiproject.sdata.tool.api.ResourceDefinition;
 import org.sakaiproject.sdata.tool.api.SDataException;
@@ -34,6 +35,16 @@ import javax.servlet.http.HttpServletResponse;
 public class JCRHideReleaseFunction extends JCRSDataFunction {
 
   private static final String KEY = "h";
+  private static final RestDescription DESCRIPTION = new RestDescription();
+  static {
+    DESCRIPTION.setTitle("Hide Release Function");
+    DESCRIPTION.setBackUrl("?doc=1");
+    DESCRIPTION
+        .setShortDescription("Hide release funciton that sets properties controlling "
+            + "hide and release, mapped to function " + KEY);
+    DESCRIPTION.addSection(2, "Introduction",
+        "This function is not currently implemented");
+  }
 
   /*
    * (non-Javadoc)
@@ -48,9 +59,9 @@ public class JCRHideReleaseFunction extends JCRSDataFunction {
       HttpServletResponse response, Node target, ResourceDefinition rp)
       throws SDataException {
     SDataFunctionUtil.checkMethod(request.getMethod(), "POST");
-    // TODO To Be implemented, hide release should be implemented as a 
-    // provider ACL on the node. There are also 
-    // some additional ACL'S that will be required, 
+    // TODO To Be implemented, hide release should be implemented as a
+    // provider ACL on the node. There are also
+    // some additional ACL'S that will be required,
     // who are we hiding from ?
     // who are we releasing to ?
     // what do we do about other nodes ?
@@ -58,7 +69,7 @@ public class JCRHideReleaseFunction extends JCRSDataFunction {
     // be better using the permissions function.
     throw new SDataException(HttpServletResponse.SC_NOT_IMPLEMENTED,
         " Hide Release is not implemented in JCR at the moment ");
-    
+
   }
 
   /**
@@ -68,6 +79,15 @@ public class JCRHideReleaseFunction extends JCRSDataFunction {
    */
   public String getKey() {
     return KEY;
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.sdata.tool.api.SDataFunction#getDescription()
+   */
+  public RestDescription getDescription() {
+    return DESCRIPTION;
   }
 
 }

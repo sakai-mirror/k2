@@ -42,5 +42,5 @@ public abstract class JCRSDataFunction implements SDataFunction {
       log.warn("Type missmatch " + e.getMessage());
     }
   }
-
+  
 }

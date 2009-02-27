@@ -18,17 +18,22 @@
 
 package org.sakaiproject.sdata.tool;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.api.rest.RestProvider;
+import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.sdata.tool.api.Handler;
 import org.sakaiproject.sdata.tool.configuration.SDataModule;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.Random;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -64,6 +69,59 @@ public class ControllerServlet extends HttpServlet {
   private static final long serialVersionUID = -7098194528761855627L;
 
   private static final Log log = LogFactory.getLog(ControllerServlet.class);
+
+  private static final RestDescription DESCRIPTION = new RestDescription();
+
+  static {
+    DESCRIPTION.setTitle("SData");
+    DESCRIPTION.setBackUrl("");
+    DESCRIPTION
+        .setShortDescription("Manages content in JCR according rfc2616");
+    DESCRIPTION
+        .addSection(
+            2,
+            "Introduction",
+            "SData contains 2 services, the Shared Data Space and the Private Data SPace. " +
+            "The Private Data space URLS require that the user is authenticated, and the URL " +
+            "space is bound to the account of the authenticated user. The shared space is shared amongst all users." +
+            "responses will contain content "
+                + "of files within the jcr or a map response (directories). The resource is "
+                + "pointed to using the URI/URL requested (the path info part), and the standard "
+                + "Http methods do what they are expected to in the http standard. GET gets the "
+                + "content of the file, PUT put puts a new file, the content coming from the "
+                + "stream of the PUT. DELETE deleted the file. HEAD gets the headers that would "
+                + "come from a full GET. ");
+    DESCRIPTION
+        .addSection(
+            2,
+            "GET, HEAD, PUT",
+            "The content type and content encoding headers are honored "
+                + "for GET,HEAD and PUT, but other headers are not honored completely at the moment "
+                + "(range-*) etc, ");
+    DESCRIPTION
+        .addSection(
+            2,
+            "POST",
+            "POST takes multipart uploads of content, the URL pointing to a folder and "
+                + "each upload being the name of the file being uploaded to that folder. The "
+                + "upload uses a streaming api, and expects that form fields are ordered, such "
+                + "that a field starting with mimetype before the upload stream will specify the "
+                + "mimetype associated with the stream.");
+    DESCRIPTION
+        .addParameter(
+            "v",
+            "(Optional) A standard integer parameter that selects the version of the resource "
+                + "that is being acted on.");
+    DESCRIPTION
+        .addParameter(
+            "d",
+            "(Optional) A standard integer parameter that controlls the depth of any query.");
+    DESCRIPTION
+        .addParameter("f",
+            "(Optional) A standard string parameter that selects the function being used.");
+    DESCRIPTION.addResponse("all codes",
+        "All response codes conform to rfc2616");
+  }
 
   /**
    * Dummy handler used for all those requests that cant be matched.
@@ -139,7 +197,6 @@ public class ControllerServlet extends HttpServlet {
         throws ServletException, IOException {
     }
 
-
     /*
      * (non-Javadoc)
      * 
@@ -168,6 +225,10 @@ public class ControllerServlet extends HttpServlet {
       return null;
     }
 
+    public RestDescription getDescription() {
+      return null;
+    }
+
   };
 
   private SDataConfiguration configuration;
@@ -189,8 +250,20 @@ public class ControllerServlet extends HttpServlet {
 
     Injector injector = Guice.createInjector(new SDataModule());
     configuration = injector.getInstance(SDataConfiguration.class);
-  }
+    
+    Map<String, RestDescription> map = Maps.newLinkedHashMap();
+    for (Entry<String, Handler> e : configuration.getHandlerRegister().entrySet()) {
+      map.put(e.getKey(), e.getValue().getDescription());
+    }
+    DESCRIPTION.addSection(2, "Handler",
+        "The following handlers are available under this location.");
+    for (String s : Lists.sortedCopy(map.keySet())) {
+      RestDescription description = map.get(s);
+      DESCRIPTION.addSection(3, "URL "+s+"/  "+description.getTitle(), description
+          .getShortDescription(), s+"/?doc=1");
+    }
 
+  }
 
   /*
    * (non-Javadoc)
@@ -227,9 +300,37 @@ public class ControllerServlet extends HttpServlet {
       h.setHandlerHeaders(request, response);
       h.doGet(request, response);
     } else {
-      response.reset();
-      response.sendError(HttpServletResponse.SC_NOT_FOUND, "No Handler Found");
+      if (!describe(request, response)) {
+        response.reset();
+        response
+            .sendError(HttpServletResponse.SC_NOT_FOUND, "No Handler Found");
+      }
     }
+  }
+
+  /**
+   * @param request
+   * @param response
+   * @return
+   * @throws IOException 
+   */
+  private boolean describe(HttpServletRequest request,
+      HttpServletResponse response) throws IOException {
+    if ("1".equals(request.getParameter("doc"))) {
+      String format = request.getParameter("fmt");
+      if ("xml".equals(format)) {
+        response.setContentType("text/xml");
+        response.getWriter().print(DESCRIPTION.toXml());
+      } else if ("json".equals(format)) {
+        response.setContentType(RestProvider.CONTENT_TYPE);
+        response.getWriter().print(DESCRIPTION.toJson());
+      } else {
+        response.setContentType("text/html");
+        response.getWriter().print(DESCRIPTION.toHtml());
+      }
+      return true;
+    }
+    return false;
   }
 
   /*
@@ -320,9 +421,9 @@ public class ControllerServlet extends HttpServlet {
     for (; end < path.length && path[end] != '/'; end++)
       ;
     String key = new String(path, start, end - start);
-    
+
     Handler h = configuration.getHandlerRegister().get(key);
-    System.err.println("Key "+key+" matched "+h);
+    System.err.println("Key " + key + " matched " + h);
     return h;
   }
 
@@ -342,7 +443,6 @@ public class ControllerServlet extends HttpServlet {
         + ":" + req.getRequestURL());
   }
 
-  
   /**
    * @return the nullHandler
    */

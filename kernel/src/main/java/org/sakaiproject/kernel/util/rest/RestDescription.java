@@ -32,11 +32,11 @@ import java.util.Map.Entry;
  */
 public class RestDescription {
 
-  private static final Object XMLHEADER = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+  private static final String XMLHEADER = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
       + "<restdoc>";
-  private static final Object XMLFOOTER = "</restdoc>";
-  private static final Object HTMLFOOTER = "</body></html>";
-  private static final Object HTMLHEADER1 = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+  private static final String XMLFOOTER = "</restdoc>";
+  private static final String HTMLFOOTER = "</body></html>";
+  private static final String HTMLHEADER1 = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
       + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
       + "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-US\" lang=\"en-US\">\n"
       + "<head profile=\"http://www.w3.org/2000/08/w3c-synd/#\"> \n"
@@ -72,13 +72,14 @@ public class RestDescription {
       + "}\n"
       + "/**/\n"
       + "</style>" + "<title> ";
-  private static final Object HTMLHEADER2 = "</title>" + "</head><body>";
+  private static final String HTMLHEADER2 = "</title>" + "</head><body>";
   Map<String, Object> content = new HashMap<String, Object>();
   private String json;
   private String html;
   private String xml;
   private String title;
   private String shortDescription;
+  private String backUrl = "../__describe__";
 
   /**
    * {@inheritDoc}
@@ -303,7 +304,7 @@ public class RestDescription {
     sb.append(HTMLHEADER1);
     sb.append(XmlUtils.encode(title));
     sb.append(HTMLHEADER2);
-    sb.append("<p><a href=\"../__describe__\" >back to all services</a></p>");
+    sb.append("<p><a href=\"").append(backUrl).append("\" >back to all services</a></p>");
     sb.append("<h3>").append(XmlUtils.encode(title)).append("</h3>");
     sb.append("<p>").append(XmlUtils.encode(shortDescription)).append("</p>");
     List<Object[]> sections = getList(content, "sections");
@@ -416,6 +417,13 @@ public class RestDescription {
    */
   public void setShortDescription(String shortDescription) {
     this.shortDescription = shortDescription;
+  }
+  
+  /**
+   * @param backUrl the backUrl to set
+   */
+  public void setBackUrl(String backUrl) {
+    this.backUrl = backUrl;
   }
 
 }

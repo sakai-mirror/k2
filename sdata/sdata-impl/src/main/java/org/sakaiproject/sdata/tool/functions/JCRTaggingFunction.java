@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
+import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.sdata.tool.api.Handler;
 import org.sakaiproject.sdata.tool.api.ResourceDefinition;
 import org.sakaiproject.sdata.tool.api.SDataException;
@@ -63,6 +64,22 @@ public class JCRTaggingFunction extends JCRSDataFunction {
   private static final String LIST_TAGS = "l";
   private static final Log LOG = LogFactory.getLog(JCRTaggingFunction.class);
   private static final String KEY = "t";
+  private static final RestDescription DESCRIPTION = new RestDescription();
+  static {
+    DESCRIPTION.setTitle("Tagging Function");
+    DESCRIPTION.setBackUrl("?doc=1");
+    DESCRIPTION
+        .setShortDescription("Querys Taggs , mapped to function  " + KEY);
+    DESCRIPTION
+        .addSection(
+            2,
+            "Introduction",
+            "This function is not implemented at the moment.");
+    DESCRIPTION.addResponse(String
+        .valueOf(HttpServletResponse.SC_INTERNAL_SERVER_ERROR),
+        "on any other error");
+
+  }
 
   private JCRTagging jcrTagging;
   private JCRNodeFactoryService jcrNodeFactoryService;
@@ -169,5 +186,13 @@ public class JCRTaggingFunction extends JCRSDataFunction {
    */
   public String getKey() {
     return KEY;
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.sdata.tool.api.SDataFunction#getDescription()
+   */
+  public RestDescription getDescription() {
+    return DESCRIPTION;
   }
 }

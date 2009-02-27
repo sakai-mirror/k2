@@ -18,6 +18,10 @@
 
 package org.sakaiproject.sdata.tool;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.util.rest.RestDescription;
+
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Map;
@@ -28,14 +32,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.sakaiproject.sdata.tool.api.Handler;
-
 /**
  * @author ieb
  */
-public class SnoopHandler implements Handler {
+public class SnoopHandler extends AbstractHandler {
 
   /**
    * 
@@ -43,6 +43,20 @@ public class SnoopHandler implements Handler {
   private static final long serialVersionUID = -936439457646310920L;
   private static final Log log = LogFactory.getLog(SnoopHandler.class);
   private static final String KEY = "snoop";
+
+  private static final RestDescription DESCRIPTION = new RestDescription();
+
+  static {
+    DESCRIPTION.setTitle("Snoop Handler");
+    DESCRIPTION.setBackUrl("../?doc=1");
+    DESCRIPTION
+        .setShortDescription("Dumps the request information ");
+    DESCRIPTION
+        .addSection(
+            2,
+            "Introduction",
+            "Dumps the Request information including session and attribute information");
+  }
 
   /*
    * (non-Javadoc)
@@ -63,6 +77,9 @@ public class SnoopHandler implements Handler {
    */
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
+    if ( describe(request, response, null) ) {
+      return;
+    }
     snoopRequest(request);
   }
 
@@ -191,6 +208,14 @@ public class SnoopHandler implements Handler {
    */
   public String getKey() {
     return KEY;
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.sdata.tool.api.Handler#getDescription()
+   */
+  public RestDescription getDescription() {
+    return DESCRIPTION;
   }
 
 }

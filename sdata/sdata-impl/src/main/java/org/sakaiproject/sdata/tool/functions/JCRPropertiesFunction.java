@@ -19,6 +19,7 @@
 package org.sakaiproject.sdata.tool.functions;
 
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
+import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.sdata.tool.api.Handler;
 import org.sakaiproject.sdata.tool.api.ResourceDefinition;
 import org.sakaiproject.sdata.tool.api.SDataException;
@@ -96,6 +97,41 @@ public class JCRPropertiesFunction extends JCRSDataFunction {
   public static final String ACTION = "action";
 
   private static final String ITEM = "item";
+
+  private static final RestDescription DESCRIPTION = new RestDescription();
+  static {
+    DESCRIPTION.setTitle("Properties Function");
+    DESCRIPTION.setBackUrl("?doc=1");
+    DESCRIPTION
+        .setShortDescription("Manages properties on a node identified by the URL , mapped to function  "
+            + KEY);
+    DESCRIPTION
+        .addSection(
+            2,
+            "Introduction",
+            "On POST Modifies the properties on a node. The post contains a set of arrays with identical lengths,"
+                + " each array represenging a column and a row of all the arrays representing an operation.");
+    DESCRIPTION.addResponse(String.valueOf(HttpServletResponse.SC_OK),
+        "If sucessfull the response contains structured node metadata.");
+
+    DESCRIPTION.addParameter(NAME, "An array of propery names");
+    DESCRIPTION
+        .addParameter(VALUE,
+            "An array of property values in a suitable format for the property content");
+    DESCRIPTION
+        .addParameter(
+            ACTION,
+            "An array of property actions, 'a' for add, 'd' for delete, 'r' for replace."
+                + " add will append a property to the end of the property list, if the property is multivbalue, "
+                + "otherwise if will create or replace a single value property. delete will delete the property or remove the "
+                + "last value of a multivalued property. replace will replace a value or replace a multivalued property with "
+                + "the value supplied, reseting the number of elements to 1");
+    DESCRIPTION
+        .addParameter(ITEM,
+            "An array of relative paths to child nodes to which this entry refers.");
+    DESCRIPTION.addResponse(String.valueOf(HttpServletResponse.SC_BAD_REQUEST),
+        "If the arrays done match in length, or the actions are not correct");
+  }
 
   /*
    * (non-Javadoc)
@@ -215,6 +251,15 @@ public class JCRPropertiesFunction extends JCRSDataFunction {
    */
   public String getKey() {
     return KEY;
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.sdata.tool.api.SDataFunction#getDescription()
+   */
+  public RestDescription getDescription() {
+    return DESCRIPTION;
   }
 
 }

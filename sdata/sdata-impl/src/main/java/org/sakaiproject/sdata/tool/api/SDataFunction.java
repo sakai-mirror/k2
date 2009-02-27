@@ -18,6 +18,8 @@
 
 package org.sakaiproject.sdata.tool.api;
 
+import org.sakaiproject.kernel.util.rest.RestDescription;
+
 import javax.jcr.Node;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,5 +43,8 @@ public interface SDataFunction {
    * @return get the Key.
    */
   String getKey();
+  
+  
+  RestDescription getDescription();
 
 }

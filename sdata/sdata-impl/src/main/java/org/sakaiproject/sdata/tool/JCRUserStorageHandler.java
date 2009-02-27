@@ -16,18 +16,21 @@
  * specific language governing permissions and limitations under the License.
  */
 
-
 package org.sakaiproject.sdata.tool;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
+import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.sdata.tool.api.HandlerSerialzer;
 import org.sakaiproject.sdata.tool.api.ResourceDefinitionFactory;
 import org.sakaiproject.sdata.tool.api.SDataFunction;
 
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * A user storage servlet performs storage based on the logged in user, as
@@ -62,10 +65,45 @@ public class JCRUserStorageHandler extends JCRHandler {
   public static final String SECURITY_ASSERTION = BASE_NAME
       + ".securityAssertion";
 
-
   public static final String LOCK_DEFINITION = BASE_NAME + ".lockDefinition";
 
   private static final String KEY = "p";
+
+  private static final RestDescription DESCRIPTION = new RestDescription();
+
+  static {
+    DESCRIPTION.setTitle("User SData JCR Handler");
+    DESCRIPTION.setBackUrl("../?doc=1");
+    DESCRIPTION
+        .setShortDescription("Manages content in the personal space of the JCR according rfc2616");
+    DESCRIPTION
+        .addSection(
+            2,
+            "Introduction",
+            "JCR User Storage Service give access to the users personal storage space in the JCR returning the content "
+                + "of files within the jcr or a map response (directories). The resource is "
+                + "pointed to using the URI/URL requested (the path info part), and the standard "
+                + "Http methods do what they are expected to in the http standard. GET gets the "
+                + "content of the file, PUT put puts a new file, the content coming from the "
+                + "stream of the PUT. DELETE deleted the file. HEAD gets the headers that would "
+                + "come from a full GET. ");
+    DESCRIPTION
+        .addSection(
+            2,
+            "GET, HEAD, PUT",
+            "The content type and content encoding headers are honored "
+                + "for GET,HEAD and PUT, but other headers are not honored completely at the moment "
+                + "(range-*) etc, ");
+    DESCRIPTION
+        .addSection(
+            2,
+            "POST",
+            "POST takes multipart uploads of content, the URL pointing to a folder and "
+                + "each upload being the name of the file being uploaded to that folder. The "
+                + "upload uses a streaming api, and expects that form fields are ordered, such "
+                + "that a field starting with mimetype before the upload stream will specify the "
+                + "mimetype associated with the stream.");
+  }
 
   /**
    * Construct a JCRUserStorageHandler, and use a Resource Definition factory to
@@ -83,17 +121,53 @@ public class JCRUserStorageHandler extends JCRHandler {
       @Named(RESOURCE_SERIALIZER) HandlerSerialzer serializer) {
     super(jcrNodeFactory, resourceDefinitionFactory, resourceFunctionFactory,
         serializer);
-    
-    System.err.println(this+" Resource Defintion Factory is "+resourceDefinitionFactory);
+    System.err.println(this + " Resource Defintion Factory is "
+        + resourceDefinitionFactory);
+
   }
-  
+
   /**
    * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.sdata.tool.JCRHandler#initDescription()
+   */
+  @Override
+  public void initDescription() {
+
+    Map<String, RestDescription> map = Maps.newLinkedHashMap();
+    for (Entry<String, SDataFunction> e : resourceFunctionFactory.entrySet()) {
+      map.put(e.getKey(), e.getValue().getDescription());
+    }
+    DESCRIPTION.addSection(2, "Functions",
+        "The following functions are activated with a ?f=key, where key is "
+            + "the function key");
+    for (String s : Lists.sortedCopy(map.keySet())) {
+      RestDescription description = map.get(s);
+      DESCRIPTION.addSection(3, "URL " + KEY + "/<resource>?f=" + s + "  "
+          + description.getTitle(), description.getShortDescription(),
+          "?doc=1&f=" + s);
+    }
+
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
    * @see org.sakaiproject.sdata.tool.JCRHandler#getKey()
    */
   @Override
   public String getKey() {
     return KEY;
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.sdata.tool.JCRHandler#getDescription()
+   */
+  @Override
+  public RestDescription getDescription() {
+    return DESCRIPTION;
   }
 
 }

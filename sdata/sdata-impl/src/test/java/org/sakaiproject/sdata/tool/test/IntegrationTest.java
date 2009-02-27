@@ -214,6 +214,7 @@ public class IntegrationTest {
     expect(request.getParameter("v")).andReturn(null).anyTimes();
     expect(request.getParameter("f")).andReturn(null).anyTimes();
     expect(request.getParameter("d")).andReturn(null).anyTimes();
+    expect(request.getParameter("doc")).andReturn(null).anyTimes();
 
     expect(request.getRequestURL()).andReturn(
         new StringBuffer("http://localhost:8080/sdata/f/test34a/sas/info.txt"))
@@ -255,6 +256,7 @@ public class IntegrationTest {
     // call 2 no path
     expect(request.getMethod()).andReturn("GET").anyTimes();
     expect(request.getPathInfo()).andReturn(null).anyTimes();
+    expect(request.getParameter("doc")).andReturn(null).anyTimes();
     expect(request.getRequestURL()).andReturn(
         new StringBuffer("http://localhost:8080/sdata")).anyTimes();
 
@@ -290,6 +292,7 @@ public class IntegrationTest {
     // call 3 empty path
     expect(request.getMethod()).andReturn("GET").anyTimes();
     expect(request.getPathInfo()).andReturn("").anyTimes();
+    expect(request.getParameter("doc")).andReturn(null).anyTimes();
     expect(request.getRequestURL()).andReturn(
         new StringBuffer("http://localhost:8080/sdata")).anyTimes();
 
@@ -381,6 +384,7 @@ public class IntegrationTest {
     expect(request.getParameter("v")).andReturn(null).anyTimes();
     expect(request.getParameter("f")).andReturn(null).anyTimes();
     expect(request.getParameter("d")).andReturn(null).anyTimes();
+    expect(request.getParameter("doc")).andReturn(null).anyTimes();
     expect(request.getParameter("snoop")).andReturn("0").anyTimes();
     expect(request.getDateHeader("if-unmodified-since")).andReturn(0L)
         .atLeastOnce();
@@ -484,6 +488,7 @@ public class IntegrationTest {
     expect(request.getParameter("v")).andReturn(null).anyTimes();
     expect(request.getParameter("f")).andReturn("m").anyTimes();
     expect(request.getParameter("d")).andReturn("2").anyTimes();
+    expect(request.getParameter("doc")).andReturn(null).anyTimes();
     expect(request.getParameter("snoop")).andReturn("0").anyTimes();
     response.setHeader("x-sdata-handler",
         "org.sakaiproject.sdata.tool.JCRHandler");

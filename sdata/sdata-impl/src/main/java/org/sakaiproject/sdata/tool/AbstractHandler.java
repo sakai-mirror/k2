@@ -25,9 +25,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.sakaiproject.kernel.api.rest.RestProvider;
+import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.sdata.tool.api.Handler;
 import org.sakaiproject.sdata.tool.api.HandlerSerialzer;
 import org.sakaiproject.sdata.tool.api.SDataException;
+import org.sakaiproject.sdata.tool.api.SDataFunction;
 
 public abstract class AbstractHandler implements Handler {
 
@@ -84,5 +87,30 @@ public abstract class AbstractHandler implements Handler {
 				HttpServletResponse.SC_METHOD_NOT_ALLOWED,
 				"Method Not Implemented "));
 	}
+	
+  public boolean describe(HttpServletRequest request, HttpServletResponse response, SDataFunction m) throws IOException {
+    if ( "1".equals(request.getParameter("doc")) ) {
+      RestDescription description;
+      if ( m == null ) {
+        description = getDescription();
+      } else {
+        description = m.getDescription();
+      }
+      String format = request.getParameter("fmt");
+      if ( "xml".equals(format) ) {
+        response.setContentType("text/xml");
+        response.getWriter().print(description.toXml());
+      } else if ( "json".equals(format) ) {
+        response.setContentType(RestProvider.CONTENT_TYPE);
+        response.getWriter().print(description.toJson());
+      } else {
+        response.setContentType("text/html");
+        response.getWriter().print(description.toHtml());            
+      }
+      return true;
+    }
+    return false;
+  }
+
 
 }

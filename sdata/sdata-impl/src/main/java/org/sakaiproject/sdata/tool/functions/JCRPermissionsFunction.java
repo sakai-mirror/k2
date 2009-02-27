@@ -18,6 +18,7 @@
 
 package org.sakaiproject.sdata.tool.functions;
 
+import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.sdata.tool.api.Handler;
 import org.sakaiproject.sdata.tool.api.ResourceDefinition;
 import org.sakaiproject.sdata.tool.api.SDataException;
@@ -33,6 +34,22 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class JCRPermissionsFunction extends JCRSDataFunction {
   private static final String KEY = "pe";
+  private static final RestDescription DESCRIPTION = new RestDescription();
+  static {
+    DESCRIPTION.setTitle("Permissions Function");
+    DESCRIPTION.setBackUrl("?doc=1");
+    DESCRIPTION
+        .setShortDescription("Manages permissions on a node , mapped to function  " + KEY);
+    DESCRIPTION
+        .addSection(
+            2,
+            "Introduction",
+            "This function is not implemented at the moment.");
+    DESCRIPTION.addResponse(String
+        .valueOf(HttpServletResponse.SC_INTERNAL_SERVER_ERROR),
+        "on any other error");
+
+  }
 
   /*
    * (non-Javadoc)
@@ -64,6 +81,14 @@ public class JCRPermissionsFunction extends JCRSDataFunction {
    */
   public String getKey() {
     return KEY;
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.sdata.tool.api.SDataFunction#getDescription()
+   */
+  public RestDescription getDescription() {
+    return DESCRIPTION;
   }
 
 }

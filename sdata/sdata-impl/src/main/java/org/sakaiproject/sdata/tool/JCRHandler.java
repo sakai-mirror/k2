@@ -16,9 +16,10 @@
  * specific language governing permissions and limitations under the License.
  */
 
-
 package org.sakaiproject.sdata.tool;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
@@ -33,6 +34,7 @@ import org.sakaiproject.kernel.api.authz.UnauthorizedException;
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
+import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.kernel.webapp.RestServiceFaultException;
 import org.sakaiproject.sdata.tool.api.HandlerSerialzer;
 import org.sakaiproject.sdata.tool.api.ResourceDefinition;
@@ -52,6 +54,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
@@ -124,11 +127,61 @@ public class JCRHandler extends AbstractHandler {
 
   private static final String KEY = "f";
 
+  private static final RestDescription DESCRIPTION = new RestDescription();
+
+  static {
+    DESCRIPTION.setTitle("Main SData JCR Handler");
+    DESCRIPTION.setBackUrl("../?doc=1");
+    DESCRIPTION
+        .setShortDescription("Manages content in the main space of the JCR according rfc2616");
+    DESCRIPTION
+        .addSection(
+            2,
+            "Introduction",
+            "JCR Service is a servlet that gives access to the JCR returning the content "
+                + "of files within the jcr or a map response (directories). The resource is "
+                + "pointed to using the URI/URL requested (the path info part), and the standard "
+                + "Http methods do what they are expected to in the http standard. GET gets the "
+                + "content of the file, PUT put puts a new file, the content coming from the "
+                + "stream of the PUT. DELETE deleted the file. HEAD gets the headers that would "
+                + "come from a full GET. ");
+    DESCRIPTION
+        .addSection(
+            2,
+            "GET, HEAD, PUT",
+            "The content type and content encoding headers are honored "
+                + "for GET,HEAD and PUT, but other headers are not honored completely at the moment "
+                + "(range-*) etc, ");
+    DESCRIPTION
+        .addSection(
+            2,
+            "POST",
+            "POST takes multipart uploads of content, the URL pointing to a folder and "
+                + "each upload being the name of the file being uploaded to that folder. The "
+                + "upload uses a streaming api, and expects that form fields are ordered, such "
+                + "that a field starting with mimetype before the upload stream will specify the "
+                + "mimetype associated with the stream.");
+    DESCRIPTION
+        .addParameter(
+            "v",
+            "(Optional) A standard integer parameter that selects the version of the resource "
+                + "that is being acted on.");
+    DESCRIPTION
+        .addParameter(
+            "d",
+            "(Optional) A standard integer parameter that controlls the depth of any query.");
+    DESCRIPTION
+        .addParameter("f",
+            "(Optional) A standard string parameter that selects the function being used.");
+    DESCRIPTION.addResponse("all codes",
+        "All response codes conform to rfc2616");
+  }
+
   private transient JCRNodeFactoryService jcrNodeFactory;
 
   private transient ResourceDefinitionFactory resourceDefinitionFactory;
 
-  private Map<String, SDataFunction> resourceFunctionFactory;
+  protected Map<String, SDataFunction> resourceFunctionFactory;
 
   /**
    * Create a JCRHandler and give it a resource definition factory that will
@@ -149,6 +202,25 @@ public class JCRHandler extends AbstractHandler {
     this.resourceFunctionFactory = resourceFunctionFactory;
     this.serializer = serializer;
 
+    initDescription();
+  }
+
+  /**
+   * 
+   */
+  public void initDescription() {
+    Map<String, RestDescription> map = Maps.newLinkedHashMap();
+    for (Entry<String, SDataFunction> e : resourceFunctionFactory.entrySet()) {
+      map.put(e.getKey(), e.getValue().getDescription());
+    }
+    DESCRIPTION.addSection(2, "Functions",
+        "The following functions are activated with a ?f=key, where key is "
+            + "the function key");
+    for (String s : Lists.sortedCopy(map.keySet())) {
+      RestDescription description = map.get(s);
+      DESCRIPTION.addSection(3, "URL "+KEY+"/<resource>?f="+s+"  "+description.getTitle(), description
+          .getShortDescription(), "?doc=1&f=" + s);
+    }
   }
 
   /*
@@ -162,6 +234,7 @@ public class JCRHandler extends AbstractHandler {
     try {
 
       snoopRequest(request);
+      
 
       ResourceDefinition rp = resourceDefinitionFactory.getSpec(request);
       Node n = jcrNodeFactory.getNode(rp.getRepositoryPath());
@@ -288,10 +361,9 @@ public class JCRHandler extends AbstractHandler {
     try {
       snoopRequest(request);
 
-
       ResourceDefinition rp = resourceDefinitionFactory.getSpec(request);
-      String mimeType = ContentTypes.getContentType(rp.getRepositoryPath(), request
-          .getContentType());
+      String mimeType = ContentTypes.getContentType(rp.getRepositoryPath(),
+          request.getContentType());
       String charEncoding = null;
       if (mimeType.startsWith("text")) {
         charEncoding = request.getCharacterEncoding();
@@ -299,7 +371,7 @@ public class JCRHandler extends AbstractHandler {
       Node n = jcrNodeFactory.getNode(rp.getRepositoryPath());
       boolean created = false;
       if (n == null) {
-        n = jcrNodeFactory.createFile(rp.getRepositoryPath(),mimeType);
+        n = jcrNodeFactory.createFile(rp.getRepositoryPath(), mimeType);
         created = true;
         if (n == null) {
           throw new RuntimeException("Failed to create node at "
@@ -408,7 +480,15 @@ public class JCRHandler extends AbstractHandler {
     try {
       snoopRequest(request);
 
+
       ResourceDefinition rp = resourceDefinitionFactory.getSpec(request);
+      SDataFunction m = resourceFunctionFactory.get(rp.getFunctionDefinition());
+      
+      if ( describe(request, response, m) ) {
+        return;
+      }
+      
+      
 
       Node n = jcrNodeFactory.getNode(rp.getRepositoryPath());
       if (n == null) {
@@ -419,7 +499,6 @@ public class JCRHandler extends AbstractHandler {
 
       NodeType nt = n.getPrimaryNodeType();
 
-      SDataFunction m = resourceFunctionFactory.get(rp.getFunctionDefinition());
       if (m != null) {
         m.call(this, request, response, n, rp);
       } else {
@@ -484,8 +563,11 @@ public class JCRHandler extends AbstractHandler {
 
           in = content.getStream();
           long loc = in.skip(ranges[0]);
-          if (  loc != ranges[0] ) {
-            throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,"Range specified is invalid asked for "+ranges[0]+" got "+loc);
+          if (loc != ranges[0]) {
+            throw new RestServiceFaultException(
+                HttpServletResponse.SC_BAD_REQUEST,
+                "Range specified is invalid asked for " + ranges[0] + " got "
+                    + loc);
           }
           byte[] b = new byte[10240];
           int nbytes = 0;
@@ -540,6 +622,8 @@ public class JCRHandler extends AbstractHandler {
       }
     }
   }
+  
+
 
   /**
    * Check the ranges requested in the request headers, this conforms to the RFC
@@ -807,7 +891,7 @@ public class JCRHandler extends AbstractHandler {
               String mimeType = ContentTypes.getContentType(finalName, item
                   .getContentType());
               Node target = jcrNodeFactory.createFile(rp
-                  .convertToAbsoluteRepositoryPath(finalName),mimeType);
+                  .convertToAbsoluteRepositoryPath(finalName), mimeType);
               GregorianCalendar lastModified = new GregorianCalendar();
               lastModified.setTime(new Date());
               long size = saveStream(target, stream, mimeType, "UTF-8",
@@ -857,7 +941,7 @@ public class JCRHandler extends AbstractHandler {
           valueList.add(value);
         }
       }
-      
+
       responseMap.put("success", true);
       responseMap.put("errors", errors.toArray(new String[1]));
       responseMap.put("uploads", uploads);
@@ -888,5 +972,14 @@ public class JCRHandler extends AbstractHandler {
    */
   public String getKey() {
     return KEY;
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.sdata.tool.api.Handler#getDescription()
+   */
+  public RestDescription getDescription() {
+    return DESCRIPTION;
   }
 }

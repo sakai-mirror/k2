@@ -18,6 +18,7 @@
 
 package org.sakaiproject.sdata.tool.functions;
 
+import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.sdata.tool.api.Handler;
 import org.sakaiproject.sdata.tool.api.ResourceDefinition;
 import org.sakaiproject.sdata.tool.api.SDataException;
@@ -38,6 +39,24 @@ import javax.servlet.http.HttpServletResponse;
 public class JCRNodeMetadata extends JCRSDataFunction {
 
   private static final String KEY = "m";
+  private static final RestDescription DESCRIPTION = new RestDescription();
+  static {
+    DESCRIPTION.setTitle("Metadata Function");
+    DESCRIPTION.setBackUrl("?doc=1");
+    DESCRIPTION
+        .setShortDescription("Returns the metadata on a node and the child " +
+        		"tree, mapped to function  " + KEY);
+    DESCRIPTION
+        .addSection(
+            2,
+            "Introduction",
+            "On GET, Returns structured medata data on the node identified by the URL." +
+            "The metadata is controlled by the hander managing this function.");
+    DESCRIPTION.addResponse(String
+        .valueOf(HttpServletResponse.SC_INTERNAL_SERVER_ERROR),
+        "on any other error");
+
+  }
 
   /*
    * (non-Javadoc)
@@ -72,6 +91,14 @@ public class JCRNodeMetadata extends JCRSDataFunction {
    */
   public String getKey() {
     return KEY;
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.sdata.tool.api.SDataFunction#getDescription()
+   */
+  public RestDescription getDescription() {
+    return DESCRIPTION;
   }
 
 }

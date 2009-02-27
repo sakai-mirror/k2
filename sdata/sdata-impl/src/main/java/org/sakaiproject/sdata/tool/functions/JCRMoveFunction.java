@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
+import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.sdata.tool.SDataAccessException;
 import org.sakaiproject.sdata.tool.api.Handler;
 import org.sakaiproject.sdata.tool.api.ResourceDefinition;
@@ -53,6 +54,31 @@ public class JCRMoveFunction extends JCRSDataFunction {
   public static final String TO = "to";
   private static final Log LOG = LogFactory.getLog(JCRMoveFunction.class);
   private static final String KEY = "mv";
+  private static final RestDescription DESCRIPTION = new RestDescription();
+  static {
+    DESCRIPTION.setTitle("Move Function");
+    DESCRIPTION.setBackUrl("?doc=1");
+    DESCRIPTION
+        .setShortDescription("Move the resource identified by the URL from one location "
+            + "to annother, mapped to function  " + KEY);
+    DESCRIPTION
+        .addSection(
+            2,
+            "Introduction",
+            "On POST, Performs a move operation on the url in the request, the target is given by the 'to' parameter");
+    DESCRIPTION.addResponse(String.valueOf(HttpServletResponse.SC_OK),
+        "A Node map of the location after the move");
+    DESCRIPTION.addResponse(String.valueOf(HttpServletResponse.SC_CONFLICT),
+        "If the target already exists, or is locked");
+    DESCRIPTION.addResponse(String.valueOf(HttpServletResponse.SC_NOT_FOUND),
+        "If the source cant be found");
+    DESCRIPTION.addResponse(String.valueOf(HttpServletResponse.SC_FORBIDDEN),
+        "If the move operation is denied");
+    DESCRIPTION.addResponse(String
+        .valueOf(HttpServletResponse.SC_INTERNAL_SERVER_ERROR),
+        "on any other error");
+
+  }
   private JCRService jcrService;
   private JCRNodeFactoryService jcrNodeFactoryService;
 
@@ -139,6 +165,14 @@ public class JCRMoveFunction extends JCRSDataFunction {
    */
   public String getKey() {
     return KEY;
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.sdata.tool.api.SDataFunction#getDescription()
+   */
+  public RestDescription getDescription() {
+    return DESCRIPTION;
   }
 
 }

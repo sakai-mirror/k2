@@ -103,6 +103,7 @@ public class SnoopHandlerTest {
      });
      expect(request.getParameter("v")).andReturn("v parameter");
      expect(request.getParameter("t")).andReturn("t parameter");
+     expect(request.getParameter("doc")).andReturn("t parameter").anyTimes();
 
      expect(request.getCookies()).andAnswer(new IAnswer<Cookie[]>(){
 

@@ -18,6 +18,8 @@
 
 package org.sakaiproject.sdata.tool.api;
 
+import org.sakaiproject.kernel.util.rest.RestDescription;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
@@ -257,4 +259,6 @@ public interface Handler extends Serializable {
    * @return
    */
   String getKey();
+  
+  RestDescription getDescription();
 }
