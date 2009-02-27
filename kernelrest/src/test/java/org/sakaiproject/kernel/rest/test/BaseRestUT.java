@@ -42,10 +42,13 @@ import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.registry.RegistryServiceImpl;
+import org.sakaiproject.kernel.util.StringUtils;
 import org.sakaiproject.kernel.webapp.SakaiServletRequest;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 
 import javax.persistence.EntityManager;
 import javax.servlet.ServletOutputStream;
@@ -81,6 +84,7 @@ public class BaseRestUT {
   protected Session sakaiSession;
   protected UserEnvironment userEnvironment;
   protected User user;
+  private String sessionID;
 
   /**
    * 
@@ -150,7 +154,7 @@ public class BaseRestUT {
    * @param string2
    * @param baos
    */
-  public void setupAnyTimes(final String username, String sessionID,
+  public void setupAnyTimes(final String username,
       final ByteArrayOutputStream baos) throws IOException {
 
      user = new User() {
@@ -238,4 +242,15 @@ public class BaseRestUT {
         sakaiSession, userEnvironment, beanConverter };
 
   }
+  
+  public void newSession() {
+    try {
+      sessionID = StringUtils.sha1Hash(String.valueOf(System.currentTimeMillis()));
+    } catch (UnsupportedEncodingException e) {
+      sessionID = String.valueOf(System.currentTimeMillis());
+    } catch (NoSuchAlgorithmException e) {
+      sessionID = String.valueOf(System.currentTimeMillis());
+    }
+  }
+
 }

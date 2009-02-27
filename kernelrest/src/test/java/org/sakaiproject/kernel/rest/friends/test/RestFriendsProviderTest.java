@@ -53,7 +53,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Unit tests for the RestSiteProvider
  */
-public class RestFriendsProviderTest extends BaseRestUT  {
+public class RestFriendsProviderTest extends BaseRestUT {
 
   private RestProvider rsp;
 
@@ -70,9 +70,10 @@ public class RestFriendsProviderTest extends BaseRestUT  {
       RepositoryException, JCRNodeFactoryServiceException {
     setupServices();
 
+    newSession();
     {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      setupAnyTimes("user1", "SESSION-21312312", baos);
+      setupAnyTimes("user1", baos);
 
       // expect(request.getParameter("friendUuid")).andReturn(null);
       // expect(request.getParameter("message")).andReturn(null);
@@ -90,11 +91,12 @@ public class RestFriendsProviderTest extends BaseRestUT  {
       }
       verifyMocks();
     }
+    newSession();
     {
       resetMocks();
       // wong path,
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      setupAnyTimes("user1", "SESSION-21312312", baos);
+      setupAnyTimes("user1", baos);
 
       // expect(request.getParameter("friendUuid")).andReturn(null);
       // expect(request.getParameter("message")).andReturn(null);
@@ -112,11 +114,12 @@ public class RestFriendsProviderTest extends BaseRestUT  {
       }
       verifyMocks();
     }
+    newSession();
     {
       resetMocks();
       // wong path,
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      setupAnyTimes("user1", "SESSION-21312312", baos);
+      setupAnyTimes("user1", baos);
 
       // expect(request.getParameter("friendUuid")).andReturn(null);
       // expect(request.getParameter("message")).andReturn(null);
@@ -134,11 +137,12 @@ public class RestFriendsProviderTest extends BaseRestUT  {
       }
       verifyMocks();
     }
+    newSession();
     {
       resetMocks();
       // wong path, too short
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      setupAnyTimes("user1", "SESSION-21312312", baos);
+      setupAnyTimes("user1", baos);
 
       // expect(request.getParameter("friendUuid")).andReturn(null);
       // expect(request.getParameter("message")).andReturn(null);
@@ -181,9 +185,10 @@ public class RestFriendsProviderTest extends BaseRestUT  {
   public void testNonAdminRequestOtherConnection() throws ServletException,
       IOException, RepositoryException, JCRNodeFactoryServiceException {
     setupServices();
+    newSession();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes("user1", "SESSION-21312312", baos);
+    setupAnyTimes("user1", baos);
 
     // expect(request.getParameter("friendUuid")).andReturn("myfriend");
     // expect(request.getParameter("message")).andReturn("Hi");
@@ -217,11 +222,12 @@ public class RestFriendsProviderTest extends BaseRestUT  {
   public void testAdminRequestOtherConnection() throws ServletException,
       IOException, RepositoryException, JCRNodeFactoryServiceException {
     setupServices();
+    newSession();
 
     expect(userEnvironment.isSuperUser()).andReturn(true).anyTimes();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes("admin", "SESSION-2131sasa", baos);
+    setupAnyTimes("admin", baos);
     expect(request.getMethod()).andReturn("POST");
 
     expect(request.getParameter("friendUuid")).andReturn("MyFriend");
@@ -307,58 +313,47 @@ public class RestFriendsProviderTest extends BaseRestUT  {
     myFriend.setUuid("user1");
 
     // request a connection
-    connect("user2", "SESSION-2131asdassdfsdfaqwe", "request", "user1", "hi",
-        me, myFriend);
+    connect("user2", "request", "user1", "hi", me, myFriend);
 
     // check that user2 has accepted
-    checkFriend("user2", "SESSION-2131asdasfaqwe", new String[] { "user1" },
-        new String[] { "PENDING" });
+    checkFriend("user2", new String[] { "user1" }, new String[] { "PENDING" });
 
     // check that user1 has accepted
-    checkFriend("user1", "SESSION-2131asdassdfsdfaqwe",
-        new String[] { "user2" }, new String[] { "INVITED" });
+    checkFriend("user1", new String[] { "user2" }, new String[] { "INVITED" });
 
     // user 1 confirms
 
-    connect("user1", "SESSION-2131asdassdfsdfaqwe", "accept", "user2", null,
-        myFriend, me);
+    connect("user1", "accept", "user2", null, myFriend, me);
 
     // check that user2 has accepted
-    checkFriend("user2", "SESSION-2131asdasfaqwe", new String[] { "user1" },
-        new String[] { "ACCEPTED" });
+    checkFriend("user2", new String[] { "user1" }, new String[] { "ACCEPTED" });
 
     // check that user1 has accepted
-    checkFriend("user1", "SESSION-2131asdassdfsdfaqwe",
-        new String[] { "user2" }, new String[] { "ACCEPTED" });
+    checkFriend("user1", new String[] { "user2" }, new String[] { "ACCEPTED" });
 
     // try to reinvite both should fail
     try {
-      connect("user1", "SESSION-2131asdassdfsdfaqwe", "request", "user2", "hi",
-          myFriend, me);
+      connect("user1", "request", "user2", "hi", myFriend, me);
       fail();
     } catch (RestServiceFaultException ex) {
       assertEquals(HttpServletResponse.SC_CONFLICT, ex.getStatusCode());
     }
 
     try {
-      connect("user2", "SESSION-2131asdasfaqwe", "request", "user1", "hi",
-         me, myFriend);
+      connect("user2", "request", "user1", "hi", me, myFriend);
       fail();
     } catch (RestServiceFaultException ex) {
       assertEquals(HttpServletResponse.SC_CONFLICT, ex.getStatusCode());
     }
 
     // user 1 removes
-    connect("user1", "SESSION-2131asdassdfsdfaqwe", "remove", "user2", null,
-        myFriend, me);
+    connect("user1", "remove", "user2", null, myFriend, me);
 
     // user 2 no mates
-    checkFriend("user2", "SESSION-2131asdasfaqwe", new String[] {},
-        new String[] {});
+    checkFriend("user2", new String[] {}, new String[] {});
 
     // user 1 no mates
-    checkFriend("user1", "SESSION-2131asdassdfsdfaqwe", new String[] {},
-        new String[] {});
+    checkFriend("user1", new String[] {}, new String[] {});
 
   }
 
@@ -383,34 +378,27 @@ public class RestFriendsProviderTest extends BaseRestUT  {
     myFriend.setUuid("user1");
 
     // request a connection
-    connect("user2", "SESSION-2131asdassdfsdfaqwe", "request", "user1", "hi",
-        me, myFriend);
+    connect("user2", "request", "user1", "hi", me, myFriend);
 
     // check that user2 has accepted
-    checkFriend("user2", "SESSION-2131asdasfaqwe", new String[] { "user1" },
-        new String[] { "PENDING" });
+    checkFriend("user2", new String[] { "user1" }, new String[] { "PENDING" });
 
     // check that user1 has accepted
-    checkFriend("user1", "SESSION-2131asdassdfsdfaqwe",
-        new String[] { "user2" }, new String[] { "INVITED" });
+    checkFriend("user1", new String[] { "user2" }, new String[] { "INVITED" });
 
     // user 1 rejects
 
-    connect("user1", "SESSION-2131asdassdfsdfaqwe", "reject", "user2", null,
-        myFriend, me);
+    connect("user1", "reject", "user2", null, myFriend, me);
 
     // check that the friend has gone
-    checkFriend("user2", "SESSION-2131asdasfaqwe", new String[] {},
-        new String[] {});
+    checkFriend("user2", new String[] {}, new String[] {});
 
     // check that the friend has gone
-    checkFriend("user1", "SESSION-2131asdassdfsdfaqwe", new String[] {},
-        new String[] {});
+    checkFriend("user1", new String[] {}, new String[] {});
 
     // user 1 removes
     try {
-      connect("user1", "SESSION-2131asdassdfsdfaqwe", "remove", "user2", null,
-          myFriend, me);
+      connect("user1", "remove", "user2", null, myFriend, me);
       fail();
     } catch (RestServiceFaultException ex) {
       assertEquals(HttpServletResponse.SC_NOT_FOUND, ex.getStatusCode());
@@ -430,6 +418,7 @@ public class RestFriendsProviderTest extends BaseRestUT  {
   public void testRequestIgnoreConnection() throws ServletException,
       IOException, RepositoryException, JCRNodeFactoryServiceException {
     setupServices();
+    newSession();
 
     FriendsBean me = new FriendsBean(jcrNodeFactoryService, userFactoryService,
         beanConverter, "private");
@@ -439,34 +428,27 @@ public class RestFriendsProviderTest extends BaseRestUT  {
     myFriend.setUuid("user1");
 
     // request a connection
-    connect("user2", "SESSION-2131asdassdfsdfaqwe", "request", "user1", "hi",
-        me, myFriend);
+    connect("user2", "request", "user1", "hi", me, myFriend);
 
     // check that user2 has accepted
-    checkFriend("user2", "SESSION-2131asdasfaqwe", new String[] { "user1" },
-        new String[] { "PENDING" });
+    checkFriend("user2", new String[] { "user1" }, new String[] { "PENDING" });
 
     // check that user1 has accepted
-    checkFriend("user1", "SESSION-2131asdassdfsdfaqwe",
-        new String[] { "user2" }, new String[] { "INVITED" });
+    checkFriend("user1", new String[] { "user2" }, new String[] { "INVITED" });
 
     // user 1 rejects
 
-    connect("user1", "SESSION-2131asdassdfsdfaqwe", "ignore", "user2", null,
-        myFriend, me);
+    connect("user1", "ignore", "user2", null, myFriend, me);
 
     // check that the friend has gone
-    checkFriend("user2", "SESSION-2131asdasfaqwe", new String[] {},
-        new String[] {});
+    checkFriend("user2", new String[] {}, new String[] {});
 
     // check that the friend has gone
-    checkFriend("user1", "SESSION-2131asdassdfsdfaqwe", new String[] {},
-        new String[] {});
+    checkFriend("user1", new String[] {}, new String[] {});
 
     // user 1 removes
     try {
-      connect("user1", "SESSION-2131asdassdfsdfaqwe", "remove", "user2", null,
-          myFriend, me);
+      connect("user1", "remove", "user2", null, myFriend, me);
       fail();
     } catch (RestServiceFaultException ex) {
       assertEquals(HttpServletResponse.SC_NOT_FOUND, ex.getStatusCode());
@@ -486,6 +468,7 @@ public class RestFriendsProviderTest extends BaseRestUT  {
   public void testRequestCancelConnection() throws ServletException,
       IOException, RepositoryException, JCRNodeFactoryServiceException {
     setupServices();
+    newSession();
     FriendsBean me = new FriendsBean(jcrNodeFactoryService, userFactoryService,
         beanConverter, "private");
     me.setUuid("user2");
@@ -494,88 +477,74 @@ public class RestFriendsProviderTest extends BaseRestUT  {
     myFriend.setUuid("user1");
 
     // request a connection
-    connect("user2", "SESSION-2131asdassdfsdfaqwe", "request", "user1", "hi",
-        me, myFriend);
+    connect("user2", "request", "user1", "hi", me, myFriend);
 
     // check that user2 has accepted
-    checkFriend("user2", "SESSION-2131asdasfaqwe", new String[] { "user1" },
-        new String[] { "PENDING" });
+    checkFriend("user2", new String[] { "user1" }, new String[] { "PENDING" });
 
     // check that user1 has accepted
-    checkFriend("user1", "SESSION-2131asdassdfsdfaqwe",
-        new String[] { "user2" }, new String[] { "INVITED" });
+    checkFriend("user1", new String[] { "user2" }, new String[] { "INVITED" });
 
     // user 1 cancel, not allowed
     try {
-      connect("user1", "SESSION-2131asdassdfsdfaqwe", "cancel", "user2", null,
-          myFriend, me);
+      connect("user1", "cancel", "user2", null, myFriend, me);
       fail();
     } catch (RestServiceFaultException ex) {
       assertEquals(HttpServletResponse.SC_CONFLICT, ex.getStatusCode());
     }
     // user 2 is not allowed to accept, reject or ignore
     try {
-      connect("user2", "SESSION-2131asdassdfsdfaqwe", "accept", "user1", null,
-          me, myFriend);
+      connect("user2", "accept", "user1", null, me, myFriend);
       fail();
     } catch (RestServiceFaultException ex) {
       assertEquals(HttpServletResponse.SC_CONFLICT, ex.getStatusCode());
     }
     // user 2 is not allowed to accept, reject or ignore
     try {
-      connect("user2", "SESSION-2131asdassdfsdfaqwe", "reject", "user1", null,
-          me, myFriend);
+      connect("user2", "reject", "user1", null, me, myFriend);
       fail();
     } catch (RestServiceFaultException ex) {
       assertEquals(HttpServletResponse.SC_CONFLICT, ex.getStatusCode());
     }
     // user 2 is not allowed to accept, reject or ignore
     try {
-      connect("user2", "SESSION-2131asdassdfsdfaqwe", "ignore", "user1", null,
-          me, myFriend);
+      connect("user2", "ignore", "user1", null, me, myFriend);
       fail();
     } catch (RestServiceFaultException ex) {
       assertEquals(HttpServletResponse.SC_CONFLICT, ex.getStatusCode());
     }
 
     // cancel
-    connect("user2", "SESSION-2131asdassdfsdfaqwe", "cancel", "user1", null,
-        me, myFriend);
+    connect("user2", "cancel", "user1", null, me, myFriend);
 
     // check that the friend has gone
-    checkFriend("user2", "SESSION-2131asdasfaqwe", new String[] {},
-        new String[] {});
+    checkFriend("user2", new String[] {}, new String[] {});
 
     // check that the friend has gone
-    checkFriend("user1", "SESSION-2131asdassdfsdfaqwe", new String[] {},
-        new String[] {});
+    checkFriend("user1", new String[] {}, new String[] {});
 
     // all the following will fail, no connection
     try {
-      connect("user1", "SESSION-2131asdassdfsdfaqwe", "cancel", "user2", null,
-          myFriend, me);
+      connect("user1", "cancel", "user2", null, myFriend, me);
       fail();
     } catch (RestServiceFaultException ex) {
       assertEquals(HttpServletResponse.SC_NOT_FOUND, ex.getStatusCode());
     }
     try {
-      connect("user1", "SESSION-2131asdassdfsdfaqwe", "reject", "user2", null,
-          myFriend, me);
+      connect("user1", "reject", "user2", null, myFriend, me);
       fail();
     } catch (RestServiceFaultException ex) {
       assertEquals(HttpServletResponse.SC_NOT_FOUND, ex.getStatusCode());
     }
     try {
-      connect("user1", "SESSION-2131asdassdfsdfaqwe", "accept", "user2", null,
-          myFriend, me);
+      connect("user1", "accept", "user2", null, myFriend, me);
       fail();
     } catch (RestServiceFaultException ex) {
       assertEquals(HttpServletResponse.SC_NOT_FOUND, ex.getStatusCode());
     }
     // user 1 removes
     try {
-      connect("user1", "SESSION-2131asdassdfsdfaqwe", "remove", "user2", null,
-          myFriend, me);
+      connect("user1", "remove", "user2", null, myFriend, me);
       fail();
     } catch (RestServiceFaultException ex) {
       assertEquals(HttpServletResponse.SC_NOT_FOUND, ex.getStatusCode());
@@ -592,13 +561,14 @@ public class RestFriendsProviderTest extends BaseRestUT  {
    * @throws RepositoryException
    * @throws JCRNodeFactoryServiceException
    */
-  private void connect(String user, String session, String action,
-      String friend, String message, FriendsBean me, FriendsBean myFriend)
-      throws IOException, JCRNodeFactoryServiceException, RepositoryException {
+  private void connect(String user, String action, String friend,
+      String message, FriendsBean me, FriendsBean myFriend) throws IOException,
+      JCRNodeFactoryServiceException, RepositoryException {
     resetMocks();
+    newSession();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes(user, session, baos);
+    setupAnyTimes(user, baos);
     expect(request.getMethod()).andReturn("POST");
 
     expect(request.getParameter("friendUuid")).andReturn(friend);
@@ -615,33 +585,29 @@ public class RestFriendsProviderTest extends BaseRestUT  {
 
     expect(friendsResolverService.resolve(friend)).andReturn(myFriend)
         .anyTimes();
-    expect(userFactoryService.getUserPathPrefix((String) anyObject())).andReturn("somepath/")
-    .anyTimes();
+    expect(userFactoryService.getUserPathPrefix((String) anyObject()))
+        .andReturn("somepath/").anyTimes();
     expect(beanConverter.convertToString(me)).andReturn("{}").anyTimes();
-    expect(beanConverter.convertToString(myFriend)).andReturn("{}")
-        .anyTimes();
-    
+    expect(beanConverter.convertToString(myFriend)).andReturn("{}").anyTimes();
+
     Capture<InputStream> inputStream = new Capture<InputStream>();
     Capture<String> stringCapture = new Capture<String>();
     Capture<String> stringCapture2 = new Capture<String>();
 
     expect(
         jcrNodeFactoryService.setInputStream(capture(stringCapture),
-            capture(inputStream), capture(stringCapture2))).andReturn(node).atLeastOnce();
+            capture(inputStream), capture(stringCapture2))).andReturn(node)
+        .atLeastOnce();
 
     node.save();
     expectLastCall().atLeastOnce();
 
     if ("request".equals(action)) {
 
-
-
     } else if ("accept".equals(action)) {
 
+    } else if ("remove".equals(action)) {
 
-
-    } else if ( "remove".equals(action)) {
-      
     }
 
     Capture<Map<String, String>> mapCapture = new Capture<Map<String, String>>();
@@ -671,12 +637,13 @@ public class RestFriendsProviderTest extends BaseRestUT  {
    * @param strings2
    * @throws IOException
    */
-  private void checkFriend(String user, String session, String[] friendUuids,
+  private void checkFriend(String user, String[] friendUuids,
       String[] friendStatus) throws IOException {
     resetMocks();
 
+    newSession();
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes(user, session, baos);
+    setupAnyTimes(user, baos);
     expect(request.getMethod()).andReturn("GET");
 
     expect(request.getParameter("friendUuid")).andReturn(null);

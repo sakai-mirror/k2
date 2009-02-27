@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package org.sakaiproject.kernel.rest;
+package org.sakaiproject.kernel.rest.search;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
@@ -31,6 +31,7 @@ import org.sakaiproject.kernel.util.IOUtils;
 import org.sakaiproject.kernel.util.JCRNodeMap;
 import org.sakaiproject.kernel.util.StringUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
+import org.sakaiproject.kernel.webapp.Initialisable;
 import org.sakaiproject.kernel.webapp.RestServiceFaultException;
 
 import java.io.IOException;
@@ -57,7 +58,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * 
  */
-public class RestSearchProvider implements RestProvider {
+public class RestSearchProvider implements RestProvider, Initialisable {
 
   private static final RestDescription DESC = new RestDescription();
   private static final String KEY = "search";
@@ -107,6 +108,7 @@ public class RestSearchProvider implements RestProvider {
 
   private JCRService jcrService;
   private BeanConverter beanConverter;
+  private Registry<String, RestProvider>  registry;
 
   /**
    * 
@@ -115,7 +117,7 @@ public class RestSearchProvider implements RestProvider {
   public RestSearchProvider(RegistryService registryService,
       JCRService jcrService,
       BeanConverter beanConverter) {
-    Registry<String, RestProvider> registry = registryService
+    registry = registryService
         .getRegistry(RestProvider.REST_REGISTRY);
     registry.add(this);
     System.err
@@ -125,6 +127,22 @@ public class RestSearchProvider implements RestProvider {
     this.jcrService = jcrService;
     this.beanConverter = beanConverter;
   }
+  
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.webapp.Initialisable#destroy()
+   */
+  public void destroy() {
+    registry.remove(this);
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.webapp.Initialisable#init()
+   */
+  public void init() {
+  }
+
 
   /**
    * {@inheritDoc}
@@ -232,12 +250,14 @@ public class RestSearchProvider implements RestProvider {
 
     try {
       q = queryManager.createQuery(sqlQuery, Query.SQL);
+     
     } catch (InvalidQueryException ex) {
       throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
           "Invalid query presented to content system: " + sqlQuery + " "
               + ex.getMessage(), ex);
     }
     long startMs = System.currentTimeMillis();
+    
     QueryResult result = q.execute();
     NodeIterator ni = result.getNodes();
     long endMs = System.currentTimeMillis();
@@ -336,5 +356,6 @@ public class RestSearchProvider implements RestProvider {
   public int getPriority() {
     return 0;
   }
+
 
 }

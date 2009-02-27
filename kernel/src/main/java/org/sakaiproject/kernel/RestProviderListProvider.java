@@ -25,7 +25,6 @@ import org.sakaiproject.kernel.rest.RestAuthenticationProvider;
 import org.sakaiproject.kernel.rest.RestLogoutProvider;
 import org.sakaiproject.kernel.rest.RestMySitesProvider;
 import org.sakaiproject.kernel.rest.RestPatchProvider;
-import org.sakaiproject.kernel.rest.RestSearchProvider;
 import org.sakaiproject.kernel.rest.RestSiteProvider;
 import org.sakaiproject.kernel.rest.RestUserProvider;
 
@@ -48,14 +47,12 @@ public class RestProviderListProvider implements Provider<List<RestProvider>> {
        RestLogoutProvider restLogoutProvider,
       RestUserProvider restUserProvider,
       RestMySitesProvider restMySitesProvider,
-      RestPatchProvider restPatchProvider,
-      RestSearchProvider restSearchProvider) {
+      RestPatchProvider restPatchProvider) {
     list.add(restAuthenticationProvider);
     list.add(restLogoutProvider);
     list.add(restUserProvider);
     list.add(restMySitesProvider);
     list.add(restPatchProvider);
-    list.add(restSearchProvider);
     list.add(restSiteProvider);
   }
 

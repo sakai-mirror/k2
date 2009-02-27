@@ -53,8 +53,9 @@ public class RestMeProviderTest extends BaseRestUT {
   @Test
   public void testAnonGet() throws ServletException, IOException, RepositoryException, JCRNodeFactoryServiceException {
     setupServices();
+    newSession();
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes("user1", "SESSION-21312312", baos);
+    setupAnyTimes("user1",  baos);
 
     // expect(request.getParameter("friendUuid")).andReturn(null);
     // expect(request.getParameter("message")).andReturn(null);
@@ -113,8 +114,9 @@ public class RestMeProviderTest extends BaseRestUT {
   @Test
   public void testAnonGetOther() throws ServletException, IOException {
     setupServices();
+    newSession();
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes("user1", "SESSION-21312312", baos);
+    setupAnyTimes("user1",  baos);
 
     expect(request.getLocale()).andReturn(new Locale("en", "US")).anyTimes();
     expect(session.getAttribute("sakai.locale.")).andReturn(null).anyTimes();
@@ -136,8 +138,9 @@ public class RestMeProviderTest extends BaseRestUT {
   @Test
   public void testUserNoEnv() throws ServletException, IOException, RepositoryException, JCRNodeFactoryServiceException {
     setupServices();
+    newSession();
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    setupAnyTimes("user1", "SESSION-21312312", baos);
+    setupAnyTimes("user1",  baos);
 
     Locale locale = new Locale("en", "US");
     expect(request.getLocale()).andReturn(locale).anyTimes();

@@ -27,6 +27,7 @@ import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.ServiceManager;
+import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
@@ -112,6 +113,9 @@ public class RestModule extends AbstractModule {
     bind(JCRNodeFactoryService.class).toProvider(
         new ServiceProvider<JCRNodeFactoryService>(serviceManager,
             JCRNodeFactoryService.class)).in(Scopes.SINGLETON);
+    bind(JCRService.class).toProvider(
+        new ServiceProvider<JCRService>(serviceManager,
+            JCRService.class)).in(Scopes.SINGLETON);
     bind(UserResolverService.class).toProvider(
         new ServiceProvider<UserResolverService>(serviceManager,
             UserResolverService.class)).in(Scopes.SINGLETON);

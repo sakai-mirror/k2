@@ -26,7 +26,6 @@ import org.sakaiproject.kernel.authz.AclListenerT;
 import org.sakaiproject.kernel.messaging.activemq.ActiveMQEmailDeliveryT;
 import org.sakaiproject.kernel.rest.test.RestMySitesProviderKernelUnitT;
 import org.sakaiproject.kernel.rest.test.RestPatchProviderKernelUnitT;
-import org.sakaiproject.kernel.rest.test.RestSearchProviderKernelUnitT;
 import org.sakaiproject.kernel.rest.test.RestSiteProviderKernelUnitT;
 import org.sakaiproject.kernel.site.SiteServiceT;
 import org.sakaiproject.kernel.webapp.test.SakaiAuthenticationFilterKernelUnitT;
@@ -40,7 +39,7 @@ import org.sakaiproject.kernel.webapp.test.SakaiAuthenticationFilterKernelUnitT;
     RequestFilterKernelUnitT.class, SakaiAuthenticationFilterKernelUnitT.class,
     SessionManagerServiceKernelUnitT.class, AclListenerT.class,
     SiteServiceT.class, RestSiteProviderKernelUnitT.class,
-    RestPatchProviderKernelUnitT.class, RestSearchProviderKernelUnitT.class,
+    RestPatchProviderKernelUnitT.class,
     RestMySitesProviderKernelUnitT.class, ActiveMQEmailDeliveryT.class })
 public class AllKernelTest {
   private static boolean shutdown;
