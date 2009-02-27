@@ -51,6 +51,7 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
 
   private static final Log LOG = LogFactory
       .getLog(SimpleAuthzResolverService.class);
+  private static final boolean debug = LOG.isDebugEnabled();
   private SessionManagerService sessionManager;
   private ReferenceResolverService referenceResolverService;
   private UserEnvironmentResolverService userEnvironmentResolverService;
@@ -86,16 +87,17 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
   public void check(String resourceReference, PermissionQuery permissionQuery)
       throws PermissionDeniedException {
 
-    Cache<Object> grants = cacheManagerService.getCache("authz",
-        CacheScope.REQUEST);
-    List<String> grantStack = (List<String>) grants.get("request-granted"
-        + secureKey);
+    String requestGrant = getRequestGrant();
 
-    if (grantStack != null && grantStack.size() > 0) {
-      LOG.warn("Bypassed Security " + grantStack.get(grantStack.size() - 1));
+    if (requestGrant != null) {
+      LOG.warn("Bypassed Security " + requestGrant);
       return;
     }
 
+    Cache<Object> grants = cacheManagerService.getCache("authz",
+        CacheScope.REQUEST);
+
+    // check the local cache
     String permissionQueryToken = permissionQuery
         .getQueryToken(resourceReference);
 
@@ -111,12 +113,14 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
     }
 
     String userId = sessionManager.getCurrentUserId();
-    
+
     UserEnvironment userEnvironment = userEnvironmentResolverService
         .resolve(userId);
     if (userEnvironment.isSuperUser()) {
-      LOG.warn("SECURITY: SuperUser permission granted on:"
-          + permissionQueryToken);
+      if (debug) {
+        LOG.debug("SECURITY: SuperUser permission granted on:"
+            + permissionQueryToken);
+      }
       return;
     }
     ReferencedObject referencedObject = referenceResolverService
@@ -152,11 +156,13 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
       }
     }
 
-    if (acl.size() == 0) {
-      LOG.info("WARNING ------------------Empty ACL");
-    } else {
-      for (String k : acl.keySet()) {
-        LOG.info("Loaded ACL for " + k);
+    if (debug) {
+      if (acl.size() == 0) {
+        LOG.debug("WARNING ------------------Empty ACL");
+      } else {
+        for (String k : acl.keySet()) {
+          LOG.debug("Loaded ACL for " + k);
+        }
       }
     }
 
@@ -174,15 +180,19 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
         for (AccessControlStatement ac : kacl) {
           if (userEnvironment.matches(referencedObject, ac.getSubject())) {
             if (ac.isGranted()) {
-              LOG.info("Granted Permission for user "
-                  + userEnvironment.getUser().getUuid() + " on " + ac);
+              if (debug) {
+                LOG.debug("Granted Permission for user "
+                    + userEnvironment.getUser().getUuid() + " on " + ac);
+              }
               // cache the response in the request scope cache.
               grants.put(permissionQueryToken, true);
               return;
             } else {
               // cache the response in the request scope cache.
               grants.put(permissionQueryToken, false);
-              LOG.info("Denied Permission " + ac);
+              if (debug) {
+                LOG.debug("Denied Permission " + ac);
+              }
               throw new PermissionDeniedException(
                   "Permission Explicitly deinied on " + resourceReference
                       + " by " + ac + " for " + qs + " user environment "
@@ -417,5 +427,23 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
 
   public void invalidateAcl(ReferencedObject referencedObject) {
     cachedAcl.removeChildren(referencedObject.getKey());
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.kernel.api.authz.AuthzResolverService#hasRequestGrant()
+   */
+  @java.lang.SuppressWarnings("unchecked")
+  public String getRequestGrant() {
+    Cache<Object> grants = cacheManagerService.getCache("authz",
+        CacheScope.REQUEST);
+    List<String> grantStack = (List<String>) grants.get("request-granted"
+        + secureKey);
+
+    if (grantStack != null && grantStack.size() > 0) {
+      return grantStack.get(grantStack.size() - 1);
+    }
+    return null;
   }
 }

@@ -62,22 +62,30 @@ public class SecureSakaiAccessManager implements AccessManager {
   private static final Log log = LogFactory
       .getLog(SecureSakaiAccessManager.class);
 
-  private static final SimplePermissionQuery[] PERMISSION_QUERIES = new SimplePermissionQuery[READ|WRITE|REMOVE];
-  
+  private static final SimplePermissionQuery[] PERMISSION_QUERIES = new SimplePermissionQuery[READ
+      | WRITE | REMOVE];
+
+  private static final boolean debug = log.isDebugEnabled();
+
+  private static final long TTL = 60000L; // cache for a minute
+
   static {
-    for ( int i = 0; i < PERMISSION_QUERIES.length; i++ ) {
+    for (int i = 0; i < PERMISSION_QUERIES.length; i++) {
       PERMISSION_QUERIES[i] = new SimplePermissionQuery(actionToString(i));
-      if ( (i&READ) == READ ) {
-        PERMISSION_QUERIES[i].addQueryStatement(new SimpleQueryStatement(PermissionQuery.READ));
+      if ((i & READ) == READ) {
+        PERMISSION_QUERIES[i].addQueryStatement(new SimpleQueryStatement(
+            PermissionQuery.READ));
       }
-      if ( (i&WRITE) == WRITE ) {
-        PERMISSION_QUERIES[i].addQueryStatement(new SimpleQueryStatement(PermissionQuery.WRITE));
+      if ((i & WRITE) == WRITE) {
+        PERMISSION_QUERIES[i].addQueryStatement(new SimpleQueryStatement(
+            PermissionQuery.WRITE));
       }
-      if ( (i&REMOVE) == REMOVE ) {
-        PERMISSION_QUERIES[i].addQueryStatement(new SimpleQueryStatement(PermissionQuery.REMOVE));
+      if ((i & REMOVE) == REMOVE) {
+        PERMISSION_QUERIES[i].addQueryStatement(new SimpleQueryStatement(
+            PermissionQuery.REMOVE));
       }
     }
-   
+
   }
 
   /**
@@ -116,7 +124,6 @@ public class SecureSakaiAccessManager implements AccessManager {
   @SuppressWarnings("unused")
   private DefaultNamePathResolver pathResolver;
 
-
   /**
    * The AuthZ Resolver
    */
@@ -126,7 +133,7 @@ public class SecureSakaiAccessManager implements AccessManager {
    * A Request Scope Cache containing already resolved permissions, we dont
    * support inverting a permissions resolution half way though a request cycle.
    */
-  private Cache<Boolean> cache;
+  private Cache<ExpiringGrant<Boolean>> cache;
 
   /**
    * The session that we are bound to.
@@ -151,13 +158,29 @@ public class SecureSakaiAccessManager implements AccessManager {
 
   private Object sessionLock = new Object();
 
-  private long total;
+  private static int ncalls;
 
-  private long ntime;
+  private static int nfullresolvegdeny;
+
+  private static int nfullresolvegrant;
+
+  private static int ncachedresolve;
+
+  private static int nresolve;
+
+  private static int nrequestgrant;
+
+  private static int nanondnied;
+
+  private static int nadmin;
+
+  private static long dumptime = System.currentTimeMillis();
 
   @Inject
-  public SecureSakaiAccessManager(JCRService jcrService, AuthzResolverService authzResolverService, CacheManagerService cacheManagerService) throws ComponentActivatorException,
-      RepositoryException {
+  public SecureSakaiAccessManager(JCRService jcrService,
+      AuthzResolverService authzResolverService,
+      CacheManagerService cacheManagerService)
+      throws ComponentActivatorException, RepositoryException {
     this.authzResolverService = authzResolverService;
     this.jcrService = jcrService;
     this.cacheManagerService = cacheManagerService;
@@ -170,15 +193,15 @@ public class SecureSakaiAccessManager implements AccessManager {
    * org.apache.jackrabbit.core.security.AccessManager#init(org.apache.jackrabbit
    * .core.security.AMContext)
    */
-  @edu.umd.cs.findbugs.annotations.SuppressWarnings(value={"BC_VACUOUS_INSTANCEOF"},justification="The type safety in only at compile time.")
+  @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = { "BC_VACUOUS_INSTANCEOF" }, justification = "The type safety in only at compile time.")
   public void init(AMContext context) throws AccessDeniedException, Exception {
     if (initialized) {
       throw new IllegalStateException("already initialized");
     }
-    
+
     cache = cacheManagerService.getCache("jcr-accessmanager",
-        CacheScope.REQUEST);
-        
+        CacheScope.INSTANCE);
+    
 
     subject = context.getSubject();
     hierMgr = context.getHierarchyManager();
@@ -231,17 +254,18 @@ public class SecureSakaiAccessManager implements AccessManager {
    */
   public void checkPermission(ItemId item, int permission)
       throws AccessDeniedException, ItemNotFoundException, RepositoryException {
-    if ( !initialized ) {
+    if (!initialized) {
       throw new RepositoryException("Access Manager is not initialized ");
     }
     if (!isGranted(item, permission)) {
-      log.info("Denied "+permission+" on "+item);
-      throw new AccessDeniedException("Permission deined to " + sakaiUserId + " to "
-          + PERMISSION_QUERIES[permission] + "on" + item );
+      if (debug) {
+        log.debug("Denied " + permission + " on " + item);
+      }
+      throw new AccessDeniedException("Permission deined to " + sakaiUserId
+          + " to " + PERMISSION_QUERIES[permission] + "on" + item);
     }
-    log.info("Granted "+permission+" on "+item);
+    log.info("Granted " + permission + " on " + item);
   }
-
 
   /*
    * (non-Javadoc)
@@ -253,82 +277,138 @@ public class SecureSakaiAccessManager implements AccessManager {
   public boolean isGranted(ItemId item, int permission)
       throws ItemNotFoundException, RepositoryException {
     // not initialized, or closed
-    if ( !initialized ) {
+    if (!initialized) {
       throw new RepositoryException("Access Manager is not initialized ");
     }
-    // this is the system just grant
-    if (sakaisystem) {
-      return true;
-    }
-    if ( session == null ) {
-      synchronized (sessionLock ) {
-        session = jcrService.getSession(); 
+    try {
+      ncalls++;
+      // this is the system just grant
+      if (sakaisystem) {
+        nadmin++;
+        return true;
       }
-    }
-    if (!checking.get()) {
-      long start = System.currentTimeMillis();
-      
-      try {
-        // in checking so dont recurse.
-        checking.set(true);
-        Node node = null;
-        if (item.denotesNode()) {
-          NodeId nid = (NodeId) item;
-          node = session.getNodeByUUID(nid.getUUID().toString());
-        } else {
-          PropertyId propertyId = (PropertyId) item;
-          node = session.getNodeByUUID(propertyId.getParentId().toString());
+      // anon is never allowed to write
+      if (anonymous
+          && ((permission & AccessManager.WRITE) == AccessManager.WRITE || (permission & AccessManager.REMOVE) == AccessManager.REMOVE)) {
+        nanondnied++;
+        return false;
+      }
+      // check for a security manager bypass
+      String requestGrant = authzResolverService.getRequestGrant();
+      if (requestGrant != null) {
+        nrequestgrant++;
+        return true;
+      }
+      if (session == null) {
+        synchronized (sessionLock) {
+          session = jcrService.getSession();
         }
-        // find the first NT_FILE or NT_FOLDER parent
-        String nodeType = node.getPrimaryNodeType().getName();
-        Node rootNode = session.getRootNode();
-        while (node != rootNode 
-            && !JCRConstants.NT_FILE.equals(nodeType)
-            && !JCRConstants.NT_FOLDER.equals(nodeType)) {
-          Node parent = node.getParent();
-          if (parent == null) {
-            break; // this should never happen unless we are dealing with some
-            // wierd structure.
-          }
-          node = parent;
-          nodeType = node.getPrimaryNodeType().getName();
-        }
-        PermissionQuery spq = PERMISSION_QUERIES[permission];
-        String resourceReference = node.getPath();
-        String queryKey = spq.getQueryToken(resourceReference);
-        if (cache.containsKey(queryKey)) {
-          return cache.get(queryKey);
-        }
-
-        // the node is now located on a File or Folder, this the path we are
-        // intereted in working on.
-
+      }
+      if (!checking.get()) {
         try {
-          // potentially expensive call.
-          authzResolverService.check(resourceReference, spq);
-          cache.put(queryKey, true);
-          log.info("Permission Granted "+resourceReference);
-          return true;
-        } catch (PermissionDeniedException denied) {
-          cache.put(queryKey, false);
-          log.info("Permission Denied for "+sakaiUserId+" on "+resourceReference+":"+denied.getMessage());
-          return false;
-        }
+          // in checking so dont recurse.
+          checking.set(true);
+          nresolve++;
+          Node node = null;
+          if (item.denotesNode()) {
+            NodeId nid = (NodeId) item;
+            node = session.getNodeByUUID(nid.getUUID().toString());
+          } else {
+            PropertyId propertyId = (PropertyId) item;
+            node = session.getNodeByUUID(propertyId.getParentId().toString());
+          }
+          // find the first NT_FILE or NT_FOLDER parent
+          String nodeType = node.getPrimaryNodeType().getName();
+          Node rootNode = session.getRootNode();
+          while (node != rootNode && !JCRConstants.NT_FILE.equals(nodeType)
+              && !JCRConstants.NT_FOLDER.equals(nodeType)) {
+            Node parent = node.getParent();
+            if (parent == null) {
+              break; // this should never happen unless we are dealing with some
+              // wierd structure.
+            }
+            node = parent;
+            nodeType = node.getPrimaryNodeType().getName();
+          }
+          PermissionQuery spq = PERMISSION_QUERIES[permission];
+          String resourceReference = node.getPath();
+          String queryKey = spq.getQueryToken(resourceReference);
+          if (cache.containsKey(sakaiUserId + ":" + queryKey)) {
+            ExpiringGrant<Boolean> cg = cache.get(sakaiUserId + ":" + queryKey);
+            if (!cg.hasExpired()) {
+              ncachedresolve++;
+              return cg.getPayload();
+            }
+          }
 
-      } finally {
-        // out of checking
-        checking.set(false);
-        long end = System.currentTimeMillis();
-        total += end - start;
-        ntime++;
-        if ( ntime%100 == 0 ) {
-          double dtotal = total;
-          log.info("AuthZ "+dtotal/ntime+" ms ");
+          // the node is now located on a File or Folder, this the path we are
+          // intereted in working on.
+
+          try {
+            // potentially expensive call.
+            authzResolverService.check(resourceReference, spq);
+            cache.put(sakaiUserId + ":" + queryKey, new ExpiringGrant<Boolean>(true,TTL));
+            nfullresolvegrant++;
+            return true;
+          } catch (PermissionDeniedException denied) {
+            nfullresolvegdeny++;
+            cache.put(sakaiUserId + ":" + queryKey, new ExpiringGrant<Boolean>(false,TTL));
+            if (debug) {
+              log.debug("Permission Denied for " + sakaiUserId + " on "
+                  + resourceReference + ":" + denied.getMessage());
+            }
+            return false;
+          }
+
+        } finally {
+          // out of checking
+          checking.set(false);
         }
+      } else {
+        // internal just exit with granted
+        return true;
       }
-    } else {
-      // internal just exit with granted
-      return true;
+    } finally {
+      if (System.currentTimeMillis() > dumptime) {
+        dumptime = System.currentTimeMillis() + 30000L;
+        int ncachemiss = 0;
+        int panondnied = 0;
+        int prequestgrant = 0;
+        int presolve = 0;
+        int padmin = 0;
+        if (ncalls > 0) {
+          padmin = nadmin * 100 / ncalls;
+          presolve = nresolve * 100 / ncalls;
+          prequestgrant = nrequestgrant * 100 / ncalls;
+          panondnied = nanondnied * 100 / ncalls;
+        }
+        int pcachemiss = 0;
+        int pfullresolvegdeny = 0;
+        int pfullresolvegrant = 0;
+        int pcachedresolve = 0;
+        if (nresolve > 0) {
+          ncachemiss = nfullresolvegdeny + nfullresolvegrant;
+          pcachemiss = ncachemiss * 100 / nresolve;
+          pfullresolvegdeny = nfullresolvegdeny * 100 / nresolve;
+          pfullresolvegrant = nfullresolvegrant * 100 / nresolve;
+          pcachedresolve = ncachedresolve * 100 / nresolve;
+        }
+        log.info("Calls:" + ncalls + "," + " Resolved:" + nresolve + "(" + presolve
+            + "%)," + " Cache(Hit:"
+            + ncachedresolve + "(" + pcachedresolve + "%)," +
+            " Miss:" + ncachemiss + "(" + pcachemiss + "%))," + " Resolved(Grant:"
+            + nfullresolvegrant + "(" + pfullresolvegrant + "%)," + " Deny:"
+            + nfullresolvegdeny + "(" + pfullresolvegdeny + "%)),"  + "Misc(super user:" + nadmin
+            + "(" + padmin + "%)," + " anon deny:" + nanondnied + "(" + panondnied
+            + "%)," + " request granted:" + nrequestgrant + "(" + prequestgrant + "%))");
+        ncalls = 0;
+        nadmin = 0;
+        nanondnied = 0;
+        ncachedresolve = 0;
+        nfullresolvegdeny = 0;
+        nfullresolvegrant = 0;
+        nresolve = 0;
+      }
     }
   }
 
@@ -341,7 +421,6 @@ public class SecureSakaiAccessManager implements AccessManager {
    */
   public boolean canAccess(String workspace) throws NoSuchWorkspaceException,
       RepositoryException {
-    // TODO look up the workspace in
     return true;
   }
 
@@ -350,7 +429,7 @@ public class SecureSakaiAccessManager implements AccessManager {
    * @return
    */
   private static String actionToString(int permission) {
-    if ( permission == 0 ) {
+    if (permission == 0) {
       return "none";
     }
     StringBuilder sb = new StringBuilder();

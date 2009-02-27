@@ -160,7 +160,7 @@ public class BaseRestUnitT {
     expect(request.getSession(false)).andReturn(session).anyTimes();
     expect(request.getAttribute("_uuid")).andReturn(null).anyTimes();
     expect(session.getAttribute("_u")).andReturn(user).anyTimes();
-    expect(session.getAttribute("_uu")).andReturn(user).anyTimes();
+    expect(session.getAttribute("_uu")).andReturn(username).anyTimes();
 
     expect(request.getRequestedSessionId()).andReturn(sessionID).anyTimes();
     expect(session.getId()).andReturn(sessionID).anyTimes();

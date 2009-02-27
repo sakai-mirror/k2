@@ -46,6 +46,7 @@ public class UserEnvironmentBean implements UserEnvironment {
 
   private static final String USER_ENV_TTL = "userenvironment.ttl";
   private static final Log LOG = LogFactory.getLog(UserEnvironmentBean.class);
+  private static final boolean debug = LOG.isDebugEnabled();
   private transient long expiry;
   private transient SubjectsBean subjectsBean;
   private transient User user;
@@ -83,10 +84,14 @@ public class UserEnvironmentBean implements UserEnvironment {
    * 
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#matches(org.sakaiproject.kernel.api.authz.SubjectStatement)
    */
-  public boolean matches(ReferencedObject referencedObject, SubjectStatement subject) {
+  public boolean matches(ReferencedObject referencedObject,
+      SubjectStatement subject) {
     switch (subject.getSubjectType()) {
     case PR:
-      LOG.info("Testing "+subject+" for "+uuid+" at "+referencedObject);
+      if (debug) {
+        LOG.debug("Testing " + subject + " for " + uuid + " at "
+            + referencedObject);
+      }
       // provided
       List<SubjectTokenProvider<String>> providers = registry.getList();
       for (SubjectTokenProvider<String> provider : providers) {
@@ -96,7 +101,10 @@ public class UserEnvironmentBean implements UserEnvironment {
       }
       return false;
     case GR:
-      LOG.info("Testing "+subject+" for "+uuid+" at "+referencedObject);
+      if (debug) {
+        LOG.debug("Testing " + subject + " for " + uuid + " at "
+            + referencedObject);
+      }
       // group/role
       String subjectToken = subject.getSubjectToken();
       loadSubjects();
@@ -108,25 +116,43 @@ public class UserEnvironmentBean implements UserEnvironment {
       }
       return false;
     case US:
-      LOG.info("Testing "+subject+" for "+uuid+" at "+referencedObject);
+      if (debug) {
+        LOG.debug("Testing " + subject + " for " + uuid + " at "
+            + referencedObject);
+      }
       // Expliciy user
       return uuid.equals(subject.getSubjectToken());
     case AU:
-      LOG.info("Testing "+subject+" for "+uuid+" at "+referencedObject);
+      if (debug) {
+        LOG.debug("Testing " + subject + " for " + uuid + " at "
+            + referencedObject);
+      }
       // Authenticated
       return (uuid != null && uuid.trim().length() > 0);
     case AN:
-      LOG.info("Testing "+subject+" for "+uuid+" at "+referencedObject);
+      if (debug) {
+        LOG.debug("Testing " + subject + " for " + uuid + " at "
+            + referencedObject);
+      }
       // Anon
       return true;
     case OW:
-      LOG.info("Testing "+subject+" for "+uuid+" at "+referencedObject+" owner "+referencedObject.getOwner());
+      if (debug) {
+        LOG.debug("Testing " + subject + " for " + uuid + " at "
+            + referencedObject + " owner " + referencedObject.getOwner());
+      }
       return uuid.equals(referencedObject.getOwner());
     case SU:
-      LOG.info("Testing "+subject+" for "+uuid+" at "+referencedObject+" superUser "+isSuperUser());
+      if (debug) {
+        LOG.debug("Testing " + subject + " for " + uuid + " at "
+            + referencedObject + " superUser " + isSuperUser());
+      }
       return isSuperUser();
     case UN:
-      LOG.info("Testing "+subject+" for "+uuid+" at "+referencedObject);
+      if (debug) {
+        LOG.debug("Testing " + subject + " for " + uuid + " at "
+            + referencedObject);
+      }
       // undefined
       return false;
     }
@@ -169,14 +195,14 @@ public class UserEnvironmentBean implements UserEnvironment {
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#getUserid()
    */
   public User getUser() {
-    if ( protect ) {
+    if (protect) {
       return null;
     }
     if (user == null) {
       user = new UserBean(uuid, eid);
     }
     return user;
-    
+
   }
 
   /**
@@ -318,24 +344,25 @@ public class UserEnvironmentBean implements UserEnvironment {
 
     };
   }
-  
+
   /**
-   * @param properties the properties to set
+   * @param properties
+   *          the properties to set
    */
   public void setProperties(Map<String, String> properties) {
-    if ( sealed ) {
+    if (sealed) {
       throw new RuntimeException(
-      "Attempt to unseal a sealed UserEnvironmentBean ");
+          "Attempt to unseal a sealed UserEnvironmentBean ");
     }
     this.properties = properties;
   }
+
   /**
    * @return the properties
    */
   public Map<String, String> getProperties() {
     return new HashMap<String, String>(properties);
   }
-  
 
   /**
    * @param userEnv
@@ -346,7 +373,7 @@ public class UserEnvironmentBean implements UserEnvironment {
     user = userEnv.getUser();
     superUser = userEnv.isSuperUser();
     subjects = userEnv.getSubjects();
-    locale = userEnv.getLocale(); 
+    locale = userEnv.getLocale();
   }
 
   /**

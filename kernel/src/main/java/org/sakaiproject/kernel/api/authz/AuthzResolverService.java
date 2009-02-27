@@ -17,7 +17,6 @@
  */
 package org.sakaiproject.kernel.api.authz;
 
-
 /**
  * This service resolves ACL questions by testing security assertions.
  */
@@ -52,8 +51,14 @@ public interface AuthzResolverService {
 
   /**
    * Invalidate ACLs associated with the Reference Object.
+   * 
    * @param referencedObject
    */
   void invalidateAcl(ReferencedObject referencedObject);
+
+  /**
+   * @return return the current request grant if there is one, otherwise null.
+   */
+  String getRequestGrant();
 
 }

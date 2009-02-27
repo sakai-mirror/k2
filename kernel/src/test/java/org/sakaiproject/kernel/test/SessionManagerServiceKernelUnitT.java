@@ -31,6 +31,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.api.KernelManager;
+import org.sakaiproject.kernel.api.memory.CacheManagerService;
+import org.sakaiproject.kernel.api.memory.CacheScope;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 
 import javax.servlet.http.Cookie;
@@ -84,7 +86,7 @@ public class SessionManagerServiceKernelUnitT {
     KernelManager kernelManager = new KernelManager();
     SessionManagerService sessionManager = kernelManager
         .getService(SessionManagerService.class);
-    
+
     System.err.println("============CREATE NEW SESSION========");
     HttpSession newSession = sessionManager
         .getSession(request, response, false);
@@ -92,6 +94,11 @@ public class SessionManagerServiceKernelUnitT {
     assertSame(session, newSession);
     
     verify(request, response, session);
+    
+    CacheManagerService cacheManagerService = kernelManager
+    .getService(CacheManagerService.class);
+    cacheManagerService.unbind(CacheScope.REQUEST);
+    cacheManagerService.unbind(CacheScope.THREAD);
     
     reset(request, response, session);
     
@@ -152,7 +159,12 @@ public class SessionManagerServiceKernelUnitT {
     assertSame(session, newSession);
     
     verify(request, response, session);
-    
+
+    CacheManagerService cacheManagerService = kernelManager
+    .getService(CacheManagerService.class);
+    cacheManagerService.unbind(CacheScope.REQUEST);
+    cacheManagerService.unbind(CacheScope.THREAD);
+
     reset(request, response, session);
     
     expect(request.getRequestedSessionId()).andReturn(null);
@@ -210,6 +222,10 @@ public class SessionManagerServiceKernelUnitT {
     assertSame(session, newSession);
     
     verify(request, response, session);
+    CacheManagerService cacheManagerService = kernelManager
+    .getService(CacheManagerService.class);
+    cacheManagerService.unbind(CacheScope.REQUEST);
+    cacheManagerService.unbind(CacheScope.THREAD);
     
     reset(request, response, session);
     

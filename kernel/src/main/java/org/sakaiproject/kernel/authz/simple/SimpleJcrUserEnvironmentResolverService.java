@@ -64,6 +64,8 @@ public class SimpleJcrUserEnvironmentResolverService implements
 
   private static final Log LOG = LogFactory
       .getLog(SimpleJcrUserEnvironmentResolverService.class);
+
+  private static final boolean debug = LOG.isDebugEnabled();
   private JCRNodeFactoryService jcrNodeFactoryService;
   private BeanConverter beanConverter;
   private UserEnvironment nullUserEnv;
@@ -103,7 +105,9 @@ public class SimpleJcrUserEnvironmentResolverService implements
       if (cache.containsKey(userId)) {
         UserEnvironment ue = cache.get(userId);
         if (ue != null && !ue.hasExpired()) {
-          System.err.println("Loaded from Cache");
+          if(debug) {
+            LOG.debug("Loaded from Cache");
+          }
           return ue;
         }
       }

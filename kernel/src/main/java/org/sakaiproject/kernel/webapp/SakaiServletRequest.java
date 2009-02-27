@@ -41,6 +41,7 @@ public class SakaiServletRequest extends HttpServletRequestWrapper {
   private UserResolverService userResolverService;
   private HttpServletResponse response;
   private SessionManagerService sessionManagerService;
+  private String remoteUser;
 
   /**
    * @param request
@@ -120,21 +121,23 @@ public class SakaiServletRequest extends HttpServletRequestWrapper {
    */
   @Override
   public String getRemoteUser() {
-    String remoteUser = super.getRemoteUser();
-    if (remoteUser == null || remoteUser.trim().length() == 0) {
-      getSession(false);
-      if (session != null) {
-        User u = session.getUser();
-        if (u != null) {
-          remoteUser = u.getUuid();
+    if (remoteUser == null) {
+      remoteUser = super.getRemoteUser();
+      if (remoteUser == null || remoteUser.trim().length() == 0) {
+        getSession(false);
+        if (session != null) {
+          User u = session.getUser();
+          if (u != null) {
+            remoteUser = u.getUuid();
+          }
         }
       }
-    }
-    if (remoteUser == null || remoteUser.trim().length() == 0) {
-      Authentication a = (Authentication) super
-          .getAttribute(Authentication.REQUESTTOKEN);
-      if (a != null) {
-        remoteUser = a.getUid();
+      if (remoteUser == null || remoteUser.trim().length() == 0) {
+        Authentication a = (Authentication) super
+            .getAttribute(Authentication.REQUESTTOKEN);
+        if (a != null) {
+          remoteUser = a.getUid();
+        }
       }
     }
     return remoteUser;

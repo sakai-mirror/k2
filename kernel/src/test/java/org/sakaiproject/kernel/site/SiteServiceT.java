@@ -110,6 +110,7 @@ public class SiteServiceT {
     expect(request.getCookies()).andReturn(new Cookie[] { cookie }).anyTimes();
     expect(request.getSession(true)).andReturn(session).anyTimes();
     expect(session.getId()).andReturn("TEST-12222").anyTimes();
+    expect(request.getAttribute("_u")).andReturn(user).anyTimes();
     expect(request.getAttribute("_uuid")).andReturn(null).anyTimes();
     expect(session.getAttribute("check-valid")).andReturn(null).anyTimes();
 
