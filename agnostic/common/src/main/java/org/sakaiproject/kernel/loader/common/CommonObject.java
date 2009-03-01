@@ -18,7 +18,7 @@
 package org.sakaiproject.kernel.loader.common;
 
 /**
- * 
+ * A common object is something that is shared amongst multiple classloaders.
  */
 public interface CommonObject {
   /**
@@ -27,9 +27,9 @@ public interface CommonObject {
   String MBEAN_COMMON = "Sakai:type=CommonObject";
 
   /**
-   * Calling objects should register to be informed of if the CommonObjectManager reloads
-   * 
-   * @return
+   * Calling objects should register to be informed of if the CommonObjectManager reloads.
+   * @param <T> The type of the managed object
+   * @return the managed object.
    */
   <T> T getManagedObject();
 

@@ -39,21 +39,25 @@ public class CommonObjectManager {
    * A lock on the kernel to handle multiple threads getting the first item.
    */
   private Object lock = new Object();
+  /**
+   * The location of the object being  managed.
+   */
   private String commonObjectSpec;
 
   /**
-   * @param string
+   * @param pCommonObjectSpec the specification for the common object being managed.
    */
-  public CommonObjectManager(String commonObjectSpec) {
-    this.commonObjectSpec = commonObjectSpec;
+  public CommonObjectManager(String pCommonObjectSpec) {
+    this.commonObjectSpec = pCommonObjectSpec;
   }
 
   /**
    * Get the kernel, this will be a single instance for the JVM, but the method
    * will retrieve the same instance regardless of this object instance.
-   * 
+   *
+   * @param <T> The type of the manged object.
    * @return the kernel
-   * @throws KernelConfigurationException
+   * @throws CommonObjectConfigurationException
    *           if the kernel is not available.
    */
   @SuppressWarnings("unchecked")
@@ -85,13 +89,13 @@ public class CommonObjectManager {
   }
 
   /**
-   * @param listener
+   * @param listener a listener to add that will be notified of changes to common object.
    */
   public void addListener(CommonLifecycleListener listener) {
   }
 
   /**
-   * @param listener
+   * @param listener a listener to remove.
    */
   public void removeListener(CommonLifecycleListener listener) {
   }

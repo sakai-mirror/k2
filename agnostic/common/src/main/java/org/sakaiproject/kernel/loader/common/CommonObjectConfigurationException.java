@@ -23,36 +23,36 @@ package org.sakaiproject.kernel.loader.common;
 public class CommonObjectConfigurationException extends Exception {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 6371768784516064601L;
 
   /**
-   * 
+   *
    */
   public CommonObjectConfigurationException() {
   }
 
   /**
-   * @param arg0
+   * @param message the message
    */
-  public CommonObjectConfigurationException(String arg0) {
-    super(arg0);
+  public CommonObjectConfigurationException(String message) {
+    super(message);
   }
 
   /**
-   * @param arg0
+   * @param message the message
    */
-  public CommonObjectConfigurationException(Throwable arg0) {
-    super(arg0);
+  public CommonObjectConfigurationException(Throwable message) {
+    super(message);
   }
 
   /**
-   * @param arg0
-   * @param arg1
+   * @param message the message.
+   * @param cause the cause.
    */
-  public CommonObjectConfigurationException(String arg0, Throwable arg1) {
-    super(arg0, arg1);
+  public CommonObjectConfigurationException(String message, Throwable cause) {
+    super(message, cause);
   }
 
 }

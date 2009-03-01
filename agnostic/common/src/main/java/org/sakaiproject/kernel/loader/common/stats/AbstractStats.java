@@ -49,7 +49,8 @@ public abstract class AbstractStats implements MemoryStats {
   /**
    * @return a measurement
    */
-  @SuppressWarnings(value={"DM_GC","REC_CATCH_EXCEPTION"},justification="Requried to get memory stats")
+  @SuppressWarnings(value = { "DM_GC", "REC_CATCH_EXCEPTION" },
+      justification = "Requried to get memory stats")
   public String measure() {
     if (!active) {
       return "";
@@ -64,14 +65,16 @@ public abstract class AbstractStats implements MemoryStats {
       long[] statsEnd = new long[names.length];
 
       for (int i = 0; i < names.length; i++) {
-        CompositeData cd = (CompositeData) mbs.getAttribute(new ObjectName(names[i]), "Usage");
+        CompositeData cd = (CompositeData) mbs.getAttribute(new ObjectName(
+            names[i]), "Usage");
         statsEnd[i] = Long.parseLong(String.valueOf(cd.get("used")));
       }
 
       StringBuilder sb = new StringBuilder();
       for (int i = 0; i < names.length; i++) {
-        sb.append(labels[i]).append("\t").append((statsEnd[i] / (ONEK))).append("\t").append(
-            (statsEnd[i] - statsStart[i]) / (ONEK)).append("\tKB\t");
+        sb.append(labels[i]).append("\t").append((statsEnd[i] / (ONEK)))
+            .append("\t").append((statsEnd[i] - statsStart[i]) / (ONEK))
+            .append("\tKB\t");
 
       }
       statsStart = statsEnd;
@@ -87,7 +90,8 @@ public abstract class AbstractStats implements MemoryStats {
   /**
    * generate the baseline measurement.
    */
-  @SuppressWarnings(value={"DM_GC","REC_CATCH_EXCEPTION", "ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"},justification="Requried to get memory stats")
+  @SuppressWarnings(value = { "DM_GC", "REC_CATCH_EXCEPTION",
+      "ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" }, justification = "Requried to get memory stats")
   public void baseLine() {
     try {
       MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
@@ -98,7 +102,8 @@ public abstract class AbstractStats implements MemoryStats {
       statsStart = new long[names.length];
 
       for (int i = 0; i < names.length; i++) {
-        CompositeData cd = (CompositeData) mbs.getAttribute(new ObjectName(names[i]), "Usage");
+        CompositeData cd = (CompositeData) mbs.getAttribute(new ObjectName(
+            names[i]), "Usage");
         statsStart[i] = Long.parseLong(String.valueOf(cd.get("used")));
       }
       active = true;
