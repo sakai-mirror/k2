@@ -53,9 +53,9 @@ public class ResteasyK2Bootstrap extends ResteasyBootstrap {
 		// Add all of the resources in our JAX-RS providers to the resteasy registry
 		KernelManager km = new KernelManager();
 		RegistryService registryService = km.getService(RegistryService.class);
-		org.sakaiproject.kernel.api.Registry<Class<?>, JaxRsSingletonProvider> jaxRsSingletonRegistry =
+		org.sakaiproject.kernel.api.Registry<String, JaxRsSingletonProvider> jaxRsSingletonRegistry =
 			registryService.getRegistry(JAXRS_SINGLETON_REGISTRY);
-		org.sakaiproject.kernel.api.Registry<Class<?>, JaxRsPrototypeProvider> jaxRsPrototypeRegistry =
+		org.sakaiproject.kernel.api.Registry<String, JaxRsPrototypeProvider> jaxRsPrototypeRegistry =
 			registryService.getRegistry(JAXRS_PROTOTYPE_REGISTRY);
 
 		// Sync the JAX-RS implementation's registry with the kernel's registry
@@ -72,10 +72,10 @@ public class ResteasyK2Bootstrap extends ResteasyBootstrap {
 	}
 
 	protected void syncRestEasyRegistry(Registry restEasyRegistry,
-			org.sakaiproject.kernel.api.Registry<Class<?>, JaxRsSingletonProvider> jaxRsSingletonRegistry,
-			org.sakaiproject.kernel.api.Registry<Class<?>, JaxRsPrototypeProvider> jaxRsPrototypeRegistry) {
+			org.sakaiproject.kernel.api.Registry<String, JaxRsSingletonProvider> jaxRsSingletonRegistry,
+			org.sakaiproject.kernel.api.Registry<String, JaxRsPrototypeProvider> jaxRsPrototypeRegistry) {
 		log.info("Updating " + restEasyRegistry);
-		Map<Class<?>, JaxRsSingletonProvider> singletonProvidersMap = jaxRsSingletonRegistry.getMap();
+		Map<String, JaxRsSingletonProvider> singletonProvidersMap = jaxRsSingletonRegistry.getMap();
 		for(JaxRsSingletonProvider provider : singletonProvidersMap.values()) {
 			try {
 				restEasyRegistry.removeRegistrations(provider.getJaxRsSingleton().getClass());
@@ -85,7 +85,7 @@ public class ResteasyK2Bootstrap extends ResteasyBootstrap {
 			if(log.isInfoEnabled()) log.info("Added JAX-RS singleton: " + provider.getJaxRsSingleton());
 			restEasyRegistry.addSingletonResource(provider.getJaxRsSingleton());
 		}
-		Map<Class<?>, JaxRsPrototypeProvider> prototypeProvidersMap = jaxRsPrototypeRegistry.getMap();
+		Map<String, JaxRsPrototypeProvider> prototypeProvidersMap = jaxRsPrototypeRegistry.getMap();
 		for(JaxRsPrototypeProvider provider : prototypeProvidersMap.values()) {
 			try {
 				restEasyRegistry.removeRegistrations(provider.getJaxRsPrototype());

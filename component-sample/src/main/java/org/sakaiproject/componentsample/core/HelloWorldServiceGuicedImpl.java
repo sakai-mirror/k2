@@ -25,8 +25,10 @@ import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.jcr.JCRService;
+import org.sakaiproject.kernel.api.rest.Documentable;
 import org.sakaiproject.kernel.api.rest.JaxRsSingletonProvider;
 import org.sakaiproject.kernel.model.GroupMembershipBean;
+import org.sakaiproject.kernel.util.rest.RestDescription;
 
 import java.util.HashMap;
 import java.util.List;
@@ -39,7 +41,16 @@ import javax.persistence.Query;
 /**
  * This is the service implementation.
  */
-public class HelloWorldServiceGuicedImpl implements HelloWorldService {
+public class HelloWorldServiceGuicedImpl implements HelloWorldService, Documentable {
+  static final RestDescription REST_DOCS;
+  static {
+    REST_DOCS = new RestDescription();
+    REST_DOCS.setTitle("This is the rest interface to the hello world service.");
+    REST_DOCS.setShortDescription("Sample rest service");    
+  }
+  public RestDescription getRestDocumentation() {
+    return REST_DOCS;
+  }
 
   /**
    * The internal service that will provide dates.
@@ -65,16 +76,16 @@ public class HelloWorldServiceGuicedImpl implements HelloWorldService {
     this.internalDateService = internalDateService;
     this.jcrService = jcrService;
     this.entityManager = entityManager;
-    Registry<Class<?>, JaxRsSingletonProvider> jaxRsSingletonRegistry =
+    Registry<String, JaxRsSingletonProvider> jaxRsSingletonRegistry =
     	new KernelManager().getService(RegistryService.class).
     	getRegistry(JaxRsSingletonProvider.JAXRS_SINGLETON_REGISTRY);
     final HelloWorldServiceGuicedImpl service = this;
     provider = new JaxRsSingletonProvider() {
-		public Object getJaxRsSingleton() {
+		public Documentable getJaxRsSingleton() {
 			return service;
 		}
-		public Class<?> getKey() {
-			return service.getClass();
+		public String getKey() {
+			return service.getClass().getName();
 		}
 		public int getPriority() {
 			return 0;

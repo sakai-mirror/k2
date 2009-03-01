@@ -16,15 +16,16 @@
  * specific language governing permissions and limitations under the License.
  */
 
-
 package org.sakaiproject.kernel.api.rest;
 
-import org.sakaiproject.kernel.api.Provider;
+import org.sakaiproject.kernel.util.rest.RestDescription;
 
 /**
- * Provides a JAX-RS singleton resource
+ * A mixin for JAX-RS resources or any other restful service that is documented.
  */
-public interface JaxRsSingletonProvider extends Provider<String>{
-  public static final String JAXRS_SINGLETON_REGISTRY = "jaxrs.singleton.registry";
-  public Documentable getJaxRsSingleton();
+public interface Documentable {
+  /**
+   * @return The {@link RestDescription} that documents this resource
+   */
+	public RestDescription getRestDocumentation();
 }

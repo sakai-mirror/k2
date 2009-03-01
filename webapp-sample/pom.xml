@@ -15,6 +15,12 @@
   <dependencies>
     <dependency>
       <groupId>org.sakaiproject.kernel2.agnostic</groupId>
+      <artifactId>kernel</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.sakaiproject.kernel2.agnostic</groupId>
       <artifactId>shared</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>

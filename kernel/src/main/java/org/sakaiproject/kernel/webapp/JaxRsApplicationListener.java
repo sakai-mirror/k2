@@ -30,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
+import org.sakaiproject.kernel.api.rest.Documentable;
 import org.sakaiproject.kernel.api.rest.JaxRsPrototypeProvider;
 import org.sakaiproject.kernel.api.rest.JaxRsSingletonProvider;
 
@@ -46,9 +47,10 @@ public class JaxRsApplicationListener implements ServletContextListener {
 	protected Set<JaxRsPrototypeProvider> jaxRsPrototypeProviders =
 		new HashSet<JaxRsPrototypeProvider>();
 
+	@SuppressWarnings("unchecked")
 	public void contextInitialized(ServletContextEvent event) {
-		Registry<Class<?>, JaxRsSingletonProvider> singletonRegistry = getSingletonRegistry();
-		Registry<Class<?>, JaxRsPrototypeProvider> prototypeRegistry = getPrototypeRegistry();
+		Registry<String, JaxRsSingletonProvider> singletonRegistry = getSingletonRegistry();
+		Registry<String, JaxRsPrototypeProvider> prototypeRegistry = getPrototypeRegistry();
 		String appClass = event.getServletContext().getInitParameter(Application.class.getName());
 		Application app;
 		try {
@@ -60,12 +62,18 @@ public class JaxRsApplicationListener implements ServletContextListener {
 			return;
 		}
 		for(final Object object : app.getSingletons()) {
+			if( ! (object instanceof Documentable)) {
+				throw new IllegalStateException(object + " must implement " + Documentable.class);
+			}
 			JaxRsSingletonProvider provider = new JaxRsSingletonProvider() {
-				public Object getJaxRsSingleton() {
-					return object;
+				// The Application object is out of our hands, so we can't
+				// properly constrain the classes it returns.  Hence, cast it.
+				Documentable documentable = (Documentable)object;
+				public Documentable getJaxRsSingleton() {
+					return documentable;
 				}
-				public Class<?> getKey() {
-					return object.getClass();
+				public String getKey() {
+					return documentable.getClass().getName();
 				}
 				public int getPriority() {
 					return 0;
@@ -79,12 +87,19 @@ public class JaxRsApplicationListener implements ServletContextListener {
 			if(log.isInfoEnabled()) log.info("Added " + provider.getJaxRsSingleton() + " to JAX-RS registry " + singletonRegistry);
 		}
 		for(final Class<?> clazz : app.getClasses()) {
+			if( ! (Documentable.class.isAssignableFrom(clazz))) {
+				throw new IllegalStateException(clazz + " must implement " + Documentable.class);
+			}
+
 			JaxRsPrototypeProvider provider = new JaxRsPrototypeProvider() {
-				public Class<?> getJaxRsPrototype() {
-					return clazz;
+				// The Application object is out of our hands, so we can't
+				// properly constrain the classes it returns.  Hence, cast it.
+				Class<? extends Documentable> documentable = (Class<? extends Documentable>)clazz;
+				public Class<? extends Documentable> getJaxRsPrototype() {
+					return documentable;
 				}
-				public Class<?> getKey() {
-					return clazz;
+				public String getKey() {
+					return documentable.getClass().getName();
 				}
 				public int getPriority() {
 					return 0;
@@ -101,23 +116,23 @@ public class JaxRsApplicationListener implements ServletContextListener {
 	}
 
 	public void contextDestroyed(ServletContextEvent event) {
-		Registry<Class<?>, JaxRsSingletonProvider> singletonRegistry = getSingletonRegistry();
+		Registry<String, JaxRsSingletonProvider> singletonRegistry = getSingletonRegistry();
 		for(JaxRsSingletonProvider provider : jaxRsSingletonProviders) {
 			singletonRegistry.remove(provider);
 		}
-		Registry<Class<?>, JaxRsPrototypeProvider> prototypeRegistry = getPrototypeRegistry();
+		Registry<String, JaxRsPrototypeProvider> prototypeRegistry = getPrototypeRegistry();
 		for(JaxRsPrototypeProvider provider : jaxRsPrototypeProviders) {
 			prototypeRegistry.remove(provider);
 		}
 	}
 
-	protected Registry<Class<?>, JaxRsSingletonProvider> getSingletonRegistry() {
+	protected Registry<String, JaxRsSingletonProvider> getSingletonRegistry() {
 		return new KernelManager().
 			getService(RegistryService.class).
 			getRegistry(JaxRsSingletonProvider.JAXRS_SINGLETON_REGISTRY);
 	}
 
-	protected Registry<Class<?>, JaxRsPrototypeProvider> getPrototypeRegistry() {
+	protected Registry<String, JaxRsPrototypeProvider> getPrototypeRegistry() {
 		return new KernelManager().
 			getService(RegistryService.class).
 			getRegistry(JaxRsPrototypeProvider.JAXRS_PROTOTYPE_REGISTRY);

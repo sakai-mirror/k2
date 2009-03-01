@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations under the License.
  */
 
-
 package org.sakaiproject.webappsample;
 
 import java.io.ByteArrayInputStream;
@@ -30,71 +29,91 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 
+import org.sakaiproject.kernel.api.rest.Documentable;
+import org.sakaiproject.kernel.util.rest.RestDescription;
+
 @Path("/singletonhello")
-public class SingletonHelloWorld {
-	@GET
-	@Path("/greeting")
-	public String getGreeting() {
-		return "This is hello from a singleton resource, located in a webapp";
-	}
-	
-	@GET
-	@Path("/model.json")
-	@Produces(MediaType.APPLICATION_JSON)
-	public MyModel getModelAsJson() {
-		return new MyModel();
-	}
+public class SingletonHelloWorld implements Documentable {
+  static final RestDescription REST_DOCS;
+  static {
+    REST_DOCS = new RestDescription();
+    REST_DOCS.setTitle("This is the rest interface to the singleton hello world service, hosted "
+        + "in a webapp.");
+    REST_DOCS.setShortDescription("Sample rest service");
+  }
 
-	@GET
-	@Path("/model.xml")
-	@Produces(MediaType.APPLICATION_XML)
-	public MyModel getModelAsXml() {
-		return new MyModel();
-	}
+  public RestDescription getRestDocumentation() {
+    return REST_DOCS;
+  }
 
-	@GET
-	@Path("/stream")
-	public InputStream getModelAsStream() {
-		String s = "{ \"keyFromJcr\" : \"valueFromJcr\" }";
-		try {
-			return new ByteArrayInputStream(s.getBytes("UTF-8"));
-		} catch (UnsupportedEncodingException e) {
-			throw new WebApplicationException(e);
-		}
-	}
-	
-	/**
-	 * A sample object to be returned by the methods in this resource
-	 */
-	public class MyModel {
+  @GET
+  @Path("/greeting")
+  public String getGreeting() {
+    return "This is hello from a singleton resource, located in a webapp";
+  }
 
-		public MyModel() {
-			d = new Date();
-			s = "A MyModel delivered via a JAX-RS resource";
-			l = Long.MAX_VALUE;
-		}
+  @GET
+  @Path("/model.json")
+  @Produces(MediaType.APPLICATION_JSON)
+  public MyModel getModelAsJson() {
+    return new MyModel();
+  }
 
-		protected String s;
-		protected Date d;
-		protected Long l;
-		
-		public String getS() {
-			return s;
-		}
-		public void setS(String s) {
-			this.s = s;
-		}
-		public Date getD() {
-			return d;
-		}
-		public void setD(Date d) {
-			this.d = d;
-		}
-		public Long getL() {
-			return l;
-		}
-		public void setL(Long l) {
-			this.l = l;
-		}
-	}
+  @GET
+  @Path("/model.xml")
+  @Produces(MediaType.APPLICATION_XML)
+  public MyModel getModelAsXml() {
+    return new MyModel();
+  }
+
+  @GET
+  @Path("/stream")
+  public InputStream getModelAsStream() {
+    String s = "{ \"keyFromJcr\" : \"valueFromJcr\" }";
+    try {
+      return new ByteArrayInputStream(s.getBytes("UTF-8"));
+    } catch (UnsupportedEncodingException e) {
+      throw new WebApplicationException(e);
+    }
+  }
+
+  /**
+   * A sample object to be returned by the methods in this resource
+   */
+  public class MyModel {
+
+    public MyModel() {
+      d = new Date();
+      s = "A MyModel delivered via a JAX-RS resource";
+      l = Long.MAX_VALUE;
+    }
+
+    protected String s;
+    protected Date d;
+    protected Long l;
+
+    public String getS() {
+      return s;
+    }
+
+    public void setS(String s) {
+      this.s = s;
+    }
+
+    public Date getD() {
+      return d;
+    }
+
+    public void setD(Date d) {
+      this.d = d;
+    }
+
+    public Long getL() {
+      return l;
+    }
+
+    public void setL(Long l) {
+      this.l = l;
+    }
+  }
 }

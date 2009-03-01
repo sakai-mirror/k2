@@ -16,18 +16,31 @@
  * specific language governing permissions and limitations under the License.
  */
 
-
 package org.sakaiproject.webappsample;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
-@Path("/prototypehello")
-public class PrototypeHelloWorld {
-	@GET
-	@Path("/greeting")
-	public String getGreeting() {
-		return "This is hello from a request-per-object resource, located in a webapp";
-	}
+import org.sakaiproject.kernel.api.rest.Documentable;
+import org.sakaiproject.kernel.util.rest.RestDescription;
 
+@Path("/prototypehello")
+public class PrototypeHelloWorld implements Documentable {
+  static final RestDescription REST_DOCS;
+  static {
+    REST_DOCS = new RestDescription();
+    REST_DOCS.setTitle("This is the rest interface to the per-request hello world service, "
+        + "hosted in a webapp.");
+    REST_DOCS.setShortDescription("Sample rest service");
+  }
+
+  public RestDescription getRestDocumentation() {
+    return REST_DOCS;
+  }
+
+  @GET
+  @Path("/greeting")
+  public String getGreeting() {
+    return "This is hello from a request-per-object resource, located in a webapp";
+  }
 }
