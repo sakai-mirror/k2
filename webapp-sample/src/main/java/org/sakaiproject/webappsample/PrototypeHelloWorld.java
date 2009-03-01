@@ -24,9 +24,15 @@ import javax.ws.rs.Path;
 import org.sakaiproject.kernel.api.rest.Documentable;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 
+/**
+ * An Example Prototype.
+ */
 @Path("/prototypehello")
 public class PrototypeHelloWorld implements Documentable {
-  static final RestDescription REST_DOCS;
+  /**
+   *
+   */
+  private static final RestDescription REST_DOCS;
   static {
     REST_DOCS = new RestDescription();
     REST_DOCS.setTitle("This is the rest interface to the per-request hello world service, "
@@ -34,10 +40,17 @@ public class PrototypeHelloWorld implements Documentable {
     REST_DOCS.setShortDescription("Sample rest service");
   }
 
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.rest.Documentable#getRestDocumentation()
+   */
   public RestDescription getRestDocumentation() {
     return REST_DOCS;
   }
 
+  /**
+   * @return the sample greeting.
+   */
   @GET
   @Path("/greeting")
   public String getGreeting() {

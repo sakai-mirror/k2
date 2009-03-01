@@ -71,7 +71,7 @@ public class Activator implements ComponentActivator {
       ReferenceResolverService.class, DataSourceService.class,
       UserEnvironmentResolverService.class, RegistryService.class,
       EntityManager.class, SiteService.class, FriendsResolverService.class,
-      ProfileResolverService.class,  MessagingService.class, 
+      ProfileResolverService.class, MessagingService.class,
       UserFactoryService.class, BeanConverter.class };
   private static final Log LOG = LogFactory.getLog(Activator.class);
   @SuppressWarnings("unused")
@@ -137,11 +137,11 @@ public class Activator implements ComponentActivator {
     LOG.info("Exporting " + serviceClass + " as " + service);
     if (service == null) {
       LOG
-          .fatal("____________________________________________________________________________________");
-      LOG
-          .fatal("Exported Service "
-              + serviceClass
-              + " as null, this service is missing from the kernel and everything that depends on it will break!");
+          .fatal("_______________________________________________________________"
+              + "_____________________");
+      LOG.fatal("Exported Service " + serviceClass
+          + " as null, this service is missing from the kernel and everything "
+          + "that depends on it will break!");
     } else {
       serviceManager.registerService(new ServiceSpec(serviceClass), service);
     }
@@ -149,7 +149,7 @@ public class Activator implements ComponentActivator {
 
   /**
    * Deactivate the component.
-   * 
+   *
    * @see org.sakaiproject.kernel.api.ComponentActivator#deactivate()
    */
   public void deactivate() {
@@ -161,7 +161,7 @@ public class Activator implements ComponentActivator {
 
   /**
    * Remove a service from the service manager.
-   * 
+   *
    * @param serviceClass
    */
   private void retractService(Class<?> serviceClass) {
@@ -190,7 +190,7 @@ public class Activator implements ComponentActivator {
   }
 
   /**
-   * @return
+   * @return a list of classes that are registered from the kernel as services.
    */
   public static Class<?>[] getServiceClasses() {
     return ArrayUtils.copy(SERVICE_CLASSES,

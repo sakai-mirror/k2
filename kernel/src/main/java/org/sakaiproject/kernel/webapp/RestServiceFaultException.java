@@ -21,18 +21,18 @@ package org.sakaiproject.kernel.webapp;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * 
+ *
  */
 public class RestServiceFaultException extends RuntimeException {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = -8421854922253600612L;
   private int statusCode = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 
   /**
-   * 
+   *
    */
   public RestServiceFaultException() {
   }

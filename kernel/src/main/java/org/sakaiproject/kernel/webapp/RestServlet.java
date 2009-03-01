@@ -34,19 +34,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * 
+ *
  */
 public class RestServlet extends HttpServlet {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = -172232497404083238L;
   private transient Registry<String, RestProvider> registry;
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.servlet.GenericServlet#init(javax.servlet.ServletConfig)
    */
   @Override
@@ -59,7 +59,7 @@ public class RestServlet extends HttpServlet {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,
    *      javax.servlet.http.HttpServletResponse)
    */
@@ -67,7 +67,7 @@ public class RestServlet extends HttpServlet {
       HttpServletResponse response) throws ServletException, IOException {
 
     String requestPath = request.getPathInfo();
-    if ( requestPath == null ) {
+    if (requestPath == null) {
       requestPath = "";
     }
     String[] elements = StringUtils.split(requestPath, '/');
@@ -76,10 +76,10 @@ public class RestServlet extends HttpServlet {
       locator = elements[0];
     }
     Map<String, RestProvider> restProviders = registry.getMap();
-    if ( locator == null ) {
+    if (locator == null) {
       locator = "default";
     }
-    if ( "__describe__".equals(locator) ) {
+    if ("__describe__".equals(locator)) {
       locator = "default";
     }
     RestProvider restProvider = restProviders.get(locator);
@@ -87,18 +87,18 @@ public class RestServlet extends HttpServlet {
       response.sendError(HttpServletResponse.SC_NOT_FOUND);
     } else {
       try {
-        if ( requestPath.endsWith("__describe__") ) {
+        if (requestPath.endsWith("__describe__")) {
           RestDescription description = restProvider.getDescription();
           String format = request.getParameter("fmt");
-          if ( "xml".equals(format) ) {
+          if ("xml".equals(format)) {
             response.setContentType("text/xml");
             response.getWriter().print(description.toXml());
-          } else if ( "json".equals(format) ) {
+          } else if ("json".equals(format)) {
             response.setContentType(RestProvider.CONTENT_TYPE);
             response.getWriter().print(description.toJson());
           } else {
             response.setContentType("text/html");
-            response.getWriter().print(description.toHtml());            
+            response.getWriter().print(description.toHtml());
           }
         } else {
           restProvider.dispatch(elements, request, response);
@@ -106,10 +106,10 @@ public class RestServlet extends HttpServlet {
       } catch (SecurityException ex) {
         response.reset();
         response.sendError(HttpServletResponse.SC_FORBIDDEN, ex.getMessage());
-      } catch ( RestServiceFaultException ex ) {
+      } catch (RestServiceFaultException ex) {
         ex.printStackTrace();
         response.reset();
-        response.sendError(ex.getStatusCode(),ex.getMessage());
+        response.sendError(ex.getStatusCode(), ex.getMessage());
       }
     }
   }

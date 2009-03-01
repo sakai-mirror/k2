@@ -17,7 +17,6 @@
  */
 package org.sakaiproject.kernel.integration.test;
 
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.After;
@@ -28,25 +27,32 @@ import org.junit.Test;
 import org.sakaiproject.kernel.component.KernelLifecycle;
 
 /**
- * 
+ * Integration test for the kernel.
  */
 public class KernelIntegrationTest {
 
+  /**
+   *
+   */
   private static final Log LOG = LogFactory.getLog(KernelIntegrationTest.class);
+  /**
+   *
+   */
   private static KernelLifecycle kernelLifecycle;
 
   /**
-   * @throws java.lang.Exception
+   * @throws Exception if anything failes to start.
    */
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
-    System.setProperty("sakai.kernel.properties", "inline://core.component.locations=\n");    
+    System.setProperty("sakai.kernel.properties",
+        "inline://core.component.locations=\n");
     kernelLifecycle = new KernelLifecycle();
     kernelLifecycle.start();
   }
 
   /**
-   * @throws java.lang.Exception
+   * @throws Exception if anything fails to start.
    */
   @AfterClass
   public static void tearDownAfterClass() throws Exception {
@@ -56,19 +62,22 @@ public class KernelIntegrationTest {
   }
 
   /**
-   * @throws java.lang.Exception
+   * @throws Exception on fail.
    */
   @Before
   public void setUp() throws Exception {
   }
 
   /**
-   * @throws java.lang.Exception
+   * @throws Exception on fail.
    */
   @After
   public void tearDown() throws Exception {
   }
-  
+
+  /**
+   * Dummy test.
+   */
   @Test
   public void testSomething() {
     LOG.info("Tested");

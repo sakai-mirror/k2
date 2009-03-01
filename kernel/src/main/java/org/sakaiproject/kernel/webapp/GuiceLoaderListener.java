@@ -31,7 +31,7 @@ import java.util.List;
 import javax.servlet.ServletContextEvent;
 
 /**
- * 
+ *
  */
 public class GuiceLoaderListener {
 
@@ -41,7 +41,7 @@ public class GuiceLoaderListener {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.servlet.ServletContextListener#contextDestroyed(javax.servlet.ServletContextEvent)
    */
   public void contextDestroyed(ServletContextEvent sce) {

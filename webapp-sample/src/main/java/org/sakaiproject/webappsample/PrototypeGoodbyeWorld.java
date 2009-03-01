@@ -24,20 +24,34 @@ import javax.ws.rs.Path;
 import org.sakaiproject.kernel.api.rest.Documentable;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 
+/**
+ *
+ */
 @Path("/prototypegoodbye")
 public class PrototypeGoodbyeWorld implements Documentable {
-  static final RestDescription REST_DOCS;
+  /**
+   *
+   */
+  private static final RestDescription REST_DOCS;
   static {
     REST_DOCS = new RestDescription();
-    REST_DOCS.setTitle("This is the rest interface to the per-request goodbye world service, " +
-    		"hosted in a webapp.");
+    REST_DOCS
+        .setTitle("This is the rest interface to the per-request goodbye world service, "
+            + "hosted in a webapp.");
     REST_DOCS.setShortDescription("Sample rest service");
   }
 
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.rest.Documentable#getRestDocumentation()
+   */
   public RestDescription getRestDocumentation() {
     return REST_DOCS;
   }
 
+  /**
+   * @return The sample greeting.
+   */
   @GET
   @Path("/greeting")
   public String getGreeting() {

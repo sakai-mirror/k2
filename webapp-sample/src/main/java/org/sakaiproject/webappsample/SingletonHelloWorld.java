@@ -32,26 +32,44 @@ import javax.ws.rs.core.MediaType;
 import org.sakaiproject.kernel.api.rest.Documentable;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 
+/**
+ * Sample singleton Hello World.
+ */
 @Path("/singletonhello")
 public class SingletonHelloWorld implements Documentable {
-  static final RestDescription REST_DOCS;
+  /**
+   *
+   */
+  private static final RestDescription REST_DOCS;
   static {
     REST_DOCS = new RestDescription();
-    REST_DOCS.setTitle("This is the rest interface to the singleton hello world service, hosted "
-        + "in a webapp.");
+    REST_DOCS
+        .setTitle("This is the rest interface to the singleton hello world service, hosted "
+            + "in a webapp.");
     REST_DOCS.setShortDescription("Sample rest service");
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @see org.sakaiproject.kernel.api.rest.Documentable#getRestDocumentation()
+   */
   public RestDescription getRestDocumentation() {
     return REST_DOCS;
   }
 
+  /**
+   * @return the greeting as a string.
+   */
   @GET
   @Path("/greeting")
   public String getGreeting() {
     return "This is hello from a singleton resource, located in a webapp";
   }
 
+  /**
+   * @return the model as json.
+   */
   @GET
   @Path("/model.json")
   @Produces(MediaType.APPLICATION_JSON)
@@ -59,6 +77,9 @@ public class SingletonHelloWorld implements Documentable {
     return new MyModel();
   }
 
+  /**
+   * @return the model as xml.
+   */
   @GET
   @Path("/model.xml")
   @Produces(MediaType.APPLICATION_XML)
@@ -66,6 +87,9 @@ public class SingletonHelloWorld implements Documentable {
     return new MyModel();
   }
 
+  /**
+   * @return the model as a stream.
+   */
   @GET
   @Path("/stream")
   public InputStream getModelAsStream() {
@@ -78,42 +102,75 @@ public class SingletonHelloWorld implements Documentable {
   }
 
   /**
-   * A sample object to be returned by the methods in this resource
+   * A sample object to be returned by the methods in this resource.
    */
   public class MyModel {
 
+    /**
+     * The model.
+     */
     public MyModel() {
       d = new Date();
       s = "A MyModel delivered via a JAX-RS resource";
       l = Long.MAX_VALUE;
     }
 
-    protected String s;
-    protected Date d;
-    protected Long l;
+    /**
+     *
+     */
+    private String s;
+    /**
+     *
+     */
+    private Date d;
+    /**
+     *
+     */
+    private Long l;
 
+    /**
+     * @return the value of s
+     */
     public String getS() {
       return s;
     }
 
-    public void setS(String s) {
-      this.s = s;
+    /**
+     * @param newS
+     *          the new value of s.
+     */
+    public void setS(String newS) {
+      this.s = newS;
     }
 
+    /**
+     * @return the value of D.
+     */
     public Date getD() {
       return d;
     }
 
-    public void setD(Date d) {
-      this.d = d;
+    /**
+     * @param newD
+     *          the new value of d.
+     */
+    public void setD(Date newD) {
+      this.d = newD;
     }
 
+    /**
+     * @return the value of l.
+     */
     public Long getL() {
       return l;
     }
 
-    public void setL(Long l) {
-      this.l = l;
+    /**
+     * @param newl
+     *          the new value of L.
+     */
+    public void setL(Long newl) {
+      this.l = newl;
     }
   }
 }

@@ -36,19 +36,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * 
+ *
  */
 public class HelloWorldServlet extends HttpServlet {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 2383631675063579262L;
+  /**
+   *
+   */
   private static final Log LOG = LogFactory.getLog(HelloWorldServlet.class);
 
   /**
    * Write a hello response.
-   * 
+   *
    * @param req
    *          the request
    * @param resp

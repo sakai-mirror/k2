@@ -24,9 +24,15 @@ import javax.ws.rs.Path;
 import org.sakaiproject.kernel.api.rest.Documentable;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 
+/**
+ * An example of a JAXRS Singleton.
+ */
 @Path("/singletongoodbye")
 public class SingletonGoodbyeWorld implements Documentable {
-  static final RestDescription REST_DOCS;
+  /**
+   * Description of the rest api.
+   */
+  private static final RestDescription REST_DOCS;
   static {
     REST_DOCS = new RestDescription();
     REST_DOCS.setTitle("This is the rest interface to the singleton goodbye world service, hosted "
@@ -34,10 +40,17 @@ public class SingletonGoodbyeWorld implements Documentable {
     REST_DOCS.setShortDescription("Sample rest service");
   }
 
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.rest.Documentable#getRestDocumentation()
+   */
   public RestDescription getRestDocumentation() {
     return REST_DOCS;
   }
 
+  /**
+   * @return sample greeting.
+   */
   @GET
   @Path("/greeting")
   public String getGreeting() {
