@@ -34,43 +34,50 @@ import org.sakaiproject.kernel.api.jcr.JCRService;
 import javax.jcr.Repository;
 
 /**
- * This class brings the component up and down on demand
+ * This class brings the component up and down on demand.
  */
 public class GuiceActivator implements ComponentActivator {
 
+  /**
+   *
+   */
   private static final Log LOG = LogFactory.getLog(GuiceActivator.class);
   /**
    * We might need to know which kernel this activator is attached to, its
-   * possible to have more than one in a JVM
+   * possible to have more than one in a JVM.
    */
   private Kernel kernel;
 
+  /**
+   *
+   */
   private Injector injector;
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.ComponentActivator#activate(org.sakaiproject.kernel.api.Kernel)
    */
-  public void activate(Kernel kernel) throws ComponentActivatorException {
+  public void activate(Kernel pKernel) throws ComponentActivatorException {
 
-    this.kernel = kernel;
+    this.kernel = pKernel;
     this.injector = Guice.createInjector(new ComponentModule(kernel));
 
     // here I want to create my services and register them
     HelloWorldService hws = injector.getInstance(HelloWorldService.class);
-    
 
     // thats it. my service is ready to go, so lets register it
     // get the service manager
     ServiceManager serviceManager = kernel.getServiceManager();
-    
-    // just for fun.. resolve the JCRService and get a reference to the respository.
+
+    // just for fun.. resolve the JCRService and get a reference to the
+    // respository.
     LOG.info("Getting JCR =============================");
-    JCRService service = serviceManager.getService(new ServiceSpec(JCRService.class));
+    JCRService service = serviceManager.getService(new ServiceSpec(
+        JCRService.class));
     Repository repo = service.getRepository();
-    for ( String k : repo.getDescriptorKeys() ) {
-      LOG.info("  JCR Repo Key "+k+"::"+repo.getDescriptor(k));
+    for (String k : repo.getDescriptorKeys()) {
+      LOG.info("  JCR Repo Key " + k + "::" + repo.getDescriptor(k));
     }
     LOG.info("Logged In OK-=============================");
 
@@ -94,12 +101,13 @@ public class GuiceActivator implements ComponentActivator {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.ComponentActivator#deactivate()
    */
   public void deactivate() {
     // we need to remove the service (this is the short way of doing the above)
-    kernel.getServiceManager().deregisterService(new ServiceSpec(HelloWorldService.class));
+    kernel.getServiceManager().deregisterService(
+        new ServiceSpec(HelloWorldService.class));
   }
 
 }

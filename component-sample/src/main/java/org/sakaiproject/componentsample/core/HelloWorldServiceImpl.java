@@ -35,29 +35,39 @@ public class HelloWorldServiceImpl implements HelloWorldService {
    * The internal service that will provide dates.
    */
   private InternalDateService internalDateService;
+  /**
+   *
+   */
   private JCRService jcrService;
 
   /**
    * A constructor that supports injection, so I know that when the class is
    * created, it is complete and ready for use.
-   * 
-   * @param internalDateService
+   *
+   * @param pInternalDateService
    *          an instance of the InternalDateService that I want this to use.
+   * @param pJcrService
+   *          the JCRService instance from the kernel.
    */
-  public HelloWorldServiceImpl(InternalDateService internalDateService, JCRService jcrService) {
-    this.internalDateService = internalDateService;
-    this.jcrService = jcrService;
+  public HelloWorldServiceImpl(InternalDateService pInternalDateService,
+      JCRService pJcrService) {
+    this.internalDateService = pInternalDateService;
+    this.jcrService = pJcrService;
   }
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.componentsample.api.HelloWorldService#getGreeting()
    */
   public String getGreeting() {
     return "Hi there, the time is " + internalDateService.getDate();
   }
-  
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.componentsample.api.HelloWorldService#getJCRInfo()
+   */
   public Map<String, String> getJCRInfo() {
     // Get some info about the JCR Repository
     Repository repo = jcrService.getRepository();
@@ -69,12 +79,16 @@ public class HelloWorldServiceImpl implements HelloWorldService {
     return jcrInfo;
   }
 
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.componentsample.api.HelloWorldService#getJPAInfo()
+   */
   public Map<String, String> getJPAInfo() {
-    // The EntityManager can't be constructor injected, see the HelloWorldServiceGuicedImpl
-    Map<String,String> unimplimented = new HashMap<String, String>();
+    // The EntityManager can't be constructor injected, see the
+    // HelloWorldServiceGuicedImpl
+    Map<String, String> unimplimented = new HashMap<String, String>();
     unimplimented.put("Try the", "Guice version");
     return unimplimented;
   }
-  
-  
+
 }

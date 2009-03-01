@@ -18,11 +18,13 @@
 
 package org.sakaiproject.componentsample.api;
 
+/**
+
+ */
 public interface InternalDateService {
 
   /**
    * @return return a suitably formatted date.
    */
   String getDate();
-
 }

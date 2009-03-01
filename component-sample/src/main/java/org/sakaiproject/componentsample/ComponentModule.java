@@ -34,25 +34,47 @@ import org.sakaiproject.kernel.component.core.guice.ServiceProvider;
 
 import javax.persistence.EntityManager;
 
+/**
+ * Configures the sample component module.
+ */
 public class ComponentModule extends AbstractModule {
 
+  /**
+   *
+   */
   private static final Log LOG = LogFactory.getLog(ComponentModule.class);
+  /**
+   *
+   */
   private final Kernel kernel;
-  
-  public ComponentModule(Kernel kernel) {
-    this.kernel = kernel;
+
+  /**
+   * @param pKernel the kernel to configure the component module with.
+   */
+  public ComponentModule(Kernel pKernel) {
+    this.kernel = pKernel;
   }
-  
+
+  /**
+   * {@inheritDoc}
+   * @see com.google.inject.AbstractModule#configure()
+   */
   @Override
   protected void configure() {
     // First bind external services to this injector
     ServiceManager serviceManager = kernel.getServiceManager();
-    bind(JCRService.class).toProvider(new ServiceProvider<JCRService>(serviceManager, JCRService.class));
-    bind(EntityManager.class).toProvider(new ServiceProvider<EntityManager>(serviceManager, EntityManager.class));
+    bind(JCRService.class).toProvider(
+        new ServiceProvider<JCRService>(serviceManager, JCRService.class));
+    bind(EntityManager.class)
+        .toProvider(
+            new ServiceProvider<EntityManager>(serviceManager,
+                EntityManager.class));
 
     // Now bind local services
-    bind(InternalDateService.class).to(InternalDateServiceImpl.class).in(Scopes.SINGLETON);
-    bind(HelloWorldService.class).to(HelloWorldServiceGuicedImpl.class).in(Scopes.SINGLETON);
+    bind(InternalDateService.class).to(InternalDateServiceImpl.class).in(
+        Scopes.SINGLETON);
+    bind(HelloWorldService.class).to(HelloWorldServiceGuicedImpl.class).in(
+        Scopes.SINGLETON);
     if (LOG.isDebugEnabled()) {
       LOG.debug("Bound HelloWorldService");
     }

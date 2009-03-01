@@ -41,13 +41,23 @@ import javax.persistence.Query;
 /**
  * This is the service implementation.
  */
-public class HelloWorldServiceGuicedImpl implements HelloWorldService, Documentable {
-  static final RestDescription REST_DOCS;
+public class HelloWorldServiceGuicedImpl implements HelloWorldService,
+    Documentable {
+  /**
+   *
+   */
+  private static final RestDescription REST_DOCS;
   static {
     REST_DOCS = new RestDescription();
-    REST_DOCS.setTitle("This is the rest interface to the hello world service.");
-    REST_DOCS.setShortDescription("Sample rest service");    
+    REST_DOCS
+        .setTitle("This is the rest interface to the hello world service.");
+    REST_DOCS.setShortDescription("Sample rest service");
   }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.rest.Documentable#getRestDocumentation()
+   */
   public RestDescription getRestDocumentation() {
     return REST_DOCS;
   }
@@ -56,56 +66,73 @@ public class HelloWorldServiceGuicedImpl implements HelloWorldService, Documenta
    * The internal service that will provide dates.
    */
   private InternalDateService internalDateService;
+  /**
+   *
+   */
   private JCRService jcrService;
+  /**
+   *
+   */
   private EntityManager entityManager;
+  /**
+   *
+   */
   private JaxRsSingletonProvider provider;
 
   /**
    * A constructor that supports injection, so I know that when the class is
    * created, it is complete and ready for use.
-   * 
-   * @param internalDateService
+   *
+   * @param pInternalDateService
    *          an instance of the InternalDateService that I want this to use.
-   * @param jcrService
+   * @param pJcrService
    *          an instance of the JCRService that I want this to use.
-   * @param entityManager
+   * @param pEntityManager
    *          an instance of the EntityManager that I want this to use.
    */
   @Inject
-  public HelloWorldServiceGuicedImpl(InternalDateService internalDateService, JCRService jcrService, EntityManager entityManager) {
-    this.internalDateService = internalDateService;
-    this.jcrService = jcrService;
-    this.entityManager = entityManager;
-    Registry<String, JaxRsSingletonProvider> jaxRsSingletonRegistry =
-    	new KernelManager().getService(RegistryService.class).
-    	getRegistry(JaxRsSingletonProvider.JAXRS_SINGLETON_REGISTRY);
+  public HelloWorldServiceGuicedImpl(InternalDateService pInternalDateService,
+      JCRService pJcrService, EntityManager pEntityManager) {
+    this.internalDateService = pInternalDateService;
+    this.jcrService = pJcrService;
+    this.entityManager = pEntityManager;
+    Registry<String, JaxRsSingletonProvider> jaxRsSingletonRegistry = new KernelManager()
+        .getService(RegistryService.class).getRegistry(
+            JaxRsSingletonProvider.JAXRS_SINGLETON_REGISTRY);
     final HelloWorldServiceGuicedImpl service = this;
     provider = new JaxRsSingletonProvider() {
-		public Documentable getJaxRsSingleton() {
-			return service;
-		}
-		public String getKey() {
-			return service.getClass().getName();
-		}
-		public int getPriority() {
-			return 0;
-		}
-		public String toString() {
-			return "Provider for: " + service.toString();
-		}
-	};
-	jaxRsSingletonRegistry.add(provider);
+      public Documentable getJaxRsSingleton() {
+        return service;
+      }
+
+      public String getKey() {
+        return service.getClass().getName();
+      }
+
+      public int getPriority() {
+        return 0;
+      }
+
+      public String toString() {
+        return "Provider for: " + service.toString();
+      }
+    };
+    jaxRsSingletonRegistry.add(provider);
   }
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.componentsample.api.HelloWorldService#getGreeting()
    */
   public String getGreeting() {
     return "Hi there, the time is " + internalDateService.getDate();
   }
-  
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.componentsample.api.HelloWorldService#getJCRInfo()
+   */
   public Map<String, String> getJCRInfo() {
     // Get some info about the JCR Repository
     Repository repo = jcrService.getRepository();
@@ -117,20 +144,27 @@ public class HelloWorldServiceGuicedImpl implements HelloWorldService, Documenta
     return jcrInfo;
   }
 
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.componentsample.api.HelloWorldService#getJPAInfo()
+   */
   public Map<String, String> getJPAInfo() {
-    //// You could write your own JPA query that would look like:
-    //@SuppressWarnings("unchecked")
-    //List<GroupMembershipBean> groupMemberships = entityManager.createQuery("select g from  GroupMembershipBean g").getResultList();
-    
+    // // You could write your own JPA query that would look like:
+    // @SuppressWarnings("unchecked")
+    // List<GroupMembershipBean> groupMemberships =
+    // entityManager.createQuery("select g from  GroupMembershipBean g"
+    // ).getResultList();
+
     // We're going to use an existing named query for the example though
-    Query adminGroupQuery = entityManager.createNamedQuery(GroupMembershipBean.FINDBY_USER);
+    Query adminGroupQuery = entityManager
+        .createNamedQuery(GroupMembershipBean.FINDBY_USER);
     adminGroupQuery.setParameter(GroupMembershipBean.USER_PARAM, "admin");
     @SuppressWarnings("unchecked")
     List<GroupMembershipBean> adminGroupList = adminGroupQuery.getResultList();
-    
+
     // The rest of this is just parsing out the result for display purposes
     Map<String, String> adminGroups = new HashMap<String, String>();
-    for (GroupMembershipBean gmb : adminGroupList){
+    for (GroupMembershipBean gmb : adminGroupList) {
       adminGroups.put(gmb.getGroupId(), gmb.getRoleId());
     }
     return adminGroups;

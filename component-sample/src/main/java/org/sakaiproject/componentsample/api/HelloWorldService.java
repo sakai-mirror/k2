@@ -23,7 +23,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 /**
- * This is a simple service interface, it will say HelloWorld
+ * This is a simple service interface, it will say HelloWorld.
  */
 @Path("/hello")
 public interface HelloWorldService {
@@ -31,16 +31,16 @@ public interface HelloWorldService {
   /**
    * @return a greeting.
    */
-	@GET
-	@Path("/greeting")
+  @GET
+  @Path("/greeting")
   String getGreeting();
-  
-  /*
+
+  /**
    * @return some interesting info about JCR
    */
   Map<String, String> getJCRInfo();
-  
-  /*
+
+  /**
    * @return some info about JPA
    */
   Map<String, String> getJPAInfo();
