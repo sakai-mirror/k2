@@ -45,14 +45,24 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.sakaiproject.kernel.api.rest.Documentable;
 
 /**
- * An extension of {@link HttpServletDispatcher}, the default resteasy servlet.
- * This extension checks for a query parameter "doc". If it exists, the jax-rs
- * resource's getRestDocumentation().toHtml() is returned as the response
- * instead of invoking the resource's intended http method.
+ * An extension of {@link HttpServletDispatcher}, the default resteasy servlet. This
+ * extension checks for a query parameter "doc". If it exists, the jax-rs resource's
+ * getRestDocumentation().toHtml() is returned as the response instead of invoking the
+ * resource's intended http method.
  */
 public class ResteasyServlet extends HttpServletDispatcher {
+  /**
+   *
+   */
   private static final long serialVersionUID = 1L;
 
+  /**
+   * {@inheritDoc}
+   *
+   * @see org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher#service(
+   *      javax.servlet.http.HttpServletRequest,
+   *      javax.servlet.http.HttpServletResponse)
+   */
   @Override
   public void service(HttpServletRequest request, HttpServletResponse response)
       throws IOException, ServletException {
@@ -65,33 +75,36 @@ public class ResteasyServlet extends HttpServletDispatcher {
         }
         try {
           ResteasyProviderFactory.pushContext(HttpServletRequest.class, request);
-          ResteasyProviderFactory.pushContext(HttpServletResponse.class,response);
+          ResteasyProviderFactory.pushContext(HttpServletResponse.class, response);
           ResteasyProviderFactory.pushContext(SecurityContext.class,
               new ServletSecurityContext(request));
           // end boilerplate
 
-          // JAX-RS uses its own request / response objects, not those defined in the servlet spec
+          // JAX-RS uses its own request / response objects, not those defined in the
+          // servlet spec
           HttpHeaders headers = ServletUtil.extractHttpHeaders(request);
           UriInfoImpl uriInfo = ServletUtil.extractUriInfo(request, "");
           HttpResponse jaxrsResponse = createServletResponse(response);
-          HttpRequest jaxrsRequest = createHttpRequest(request.getMethod(), request, headers,
-              uriInfo, jaxrsResponse);
+          HttpRequest jaxrsRequest = createHttpRequest(request.getMethod(), request,
+              headers, uriInfo, jaxrsResponse);
 
           // Find the resource that would normally be invoked by this request
           Registry registry = (Registry) request.getSession().getServletContext()
               .getAttribute(Registry.class.getName());
-          ResourceInvoker invoker = registry.getResourceInvoker(jaxrsRequest, jaxrsResponse);
+          ResourceInvoker invoker = registry.getResourceInvoker(jaxrsRequest,
+              jaxrsResponse);
           PrintWriter writer = response.getWriter();
           if (invoker instanceof ResourceLocator) {
             ResourceLocator rl = (ResourceLocator) invoker;
             try {
-              // Resteasy is designed to invoke, not list, resources, so finding the resource class
+              // Resteasy is designed to invoke, not list, resources, so finding the
+              // resource class
               // requires reflection on the internal resteasy APIs
               Method createResourceMethod = rl.getMethod().getDeclaringClass()
                   .getDeclaredMethod("createResource",
-                      new Class[] { HttpRequest.class, HttpResponse.class });
-              Documentable documentable = (Documentable) createResourceMethod
-                  .invoke(rl, new Object[] { jaxrsRequest, jaxrsResponse });
+                      new Class[] {HttpRequest.class, HttpResponse.class });
+              Documentable documentable = (Documentable) createResourceMethod.invoke(rl,
+                  new Object[] {jaxrsRequest, jaxrsResponse });
               writer.write(documentable.getRestDocumentation().toHtml());
               writer.flush();
               return;
@@ -102,14 +115,16 @@ public class ResteasyServlet extends HttpServletDispatcher {
           } else if (invoker instanceof ResourceMethod) {
             ResourceMethod rm = (ResourceMethod) invoker;
             try {
-              // Again, we can't easily find the jax-rs resources, so we must use reflection to
-              // drill down into the internal resteasy APIs.  Hopefully this will change with later
+              // Again, we can't easily find the jax-rs resources, so we must use
+              // reflection to
+              // drill down into the internal resteasy APIs. Hopefully this will change
+              // with later
               // resteasy releases.
               Field resourceField = rm.getClass().getDeclaredField("resource");
               resourceField.setAccessible(true);
               ResourceFactory rf = (ResourceFactory) resourceField.get(rm);
-              Documentable documentable = (Documentable) rf.createResource(
-                  jaxrsRequest, jaxrsResponse, null);
+              Documentable documentable = (Documentable) rf.createResource(jaxrsRequest,
+                  jaxrsResponse, null);
               writer.write(documentable.getRestDocumentation().toHtml());
               writer.flush();
               return;
@@ -122,15 +137,15 @@ public class ResteasyServlet extends HttpServletDispatcher {
           ResteasyProviderFactory.clearContextData();
         }
       } finally {
-        ResteasyProviderFactory defaultInstance = ResteasyProviderFactory
-            .getInstance();
+        ResteasyProviderFactory defaultInstance = ResteasyProviderFactory.getInstance();
         if (defaultInstance instanceof ThreadLocalResteasyProviderFactory) {
           ThreadLocalResteasyProviderFactory.pop();
         }
 
       }
     } else {
-      // Delegate to the default resteasy servlet to invoke the correct jax-rs resource method
+      // Delegate to the default resteasy servlet to invoke the correct jax-rs resource
+      // method
       super.service(request, response);
     }
   }

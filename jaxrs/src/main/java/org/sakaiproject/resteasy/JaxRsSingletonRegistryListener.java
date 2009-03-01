@@ -25,24 +25,43 @@ import org.sakaiproject.kernel.api.rest.JaxRsSingletonProvider;
  * Listens for changes to Sakai's JAX-RS registry, and updates RestEasy's
  * internal resource registry.
  */
-public class JaxRsSingletonRegistryListener implements RegistryListener<JaxRsSingletonProvider> {
-	protected Registry registry;
-	
-	public JaxRsSingletonRegistryListener(Registry jaxRsRegistry) {
-		this.registry = jaxRsRegistry;
-	}
-	
-	public void added(JaxRsSingletonProvider wasAdded) {
-		registry.addSingletonResource(wasAdded.getJaxRsSingleton());
-	}
+public class JaxRsSingletonRegistryListener implements
+    RegistryListener<JaxRsSingletonProvider> {
+  /**
+   *
+   */
+  private Registry registry;
 
-	public void removed(JaxRsSingletonProvider wasRemoved) {
-		registry.removeRegistrations(wasRemoved.getJaxRsSingleton().getClass());
-	}
+  /**
+   * @param jaxRsRegistry the registry where we are registering JAXRS Beans.
+   */
+  public JaxRsSingletonRegistryListener(Registry jaxRsRegistry) {
+    this.registry = jaxRsRegistry;
+  }
 
-	public void updated(JaxRsSingletonProvider wasUpdated) {
-		registry.removeRegistrations(wasUpdated.getJaxRsSingleton().getClass());
-		registry.addSingletonResource(wasUpdated.getJaxRsSingleton());
-	}
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.RegistryListener#added(java.lang.Object)
+   */
+  public void added(JaxRsSingletonProvider wasAdded) {
+    registry.addSingletonResource(wasAdded.getJaxRsSingleton());
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.RegistryListener#removed(java.lang.Object)
+   */
+  public void removed(JaxRsSingletonProvider wasRemoved) {
+    registry.removeRegistrations(wasRemoved.getJaxRsSingleton().getClass());
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.RegistryListener#updated(java.lang.Object)
+   */
+  public void updated(JaxRsSingletonProvider wasUpdated) {
+    registry.removeRegistrations(wasUpdated.getJaxRsSingleton().getClass());
+    registry.addSingletonResource(wasUpdated.getJaxRsSingleton());
+  }
 
 }
