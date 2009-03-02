@@ -335,7 +335,7 @@ public class SecureSakaiAccessManager implements AccessManager {
           String queryKey = spq.getQueryToken(resourceReference);
           if (cache.containsKey(sakaiUserId + ":" + queryKey)) {
             ExpiringGrant<Boolean> cg = cache.get(sakaiUserId + ":" + queryKey);
-            if (!cg.hasExpired()) {
+            if (cg != null && !cg.hasExpired()) {
               ncachedresolve++;
               return cg.getPayload();
             }
