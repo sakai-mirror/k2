@@ -21,6 +21,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 import org.sakaiproject.sdata.tool.api.SDataFunction;
+import org.sakaiproject.sdata.tool.functions.JCRCopyFunction;
 import org.sakaiproject.sdata.tool.functions.JCRHideReleaseFunction;
 import org.sakaiproject.sdata.tool.functions.JCRMoveFunction;
 import org.sakaiproject.sdata.tool.functions.JCRNodeMetadata;
@@ -46,7 +47,8 @@ public class JCRHandlerFunctionProvider implements Provider<Map<String, SDataFun
   public JCRHandlerFunctionProvider(JCRHideReleaseFunction hideRelease,
       JCRMoveFunction move, JCRNodeMetadata node, JCRPermissionsFunction permission,
       JCRPropertiesFunction properties, JCRTaggingFunction tagging,
-      JCRVersionHistoryFunction jcrVersionHistoryFunction) {
+      JCRVersionHistoryFunction jcrVersionHistoryFunction,
+      JCRCopyFunction jcrCopyFunction) {
 
     functionMap.put(hideRelease.getKey(), hideRelease);
     functionMap.put(move.getKey(), move);
@@ -55,6 +57,7 @@ public class JCRHandlerFunctionProvider implements Provider<Map<String, SDataFun
     functionMap.put(properties.getKey(), properties);
     functionMap.put(tagging.getKey(), tagging);
     functionMap.put(jcrVersionHistoryFunction.getKey(), jcrVersionHistoryFunction);
+    functionMap.put(jcrCopyFunction.getKey(), jcrCopyFunction);
   }
 
   /**
