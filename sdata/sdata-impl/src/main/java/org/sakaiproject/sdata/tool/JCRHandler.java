@@ -317,6 +317,10 @@ public class JCRHandler extends AbstractHandler {
         response.sendError(HttpServletResponse.SC_NOT_FOUND);
         return;
       }
+      String version = rp.getVersion();
+      if ( version != null ) {
+        n = n.getVersionHistory().getVersion(version);
+      }
 
       Node resource = n.getNode(JCRConstants.JCR_CONTENT);
       Property lastModified = resource.getProperty(JCRConstants.JCR_LASTMODIFIED);
@@ -483,7 +487,12 @@ public class JCRHandler extends AbstractHandler {
         response.sendError(HttpServletResponse.SC_NOT_FOUND);
         return;
       }
-
+      
+      String version = rp.getVersion();
+      if ( version != null ) {
+        n = n.getVersionHistory().getVersion(version);
+      }
+      
       NodeType nt = n.getPrimaryNodeType();
 
       if (m != null) {

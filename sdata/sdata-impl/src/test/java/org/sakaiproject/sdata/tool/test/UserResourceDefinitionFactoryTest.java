@@ -80,13 +80,6 @@ public class UserResourceDefinitionFactoryTest {
                     .length() == rp.trim().length());
             assertTrue("Repository Paths must no have // ",
                 rp.indexOf("//") < 0);
-            String[] elements = rp.split("/");
-            if (elements.length != 0) {
-              char c = elements[elements.length - 1].charAt(0);
-              assertTrue(
-                  "Last Element of a repository paths cant start with a number ",
-                  !Character.isDigit(c));
-            }
             rp = rd.convertToExternalPath(testPath);
             
             assertTrue("External Paths must not be null ", rp != null); //

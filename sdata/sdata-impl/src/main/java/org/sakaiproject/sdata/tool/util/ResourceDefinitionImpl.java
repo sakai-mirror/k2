@@ -36,7 +36,7 @@ public class ResourceDefinitionImpl implements ResourceDefinition {
   /**
    * The version
    */
-  protected int version;
+  protected String version;
 
   protected String basePath;
 
@@ -73,7 +73,7 @@ public class ResourceDefinitionImpl implements ResourceDefinition {
    * @throws SDataException
    */
   public ResourceDefinitionImpl(String method, String f, int depth,
-      String inbasePath, String inpath, int inversion,
+      String inbasePath, String inpath, String inversion,
       SecurityAssertion securityAssertion) throws SDataException {
     if (log.isDebugEnabled()) {
       log.debug("ResourceDef: Base:" + inbasePath + ": path:" + inpath
@@ -206,6 +206,14 @@ public class ResourceDefinitionImpl implements ResourceDefinition {
    */
   public int getDepth() {
     return depth;
+  }
+  
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.sdata.tool.api.ResourceDefinition#getVersion()
+   */
+  public String getVersion() {
+    return version;
   }
 
 }

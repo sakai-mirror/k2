@@ -69,10 +69,6 @@ public class ResourceDefinitionFactoryImpl implements ResourceDefinitionFactory 
     }
 
     String v = request.getParameter("v"); // version
-    int version = -1;
-    if (v != null && v.trim().length() > 0) {
-      version = Integer.parseInt(v);
-    }
     String f = request.getParameter("f"); // function
     String d = request.getParameter("d"); // function
     int depth = 1;
@@ -80,7 +76,7 @@ public class ResourceDefinitionFactoryImpl implements ResourceDefinitionFactory 
       depth = Integer.parseInt(d);
     }
     return new ResourceDefinitionImpl(request.getMethod(), f, depth, basePath,
-        path, version, securityAssertion);
+        path, v, securityAssertion);
   }
 
 }

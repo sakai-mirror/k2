@@ -116,5 +116,8 @@ public interface ResourceDefinition {
    *           is permission is denied.
    */
   ResourceDefinition getParentResourceDefinition() throws SDataException;
+  
+  
+  String getVersion();
 
 }

@@ -83,17 +83,6 @@ public class UserResourceDefinitionFactory implements ResourceDefinitionFactory 
     if (path.endsWith("/")) {
       path = path.substring(0, path.length() - 1);
     }
-    int lastSlash = path.lastIndexOf("/");
-    String lastElement = path.substring(lastSlash + 1);
-
-    int version = -1;
-    if (lastElement.length() > 0) {
-      char c = lastElement.charAt(0);
-      if (Character.isDigit(c)) {
-        version = Integer.parseInt(lastElement);
-        path = path.substring(0, lastSlash);
-      }
-    }
 
     String user = request.getRemoteUser();
     if (user == null || user.trim().length() == 0) {
@@ -107,6 +96,7 @@ public class UserResourceDefinitionFactory implements ResourceDefinitionFactory 
 
     path = pathPrefix + path;
 
+    String v = request.getParameter("v"); // version
     String f = request.getParameter("f"); // function
     String d = request.getParameter("d"); // function
     int depth = 1;
@@ -115,7 +105,7 @@ public class UserResourceDefinitionFactory implements ResourceDefinitionFactory 
     }
 
     return new ResourceDefinitionImpl(request.getMethod(), f, depth, basePath,
-        path, version, nullSecurityAssertion);
+        path, v, nullSecurityAssertion);
   }
 
 }
