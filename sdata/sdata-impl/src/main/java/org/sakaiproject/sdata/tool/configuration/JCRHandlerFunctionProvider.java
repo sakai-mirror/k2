@@ -27,6 +27,7 @@ import org.sakaiproject.sdata.tool.functions.JCRNodeMetadata;
 import org.sakaiproject.sdata.tool.functions.JCRPermissionsFunction;
 import org.sakaiproject.sdata.tool.functions.JCRPropertiesFunction;
 import org.sakaiproject.sdata.tool.functions.JCRTaggingFunction;
+import org.sakaiproject.sdata.tool.functions.JCRVersionHistoryFunction;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,8 +35,7 @@ import java.util.Map;
 /**
  * 
  */
-public class JCRHandlerFunctionProvider implements
-    Provider<Map<String, SDataFunction>> {
+public class JCRHandlerFunctionProvider implements Provider<Map<String, SDataFunction>> {
 
   private Map<String, SDataFunction> functionMap = new HashMap<String, SDataFunction>();
 
@@ -43,10 +43,10 @@ public class JCRHandlerFunctionProvider implements
    * 
    */
   @Inject
-  public JCRHandlerFunctionProvider(
-      JCRHideReleaseFunction hideRelease, JCRMoveFunction move,
-      JCRNodeMetadata node, JCRPermissionsFunction permission,
-      JCRPropertiesFunction properties, JCRTaggingFunction tagging) {
+  public JCRHandlerFunctionProvider(JCRHideReleaseFunction hideRelease,
+      JCRMoveFunction move, JCRNodeMetadata node, JCRPermissionsFunction permission,
+      JCRPropertiesFunction properties, JCRTaggingFunction tagging,
+      JCRVersionHistoryFunction jcrVersionHistoryFunction) {
 
     functionMap.put(hideRelease.getKey(), hideRelease);
     functionMap.put(move.getKey(), move);
@@ -54,6 +54,7 @@ public class JCRHandlerFunctionProvider implements
     functionMap.put(permission.getKey(), permission);
     functionMap.put(properties.getKey(), properties);
     functionMap.put(tagging.getKey(), tagging);
+    functionMap.put(jcrVersionHistoryFunction.getKey(), jcrVersionHistoryFunction);
   }
 
   /**
