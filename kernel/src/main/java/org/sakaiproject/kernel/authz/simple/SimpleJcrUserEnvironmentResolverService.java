@@ -315,7 +315,6 @@ public class SimpleJcrUserEnvironmentResolverService implements
    */
   public UserEnvironment create(User u, String externalId, String password,
       String userType) {
-    authzResolverService.setRequestGrant("Creating User Environment");
     String userEnvironmentPath = userFactoryService.getUserEnvPath(u.getUuid());
 
     ByteArrayInputStream bais = null;
@@ -380,7 +379,6 @@ public class SimpleJcrUserEnvironmentResolverService implements
       } catch (Exception ex) {
         // not interested
       }
-      authzResolverService.clearRequestGrant();
     }
     return null;
 

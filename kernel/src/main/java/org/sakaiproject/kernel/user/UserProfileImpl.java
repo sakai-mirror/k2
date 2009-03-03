@@ -20,6 +20,7 @@ package org.sakaiproject.kernel.user;
 
 import com.google.common.collect.Maps;
 
+import org.sakaiproject.kernel.api.authz.AuthzResolverService;
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
@@ -57,8 +58,8 @@ public class UserProfileImpl implements UserProfile {
    * @param beanConverter
    */
   public UserProfileImpl(String uuid, Map<String, Object> profileMap,
-      UserFactoryService userFactoryService,
-      JCRNodeFactoryService jcrNodeFactoryService, BeanConverter beanConverter) {
+      UserFactoryService userFactoryService, JCRNodeFactoryService jcrNodeFactoryService,
+      BeanConverter beanConverter) {
     this.uuid = uuid;
     this.profileMap = Maps.newHashMap(profileMap);
     this.userFactoryService = userFactoryService;
@@ -86,28 +87,30 @@ public class UserProfileImpl implements UserProfile {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.user.UserProfile#setProperties(java.util.Map)
    */
   public void setProperties(Map<String, Object> properties) {
     this.profileMap = Maps.newHashMap(properties);
   }
 
-  public void save() throws JCRNodeFactoryServiceException, RepositoryException, UnsupportedEncodingException {
+  public void save() throws JCRNodeFactoryServiceException, RepositoryException,
+      UnsupportedEncodingException {
     String profile = beanConverter.convertToString(profileMap);
     String userProfilePath = userFactoryService.getUserProfilePath(uuid);
 
-    System.err.println("Saving Profile to " + userProfilePath + " as "
-        + profile);
+    System.err.println("Saving Profile to " + userProfilePath + " as " + profile);
     ByteArrayInputStream bais = null;
     try {
       bais = new ByteArrayInputStream(profile.getBytes("UTF-8"));
-      Node profileNode = jcrNodeFactoryService.setInputStream(userProfilePath,
-          bais, RestProvider.CONTENT_TYPE);
+      Node profileNode = jcrNodeFactoryService.setInputStream(userProfilePath, bais,
+          RestProvider.CONTENT_TYPE);
       if (profileNode.hasNode(JCRConstants.JCR_CONTENT)) {
         Node dataNode = profileNode.getNode(JCRConstants.JCR_CONTENT);
-        dataNode.setProperty("sakai:firstName", String.valueOf(profileMap.get("firstName")));
-        dataNode.setProperty("sakai:lastName", String.valueOf(profileMap.get("lastName")));
+        dataNode.setProperty("sakai:firstName", String.valueOf(profileMap
+            .get("firstName")));
+        dataNode
+            .setProperty("sakai:lastName", String.valueOf(profileMap.get("lastName")));
         dataNode.setProperty("sakai:email", String.valueOf(profileMap.get("email")));
       } else {
         throw new RestServiceFaultException(

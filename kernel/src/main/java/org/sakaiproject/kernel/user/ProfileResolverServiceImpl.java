@@ -22,6 +22,7 @@ import com.google.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.api.authz.AuthzResolverService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
@@ -47,6 +48,7 @@ public class ProfileResolverServiceImpl implements ProfileResolverService {
   private JCRNodeFactoryService jcrNodeFactoryService;
   private UserFactoryService userFactoryService;
   private BeanConverter beanConverter;
+  private AuthzResolverService authzResolverService;
   
   /**
    * 
@@ -55,10 +57,12 @@ public class ProfileResolverServiceImpl implements ProfileResolverService {
   public ProfileResolverServiceImpl(
       BeanConverter beanConverter,
       JCRNodeFactoryService jcrNodeFactoryService,
-      UserFactoryService userFactoryService) {
+      UserFactoryService userFactoryService,
+      AuthzResolverService authzResolverService) {
     this.beanConverter = beanConverter;
     this.userFactoryService = userFactoryService;
     this.jcrNodeFactoryService = jcrNodeFactoryService;
+    this.authzResolverService = authzResolverService;
   }
 
   /**
@@ -84,7 +88,7 @@ public class ProfileResolverServiceImpl implements ProfileResolverService {
     } catch (RepositoryException e) {
       LOG.error(e.getMessage(), e);
     } catch (JCRNodeFactoryServiceException e) {
-      LOG.debug(e.getMessage(), e);
+      LOG.error(e.getMessage(), e);
     } catch (UnsupportedEncodingException e) {
       LOG.error(e.getMessage(), e);
     } catch (IOException e) {

@@ -59,8 +59,7 @@ import javax.security.auth.Subject;
 /**
  */
 public class SecureSakaiAccessManager implements AccessManager {
-  private static final Log log = LogFactory
-      .getLog(SecureSakaiAccessManager.class);
+  private static final Log log = LogFactory.getLog(SecureSakaiAccessManager.class);
 
   private static final SimplePermissionQuery[] PERMISSION_QUERIES = new SimplePermissionQuery[READ
       | WRITE | REMOVE];
@@ -89,8 +88,8 @@ public class SecureSakaiAccessManager implements AccessManager {
   }
 
   /**
-   * The Subject represents the User or Actor that this access manager belongs
-   * to, it is not related to the SubjectToken in the Sakai K2 AuthZ system.
+   * The Subject represents the User or Actor that this access manager belongs to, it is
+   * not related to the SubjectToken in the Sakai K2 AuthZ system.
    */
   private Subject subject;
 
@@ -98,8 +97,8 @@ public class SecureSakaiAccessManager implements AccessManager {
   private HierarchyManager hierMgr;
 
   /**
-   * If the User or Actor using this access manager is an anonymous user, this
-   * ill be true.
+   * If the User or Actor using this access manager is an anonymous user, this ill be
+   * true.
    */
   protected boolean anonymous = false;
 
@@ -109,8 +108,8 @@ public class SecureSakaiAccessManager implements AccessManager {
   private boolean initialized = false;
 
   /**
-   * If the Actor bound to this access manager is the system, then this is try,
-   * otherwise it its false.
+   * If the Actor bound to this access manager is the system, then this is try, otherwise
+   * it its false.
    */
   protected boolean sakaisystem = false;
 
@@ -130,8 +129,8 @@ public class SecureSakaiAccessManager implements AccessManager {
   private AuthzResolverService authzResolverService;
 
   /**
-   * A Request Scope Cache containing already resolved permissions, we dont
-   * support inverting a permissions resolution half way though a request cycle.
+   * A Request Scope Cache containing already resolved permissions, we dont support
+   * inverting a permissions resolution half way though a request cycle.
    */
   private Cache<ExpiringGrant<Boolean>> cache;
 
@@ -178,8 +177,7 @@ public class SecureSakaiAccessManager implements AccessManager {
 
   @Inject
   public SecureSakaiAccessManager(JCRService jcrService,
-      AuthzResolverService authzResolverService,
-      CacheManagerService cacheManagerService)
+      AuthzResolverService authzResolverService, CacheManagerService cacheManagerService)
       throws ComponentActivatorException, RepositoryException {
     this.authzResolverService = authzResolverService;
     this.jcrService = jcrService;
@@ -189,8 +187,7 @@ public class SecureSakaiAccessManager implements AccessManager {
   /*
    * (non-Javadoc)
    * 
-   * @see
-   * org.apache.jackrabbit.core.security.AccessManager#init(org.apache.jackrabbit
+   * @see org.apache.jackrabbit.core.security.AccessManager#init(org.apache.jackrabbit
    * .core.security.AMContext)
    */
   @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = { "BC_VACUOUS_INSTANCEOF" }, justification = "The type safety in only at compile time.")
@@ -199,9 +196,7 @@ public class SecureSakaiAccessManager implements AccessManager {
       throw new IllegalStateException("already initialized");
     }
 
-    cache = cacheManagerService.getCache("jcr-accessmanager",
-        CacheScope.INSTANCE);
-    
+    cache = cacheManagerService.getCache("jcr-accessmanager", CacheScope.INSTANCE);
 
     subject = context.getSubject();
     hierMgr = context.getHierarchyManager();
@@ -248,12 +243,11 @@ public class SecureSakaiAccessManager implements AccessManager {
   /*
    * (non-Javadoc)
    * 
-   * @see
-   * org.apache.jackrabbit.core.security.AccessManager#checkPermission(org.apache
+   * @see org.apache.jackrabbit.core.security.AccessManager#checkPermission(org.apache
    * .jackrabbit.core.ItemId, int)
    */
-  public void checkPermission(ItemId item, int permission)
-      throws AccessDeniedException, ItemNotFoundException, RepositoryException {
+  public void checkPermission(ItemId item, int permission) throws AccessDeniedException,
+      ItemNotFoundException, RepositoryException {
     if (!initialized) {
       throw new RepositoryException("Access Manager is not initialized ");
     }
@@ -261,8 +255,8 @@ public class SecureSakaiAccessManager implements AccessManager {
       if (debug) {
         log.debug("Denied " + permission + " on " + item);
       }
-      throw new AccessDeniedException("Permission deined to " + sakaiUserId
-          + " to " + PERMISSION_QUERIES[permission] + "on" + item);
+      throw new AccessDeniedException("Permission deined to " + sakaiUserId + " to "
+          + PERMISSION_QUERIES[permission] + "on" + item);
     }
     log.info("Granted " + permission + " on " + item);
   }
@@ -270,12 +264,11 @@ public class SecureSakaiAccessManager implements AccessManager {
   /*
    * (non-Javadoc)
    * 
-   * @see
-   * org.apache.jackrabbit.core.security.AccessManager#isGranted(org.apache.
+   * @see org.apache.jackrabbit.core.security.AccessManager#isGranted(org.apache.
    * jackrabbit.core.ItemId, int)
    */
-  public boolean isGranted(ItemId item, int permission)
-      throws ItemNotFoundException, RepositoryException {
+  public boolean isGranted(ItemId item, int permission) throws ItemNotFoundException,
+      RepositoryException {
     // not initialized, or closed
     if (!initialized) {
       throw new RepositoryException("Access Manager is not initialized ");
@@ -287,17 +280,18 @@ public class SecureSakaiAccessManager implements AccessManager {
         nadmin++;
         return true;
       }
-      // anon is never allowed to write
-      if (anonymous
-          && ((permission & AccessManager.WRITE) == AccessManager.WRITE || (permission & AccessManager.REMOVE) == AccessManager.REMOVE)) {
-        nanondnied++;
-        return false;
-      }
       // check for a security manager bypass
       String requestGrant = authzResolverService.getRequestGrant();
       if (requestGrant != null) {
         nrequestgrant++;
         return true;
+      }
+      // anon is never allowed to write
+      if (anonymous
+          && ((permission & AccessManager.WRITE) == AccessManager.WRITE
+              || (permission & AccessManager.REMOVE) == AccessManager.REMOVE)) {
+        nanondnied++;
+        return false;
       }
       if (session == null) {
         synchronized (sessionLock) {
@@ -347,12 +341,14 @@ public class SecureSakaiAccessManager implements AccessManager {
           try {
             // potentially expensive call.
             authzResolverService.check(resourceReference, spq);
-            cache.put(sakaiUserId + ":" + queryKey, new ExpiringGrant<Boolean>(true,TTL));
+            cache
+                .put(sakaiUserId + ":" + queryKey, new ExpiringGrant<Boolean>(true, TTL));
             nfullresolvegrant++;
             return true;
           } catch (PermissionDeniedException denied) {
             nfullresolvegdeny++;
-            cache.put(sakaiUserId + ":" + queryKey, new ExpiringGrant<Boolean>(false,TTL));
+            cache.put(sakaiUserId + ":" + queryKey,
+                new ExpiringGrant<Boolean>(false, TTL));
             if (debug) {
               log.debug("Permission Denied for " + sakaiUserId + " on "
                   + resourceReference + ":" + denied.getMessage());
@@ -394,13 +390,13 @@ public class SecureSakaiAccessManager implements AccessManager {
           pcachedresolve = ncachedresolve * 100 / nresolve;
         }
         log.info("Calls:" + ncalls + "," + " Resolved:" + nresolve + "(" + presolve
-            + "%)," + " Cache(Hit:"
-            + ncachedresolve + "(" + pcachedresolve + "%)," +
-            " Miss:" + ncachemiss + "(" + pcachemiss + "%))," + " Resolved(Grant:"
+            + "%)," + " Cache(Hit:" + ncachedresolve + "(" + pcachedresolve + "%),"
+            + " Miss:" + ncachemiss + "(" + pcachemiss + "%))," + " Resolved(Grant:"
             + nfullresolvegrant + "(" + pfullresolvegrant + "%)," + " Deny:"
-            + nfullresolvegdeny + "(" + pfullresolvegdeny + "%)),"  + "Misc(super user:" + nadmin
-            + "(" + padmin + "%)," + " anon deny:" + nanondnied + "(" + panondnied
-            + "%)," + " request granted:" + nrequestgrant + "(" + prequestgrant + "%))");
+            + nfullresolvegdeny + "(" + pfullresolvegdeny + "%))," + "Misc(super user:"
+            + nadmin + "(" + padmin + "%)," + " anon deny:" + nanondnied + "("
+            + panondnied + "%)," + " request granted:" + nrequestgrant + "("
+            + prequestgrant + "%))");
         ncalls = 0;
         nadmin = 0;
         nanondnied = 0;
@@ -415,9 +411,7 @@ public class SecureSakaiAccessManager implements AccessManager {
   /*
    * (non-Javadoc)
    * 
-   * @see
-   * org.apache.jackrabbit.core.security.AccessManager#canAccess(java.lang.String
-   * )
+   * @see org.apache.jackrabbit.core.security.AccessManager#canAccess(java.lang.String )
    */
   public boolean canAccess(String workspace) throws NoSuchWorkspaceException,
       RepositoryException {
