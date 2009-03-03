@@ -120,17 +120,24 @@ public class RestMeProviderTest extends BaseRestUT {
 
     expect(request.getLocale()).andReturn(new Locale("en", "US")).anyTimes();
     expect(session.getAttribute("sakai.locale.")).andReturn(null).anyTimes();
-
+    
     expect(userResolverService.resolveWithUUID("garbage")).andReturn(null).anyTimes();
+    response.setContentType(RestProvider.CONTENT_TYPE);
+    expectLastCall().atLeastOnce();
+    Capture<Map<String,String>> responseMap = new Capture<Map<String,String>>();
+    String testResponse = "{\"tested\":\"true\"}";
+    expect(beanConverter.convertToString(capture(responseMap))).andReturn(testResponse);
+
     replayMocks();
     createProvider();
 
-    try {
-      rmp.dispatch(new String[] { "me", "garbage" }, request, response);
-      fail();
-    } catch (RestServiceFaultException ex) {
-      assertEquals(HttpServletResponse.SC_NOT_FOUND, ex.getStatusCode());
-    }
+    rmp.dispatch(new String[] { "me", "garbage" }, request, response);
+    
+    String responseString = new String(baos.toByteArray(), "UTF-8");
+    System.err.println("Response Testing garbage " + responseString);
+    Map<String,String> rm = responseMap.getValue();
+    assertEquals("404", rm.get("statusCode"));
+    assertEquals("garbage", rm.get("userId"));
 
     verifyMocks();
   }

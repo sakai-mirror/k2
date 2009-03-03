@@ -17,8 +17,11 @@
  */
 package org.sakaiproject.kernel.rest.me;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 
+import org.apache.derby.iapi.util.StringUtil;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
@@ -33,6 +36,7 @@ import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.util.IOUtils;
+import org.sakaiproject.kernel.util.StringUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.kernel.util.user.AnonUser;
 import org.sakaiproject.kernel.util.user.NullUserEnvironment;
@@ -67,18 +71,15 @@ public class RestMeProvider implements RestProvider, Initialisable {
   private Registry<String, RestProvider> registry;
 
   @Inject
-  public RestMeProvider(
-      RegistryService registryService,
+  public RestMeProvider(RegistryService registryService,
       SessionManagerService sessionManagerService,
       JCRNodeFactoryService jcrNodeFactoryService,
-      UserResolverService userResolverService,
-      UserFactoryService userFactoryService,
+      UserResolverService userResolverService, UserFactoryService userFactoryService,
       BeanConverter beanConverter,
       UserEnvironmentResolverService userEnvironmentResolverService) {
-    registry = registryService
-        .getRegistry(RestProvider.REST_REGISTRY);
+    registry = registryService.getRegistry(RestProvider.REST_REGISTRY);
     registry.add(this);
-   
+
     this.sessionManagerService = sessionManagerService;
     this.jcrNodeFactoryService = jcrNodeFactoryService;
     this.beanConverter = beanConverter;
@@ -86,41 +87,38 @@ public class RestMeProvider implements RestProvider, Initialisable {
     this.userResolverService = userResolverService;
     this.userFactoryService = userFactoryService;
   }
+
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.webapp.Initialisable#init()
    */
   public void init() {
   }
+
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.webapp.Initialisable#destroy()
    */
   public void destroy() {
-    registry.remove(this);    
+    registry.remove(this);
   }
 
   static {
     DESCRIPTION.setTitle("Me Service");
-    DESCRIPTION
-        .setShortDescription("The Me service provides information about "
-            + "the current user");
-    DESCRIPTION
-        .addSection(
-            1,
-            "Introduction",
-            "The Me Service, when queried will respond with a json specific "
-                + "to the logged in user. If no logged in user is present, then an "
-                + "anonymouse json response will be sent. In addition some headers "
-                + "will be modified to reflect the locale preferences of the user.");
-    DESCRIPTION
-        .addSection(
-            2,
-            "Response: Anon User",
-            "Where the user is an anon user the response will contain 2 parts, "
-                + "a description of the locale and a default anon user environment. The "
-                + "locale is derived from the locale specified in the request and the "
-                + "locale of the server. ");
+    DESCRIPTION.setShortDescription("The Me service provides information about "
+        + "the current user");
+    DESCRIPTION.addSection(1, "Introduction",
+        "The Me Service, when queried will respond with a json specific "
+            + "to the logged in user. If no logged in user is present, then an "
+            + "anonymouse json response will be sent. In addition some headers "
+            + "will be modified to reflect the locale preferences of the user.");
+    DESCRIPTION.addSection(2, "Response: Anon User",
+        "Where the user is an anon user the response will contain 2 parts, "
+            + "a description of the locale and a default anon user environment. The "
+            + "locale is derived from the locale specified in the request and the "
+            + "locale of the server. ");
     DESCRIPTION
         .addSection(
             2,
@@ -131,16 +129,14 @@ public class RestMeProvider implements RestProvider, Initialisable {
                 + "locale is derived from the locale specified in the request, any prefereces "
                 + "expressed by the user and the " + "locale of the server. ");
     DESCRIPTION.addParameter("none", "The service accepts no parameters ");
+    DESCRIPTION.addHeader("none",
+        "The service neither looks for headers nor sets any non standatd headers");
     DESCRIPTION
-        .addHeader("none",
-            "The service neither looks for headers nor sets any non standatd headers");
-    DESCRIPTION
-        .addURLTemplate(
-            "me",
+        .addURLTemplate("me",
             "The service is selected by /rest/me and provides the me json for the current user.");
     DESCRIPTION
         .addURLTemplate(
-            "me/<userid>",
+            "me/<userid,userid,userid>",
             "The service is selected by /rest/me and provides the a reduced me json response for the specified user.");
     DESCRIPTION
         .addResponse(
@@ -159,8 +155,8 @@ public class RestMeProvider implements RestProvider, Initialisable {
    * {@inheritDoc}
    * 
    * @see org.sakaiproject.kernel.api.rest.RestProvider#dispatch(java.lang.String[],
-   *      javax.servlet.http.HttpServletRequest,
-   *      javax.servlet.http.HttpServletResponse) /x/y/z?searchOrder=1231231
+   *      javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+   *      /x/y/z?searchOrder=1231231
    */
   public void dispatch(String[] elements, HttpServletRequest request,
       HttpServletResponse response) {
@@ -196,20 +192,29 @@ public class RestMeProvider implements RestProvider, Initialisable {
    */
   private void doOtherUser(String[] elements, HttpServletRequest request,
       HttpServletResponse response) throws IOException, RepositoryException {
-    String userId = elements[1];
-    User user = userResolverService.resolveWithUUID(userId);
-    if (user == null) {
-      throw new RestServiceFaultException(HttpServletResponse.SC_NOT_FOUND,
-          "User " + userId + " does not exist");
-    }
+    String[] userIds = StringUtils.split(elements[1], ',');
+
     response.setContentType(RestProvider.CONTENT_TYPE);
-
     ServletOutputStream outputStream = response.getOutputStream();
-    outputStream.print("{ \"restricted\": true");
-    outputPathPrefix(user.getUuid(), outputStream);
-    outputUserProfile(user.getUuid(), outputStream);
-    outputStream.print("}");
+    outputStream.print("{ \"users\" : [ ");
 
+    boolean first = true;
+    for (String userId : userIds) {
+      if (!first) {
+        outputStream.print(",");
+      }
+      User user = userResolverService.resolveWithUUID(userId);
+      if (user == null) {
+        outputStream.print(beanConverter.convertToString(ImmutableMap.of("statusCode","404","userId",userId)));
+      } else {
+        outputStream.print("{ \"statusCode\": \"200\", \"restricted\": true");
+        outputPathPrefix(user.getUuid(), outputStream);
+        outputUserProfile(user.getUuid(), outputStream);
+        outputStream.print("}");
+      }
+      first = false;
+    }
+    outputStream.print("]}");
   }
 
   /**
@@ -233,15 +238,13 @@ public class RestMeProvider implements RestProvider, Initialisable {
 
     System.err.println("Got user as " + user);
 
-    Locale locale = userEnvironmentResolverService.getUserLocale(request
-        .getLocale(), session);
+    Locale locale = userEnvironmentResolverService.getUserLocale(request.getLocale(),
+        session);
     if (user == null || user.getUuid() == null || "anon".equals(user.getUuid())) {
       sendOutput(response, locale, new AnonUser(), ANON_UE_FILE);
     } else {
-      UserEnvironment userEnvironment = userEnvironmentResolverService
-          .resolve(user);
-      if (userEnvironment == null
-          || userEnvironment instanceof NullUserEnvironment) {
+      UserEnvironment userEnvironment = userEnvironmentResolverService.resolve(user);
+      if (userEnvironment == null || userEnvironment instanceof NullUserEnvironment) {
         sendDefaultUserOutput(response, locale, user);
       } else {
         sendOutput(response, locale, userEnvironment.getUser(), userEnvironment);
@@ -256,14 +259,13 @@ public class RestMeProvider implements RestProvider, Initialisable {
    * @throws RepositoryException
    * @throws IOException
    */
-  private void sendOutput(HttpServletResponse response, Locale locale,
-      User user, UserEnvironment userEnvironment) throws RepositoryException,
+  private void sendOutput(HttpServletResponse response, Locale locale, User user,
+      UserEnvironment userEnvironment) throws RepositoryException,
       JCRNodeFactoryServiceException, IOException {
     response.setContentType(RestProvider.CONTENT_TYPE);
     ServletOutputStream outputStream = response.getOutputStream();
     outputStream.print("{ \"locale\" :");
-    outputStream.print(beanConverter.convertToString(UserLocale
-        .localeToMap(locale)));
+    outputStream.print(beanConverter.convertToString(UserLocale.localeToMap(locale)));
     outputStream.print(", \"preferences\" :");
     userEnvironment.setProtected(true);
     String json = beanConverter.convertToString(userEnvironment);
@@ -281,14 +283,13 @@ public class RestMeProvider implements RestProvider, Initialisable {
    * @throws RepositoryException
    * @throws IOException
    */
-  private void sendOutput(HttpServletResponse response, Locale locale,
-      User user, String path) throws RepositoryException,
-      JCRNodeFactoryServiceException, IOException {
+  private void sendOutput(HttpServletResponse response, Locale locale, User user,
+      String path) throws RepositoryException, JCRNodeFactoryServiceException,
+      IOException {
     response.setContentType(RestProvider.CONTENT_TYPE);
     ServletOutputStream outputStream = response.getOutputStream();
     outputStream.print("{ \"locale\" :");
-    outputStream.print(beanConverter.convertToString(UserLocale
-        .localeToMap(locale)));
+    outputStream.print(beanConverter.convertToString(UserLocale.localeToMap(locale)));
     sendFile("preferences", path, outputStream);
     outputPathPrefix(user.getUuid(), outputStream);
     outputStream.print(", \"profile\" : {}");
@@ -301,8 +302,8 @@ public class RestMeProvider implements RestProvider, Initialisable {
    * @throws IOException
    * @throws RepositoryException
    */
-  private void sendFile(String key, String path,
-      ServletOutputStream outputStream) throws IOException, RepositoryException {
+  private void sendFile(String key, String path, ServletOutputStream outputStream)
+      throws IOException, RepositoryException {
 
     InputStream in = null;
     try {
@@ -336,14 +337,12 @@ public class RestMeProvider implements RestProvider, Initialisable {
    * @throws RepositoryException
    * @throws IOException
    */
-  private void sendDefaultUserOutput(HttpServletResponse response,
-      Locale locale, User user) throws RepositoryException,
-      JCRNodeFactoryServiceException, IOException {
+  private void sendDefaultUserOutput(HttpServletResponse response, Locale locale,
+      User user) throws RepositoryException, JCRNodeFactoryServiceException, IOException {
     response.setContentType(RestProvider.CONTENT_TYPE);
     ServletOutputStream outputStream = response.getOutputStream();
     outputStream.print("{ \"locale\" :");
-    outputStream.print(beanConverter.convertToString(UserLocale
-        .localeToMap(locale)));
+    outputStream.print(beanConverter.convertToString(UserLocale.localeToMap(locale)));
     outputStream.print(", \"preferences\" :");
     Map<String, Object> m = new HashMap<String, Object>();
     m.put("uuid", user.getUuid());
@@ -401,6 +400,5 @@ public class RestMeProvider implements RestProvider, Initialisable {
   public int getPriority() {
     return 0;
   }
-
 
 }
