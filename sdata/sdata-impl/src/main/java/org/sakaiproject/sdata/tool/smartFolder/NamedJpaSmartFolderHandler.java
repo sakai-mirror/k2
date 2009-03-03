@@ -29,7 +29,7 @@ import javax.jcr.query.Query;
 import javax.persistence.EntityManager;
 
 /**
- *
+ * Handler for smart folders whose action is tied to a named JPA query.
  */
 public class NamedJpaSmartFolderHandler implements SmartFolderHandler {
   public static final String KEY = "jpa-named";

@@ -25,7 +25,7 @@ import org.sakaiproject.kernel.api.RegistryService;
 import javax.jcr.query.Query;
 
 /**
- *
+ * XPath handler for smart folder actions.
  */
 public class XpathSmartFolderHandler extends JcrSmartFolderHandler {
   private static final String KEY = Query.XPATH;

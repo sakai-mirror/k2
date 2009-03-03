@@ -25,7 +25,7 @@ import org.sakaiproject.kernel.api.RegistryService;
 import javax.jcr.query.Query;
 
 /**
- *
+ * SQL handler for smart folder actions.
  */
 public class SqlSmartFolderHandler extends JcrSmartFolderHandler {
   private static final String KEY = Query.SQL;

@@ -29,7 +29,7 @@ import javax.jcr.query.Query;
 import javax.persistence.EntityManager;
 
 /**
- *
+ * Handler for smart folder actions that use an ad-hoc JPA query.
  */
 public class JpaSmartFolderHandler implements SmartFolderHandler {
   public static final String KEY = "jpa";
