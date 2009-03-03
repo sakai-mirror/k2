@@ -188,10 +188,6 @@ public class JCRHandler extends AbstractHandler {
   private transient RegistryService registryService;
 
   /**
-   * Create a JCRHandler and give it a resource definition factory that will convert a URL
-   * into a location in the repository.
-   * 
-=======
    * Create a JCRHandler and give it a resource definition factory that will
    * convert a URL into a location in the repository.
    *

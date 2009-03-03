@@ -156,6 +156,9 @@ public class SDataModule extends AbstractModule {
     bind(AuthzResolverService.class).toProvider(
         new ServiceProvider<AuthzResolverService>(sm,
             AuthzResolverService.class));
+    bind(ReferenceResolverService.class).toProvider(
+        new ServiceProvider<ReferenceResolverService>(sm,
+            ReferenceResolverService.class));
 
     // bring this list up early so it can register itself
     TypeLiteral<List<SmartFolderHandler>> smartFolderHandlerList = new TypeLiteral<List<SmartFolderHandler>>() {
