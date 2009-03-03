@@ -123,13 +123,37 @@ public class JCRUserStorageHandler extends JCRHandler {
       RegistryService registryService) {
     super(jcrNodeFactory, resourceDefinitionFactory, resourceFunctionFactory,
         serializer, registryService);
-
-    System.err.println(this+" Resource Defintion Factory is "+resourceDefinitionFactory);
+    System.err.println(this + " Resource Defintion Factory is "
+        + resourceDefinitionFactory);
   }
 
   /**
    * {@inheritDoc}
-   * 
+   *
+   * @see org.sakaiproject.sdata.tool.JCRHandler#initDescription()
+   */
+  @Override
+  public void initDescription() {
+
+    Map<String, RestDescription> map = Maps.newLinkedHashMap();
+    for (Entry<String, SDataFunction> e : resourceFunctionFactory.entrySet()) {
+      map.put(e.getKey(), e.getValue().getDescription());
+    }
+    DESCRIPTION.addSection(2, "Functions",
+        "The following functions are activated with a ?f=key, where key is "
+            + "the function key");
+    for (String s : Lists.sortedCopy(map.keySet())) {
+      RestDescription description = map.get(s);
+      DESCRIPTION.addSection(3, "URL " + KEY + "/<resource>?f=" + s + "  "
+          + description.getTitle(), description.getShortDescription(),
+          "?doc=1&f=" + s);
+    }
+
+  }
+
+  /**
+   * {@inheritDoc}
+   *
    * @see org.sakaiproject.sdata.tool.JCRHandler#getKey()
    */
   @Override
@@ -139,7 +163,7 @@ public class JCRUserStorageHandler extends JCRHandler {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.sdata.tool.JCRHandler#getDescription()
    */
   @Override
