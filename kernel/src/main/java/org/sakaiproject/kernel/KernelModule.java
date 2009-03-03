@@ -46,6 +46,7 @@ import org.sakaiproject.kernel.api.messaging.EmailMessage;
 import org.sakaiproject.kernel.api.messaging.Message;
 import org.sakaiproject.kernel.api.messaging.MessagingService;
 import org.sakaiproject.kernel.api.messaging.MultipartMessage;
+import org.sakaiproject.kernel.api.presence.PresenceService;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
@@ -82,6 +83,7 @@ import org.sakaiproject.kernel.messaging.JmsSessionProvider;
 import org.sakaiproject.kernel.messaging.email.EmailMessagingService;
 import org.sakaiproject.kernel.messaging.email.MailSessionProvider;
 import org.sakaiproject.kernel.model.UserEnvironmentBean;
+import org.sakaiproject.kernel.presence.PresenceServiceImpl;
 import org.sakaiproject.kernel.registry.RegistryServiceImpl;
 import org.sakaiproject.kernel.serialization.json.BeanJsonLibConfig;
 import org.sakaiproject.kernel.serialization.json.BeanJsonLibConverter;
@@ -121,8 +123,7 @@ public class KernelModule extends AbstractModule {
   public static final String LOCAL_PROPERTIES = "SAKAI_KERNEL_COMPONENT_PROPERTIES";
 
   /**
-   * The System property name that contains overrides to the kernel properties
-   * resource
+   * The System property name that contains overrides to the kernel properties resource
    */
   public static final String SYS_LOCAL_PROPERTIES = "sakai.kernel.component.properties";
 
@@ -161,20 +162,19 @@ public class KernelModule extends AbstractModule {
     bind(ComponentManager.class).toInstance(kernel.getComponentManager());
 
     bind(ShutdownService.class).toProvider(
-        new ServiceProvider<ShutdownService>(serviceManager,
-            ShutdownService.class));
+        new ServiceProvider<ShutdownService>(serviceManager, ShutdownService.class));
 
     bind(AuthzResolverService.class).to(SimpleAuthzResolverService.class).in(
         Scopes.SINGLETON);
 
-    bind(PermissionQueryService.class).to(
-        MinimalPermissionQueryServiceImpl.class).in(Scopes.SINGLETON);
+    bind(PermissionQueryService.class).to(MinimalPermissionQueryServiceImpl.class).in(
+        Scopes.SINGLETON);
 
-    bind(ReferenceResolverService.class).to(PathReferenceResolverService.class)
-        .in(Scopes.SINGLETON);
+    bind(ReferenceResolverService.class).to(PathReferenceResolverService.class).in(
+        Scopes.SINGLETON);
 
-    bind(SubjectPermissionService.class).to(SubjectPermissionServiceImpl.class)
-        .in(Scopes.SINGLETON);
+    bind(SubjectPermissionService.class).to(SubjectPermissionServiceImpl.class).in(
+        Scopes.SINGLETON);
 
     bind(JCRNodeFactoryService.class).to(JCRNodeFactoryServiceImpl.class).in(
         Scopes.SINGLETON);
@@ -184,11 +184,10 @@ public class KernelModule extends AbstractModule {
 
     bind(JCRService.class).to(JCRServiceImpl.class).in(Scopes.SINGLETON);
 
-    bind(CacheManagerService.class).to(CacheManagerServiceImpl.class).in(
-        Scopes.SINGLETON);
+    bind(CacheManagerService.class).to(CacheManagerServiceImpl.class)
+        .in(Scopes.SINGLETON);
 
-    bind(MessagingService.class).to(EmailMessagingService.class).in(
-        Scopes.SINGLETON);
+    bind(MessagingService.class).to(EmailMessagingService.class).in(Scopes.SINGLETON);
 
     bind(SessionManagerService.class).to(SessionManagerServiceImpl.class).in(
         Scopes.SINGLETON);
@@ -202,13 +201,12 @@ public class KernelModule extends AbstractModule {
     bind(UserResolverService.class).to(ProviderUserResolverService.class).in(
         Scopes.SINGLETON);
 
-    
-    
+    bind(PresenceService.class).to(PresenceServiceImpl.class).in(Scopes.SINGLETON);
+
     bind(UserEnvironmentResolverService.class).to(
         SimpleJcrUserEnvironmentResolverService.class).in(Scopes.SINGLETON);
 
-    bind(RegistryService.class).to(RegistryServiceImpl.class).in(
-        Scopes.SINGLETON);
+    bind(RegistryService.class).to(RegistryServiceImpl.class).in(Scopes.SINGLETON);
 
     bind(KernelInitialization.class).to(KernelInitializationImpl.class).in(
         Scopes.SINGLETON);
@@ -218,19 +216,18 @@ public class KernelModule extends AbstractModule {
     // JCR setup
     TypeLiteral<List<StartupAction>> startupActionType = new TypeLiteral<List<StartupAction>>() {
     };
-    bind(startupActionType).toProvider(StartupActionProvider.class).in(
-        Scopes.SINGLETON);
+    bind(startupActionType).toProvider(StartupActionProvider.class).in(Scopes.SINGLETON);
 
-//    bind(Credentials.class).annotatedWith(
-//        Names.named(JCRService.NAME_CREDENTIALS)).to(SakaiJCRCredentials.class);
+    // bind(Credentials.class).annotatedWith(
+    // Names.named(JCRService.NAME_CREDENTIALS)).to(SakaiJCRCredentials.class);
 
     // Kernel initialization
     TypeLiteral<List<InitializationAction>> initializationActionType = new TypeLiteral<List<InitializationAction>>() {
     };
-    bind(initializationActionType).toProvider(
-        InitializationActionProvider.class).in(Scopes.SINGLETON);
+    bind(initializationActionType).toProvider(InitializationActionProvider.class).in(
+        Scopes.SINGLETON);
 
-    //bind(AccessManager.class).to(SakaiAccessManager.class);
+    // bind(AccessManager.class).to(SakaiAccessManager.class);
     bind(AccessManager.class).to(SecureSakaiAccessManager.class);
 
     TypeLiteral<Map<String, ReferenceResolverService>> resolverMap = new TypeLiteral<Map<String, ReferenceResolverService>>() {
@@ -242,8 +239,7 @@ public class KernelModule extends AbstractModule {
         Names.named(PathReferenceResolverService.DEFAULT_RESOLVER)).to(
         JcrReferenceResolverService.class).in(Scopes.SINGLETON);
 
-    bind(BeanConverter.class).to(BeanJsonLibConverter.class).in(
-        Scopes.SINGLETON);
+    bind(BeanConverter.class).to(BeanJsonLibConverter.class).in(Scopes.SINGLETON);
 
     // site service
     bind(SiteService.class).to(SiteServiceImpl.class).in(Scopes.SINGLETON);
@@ -252,15 +248,13 @@ public class KernelModule extends AbstractModule {
     bind(Map.class).to(HashMap.class);
     bind(List.class).to(ArrayList.class);
     bind(Map[].class).to(HashMap[].class);
-    bind(JsonConfig.class).annotatedWith(Names.named("SakaiKernelJsonConfig"))
-        .to(BeanJsonLibConfig.class).in(Scopes.SINGLETON);
+    bind(JsonConfig.class).annotatedWith(Names.named("SakaiKernelJsonConfig")).to(
+        BeanJsonLibConfig.class).in(Scopes.SINGLETON);
 
-    bind(UserFactoryService.class).to(JcrUserFactoryService.class).in(
-        Scopes.SINGLETON);
+    bind(UserFactoryService.class).to(JcrUserFactoryService.class).in(Scopes.SINGLETON);
 
-    bind(UserEnvironment.class).annotatedWith(
-        Names.named(KernelConstants.NULLUSERENV)).to(NullUserEnvironment.class)
-        .in(Scopes.SINGLETON);
+    bind(UserEnvironment.class).annotatedWith(Names.named(KernelConstants.NULLUSERENV))
+        .to(NullUserEnvironment.class).in(Scopes.SINGLETON);
 
     TypeLiteral<Map<String, HttpSession>> sessionMap = new TypeLiteral<Map<String, HttpSession>>() {
     };
@@ -269,8 +263,7 @@ public class KernelModule extends AbstractModule {
     // event registration
     TypeLiteral<List<EventRegistration>> eventList = new TypeLiteral<List<EventRegistration>>() {
     };
-    bind(eventList).toProvider(EventRegistrationProvider.class).in(
-        Scopes.SINGLETON);
+    bind(eventList).toProvider(EventRegistrationProvider.class).in(Scopes.SINGLETON);
 
     TypeLiteral<List<JcrContentListener>> contentListeners = new TypeLiteral<List<JcrContentListener>>() {
     };
@@ -279,41 +272,34 @@ public class KernelModule extends AbstractModule {
 
     TypeLiteral<List<JcrContentListener>> syncContentListeners = new TypeLiteral<List<JcrContentListener>>() {
     };
-    bind(syncContentListeners)
-        .annotatedWith(
-            Names
-                .named(JcrSynchronousContentListenerAdapter.SYNCHRONOUS_LISTENERS))
-        .toProvider(JcrSynchronousContentListenerProvider.class).in(
-            Scopes.SINGLETON);
+    bind(syncContentListeners).annotatedWith(
+        Names.named(JcrSynchronousContentListenerAdapter.SYNCHRONOUS_LISTENERS))
+        .toProvider(JcrSynchronousContentListenerProvider.class).in(Scopes.SINGLETON);
 
     TypeLiteral<List<ValueProcessor>> valueProcessors = new TypeLiteral<List<ValueProcessor>>() {
     };
-    bind(valueProcessors).toProvider(ValueProcessorsProvider.class).in(
-        Scopes.SINGLETON);
+    bind(valueProcessors).toProvider(ValueProcessorsProvider.class).in(Scopes.SINGLETON);
 
     TypeLiteral<List<BeanProcessor>> beanProcessors = new TypeLiteral<List<BeanProcessor>>() {
     };
-    bind(beanProcessors).toProvider(BeanProcessorProvider.class).in(
-        Scopes.SINGLETON);
+    bind(beanProcessors).toProvider(BeanProcessorProvider.class).in(Scopes.SINGLETON);
 
     TypeLiteral<Map<String, Object>> jsonClassMap = new TypeLiteral<Map<String, Object>>() {
     };
-    bind(jsonClassMap)
-        .annotatedWith(Names.named(KernelConstants.JSON_CLASSMAP)).toProvider(
-            JsonClassMapProvider.class).in(Scopes.SINGLETON);
+    bind(jsonClassMap).annotatedWith(Names.named(KernelConstants.JSON_CLASSMAP))
+        .toProvider(JsonClassMapProvider.class).in(Scopes.SINGLETON);
 
     TypeLiteral<List<Morpher>> jsonMorpherList = new TypeLiteral<List<Morpher>>() {
     };
-    bind(jsonMorpherList).toProvider(JsonMorpherListProvider.class).in(
-        Scopes.SINGLETON);
+    bind(jsonMorpherList).toProvider(JsonMorpherListProvider.class).in(Scopes.SINGLETON);
 
     // bind in the cached version
-    bind(AuthenticationResolverService.class).to(
-        AuthenticationResolverServiceImpl.class).in(Scopes.SINGLETON);
+    bind(AuthenticationResolverService.class).to(AuthenticationResolverServiceImpl.class)
+        .in(Scopes.SINGLETON);
 
     // bind in the authn manager
-    bind(AuthenticationManagerService.class).to(
-        AuthenticationResolverServiceImpl.class).in(Scopes.SINGLETON);
+    bind(AuthenticationManagerService.class).to(AuthenticationResolverServiceImpl.class)
+        .in(Scopes.SINGLETON);
 
     // then bind the provider container to the head
     bind(AuthenticationResolverService.class).annotatedWith(
@@ -327,16 +313,14 @@ public class KernelModule extends AbstractModule {
     // bring this list up early so it can register itself
     TypeLiteral<List<RestProvider>> restProviderList = new TypeLiteral<List<RestProvider>>() {
     };
-    bind(restProviderList).toProvider(RestProviderListProvider.class)
-        .asEagerSingleton();
+    bind(restProviderList).toProvider(RestProviderListProvider.class).asEagerSingleton();
 
     // this is the list of all integrtion parts, annotated to avoid it being
     // used elsewhere by mistake.
     TypeLiteral<List<Provider<String>>> integrationProviderList = new TypeLiteral<List<Provider<String>>>() {
     };
-    bind(integrationProviderList).annotatedWith(
-        Names.named("forced-internal-1")).toProvider(
-        IntegrationProviderListProvider.class).asEagerSingleton();
+    bind(integrationProviderList).annotatedWith(Names.named("forced-internal-1"))
+        .toProvider(IntegrationProviderListProvider.class).asEagerSingleton();
 
     bind(javax.mail.Session.class).toProvider(MailSessionProvider.class).in(
         Scopes.SINGLETON);
@@ -346,8 +330,10 @@ public class KernelModule extends AbstractModule {
 
     // Messaging
     bind(Message.class).annotatedWith(Names.named(Message.TYPE)).to(Message.class);
-    bind(Message.class).annotatedWith(Names.named(MultipartMessage.TYPE)).to(MultipartMessage.class);
-    bind(Message.class).annotatedWith(Names.named(EmailMessage.TYPE)).to(EmailMessage.class);
+    bind(Message.class).annotatedWith(Names.named(MultipartMessage.TYPE)).to(
+        MultipartMessage.class);
+    bind(Message.class).annotatedWith(Names.named(EmailMessage.TYPE)).to(
+        EmailMessage.class);
 
   }
 }
