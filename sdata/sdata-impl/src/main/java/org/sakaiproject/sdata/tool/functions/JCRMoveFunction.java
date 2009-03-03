@@ -40,6 +40,7 @@ import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.Workspace;
 import javax.jcr.lock.LockException;
 import javax.jcr.nodetype.ConstraintViolationException;
 import javax.jcr.version.VersionException;
@@ -118,7 +119,9 @@ public class JCRMoveFunction extends JCRSDataFunction {
           + " specified by " + targetPath);
 
       Session session = jcrService.getSession();
-      session.move(repositorySourcePath, repositoryTargetPath);
+      Workspace workspace = session.getWorkspace();
+      workspace.move(repositorySourcePath, repositoryTargetPath);
+     
       Node n = jcrNodeFactoryService.getNode(repositoryTargetPath);
       response.setStatus(HttpServletResponse.SC_OK);
 
