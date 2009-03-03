@@ -23,6 +23,8 @@ import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -55,7 +57,14 @@ public class ResteasyServlet extends HttpServletDispatcher {
    *
    */
   private static final long serialVersionUID = 1L;
-
+  protected Registry registry;
+  
+  @Override
+  public void init(ServletConfig sc) throws ServletException {
+    super.init(sc);
+    registry = (Registry) sc.getServletContext().getAttribute(Registry.class.getName());
+  }
+  
   /**
    * {@inheritDoc}
    *
@@ -88,9 +97,6 @@ public class ResteasyServlet extends HttpServletDispatcher {
           HttpRequest jaxrsRequest = createHttpRequest(request.getMethod(), request,
               headers, uriInfo, jaxrsResponse);
 
-          // Find the resource that would normally be invoked by this request
-          Registry registry = (Registry) request.getSession().getServletContext()
-              .getAttribute(Registry.class.getName());
           ResourceInvoker invoker = registry.getResourceInvoker(jaxrsRequest,
               jaxrsResponse);
           PrintWriter writer = response.getWriter();
