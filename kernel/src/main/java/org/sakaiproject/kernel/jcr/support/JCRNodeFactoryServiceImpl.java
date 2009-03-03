@@ -41,11 +41,14 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
 import javax.jcr.ValueFactory;
+import javax.jcr.Workspace;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
 
 /**
  * @author ieb This is a support service to make it easier to treat a JCR
  *         service as a Filing System.
- * 
+ *
  **/
 @Singleton
 public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
@@ -108,7 +111,7 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService#createFile
    * (java.lang.String)
@@ -120,7 +123,7 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService#createFolder
    * (java.lang.String)
@@ -134,7 +137,7 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
    * Create a new node. Nodes are of the form
    * nt:folder/nt:folder/nt:folder/nt:file nt:folders have properties nt:files
    * have properties nt:files have a nt:resource subnode
-   * 
+   *
    * @param id
    * @param string
    * @param collection
@@ -190,31 +193,36 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
           }
 
         } catch (PathNotFoundException pnfe) {
-          if (log.isDebugEnabled())
+          if (log.isDebugEnabled()) {
             log.debug("Not Found " + pnfe.getMessage() + " ");
+          }
           if (i < pathElements.length - 1
               || JCRConstants.NT_FOLDER.equals(type)) {
-            if (log.isDebugEnabled())
+            if (log.isDebugEnabled()) {
               log.debug("Adding Node " + pathElements[i] + " as "
                   + JCRConstants.NT_FOLDER + " to " + currentNode.getPath());
+            }
             Node newNode = currentNode.addNode(pathElements[i],
                 JCRConstants.NT_FOLDER);
             populateFolder(newNode);
             currentNode.save();
             currentNode = newNode;
-            if (log.isDebugEnabled())
+            if (log.isDebugEnabled()) {
               log.debug("Adding Node Complete");
+            }
           } else {
-            if (log.isDebugEnabled())
+            if (log.isDebugEnabled()) {
               log.debug("Adding Node " + pathElements[i] + " as " + type
                   + " to " + currentNode.getPath());
+            }
             Node newNode = currentNode.addNode(pathElements[i],
                 JCRConstants.NT_FILE);
             populateFile(newNode, mimeType);
             currentNode.save();
             currentNode = newNode;
-            if (log.isDebugEnabled())
+            if (log.isDebugEnabled()) {
               log.debug("Adding Node Complete");
+            }
 
           }
         }
@@ -283,8 +291,9 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
     int pre = absPath.lastIndexOf("/");
     if (pre > 0) {
       String parentPath = absPath.substring(0, pre);
-      if (log.isDebugEnabled())
+      if (log.isDebugEnabled()) {
         log.debug("Parent path is [" + parentPath + "]");
+      }
       return parentPath;
     }
     return "/";
@@ -329,4 +338,13 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
     }
   }
 
+  public Query getQuery(String id) throws RepositoryException,
+      JCRNodeFactoryServiceException {
+    Session session = jcrService.getSession();
+    Node node = getNodeFromSession(session, id);
+    Workspace workspace = session.getWorkspace();
+    QueryManager queryMgr = workspace.getQueryManager();
+    Query query = queryMgr.getQuery(node);
+    return query;
+  }
 }

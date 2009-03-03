@@ -35,19 +35,19 @@ import java.util.Map;
  * <p>
  * If you do
  * </p>
- * 
+ *
  * <pre>
  * Registry r;
  * r.add(new RestProvider());
  * </pre>
- * 
+ *
  * The RestProvider just created will immediately be garbage collected and be
  * removed from the registry. You should do
- * 
+ *
  * <pre>
- * 
+ *
  * private RestProvider restProvider;
- * 
+ *
  * public init() {
  *   Registry r;
  *   restProvider = new RestProvider();
@@ -74,18 +74,30 @@ import java.util.Map;
  * reference to explicity invoke remove, if your classloader is not be held in
  * an open state.
  * </p>
- * 
+ *
  */
 public interface Registry<V, T extends Provider<V>> {
 
   /**
    * Add a provider to the registry, be certain to keep a reference to whatever
    * is added to prevent the garbage collector from cleaning up the Provider.
-   * 
+   *
    * @param provider
    *          the provider to be added.
    */
   void add(T provider);
+
+  /**
+   * Add a provider to the registry by a key, be certain to keep a reference to
+   * whatever is added to prevent the garbage collector from cleaning up the
+   * Provider.
+   * 
+   * @param provider
+   *          the provider to be added.
+   * @param key
+   * @param provider
+   */
+  void add(V key, T provider);
 
   /**
    * Explicitly remove a provider from the registry.
@@ -101,7 +113,7 @@ public interface Registry<V, T extends Provider<V>> {
    * the List and should ensure that the component that added the item to the
    * list explicitly invokes remove to notify anything holding a reference to
    * release it.
-   * 
+   *
    * @return a sorted list of providers
    */
   List<T> getList();
@@ -112,7 +124,7 @@ public interface Registry<V, T extends Provider<V>> {
    * the component that added the contents of the map is not going to explicitly
    * invoke remove. If any references are held, a listener must be registered to
    * enable those references to be dropped at the appropriate moment.
-   * 
+   *
    * @return a Map of providers.
    */
   Map<V, T> getMap();
@@ -120,7 +132,7 @@ public interface Registry<V, T extends Provider<V>> {
   /**
    * Add a listener to the registry to be notified of changes. The class adding
    * the listener <b>must</b> hold onto a reference to the listener.
-   * 
+   *
    * @param listener
    *          the listener to add
    */
@@ -132,7 +144,7 @@ public interface Registry<V, T extends Provider<V>> {
    * garbage collected. No events are fired on listener removal and anything
    * implementing a registry should not expose the listeners to external
    * classes that might hold references.
-   * 
+   *
    * @param listener the listern to remove.
    */
   void removeListener(RegistryListener<T> listener);

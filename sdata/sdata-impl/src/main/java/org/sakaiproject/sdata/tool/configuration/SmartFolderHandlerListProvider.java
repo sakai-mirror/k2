@@ -21,6 +21,7 @@ import com.google.inject.Provider;
 
 import org.sakaiproject.sdata.tool.smartFolder.JcrSmartFolderHandler;
 import org.sakaiproject.sdata.tool.smartFolder.JpaSmartFolderHandler;
+import org.sakaiproject.sdata.tool.smartFolder.NamedJpaSmartFolderHandler;
 import org.sakaiproject.sdata.tool.smartFolder.SmartFolderHandler;
 
 import java.util.ArrayList;
@@ -37,10 +38,12 @@ public class SmartFolderHandlerListProvider implements
    *
    */
   public SmartFolderHandlerListProvider(JcrSmartFolderHandler jcrHandler,
-      JpaSmartFolderHandler jpaHandler) {
+      JpaSmartFolderHandler jpaHandler,
+      NamedJpaSmartFolderHandler namedJpaHandler) {
     handlers = new ArrayList<SmartFolderHandler>();
     handlers.add(jcrHandler);
     handlers.add(jpaHandler);
+    handlers.add(namedJpaHandler);
   }
 
   /**

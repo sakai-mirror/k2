@@ -22,6 +22,7 @@ import java.io.InputStream;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+import javax.jcr.query.Query;
 
 /**
  * The JCRNodeFactoryService provides simplified content methods to deal with
@@ -34,7 +35,7 @@ public interface JCRNodeFactoryService {
    * the file. If the path to the file does not exist, it will be created. The
    * patch must be a valid JCR file patch and must not end in /. If the file
    * exists that file will be returned.
-   * 
+   *
    * @param filePath
    *          the path to the file
    * @param mimeType the mime types to use.
@@ -48,7 +49,7 @@ public interface JCRNodeFactoryService {
    * exist it will be created. The path must be a valid JCR path. If it ends in
    * / the / will be removed before the requested folder is created If the
    * folder alread exists, that node will be returned.
-   * 
+   *
    * @param id
    * @return
    * @throws JCRNodeFactoryServiceException
@@ -61,7 +62,7 @@ public interface JCRNodeFactoryService {
    * When that node is saved, by the calling code, the stream will be read and
    * streamed into the content of the file inside the JCR. If the node does not
    * exist it will be created.
-   * 
+   *
    * @param filePath the path to the file.
    * @param inputStream the input stream that is the content of the file.
    * @param mimeType the mimeType to use if the file does not exist.
@@ -73,7 +74,7 @@ public interface JCRNodeFactoryService {
 
   /**
    * Get an output stream for the content of a file, that can be read
-   * 
+   *
    * @param the
    *          filePath
    * @return
@@ -86,7 +87,7 @@ public interface JCRNodeFactoryService {
   /**
    * Get the node at the given path, if it does not exist, a
    * JCRNodeFactoryService exception will be thrown
-   * 
+   *
    * @param nodePath
    * @return the node at the requested location
    * @throws RepositoryException
@@ -95,4 +96,16 @@ public interface JCRNodeFactoryService {
   Node getNode(String nodePath) throws RepositoryException,
       JCRNodeFactoryServiceException;
 
+  /**
+   * Get the query node at the given path.
+   * 
+   * @param id
+   * @return The query found at id
+   * @throws RepositoryException
+   *           If a node doesn't exist at id.
+   * @throws JCRNodeFactoryServiceException
+   *           If node is not of type nt:query.
+   */
+  Query getQuery(String id) throws RepositoryException,
+      JCRNodeFactoryServiceException;
 }

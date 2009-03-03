@@ -24,22 +24,31 @@ import org.sakaiproject.kernel.api.RegistryService;
 
 import java.util.Map;
 
-import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
 
 /**
  *
  */
 public class JcrSmartFolderHandler implements SmartFolderHandler {
-  public static final String KEY = "jcr";
+  private static final String KEY_0 = Query.XPATH;
+  private static final String KEY_1 = Query.SQL;
+
+  private final QueryManager queryMgr;
 
   /**
    *
    */
   @Inject
-  public JcrSmartFolderHandler(RegistryService registryService) {
+  public JcrSmartFolderHandler(RegistryService registryService,
+      QueryManager queryMgr) {
     Registry<String, SmartFolderHandler> registry = registryService
         .getRegistry(SmartFolderHandler.SMARTFOLDER_REGISTRY);
-    registry.add(this);
+    registry.add(KEY_0, this);
+    registry.add(KEY_1, this);
+    this.queryMgr = queryMgr;
   }
 
   /**
@@ -47,7 +56,8 @@ public class JcrSmartFolderHandler implements SmartFolderHandler {
    *
    * @see org.sakaiproject.sdata.tool.smartFolder.SmartFolderHandler#handle(javax.jcr.Node)
    */
-  public Map<String, Object> handle(Node node) {
+  public Map<String, Object> handle(Query query) throws RepositoryException {
+    QueryResult results = query.execute();
     return null;
   }
 
@@ -57,7 +67,7 @@ public class JcrSmartFolderHandler implements SmartFolderHandler {
    * @see org.sakaiproject.kernel.api.Provider#getKey()
    */
   public String getKey() {
-    return KEY;
+    return KEY_0 + ";" + KEY_1;
   }
 
   /**

@@ -15,22 +15,19 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.sdata.tool.smartFolder;
+package org.sakaiproject.sdata.tool;
 
-import org.sakaiproject.kernel.api.Provider;
-
-import java.util.Map;
-
-import javax.jcr.RepositoryException;
-import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
 
 /**
- * Interface for handlers of smart folder actions.
+ *
  */
-public interface SmartFolderHandler extends Provider<String> {
-  String SMARTFOLDER_REGISTRY = "smartFolder.registry";
+public class QueryNodeHandler {
+  private final QueryManager queryMgr;
 
-  String SMARTFOLDER_ACTION = ".smartAction";
+  public QueryNodeHandler(QueryManager queryMgr) {
+    this.queryMgr = queryMgr;
+  }
 
-  Map<String, Object> handle(Query query) throws RepositoryException;
+  
 }

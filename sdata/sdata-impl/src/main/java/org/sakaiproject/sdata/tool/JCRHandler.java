@@ -61,11 +61,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.jcr.Node;
-import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
+import javax.jcr.query.Query;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -216,7 +216,7 @@ public class JCRHandler extends AbstractHandler {
   }
 
   /**
-   * 
+   *
    */
   public void initDescription() {
     Map<String, RestDescription> map = Maps.newLinkedHashMap();
@@ -493,9 +493,11 @@ public class JCRHandler extends AbstractHandler {
       ResourceDefinition rp = resourceDefinitionFactory.getSpec(request);
       SDataFunction m = resourceFunctionFactory.get(rp.getFunctionDefinition());
 
-      if (describe(request, response, m)) {
+      if ( describe(request, response, m) ) {
         return;
       }
+
+
 
       Node n = jcrNodeFactory.getNode(rp.getRepositoryPath());
       if (n == null) {
@@ -589,34 +591,27 @@ public class JCRHandler extends AbstractHandler {
 
           boolean handled = false;
 
-          // get the action node
-          NodeIterator childNodes = n.getNodes(".smartAction");
+          try {
+            // get the query and language of the query
+            Query query = jcrNodeFactory.getQuery(n.getPath() + "/"
+                + SmartFolderHandler.SMARTFOLDER_ACTION);
+            String lang = query.getLanguage();
 
-          if (childNodes.getSize() > 0) {
-            // only handle 1 smart action file
-            Node childNode = childNodes.nextNode();
+            // get the handler from the registry based on the protocol
+            Registry<String, SmartFolderHandler> registry = registryService
+                .getRegistry(SmartFolderHandler.SMARTFOLDER_REGISTRY);
+            SmartFolderHandler handler = registry.getMap().get(lang);
 
-            // only work with the node if it is a file
-            if (JCRConstants.NT_FILE.equals(childNode.getPrimaryNodeType())) {
-              // get the action
-              Property actionProp = childNode.getProperty(JCRConstants.JCR_DATA);
-
-              // get the protocol from the action
-              int colonPos = actionProp.getString().indexOf(":");
-              String protocol = actionProp.getString().substring(0, colonPos);
-
-              // get the handler from the registry based on the protocol
-              Registry<String, SmartFolderHandler> registry = registryService
-                  .getRegistry(SmartFolderHandler.SMARTFOLDER_REGISTRY);
-              SmartFolderHandler handler = registry.getMap().get(protocol);
-
-              // now handle the node
-              if (handler != null) {
-                Map<String, Object> outputMap = handler.handle(n);
-                sendMap(request, response, outputMap);
-                handled = true;
-              }
+            // now handle the node
+            if (handler != null) {
+              Map<String, Object> outputMap = handler.handle(query);
+              sendMap(request, response, outputMap);
+              handled = true;
             }
+          } catch (RepositoryException e) {
+
+          } catch (JCRNodeFactoryServiceException e) {
+
           }
 
           // do the default get if not handled
@@ -1038,7 +1033,7 @@ public class JCRHandler extends AbstractHandler {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.sdata.tool.api.Handler#getDescription()
    */
   public RestDescription getDescription() {

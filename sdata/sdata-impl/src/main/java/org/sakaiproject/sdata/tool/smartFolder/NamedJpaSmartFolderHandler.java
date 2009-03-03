@@ -31,15 +31,15 @@ import javax.persistence.EntityManager;
 /**
  *
  */
-public class JpaSmartFolderHandler implements SmartFolderHandler {
-  public static final String KEY = "jpa";
+public class NamedJpaSmartFolderHandler implements SmartFolderHandler {
+  public static final String KEY = "jpa-named";
 
   private final EntityManager entityManager;
   /**
    *
    */
   @Inject
-  public JpaSmartFolderHandler(RegistryService registryService,
+  public NamedJpaSmartFolderHandler(RegistryService registryService,
       EntityManager entityManager) {
     Registry<String, SmartFolderHandler> registry = registryService
         .getRegistry(SmartFolderHandler.SMARTFOLDER_REGISTRY);
@@ -54,7 +54,7 @@ public class JpaSmartFolderHandler implements SmartFolderHandler {
    */
   public Map<String, Object> handle(Query query) {
     String stmt = query.getStatement();
-    javax.persistence.Query jpaQuery = entityManager.createQuery(stmt);
+    javax.persistence.Query jpaQuery = entityManager.createNamedQuery(stmt);
     List results = jpaQuery.getResultList();
     return null;
   }
