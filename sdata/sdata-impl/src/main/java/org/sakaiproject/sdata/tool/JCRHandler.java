@@ -609,9 +609,9 @@ public class JCRHandler extends AbstractHandler {
               handled = true;
             }
           } catch (RepositoryException e) {
-
+            // log this then let default handler happen
           } catch (JCRNodeFactoryServiceException e) {
-
+            // log this then let default handler happen
           }
 
           // do the default get if not handled
