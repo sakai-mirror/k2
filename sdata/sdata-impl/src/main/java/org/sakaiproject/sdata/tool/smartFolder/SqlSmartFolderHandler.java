@@ -17,23 +17,43 @@
  */
 package org.sakaiproject.sdata.tool.smartFolder;
 
-import java.util.Map;
+import com.google.inject.Inject;
 
-import javax.jcr.RepositoryException;
+import org.sakaiproject.kernel.api.Registry;
+import org.sakaiproject.kernel.api.RegistryService;
+
 import javax.jcr.query.Query;
-import javax.jcr.query.QueryResult;
 
 /**
  *
  */
-public abstract class JcrSmartFolderHandler implements SmartFolderHandler {
+public class SqlSmartFolderHandler extends JcrSmartFolderHandler {
+  private static final String KEY = Query.SQL;
+
+  /**
+   *
+   */
+  @Inject
+  public SqlSmartFolderHandler(RegistryService registryService) {
+    Registry<String, SmartFolderHandler> registry = registryService
+        .getRegistry(SmartFolderHandler.SMARTFOLDER_REGISTRY);
+    registry.add(this);
+  }
+
   /**
    * {@inheritDoc}
-   *
-   * @see org.sakaiproject.sdata.tool.smartFolder.SmartFolderHandler#handle(javax.jcr.Node)
+   * @see org.sakaiproject.kernel.api.Provider#getKey()
    */
-  public Map<String, Object> handle(Query query) throws RepositoryException {
-    QueryResult results = query.execute();
-    return null;
+  public String getKey() {
+    return KEY;
   }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.Provider#getPriority()
+   */
+  public int getPriority() {
+    return 0;
+  }
+
 }

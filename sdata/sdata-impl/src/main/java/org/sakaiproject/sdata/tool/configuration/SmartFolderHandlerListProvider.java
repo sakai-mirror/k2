@@ -19,10 +19,11 @@ package org.sakaiproject.sdata.tool.configuration;
 
 import com.google.inject.Provider;
 
-import org.sakaiproject.sdata.tool.smartFolder.JcrSmartFolderHandler;
 import org.sakaiproject.sdata.tool.smartFolder.JpaSmartFolderHandler;
 import org.sakaiproject.sdata.tool.smartFolder.NamedJpaSmartFolderHandler;
 import org.sakaiproject.sdata.tool.smartFolder.SmartFolderHandler;
+import org.sakaiproject.sdata.tool.smartFolder.SqlSmartFolderHandler;
+import org.sakaiproject.sdata.tool.smartFolder.XpathSmartFolderHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,14 +35,17 @@ public class SmartFolderHandlerListProvider implements
     Provider<List<SmartFolderHandler>> {
 
   private ArrayList<SmartFolderHandler> handlers;
+
   /**
    *
    */
-  public SmartFolderHandlerListProvider(JcrSmartFolderHandler jcrHandler,
+  public SmartFolderHandlerListProvider(XpathSmartFolderHandler xpathHandler,
+      SqlSmartFolderHandler sqlHandler,
       JpaSmartFolderHandler jpaHandler,
       NamedJpaSmartFolderHandler namedJpaHandler) {
     handlers = new ArrayList<SmartFolderHandler>();
-    handlers.add(jcrHandler);
+    handlers.add(xpathHandler);
+    handlers.add(sqlHandler);
     handlers.add(jpaHandler);
     handlers.add(namedJpaHandler);
   }

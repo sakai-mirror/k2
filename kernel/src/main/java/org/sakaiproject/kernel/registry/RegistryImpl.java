@@ -30,10 +30,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
+ * 
  */
 public class RegistryImpl<V, T extends Provider<V>> implements Registry<V, T> {
-
+  
 
   private Comparator<? super T> comparitor = new Comparator<T>() {
     public int compare(T o1, T o2) {
@@ -44,8 +44,8 @@ public class RegistryImpl<V, T extends Provider<V>> implements Registry<V, T> {
 
 
   /**
-   * A map of providers, using weak references to ensure that when the remote object is GC's the
-   * reference is dropped from the map.
+   * A map of providers, using weak references to ensure that when the remote object is GC's the 
+   * reference is dropped from the map. 
    */
   private Map<V, T> mappedProviders = new ReferenceMap<V, T>(ReferenceType.STRONG,ReferenceType.WEAK);
 
@@ -53,31 +53,23 @@ public class RegistryImpl<V, T extends Provider<V>> implements Registry<V, T> {
 
   /**
    * {@inheritDoc}
-   *
-   * @see org.sakaiproject.kernel.api.Registry#add(java.lang.Object)
-   */
-  public synchronized void add(T provider) {
-    add(provider.getKey(), provider);
-  }
-
-  /**
-   * {@inheritDoc}
    * 
    * @see org.sakaiproject.kernel.api.Registry#add(java.lang.Object)
    */
-  public synchronized void add(V key, T provider) {
-    boolean wasUpdate = mappedProviders.containsKey(key);
-    mappedProviders.put(key, provider);
-    if (wasUpdate) {
+  public synchronized void add(T provider) {    
+    boolean wasUpdate = mappedProviders.containsKey(provider.getKey());
+    mappedProviders.put(provider.getKey(), provider);
+    if ( wasUpdate ) {
       doUpdate(provider);
     } else {
       doAdd(provider);
     }
   }
 
+
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.api.Registry#remove(java.lang.Object)
    */
   public synchronized void remove(T provider) {
@@ -95,10 +87,10 @@ public class RegistryImpl<V, T extends Provider<V>> implements Registry<V, T> {
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.api.Registry#getMap()
    */
-  public Map<V, T> getMap() {
+  public Map<V, T> getMap() {    
     return mappedProviders ;
   }
 
