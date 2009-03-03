@@ -25,11 +25,14 @@ import javax.servlet.ServletContextListener;
 /**
  * 
  */
-public class LoaderListener  implements ServletContextListener {
+public class LoaderListener implements ServletContextListener {
 
   GuiceLoaderListener loader = new GuiceLoaderListener();
+
+  
   /**
    * {@inheritDoc}
+   * 
    * @see javax.servlet.ServletContextListener#contextDestroyed(javax.servlet.ServletContextEvent)
    */
   public void contextDestroyed(ServletContextEvent sce) {
@@ -38,10 +41,11 @@ public class LoaderListener  implements ServletContextListener {
 
   /**
    * {@inheritDoc}
+   * 
    * @see javax.servlet.ServletContextListener#contextInitialized(javax.servlet.ServletContextEvent)
    */
   public void contextInitialized(ServletContextEvent sce) {
-    loader.contextInitialized(sce,this.getClass().getClassLoader());
+    loader.contextInitialized(sce, this.getClass().getClassLoader());
   }
 
 }

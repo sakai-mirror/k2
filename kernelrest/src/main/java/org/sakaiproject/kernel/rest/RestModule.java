@@ -29,6 +29,7 @@ import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.ServiceManager;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
+import org.sakaiproject.kernel.api.presence.PresenceService;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.social.FriendsResolverService;
@@ -89,8 +90,8 @@ public class RestModule extends AbstractModule {
 
     // make some services available
     bind(RegistryService.class).toProvider(
-        new ServiceProvider<RegistryService>(serviceManager,
-            RegistryService.class)).in(Scopes.SINGLETON);
+        new ServiceProvider<RegistryService>(serviceManager, RegistryService.class)).in(
+        Scopes.SINGLETON);
     bind(SessionManagerService.class).toProvider(
         new ServiceProvider<SessionManagerService>(serviceManager,
             SessionManagerService.class)).in(Scopes.SINGLETON);
@@ -100,29 +101,32 @@ public class RestModule extends AbstractModule {
     bind(ProfileResolverService.class).toProvider(
         new ServiceProvider<ProfileResolverService>(serviceManager,
             ProfileResolverService.class)).in(Scopes.SINGLETON);
-    bind(EntityManager.class)
-        .toProvider(
-            new ServiceProvider<EntityManager>(serviceManager,
-                EntityManager.class)).in(Scopes.SINGLETON);
+    bind(EntityManager.class).toProvider(
+        new ServiceProvider<EntityManager>(serviceManager, EntityManager.class)).in(
+        Scopes.SINGLETON);
     bind(FriendsResolverService.class).toProvider(
         new ServiceProvider<FriendsResolverService>(serviceManager,
             FriendsResolverService.class)).in(Scopes.SINGLETON);
-    bind(UserFactoryService.class).toProvider(
-        new ServiceProvider<UserFactoryService>(serviceManager,
-            UserFactoryService.class)).in(Scopes.SINGLETON);
+    bind(UserFactoryService.class)
+        .toProvider(
+            new ServiceProvider<UserFactoryService>(serviceManager,
+                UserFactoryService.class)).in(Scopes.SINGLETON);
     bind(JCRNodeFactoryService.class).toProvider(
         new ServiceProvider<JCRNodeFactoryService>(serviceManager,
             JCRNodeFactoryService.class)).in(Scopes.SINGLETON);
     bind(JCRService.class).toProvider(
-        new ServiceProvider<JCRService>(serviceManager,
-            JCRService.class)).in(Scopes.SINGLETON);
+        new ServiceProvider<JCRService>(serviceManager, JCRService.class)).in(
+        Scopes.SINGLETON);
     bind(UserResolverService.class).toProvider(
         new ServiceProvider<UserResolverService>(serviceManager,
             UserResolverService.class)).in(Scopes.SINGLETON);
-    bind(BeanConverter.class)
-        .toProvider(
-            new ServiceProvider<BeanConverter>(serviceManager,
-                BeanConverter.class)).in(Scopes.SINGLETON);
+    bind(BeanConverter.class).toProvider(
+        new ServiceProvider<BeanConverter>(serviceManager, BeanConverter.class)).in(
+        Scopes.SINGLETON);
+
+    bind(PresenceService.class).toProvider(
+        new ServiceProvider<PresenceService>(serviceManager, PresenceService.class)).in(
+        Scopes.SINGLETON);
 
     // activate all the services
     TypeLiteral<List<Initialisable>> initType = new TypeLiteral<List<Initialisable>>() {

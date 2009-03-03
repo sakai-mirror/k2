@@ -23,7 +23,6 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import org.easymock.Capture;
 import org.junit.Test;
@@ -32,7 +31,6 @@ import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.rest.me.RestMeProvider;
 import org.sakaiproject.kernel.rest.test.BaseRestUT;
-import org.sakaiproject.kernel.webapp.RestServiceFaultException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -41,7 +39,6 @@ import java.util.Map;
 
 import javax.jcr.RepositoryException;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * 
