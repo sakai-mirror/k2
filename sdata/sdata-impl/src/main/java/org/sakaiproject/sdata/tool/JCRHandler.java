@@ -86,7 +86,7 @@ import javax.servlet.http.HttpServletResponse;
  * api, and expects that form fields are ordered, such that a field starting with mimetype
  * before the upload stream will specify the mimetype associated with the stream.
  * </p>
- * 
+ *
  * @author ieb
  */
 public class JCRHandler extends AbstractHandler {
@@ -185,9 +185,13 @@ public class JCRHandler extends AbstractHandler {
    * Create a JCRHandler and give it a resource definition factory that will convert a URL
    * into a location in the repository.
    * 
+=======
+   * Create a JCRHandler and give it a resource definition factory that will
+   * convert a URL into a location in the repository.
+   *
    * @param serializer
    * @param securityAssertion
-   * 
+   *
    */
   @Inject
   public JCRHandler(
@@ -223,10 +227,11 @@ public class JCRHandler extends AbstractHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @seeorg.sakaiproject.sdata.tool.api.Handler#doDelete(javax.servlet.http.
    * HttpServletRequest, javax.servlet.http.HttpServletResponse)
    */
+  @Override
   public void doDelete(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     try {
@@ -269,9 +274,9 @@ public class JCRHandler extends AbstractHandler {
   }
 
   /**
-   * Snoop on the request if the request parameter snoop=1 output appears in the log, at
-   * level INFO
-   * 
+   * Snoop on the request if the request parameter snoop=1 output appears in the
+   * log, at level INFO
+   *
    * @param request
    */
   private void snoopRequest(HttpServletRequest request) {
@@ -300,10 +305,11 @@ public class JCRHandler extends AbstractHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @seeorg.sakaiproject.sdata.tool.api.Handler#doHead(javax.servlet.http.
    * HttpServletRequest, javax.servlet.http.HttpServletResponse)
    */
+  @Override
   public void doHead(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     try {
@@ -349,10 +355,11 @@ public class JCRHandler extends AbstractHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @seeorg.sakaiproject.sdata.tool.api.Handler#doPut(javax.servlet.http.
    * HttpServletRequest, javax.servlet.http.HttpServletResponse)
    */
+  @Override
   public void doPut(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     try {
@@ -421,7 +428,7 @@ public class JCRHandler extends AbstractHandler {
 
   /**
    * Save the input stream into the JCR storage,
-   * 
+   *
    * @param n
    *          the target node
    * @param in
@@ -462,12 +469,13 @@ public class JCRHandler extends AbstractHandler {
    */
   /*
    * (non-Javadoc)
-   * 
+   *
    * @seeorg.sakaiproject.sdata.tool.api.Handler#doGet(javax.servlet.http.
    * HttpServletRequest, javax.servlet.http.HttpServletResponse)
    */
-  public void doGet(final HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
+  @Override
+  public void doGet(final HttpServletRequest request,
+      HttpServletResponse response) throws ServletException, IOException {
 
     OutputStream out = null;
     InputStream in = null;
@@ -567,6 +575,11 @@ public class JCRHandler extends AbstractHandler {
               length = 0;
             }
           }
+        } else if (JCRConstants.NT_FOLDER.equals(nt.getName())
+            && n.hasProperty(JCRConstants.JCR_SMARTFOLDER)) {
+          // handle smart folder action
+          Property actionProp = n.getProperty(JCRConstants.JCR_SMARTFOLDER);
+          String action = actionProp.getString();
         } else {
           setGetCacheControl(response, rp.isPrivate());
 
@@ -611,11 +624,11 @@ public class JCRHandler extends AbstractHandler {
   }
 
   /**
-   * Check the ranges requested in the request headers, this conforms to the RFC on the
-   * range, if-range headers. On return, it the request is to be processed, true will be
-   * returned, and ranges[0] will the the start byte of the response stream and ranges[1]
-   * will be the end byte.
-   * 
+   * Check the ranges requested in the request headers, this conforms to the RFC
+   * on the range, if-range headers. On return, it the request is to be
+   * processed, true will be returned, and ranges[0] will the the start byte of
+   * the response stream and ranges[1] will be the end byte.
+   *
    * @param request
    *          the request object from the Servlet Container.
    * @param response
@@ -676,7 +689,7 @@ public class JCRHandler extends AbstractHandler {
 
   /**
    * Evaluate pre-conditions, based on the request, as per the http rfc.
-   * 
+   *
    * @param request
    * @param response
    * @return
@@ -724,7 +737,7 @@ public class JCRHandler extends AbstractHandler {
 
   /**
    * Set the cache control headers suitable for all HTTP protocol versions
-   * 
+   *
    * @param response
    */
   private void setGetCacheControl(HttpServletResponse response, boolean isprivate) {
@@ -745,10 +758,11 @@ public class JCRHandler extends AbstractHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @seeorg.sakaiproject.sdata.tool.api.Handler#doPost(javax.servlet.http.
    * HttpServletRequest, javax.servlet.http.HttpServletResponse)
    */
+  @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     if (request.getRemoteUser() == null) {
@@ -803,10 +817,10 @@ public class JCRHandler extends AbstractHandler {
   }
 
   /**
-   * Perform a mime multipart upload into the JCR repository based on a location specified
-   * by the rp parameter. The parts of the multipart upload are relative to the current
-   * request path
-   * 
+   * Perform a mime multipart upload into the JCR repository based on a location
+   * specified by the rp parameter. The parts of the multipart upload are
+   * relative to the current request path
+   *
    * @param request
    *          the request object of the current request.
    * @param response
@@ -956,8 +970,9 @@ public class JCRHandler extends AbstractHandler {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see org.sakaiproject.sdata.tool.api.Handler#setHandlerHeaders(javax.servlet
+   *
+   * @see
+   * org.sakaiproject.sdata.tool.api.Handler#setHandlerHeaders(javax.servlet
    * .http.HttpServletResponse)
    */
   public void setHandlerHeaders(HttpServletRequest request, HttpServletResponse response) {

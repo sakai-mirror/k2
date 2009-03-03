@@ -310,4 +310,6 @@ public interface JCRConstants {
   public static final String MIX_SAKAIPROPERTIES = "sakaijcr:properties-mix";
 
   public static final String MIX_ACL = "acl:properties-mix";
+
+  public static final String JCR_SMARTFOLDER = "jcr:smartFolder";
 }
