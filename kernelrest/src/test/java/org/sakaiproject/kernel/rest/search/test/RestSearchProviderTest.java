@@ -202,8 +202,7 @@ public class RestSearchProviderTest extends BaseRestUT {
           testQuery.getParameter("mimetype"));
 
 
-      expect(nodeIterator.getSize()).andReturn(0L);
-      expect(nodeIterator.getSize()).andReturn(0L);
+      expect(nodeIterator.getSize()).andReturn(0L).anyTimes();
       nodeIterator.skip(0L);
       expect(nodeIterator.getPosition()).andReturn(0L);
       for (int i = 0; i < 5; i++) {
@@ -314,8 +313,7 @@ public class RestSearchProviderTest extends BaseRestUT {
 
     
     
-    expect(nodeIterator.getSize()).andReturn(7L);
-    expect(nodeIterator.getSize()).andReturn(7L);
+    expect(nodeIterator.getSize()).andReturn(7L).anyTimes();
     nodeIterator.skip(0L);
     expect(nodeIterator.getPosition()).andReturn(0L);
     for (int i = 0; i < 7; i++) {
