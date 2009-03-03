@@ -35,5 +35,6 @@ public abstract class JcrSmartNodeHandler implements SmartNodeHandler {
    */
   public void handle(HttpServletRequest request, HttpServletResponse response,
       Node node, String statement) throws RepositoryException {
+    // handle statement by calling the JCR query manager.
   }
 }

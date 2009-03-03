@@ -37,7 +37,7 @@ public class SqlSmartNodeHandler extends JcrSmartNodeHandler {
   @Inject
   public SqlSmartNodeHandler(RegistryService registryService) {
     Registry<String, SmartNodeHandler> registry = registryService
-        .getRegistry(SmartNodeHandler.SMARTFOLDER_REGISTRY);
+        .getRegistry(SmartNodeHandler.REGISTRY);
     registry.add(this);
   }
 

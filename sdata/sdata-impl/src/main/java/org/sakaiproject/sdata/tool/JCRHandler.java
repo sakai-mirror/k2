@@ -632,7 +632,7 @@ public class JCRHandler extends AbstractHandler {
 
       // get the handler from the registry based on the protocol
       Registry<String, SmartNodeHandler> registry = registryService
-          .getRegistry(SmartNodeHandler.SMARTFOLDER_REGISTRY);
+          .getRegistry(SmartNodeHandler.REGISTRY);
       SmartNodeHandler handler = registry.getMap().get(protocol);
 
       // now handle the node

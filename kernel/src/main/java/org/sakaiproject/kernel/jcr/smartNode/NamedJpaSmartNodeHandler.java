@@ -46,7 +46,7 @@ public class NamedJpaSmartNodeHandler implements SmartNodeHandler {
   public NamedJpaSmartNodeHandler(RegistryService registryService,
       EntityManager entityManager) {
     Registry<String, SmartNodeHandler> registry = registryService
-        .getRegistry(SmartNodeHandler.SMARTFOLDER_REGISTRY);
+        .getRegistry(SmartNodeHandler.REGISTRY);
     registry.add(this);
     this.entityManager = entityManager;
   }

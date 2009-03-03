@@ -78,7 +78,7 @@ import org.sakaiproject.kernel.jcr.jackrabbit.JCRServiceImpl;
 import org.sakaiproject.kernel.jcr.jackrabbit.JcrSynchronousContentListenerAdapter;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SecureSakaiAccessManager;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.StartupActionProvider;
-import org.sakaiproject.kernel.jcr.smartNode.SmartFolderNodeListProvider;
+import org.sakaiproject.kernel.jcr.smartNode.SmartNodeHandlerListProvider;
 import org.sakaiproject.kernel.jcr.support.JCRNodeFactoryServiceImpl;
 import org.sakaiproject.kernel.memory.CacheManagerServiceImpl;
 import org.sakaiproject.kernel.messaging.JmsSessionProvider;
@@ -203,6 +203,8 @@ public class KernelModule extends AbstractModule {
     bind(UserResolverService.class).to(ProviderUserResolverService.class).in(
         Scopes.SINGLETON);
 
+    bind(PresenceService.class).to(PresenceServiceImpl.class).in(
+        Scopes.SINGLETON);
 
     bind(UserEnvironmentResolverService.class).to(
         SimpleJcrUserEnvironmentResolverService.class).in(Scopes.SINGLETON);
@@ -339,7 +341,7 @@ public class KernelModule extends AbstractModule {
     // bring this smart node handler list up early so it can register itself
     TypeLiteral<List<SmartNodeHandler>> smartFolderHandlerList = new TypeLiteral<List<SmartNodeHandler>>() {
     };
-    bind(smartFolderHandlerList).toProvider(SmartFolderNodeListProvider.class)
+    bind(smartFolderHandlerList).toProvider(SmartNodeHandlerListProvider.class)
         .asEagerSingleton();
   }
 }

@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletResponse;
  * Interface for handlers of smart folder actions.
  */
 public interface SmartNodeHandler extends Provider<String> {
-  String SMARTFOLDER_REGISTRY = "smartFolder.registry";
+  String REGISTRY = "smartNode.registry";
 
   void handle(HttpServletRequest request, HttpServletResponse response,
       Node node, String statement) throws RepositoryException;
