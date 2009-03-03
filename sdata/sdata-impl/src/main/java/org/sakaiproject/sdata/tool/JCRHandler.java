@@ -580,6 +580,11 @@ public class JCRHandler extends AbstractHandler {
           // handle smart folder action
           Property actionProp = n.getProperty(JCRConstants.JCR_SMARTFOLDER);
           String action = actionProp.getString();
+          if (action.startsWith("jcr:")) {
+
+          } else if (action.startsWith("jpa:")) {
+
+          }
         } else {
           setGetCacheControl(response, rp.isPrivate());
 
