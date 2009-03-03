@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.KernelManager;
+import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.ServiceManager;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
 import org.sakaiproject.kernel.api.authz.PermissionQueryService;
@@ -70,7 +71,11 @@ public class SDataModule extends AbstractModule {
    */
   private final Properties properties;
 
-  public SDataModule() {
+  private final Kernel kernel;
+
+  public SDataModule(Kernel kernel) {
+    this.kernel = kernel;
+
     InputStream is = null;
     try {
       is = ResourceLoader.openResource(DEFAULT_PROPERTIES, this.getClass()
@@ -157,6 +162,10 @@ public class SDataModule extends AbstractModule {
     bind(ReferenceResolverService.class).toProvider(
         new ServiceProvider<ReferenceResolverService>(sm,
             ReferenceResolverService.class));
+
+    bind(RegistryService.class).toProvider(
+        new ServiceProvider<RegistryService>(kernel.getServiceManager(),
+            RegistryService.class));
   }
 
   /**

@@ -25,6 +25,8 @@ import com.google.inject.Injector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.api.Kernel;
+import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.sdata.tool.api.Handler;
@@ -58,13 +60,13 @@ import javax.servlet.http.HttpServletResponse;
  * random data. This is used for unit testing. The size of the block can be set
  * with a x-testdata-size header in the request. This is limited to 4K maximum.
  * </p>
- * 
+ *
  * @author ieb
  */
 public class ControllerServlet extends HttpServlet {
 
   /**
-	 * 
+	 *
 	 */
   private static final long serialVersionUID = -7098194528761855627L;
 
@@ -129,14 +131,14 @@ public class ControllerServlet extends HttpServlet {
   private Handler nullHandler = new Handler() {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = -225447966882182992L;
     private Random r = new Random(System.currentTimeMillis());
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seeorg.sakaiproject.sdata.tool.api.Handler#doDelete(javax.servlet.http.
      * HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
@@ -146,7 +148,7 @@ public class ControllerServlet extends HttpServlet {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seeorg.sakaiproject.sdata.tool.api.Handler#doGet(javax.servlet.http.
      * HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
@@ -169,7 +171,7 @@ public class ControllerServlet extends HttpServlet {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seeorg.sakaiproject.sdata.tool.api.Handler#doHead(javax.servlet.http.
      * HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
@@ -179,7 +181,7 @@ public class ControllerServlet extends HttpServlet {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seeorg.sakaiproject.sdata.tool.api.Handler#doPost(javax.servlet.http.
      * HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
@@ -189,7 +191,7 @@ public class ControllerServlet extends HttpServlet {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seeorg.sakaiproject.sdata.tool.api.Handler#doPut(javax.servlet.http.
      * HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
@@ -199,7 +201,7 @@ public class ControllerServlet extends HttpServlet {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.sakaiproject.sdata.tool.api.Handler#setHandlerHeaders(javax.servlet
      * .http.HttpServletResponse)
@@ -242,15 +244,17 @@ public class ControllerServlet extends HttpServlet {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see javax.servlet.GenericServlet#init(javax.servlet.ServletConfig)
    */
   @Override
   public void init(ServletConfig config) throws ServletException {
 
-    Injector injector = Guice.createInjector(new SDataModule());
+    KernelManager kernelMgr = new KernelManager();
+    Kernel kernel = kernelMgr.getKernel();
+    Injector injector = Guice.createInjector(new SDataModule(kernel));
     configuration = injector.getInstance(SDataConfiguration.class);
-    
+
     Map<String, RestDescription> map = Maps.newLinkedHashMap();
     for (Entry<String, Handler> e : configuration.getHandlerRegister().entrySet()) {
       map.put(e.getKey(), e.getValue().getDescription());
@@ -267,7 +271,7 @@ public class ControllerServlet extends HttpServlet {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * javax.servlet.http.HttpServlet#doDelete(javax.servlet.http.HttpServletRequest
    * , javax.servlet.http.HttpServletResponse)
@@ -287,7 +291,7 @@ public class ControllerServlet extends HttpServlet {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,
    * javax.servlet.http.HttpServletResponse)
@@ -312,7 +316,7 @@ public class ControllerServlet extends HttpServlet {
    * @param request
    * @param response
    * @return
-   * @throws IOException 
+   * @throws IOException
    */
   private boolean describe(HttpServletRequest request,
       HttpServletResponse response) throws IOException {
@@ -335,7 +339,7 @@ public class ControllerServlet extends HttpServlet {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * javax.servlet.http.HttpServlet#doHead(javax.servlet.http.HttpServletRequest
    * , javax.servlet.http.HttpServletResponse)
@@ -355,7 +359,7 @@ public class ControllerServlet extends HttpServlet {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest
    * , javax.servlet.http.HttpServletResponse)
@@ -375,7 +379,7 @@ public class ControllerServlet extends HttpServlet {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * javax.servlet.http.HttpServlet#doPut(javax.servlet.http.HttpServletRequest,
    * javax.servlet.http.HttpServletResponse)
@@ -395,7 +399,7 @@ public class ControllerServlet extends HttpServlet {
 
   /**
    * Get the handler mapped to a request path.
-   * 
+   *
    * @param request
    * @return
    */
@@ -407,19 +411,22 @@ public class ControllerServlet extends HttpServlet {
     if ("/checkRunning".equals(pathInfo)) {
       return nullHandler;
     }
-    if (pathInfo == null)
+    if (pathInfo == null) {
       return null;
+    }
 
     char[] path = pathInfo.trim().toCharArray();
-    if (path.length < 1)
+    if (path.length < 1) {
       return null;
+    }
     int start = 0;
     if (path[0] == '/') {
       start = 1;
     }
     int end = start;
-    for (; end < path.length && path[end] != '/'; end++)
+    for (; end < path.length && path[end] != '/'; end++) {
       ;
+    }
     String key = new String(path, start, end - start);
 
     Handler h = configuration.getHandlerRegister().get(key);
@@ -429,7 +436,7 @@ public class ControllerServlet extends HttpServlet {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest
    * , javax.servlet.http.HttpServletResponse)
