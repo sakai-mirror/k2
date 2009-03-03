@@ -15,15 +15,19 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.sdata.tool;
+package org.sakaiproject.sdata.tool.smartFolder;
+
+import org.sakaiproject.kernel.api.Provider;
 
 import java.util.Map;
 
 import javax.jcr.Node;
 
 /**
- *
+ * Interface for handlers of smart folder actions.
  */
-public interface SmartFolderHandler {
-  Map handle(Node node);
+public interface SmartFolderHandler extends Provider<String> {
+  String SMARTFOLDER_REGISTRY = "smartFolder.registry";
+
+  Map<String, Object> handle(Node node);
 }

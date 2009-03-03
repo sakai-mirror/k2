@@ -29,6 +29,8 @@ import org.apache.commons.fileupload.sdata.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.sdata.util.Streams;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.api.Registry;
+import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.authz.PermissionDeniedException;
 import org.sakaiproject.kernel.api.authz.UnauthorizedException;
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
@@ -43,6 +45,7 @@ import org.sakaiproject.sdata.tool.api.ResourceDefinitionFactory;
 import org.sakaiproject.sdata.tool.api.SDataException;
 import org.sakaiproject.sdata.tool.api.SDataFunction;
 import org.sakaiproject.sdata.tool.model.JCRNodeMap;
+import org.sakaiproject.sdata.tool.smartFolder.SmartFolderHandler;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,6 +61,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -181,6 +185,8 @@ public class JCRHandler extends AbstractHandler {
 
   protected Map<String, SDataFunction> resourceFunctionFactory;
 
+  private transient RegistryService registryService;
+
   /**
    * Create a JCRHandler and give it a resource definition factory that will convert a URL
    * into a location in the repository.
@@ -198,11 +204,13 @@ public class JCRHandler extends AbstractHandler {
       JCRNodeFactoryService jcrNodeFactory,
       @Named(RESOURCE_DEFINITION_FACTORY) ResourceDefinitionFactory resourceDefinitionFactory,
       @Named(RESOURCE_FUNCTION_FACTORY) Map<String, SDataFunction> resourceFunctionFactory,
-      @Named(RESOURCE_SERIALIZER) HandlerSerialzer serializer) {
+      @Named(RESOURCE_SERIALIZER) HandlerSerialzer serializer,
+      RegistryService registryService) {
     this.jcrNodeFactory = jcrNodeFactory;
     this.resourceDefinitionFactory = resourceDefinitionFactory;
     this.resourceFunctionFactory = resourceFunctionFactory;
     this.serializer = serializer;
+    this.registryService = registryService;
 
     initDescription();
   }
@@ -576,26 +584,47 @@ public class JCRHandler extends AbstractHandler {
             }
           }
         } else if (JCRConstants.NT_FOLDER.equals(nt.getName())
-            && n.hasProperty(JCRConstants.JCR_SMARTFOLDER)) {
-          // handle smart folder action
-          Property actionProp = n.getProperty(JCRConstants.JCR_SMARTFOLDER);
-          String action = actionProp.getString();
-          if (action.startsWith("jcr:")) {
+            && n.hasProperty(JCRConstants.JCR_SMARTFOLDER)
+            && n.getProperty(JCRConstants.JCR_SMARTFOLDER).getBoolean()) {
 
-          } else if (action.startsWith("jpa:")) {
+          boolean handled = false;
 
+          // get the action node
+          NodeIterator childNodes = n.getNodes(".smartAction");
+
+          if (childNodes.getSize() > 0) {
+            // only handle 1 smart action file
+            Node childNode = childNodes.nextNode();
+
+            // only work with the node if it is a file
+            if (JCRConstants.NT_FILE.equals(childNode.getPrimaryNodeType())) {
+              // get the action
+              Property actionProp = childNode.getProperty(JCRConstants.JCR_DATA);
+
+              // get the protocol from the action
+              int colonPos = actionProp.getString().indexOf(":");
+              String protocol = actionProp.getString().substring(0, colonPos);
+
+              // get the handler from the registry based on the protocol
+              Registry<String, SmartFolderHandler> registry = registryService
+                  .getRegistry(SmartFolderHandler.SMARTFOLDER_REGISTRY);
+              SmartFolderHandler handler = registry.getMap().get(protocol);
+
+              // now handle the node
+              if (handler != null) {
+                Map<String, Object> outputMap = handler.handle(n);
+                sendMap(request, response, outputMap);
+                handled = true;
+              }
+            }
+          }
+
+          // do the default get if not handled
+          if (!handled) {
+            doDefaultGet(request, response, rp, n);
           }
         } else {
-          setGetCacheControl(response, rp.isPrivate());
-
-          // Property lastModified =
-          // n.getProperty(JCRConstants.JCR_LASTMODIFIED);
-          // response.setHeader("ETag",
-          // String.valueOf(lastModified.getDate()
-          // .getTimeInMillis()));
-
-          JCRNodeMap outputMap = new JCRNodeMap(n, rp.getDepth(), rp);
-          sendMap(request, response, outputMap);
+          doDefaultGet(request, response, rp, n);
         }
       }
     } catch (UnauthorizedException ape) {
@@ -626,6 +655,21 @@ public class JCRHandler extends AbstractHandler {
       } catch (Exception ex) {
       }
     }
+  }
+
+  private void doDefaultGet(final HttpServletRequest request,
+      HttpServletResponse response, ResourceDefinition rp, Node n)
+      throws RepositoryException, IOException {
+    setGetCacheControl(response, rp.isPrivate());
+
+    // Property lastModified =
+    // n.getProperty(JCRConstants.JCR_LASTMODIFIED);
+    // response.setHeader("ETag",
+    // String.valueOf(lastModified.getDate()
+    // .getTimeInMillis()));
+
+    JCRNodeMap outputMap = new JCRNodeMap(n, rp.getDepth(), rp);
+    sendMap(request, response, outputMap);
   }
 
   /**

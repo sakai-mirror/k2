@@ -43,6 +43,7 @@ import org.sakaiproject.sdata.tool.api.ResourceDefinitionFactory;
 import org.sakaiproject.sdata.tool.api.SDataFunction;
 import org.sakaiproject.sdata.tool.api.SecurityAssertion;
 import org.sakaiproject.sdata.tool.json.JsonHandlerSerializer;
+import org.sakaiproject.sdata.tool.smartFolder.SmartFolderHandler;
 import org.sakaiproject.sdata.tool.util.NullSecurityAssertion;
 import org.sakaiproject.sdata.tool.util.ResourceDefinitionFactoryImpl;
 import org.sakaiproject.sdata.tool.util.UserResourceDefinitionFactory;
@@ -50,11 +51,12 @@ import org.sakaiproject.sdata.tool.util.UserResourceDefinitionFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 /**
- * 
+ *
  */
 public class SDataModule extends AbstractModule {
 
@@ -95,7 +97,7 @@ public class SDataModule extends AbstractModule {
 
   /**
    * Configure the guice bindings.
-   * 
+   *
    * @see com.google.inject.AbstractModule#configure()
    */
   @Override
@@ -135,7 +137,7 @@ public class SDataModule extends AbstractModule {
         NullSecurityAssertion.class);
     bind(SecurityAssertion.class).annotatedWith(
         Names.named(JCRUserStorageHandler.SECURITY_ASSERTION)).to(NullSecurityAssertion.class);
-    
+
     // bind in the kernel services that we need.
     KernelManager km = new KernelManager();
     Kernel k = km.getKernel();
@@ -154,11 +156,12 @@ public class SDataModule extends AbstractModule {
     bind(AuthzResolverService.class).toProvider(
         new ServiceProvider<AuthzResolverService>(sm,
             AuthzResolverService.class));
-    bind(ReferenceResolverService.class).toProvider(
-        new ServiceProvider<ReferenceResolverService>(sm,
-            ReferenceResolverService.class));
-    
 
+    // bring this list up early so it can register itself
+    TypeLiteral<List<SmartFolderHandler>> smartFolderHandlerList = new TypeLiteral<List<SmartFolderHandler>>() {
+    };
+    bind(smartFolderHandlerList).toProvider(
+        SmartFolderHandlerListProvider.class).asEagerSingleton();
   }
 
   /**
@@ -169,3 +172,4 @@ public class SDataModule extends AbstractModule {
   }
 
 }
+

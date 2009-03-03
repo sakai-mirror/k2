@@ -23,6 +23,7 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.sdata.tool.api.HandlerSerialzer;
@@ -38,13 +39,13 @@ import java.util.Map.Entry;
  * locate the location of the users storage within the underlying jcr
  * repository. This servlet extends the JCRServlet and uses its methods and
  * handling to respond to the content.
- * 
+ *
  * @author ieb
  */
 public class JCRUserStorageHandler extends JCRHandler {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = -7527973143563221845L;
 
@@ -108,7 +109,7 @@ public class JCRUserStorageHandler extends JCRHandler {
   /**
    * Construct a JCRUserStorageHandler, and use a Resource Definition factory to
    * translate the request URL into the repository location.
-   * 
+   *
    * @param jcrNodeFactory
    * @param resourceDefinitionFactory
    * @param resourceFunctionFactory
@@ -118,36 +119,12 @@ public class JCRUserStorageHandler extends JCRHandler {
       JCRNodeFactoryService jcrNodeFactory,
       @Named(RESOURCE_DEFINITION_FACTORY) ResourceDefinitionFactory resourceDefinitionFactory,
       @Named(RESOURCE_FUNCTION_FACTORY) Map<String, SDataFunction> resourceFunctionFactory,
-      @Named(RESOURCE_SERIALIZER) HandlerSerialzer serializer) {
+      @Named(RESOURCE_SERIALIZER) HandlerSerialzer serializer,
+      RegistryService registryService) {
     super(jcrNodeFactory, resourceDefinitionFactory, resourceFunctionFactory,
-        serializer);
-    System.err.println(this + " Resource Defintion Factory is "
-        + resourceDefinitionFactory);
+        serializer, registryService);
 
-  }
-
-  /**
-   * {@inheritDoc}
-   * 
-   * @see org.sakaiproject.sdata.tool.JCRHandler#initDescription()
-   */
-  @Override
-  public void initDescription() {
-
-    Map<String, RestDescription> map = Maps.newLinkedHashMap();
-    for (Entry<String, SDataFunction> e : resourceFunctionFactory.entrySet()) {
-      map.put(e.getKey(), e.getValue().getDescription());
-    }
-    DESCRIPTION.addSection(2, "Functions",
-        "The following functions are activated with a ?f=key, where key is "
-            + "the function key");
-    for (String s : Lists.sortedCopy(map.keySet())) {
-      RestDescription description = map.get(s);
-      DESCRIPTION.addSection(3, "URL " + KEY + "/<resource>?f=" + s + "  "
-          + description.getTitle(), description.getShortDescription(),
-          "?doc=1&f=" + s);
-    }
-
+    System.err.println(this+" Resource Defintion Factory is "+resourceDefinitionFactory);
   }
 
   /**

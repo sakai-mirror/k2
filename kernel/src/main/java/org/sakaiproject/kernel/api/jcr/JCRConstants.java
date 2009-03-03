@@ -311,5 +311,5 @@ public interface JCRConstants {
 
   public static final String MIX_ACL = "acl:properties-mix";
 
-  public static final String JCR_SMARTFOLDER = "jcr:smartFolder";
+  public static final String JCR_SMARTFOLDER = "sakaijcr:smartFolder";
 }
