@@ -15,28 +15,29 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.sdata.tool.smartFolder;
+package org.sakaiproject.kernel.jcr.smartNode;
 
 import com.google.inject.Inject;
 
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
+import org.sakaiproject.kernel.jcr.api.SmartNodeHandler;
 
 import javax.jcr.query.Query;
 
 /**
- * XPath handler for smart folder actions.
+ * SQL handler for smart folder actions.
  */
-public class XpathSmartFolderHandler extends JcrSmartFolderHandler {
-  private static final String KEY = Query.XPATH;
+public class SqlSmartNodeHandler extends JcrSmartNodeHandler {
+  private static final String KEY = Query.SQL;
 
   /**
    *
    */
   @Inject
-  public XpathSmartFolderHandler(RegistryService registryService) {
-    Registry<String, SmartFolderHandler> registry = registryService
-        .getRegistry(SmartFolderHandler.SMARTFOLDER_REGISTRY);
+  public SqlSmartNodeHandler(RegistryService registryService) {
+    Registry<String, SmartNodeHandler> registry = registryService
+        .getRegistry(SmartNodeHandler.SMARTFOLDER_REGISTRY);
     registry.add(this);
   }
 

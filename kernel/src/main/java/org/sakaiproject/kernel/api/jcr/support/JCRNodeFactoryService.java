@@ -22,7 +22,6 @@ import java.io.InputStream;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
-import javax.jcr.query.Query;
 
 /**
  * The JCRNodeFactoryService provides simplified content methods to deal with
@@ -94,18 +93,5 @@ public interface JCRNodeFactoryService {
    * @throws NodeFactoryServiceException
    */
   Node getNode(String nodePath) throws RepositoryException,
-      JCRNodeFactoryServiceException;
-
-  /**
-   * Get the query node at the given path.
-   * 
-   * @param id
-   * @return The query found at id
-   * @throws RepositoryException
-   *           If a node doesn't exist at id.
-   * @throws JCRNodeFactoryServiceException
-   *           If node is not of type nt:query.
-   */
-  Query getQuery(String id) throws RepositoryException,
       JCRNodeFactoryServiceException;
 }

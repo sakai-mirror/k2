@@ -15,33 +15,57 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.sdata.tool.smartFolder;
+package org.sakaiproject.kernel.jcr.smartNode;
 
 import com.google.inject.Inject;
 
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
+import org.sakaiproject.kernel.jcr.api.SmartNodeHandler;
 
-import javax.jcr.query.Query;
+import java.util.List;
+
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+import javax.persistence.EntityManager;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
- * SQL handler for smart folder actions.
+ * Handler for smart folders whose action is tied to a named JPA query.
  */
-public class SqlSmartFolderHandler extends JcrSmartFolderHandler {
-  private static final String KEY = Query.SQL;
+public class NamedJpaSmartNodeHandler implements SmartNodeHandler {
+  public static final String KEY = "jpa-named";
+
+  private final EntityManager entityManager;
 
   /**
    *
    */
   @Inject
-  public SqlSmartFolderHandler(RegistryService registryService) {
-    Registry<String, SmartFolderHandler> registry = registryService
-        .getRegistry(SmartFolderHandler.SMARTFOLDER_REGISTRY);
+  public NamedJpaSmartNodeHandler(RegistryService registryService,
+      EntityManager entityManager) {
+    Registry<String, SmartNodeHandler> registry = registryService
+        .getRegistry(SmartNodeHandler.SMARTFOLDER_REGISTRY);
     registry.add(this);
+    this.entityManager = entityManager;
   }
 
   /**
    * {@inheritDoc}
+   *
+   * @see org.sakaiproject.kernel.jcr.api.SmartNodeHandler#handle(javax.jcr.Node)
+   */
+  public void handle(HttpServletRequest request, HttpServletResponse response,
+      Node node, String statement) throws RepositoryException {
+    javax.persistence.Query jpaQuery = entityManager
+        .createNamedQuery(statement);
+    List results = jpaQuery.getResultList();
+  }
+
+  /**
+   * {@inheritDoc}
+   *
    * @see org.sakaiproject.kernel.api.Provider#getKey()
    */
   public String getKey() {
@@ -50,6 +74,7 @@ public class SqlSmartFolderHandler extends JcrSmartFolderHandler {
 
   /**
    * {@inheritDoc}
+   *
    * @see org.sakaiproject.kernel.api.Provider#getPriority()
    */
   public int getPriority() {

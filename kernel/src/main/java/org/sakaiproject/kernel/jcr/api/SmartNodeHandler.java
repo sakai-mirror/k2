@@ -15,25 +15,21 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.sdata.tool.smartFolder;
+package org.sakaiproject.kernel.jcr.api;
 
-import java.util.Map;
+import org.sakaiproject.kernel.api.Provider;
 
+import javax.jcr.Node;
 import javax.jcr.RepositoryException;
-import javax.jcr.query.Query;
-import javax.jcr.query.QueryResult;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
- *
+ * Interface for handlers of smart folder actions.
  */
-public abstract class JcrSmartFolderHandler implements SmartFolderHandler {
-  /**
-   * {@inheritDoc}
-   *
-   * @see org.sakaiproject.sdata.tool.smartFolder.SmartFolderHandler#handle(javax.jcr.Node)
-   */
-  public Map<String, Object> handle(Query query) throws RepositoryException {
-    QueryResult results = query.execute();
-    return null;
-  }
+public interface SmartNodeHandler extends Provider<String> {
+  String SMARTFOLDER_REGISTRY = "smartFolder.registry";
+
+  void handle(HttpServletRequest request, HttpServletResponse response,
+      Node node, String statement) throws RepositoryException;
 }

@@ -15,15 +15,11 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.sdata.tool.configuration;
+package org.sakaiproject.kernel.jcr.smartNode;
 
 import com.google.inject.Provider;
 
-import org.sakaiproject.sdata.tool.smartFolder.JpaSmartFolderHandler;
-import org.sakaiproject.sdata.tool.smartFolder.NamedJpaSmartFolderHandler;
-import org.sakaiproject.sdata.tool.smartFolder.SmartFolderHandler;
-import org.sakaiproject.sdata.tool.smartFolder.SqlSmartFolderHandler;
-import org.sakaiproject.sdata.tool.smartFolder.XpathSmartFolderHandler;
+import org.sakaiproject.kernel.jcr.api.SmartNodeHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,19 +27,19 @@ import java.util.List;
 /**
  *
  */
-public class SmartFolderHandlerListProvider implements
-    Provider<List<SmartFolderHandler>> {
+public class SmartFolderNodeListProvider implements
+    Provider<List<SmartNodeHandler>> {
 
-  private ArrayList<SmartFolderHandler> handlers;
+  private ArrayList<SmartNodeHandler> handlers;
 
   /**
    *
    */
-  public SmartFolderHandlerListProvider(XpathSmartFolderHandler xpathHandler,
-      SqlSmartFolderHandler sqlHandler,
-      JpaSmartFolderHandler jpaHandler,
-      NamedJpaSmartFolderHandler namedJpaHandler) {
-    handlers = new ArrayList<SmartFolderHandler>();
+  public SmartFolderNodeListProvider(XpathSmartNodeHandler xpathHandler,
+      SqlSmartNodeHandler sqlHandler,
+      JpaSmartNodeHandler jpaHandler,
+      NamedJpaSmartNodeHandler namedJpaHandler) {
+    handlers = new ArrayList<SmartNodeHandler>();
     handlers.add(xpathHandler);
     handlers.add(sqlHandler);
     handlers.add(jpaHandler);
@@ -55,7 +51,7 @@ public class SmartFolderHandlerListProvider implements
    *
    * @see com.google.inject.Provider#get()
    */
-  public List<SmartFolderHandler> get() {
+  public List<SmartNodeHandler> get() {
     return handlers;
   }
 

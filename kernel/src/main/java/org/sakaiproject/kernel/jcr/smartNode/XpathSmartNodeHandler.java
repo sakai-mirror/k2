@@ -15,53 +15,34 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.sdata.tool.smartFolder;
+package org.sakaiproject.kernel.jcr.smartNode;
 
 import com.google.inject.Inject;
 
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
-
-import java.util.List;
-import java.util.Map;
+import org.sakaiproject.kernel.jcr.api.SmartNodeHandler;
 
 import javax.jcr.query.Query;
-import javax.persistence.EntityManager;
 
 /**
- * Handler for smart folders whose action is tied to a named JPA query.
+ * XPath handler for smart folder actions.
  */
-public class NamedJpaSmartFolderHandler implements SmartFolderHandler {
-  public static final String KEY = "jpa-named";
+public class XpathSmartNodeHandler extends JcrSmartNodeHandler {
+  private static final String KEY = Query.XPATH;
 
-  private final EntityManager entityManager;
   /**
    *
    */
   @Inject
-  public NamedJpaSmartFolderHandler(RegistryService registryService,
-      EntityManager entityManager) {
-    Registry<String, SmartFolderHandler> registry = registryService
-        .getRegistry(SmartFolderHandler.SMARTFOLDER_REGISTRY);
+  public XpathSmartNodeHandler(RegistryService registryService) {
+    Registry<String, SmartNodeHandler> registry = registryService
+        .getRegistry(SmartNodeHandler.SMARTFOLDER_REGISTRY);
     registry.add(this);
-    this.entityManager = entityManager;
   }
 
   /**
    * {@inheritDoc}
-   *
-   * @see org.sakaiproject.sdata.tool.smartFolder.SmartFolderHandler#handle(javax.jcr.Node)
-   */
-  public Map<String, Object> handle(Query query) {
-    String stmt = query.getStatement();
-    javax.persistence.Query jpaQuery = entityManager.createNamedQuery(stmt);
-    List results = jpaQuery.getResultList();
-    return null;
-  }
-
-  /**
-   * {@inheritDoc}
-   *
    * @see org.sakaiproject.kernel.api.Provider#getKey()
    */
   public String getKey() {
@@ -70,7 +51,6 @@ public class NamedJpaSmartFolderHandler implements SmartFolderHandler {
 
   /**
    * {@inheritDoc}
-   *
    * @see org.sakaiproject.kernel.api.Provider#getPriority()
    */
   public int getPriority() {

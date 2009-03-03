@@ -43,7 +43,6 @@ import org.sakaiproject.sdata.tool.api.ResourceDefinitionFactory;
 import org.sakaiproject.sdata.tool.api.SDataFunction;
 import org.sakaiproject.sdata.tool.api.SecurityAssertion;
 import org.sakaiproject.sdata.tool.json.JsonHandlerSerializer;
-import org.sakaiproject.sdata.tool.smartFolder.SmartFolderHandler;
 import org.sakaiproject.sdata.tool.util.NullSecurityAssertion;
 import org.sakaiproject.sdata.tool.util.ResourceDefinitionFactoryImpl;
 import org.sakaiproject.sdata.tool.util.UserResourceDefinitionFactory;
@@ -51,7 +50,6 @@ import org.sakaiproject.sdata.tool.util.UserResourceDefinitionFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -159,12 +157,6 @@ public class SDataModule extends AbstractModule {
     bind(ReferenceResolverService.class).toProvider(
         new ServiceProvider<ReferenceResolverService>(sm,
             ReferenceResolverService.class));
-
-    // bring this list up early so it can register itself
-    TypeLiteral<List<SmartFolderHandler>> smartFolderHandlerList = new TypeLiteral<List<SmartFolderHandler>>() {
-    };
-    bind(smartFolderHandlerList).toProvider(
-        SmartFolderHandlerListProvider.class).asEagerSingleton();
   }
 
   /**

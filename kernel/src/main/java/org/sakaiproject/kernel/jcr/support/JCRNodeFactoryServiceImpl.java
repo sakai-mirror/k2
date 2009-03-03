@@ -41,9 +41,6 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
 import javax.jcr.ValueFactory;
-import javax.jcr.Workspace;
-import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
 
 /**
  * @author ieb This is a support service to make it easier to treat a JCR
@@ -336,15 +333,5 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
     } catch (AccessDeniedException ax) {
       throw new PermissionDeniedException(ax.getMessage(), ax);
     }
-  }
-
-  public Query getQuery(String id) throws RepositoryException,
-      JCRNodeFactoryServiceException {
-    Session session = jcrService.getSession();
-    Node node = getNodeFromSession(session, id);
-    Workspace workspace = session.getWorkspace();
-    QueryManager queryMgr = workspace.getQueryManager();
-    Query query = queryMgr.getQuery(node);
-    return query;
   }
 }

@@ -71,12 +71,14 @@ import org.sakaiproject.kernel.initialization.KernelInitializationImpl;
 import org.sakaiproject.kernel.internal.api.InitializationAction;
 import org.sakaiproject.kernel.internal.api.KernelInitialization;
 import org.sakaiproject.kernel.jcr.api.JcrContentListener;
+import org.sakaiproject.kernel.jcr.api.SmartNodeHandler;
 import org.sakaiproject.kernel.jcr.api.internal.StartupAction;
 import org.sakaiproject.kernel.jcr.jackrabbit.JCRRegistrationServiceImpl;
 import org.sakaiproject.kernel.jcr.jackrabbit.JCRServiceImpl;
 import org.sakaiproject.kernel.jcr.jackrabbit.JcrSynchronousContentListenerAdapter;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SecureSakaiAccessManager;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.StartupActionProvider;
+import org.sakaiproject.kernel.jcr.smartNode.SmartFolderNodeListProvider;
 import org.sakaiproject.kernel.jcr.support.JCRNodeFactoryServiceImpl;
 import org.sakaiproject.kernel.memory.CacheManagerServiceImpl;
 import org.sakaiproject.kernel.messaging.JmsSessionProvider;
@@ -139,7 +141,7 @@ public class KernelModule extends AbstractModule {
 
   /**
    * Create the bootstrap module with a kernel and supplied properties.
-   * 
+   *
    * @param kernel
    * @param properties
    */
@@ -150,7 +152,7 @@ public class KernelModule extends AbstractModule {
 
   /**
    * Configure the guice bindings.
-   * 
+   *
    * @see com.google.inject.AbstractModule#configure()
    */
   @Override
@@ -201,7 +203,6 @@ public class KernelModule extends AbstractModule {
     bind(UserResolverService.class).to(ProviderUserResolverService.class).in(
         Scopes.SINGLETON);
 
-    bind(PresenceService.class).to(PresenceServiceImpl.class).in(Scopes.SINGLETON);
 
     bind(UserEnvironmentResolverService.class).to(
         SimpleJcrUserEnvironmentResolverService.class).in(Scopes.SINGLETON);
@@ -335,5 +336,10 @@ public class KernelModule extends AbstractModule {
     bind(Message.class).annotatedWith(Names.named(EmailMessage.TYPE)).to(
         EmailMessage.class);
 
+    // bring this smart node handler list up early so it can register itself
+    TypeLiteral<List<SmartNodeHandler>> smartFolderHandlerList = new TypeLiteral<List<SmartNodeHandler>>() {
+    };
+    bind(smartFolderHandlerList).toProvider(SmartFolderNodeListProvider.class)
+        .asEagerSingleton();
   }
 }

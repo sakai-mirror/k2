@@ -15,23 +15,26 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.sdata.tool.smartFolder;
+package org.sakaiproject.kernel.jcr.smartNode;
 
 import com.google.inject.Inject;
 
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
+import org.sakaiproject.kernel.jcr.api.SmartNodeHandler;
 
 import java.util.List;
-import java.util.Map;
 
-import javax.jcr.query.Query;
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
 import javax.persistence.EntityManager;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Handler for smart folder actions that use an ad-hoc JPA query.
  */
-public class JpaSmartFolderHandler implements SmartFolderHandler {
+public class JpaSmartNodeHandler implements SmartNodeHandler {
   public static final String KEY = "jpa";
 
   private final EntityManager entityManager;
@@ -39,10 +42,10 @@ public class JpaSmartFolderHandler implements SmartFolderHandler {
    *
    */
   @Inject
-  public JpaSmartFolderHandler(RegistryService registryService,
+  public JpaSmartNodeHandler(RegistryService registryService,
       EntityManager entityManager) {
-    Registry<String, SmartFolderHandler> registry = registryService
-        .getRegistry(SmartFolderHandler.SMARTFOLDER_REGISTRY);
+    Registry<String, SmartNodeHandler> registry = registryService
+        .getRegistry(SmartNodeHandler.SMARTFOLDER_REGISTRY);
     registry.add(this);
     this.entityManager = entityManager;
   }
@@ -50,13 +53,12 @@ public class JpaSmartFolderHandler implements SmartFolderHandler {
   /**
    * {@inheritDoc}
    *
-   * @see org.sakaiproject.sdata.tool.smartFolder.SmartFolderHandler#handle(javax.jcr.Node)
+   * @see org.sakaiproject.kernel.jcr.api.SmartNodeHandler#handle(javax.jcr.Node)
    */
-  public Map<String, Object> handle(Query query) {
-    String stmt = query.getStatement();
-    javax.persistence.Query jpaQuery = entityManager.createQuery(stmt);
+  public void handle(HttpServletRequest request, HttpServletResponse response,
+      Node node, String statement) throws RepositoryException {
+    javax.persistence.Query jpaQuery = entityManager.createQuery(statement);
     List results = jpaQuery.getResultList();
-    return null;
   }
 
   /**

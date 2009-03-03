@@ -36,6 +36,7 @@ import org.sakaiproject.kernel.api.authz.UnauthorizedException;
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
+import org.sakaiproject.kernel.jcr.api.SmartNodeHandler;
 import org.sakaiproject.kernel.util.PathUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.kernel.webapp.RestServiceFaultException;
@@ -45,7 +46,6 @@ import org.sakaiproject.sdata.tool.api.ResourceDefinitionFactory;
 import org.sakaiproject.sdata.tool.api.SDataException;
 import org.sakaiproject.sdata.tool.api.SDataFunction;
 import org.sakaiproject.sdata.tool.model.JCRNodeMap;
-import org.sakaiproject.sdata.tool.smartFolder.SmartFolderHandler;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -65,7 +65,6 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
-import javax.jcr.query.Query;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -501,12 +500,12 @@ public class JCRHandler extends AbstractHandler {
         response.sendError(HttpServletResponse.SC_NOT_FOUND);
         return;
       }
-      
+
       String version = rp.getVersion();
       if ( version != null ) {
         n = n.getVersionHistory().getVersion(version);
       }
-      
+
       NodeType nt = n.getPrimaryNodeType();
 
       if (m != null) {
@@ -581,39 +580,8 @@ public class JCRHandler extends AbstractHandler {
               length = 0;
             }
           }
-        } else if (JCRConstants.NT_FOLDER.equals(nt.getName())
-            && n.hasProperty(JCRConstants.JCR_SMARTFOLDER)
-            && n.getProperty(JCRConstants.JCR_SMARTFOLDER).getBoolean()) {
-
-          boolean handled = false;
-
-          try {
-            // get the query and language of the query
-            Query query = jcrNodeFactory.getQuery(n.getPath() + "/"
-                + SmartFolderHandler.SMARTFOLDER_ACTION);
-            String lang = query.getLanguage();
-
-            // get the handler from the registry based on the protocol
-            Registry<String, SmartFolderHandler> registry = registryService
-                .getRegistry(SmartFolderHandler.SMARTFOLDER_REGISTRY);
-            SmartFolderHandler handler = registry.getMap().get(lang);
-
-            // now handle the node
-            if (handler != null) {
-              Map<String, Object> outputMap = handler.handle(query);
-              sendMap(request, response, outputMap);
-              handled = true;
-            }
-          } catch (RepositoryException e) {
-            // log this then let default handler happen
-          } catch (JCRNodeFactoryServiceException e) {
-            // log this then let default handler happen
-          }
-
-          // do the default get if not handled
-          if (!handled) {
-            doDefaultGet(request, response, rp, n);
-          }
+        } else if (n.hasProperty(JCRConstants.JCR_SMARTNODE)) {
+          handleSmartNode(request, response, rp, n);
         } else {
           doDefaultGet(request, response, rp, n);
         }
@@ -645,6 +613,40 @@ public class JCRHandler extends AbstractHandler {
         in.close();
       } catch (Exception ex) {
       }
+    }
+  }
+
+  private void handleSmartNode(final HttpServletRequest request,
+      final HttpServletResponse response, final ResourceDefinition rp,
+      final Node n) throws IOException, RepositoryException {
+    boolean handled = false;
+
+    try {
+      // get the action property from the node
+      Property prop = n.getProperty(JCRConstants.JCR_SMARTNODE);
+      String action = prop.getString();
+
+      int colonPos = action.indexOf(":");
+      String protocol = action.substring(0, colonPos);
+      String statement = action.substring(colonPos + 1);
+
+      // get the handler from the registry based on the protocol
+      Registry<String, SmartNodeHandler> registry = registryService
+          .getRegistry(SmartNodeHandler.SMARTFOLDER_REGISTRY);
+      SmartNodeHandler handler = registry.getMap().get(protocol);
+
+      // now handle the node
+      if (handler != null) {
+        handler.handle(request, response, n, statement);
+        handled = true;
+      }
+    } catch (RepositoryException e) {
+      // log this then let default handler happen
+    }
+
+    // do the default get if not handled
+    if (!handled) {
+      doDefaultGet(request, response, rp, n);
     }
   }
 
