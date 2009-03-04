@@ -76,6 +76,9 @@
                       file="${basedir}/target/runtime/bin/setclasspath.sh"
                       perm="775" />
                     <chmod file="${basedir}/start.sh" perm="775" />
+		    <condition property="run.arg" value="${tomcat.args}" else="run">
+		      <isset property="tomcat.args" />
+		    </condition>
                     <condition property="startscript" value="start.bat">
                      <os family="windows"/>
                     </condition>
@@ -84,7 +87,7 @@
                     </condition>
                     <exec dir="${basedir}" executable="${basedir}/${startscript}"
                       failonerror="true">
-                      <arg value="run" />
+		      <arg value="${run.arg}" />
                     </exec>
                   </tasks>
                 </configuration>
@@ -124,9 +127,12 @@
                       file="${basedir}/target/runtime/bin/setclasspath.sh"
                       perm="775" />
                     <chmod file="${basedir}/start.sh" perm="775" />
+		    <condition property="run.arg" value="${tomcat.args}" else="run">
+		      <isset property="tomcat.args" />
+		    </condition>
                     <exec dir="${basedir}" executable="${basedir}/start.sh"
                       failonerror="true">
-                      <arg value="run" />
+		      <arg value="${run.arg}" />
                     </exec>
                   </tasks>
                 </configuration>
@@ -159,9 +165,12 @@
                       file="${basedir}/target/runtime/bin/setclasspath.sh"
                       perm="775" />
                     <chmod file="${basedir}/start.sh" perm="775" />
+		    <condition property="run.arg" value="${tomcat.args}" else="run">
+		      <isset property="tomcat.args" />
+		    </condition>
                     <exec dir="${basedir}" executable="${basedir}/start.sh"
                       failonerror="true">
-                      <arg value="run" />
+		      <arg value="${run.arg}" />
                     </exec>
                   </tasks>
                 </configuration>
