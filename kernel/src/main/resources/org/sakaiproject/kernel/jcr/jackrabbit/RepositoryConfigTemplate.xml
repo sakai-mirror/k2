@@ -328,7 +328,7 @@
     	<param name="directory" value="${journal.location}" />
       </Journal>
 -->
-        <Journal class="org.apache.jackrabbit.core.journal.DatabaseJournal">
+        <Journal class="org.sakaiproject.kernel.jcr.jackrabbit.journal.SakaiJournal">
   			<param name="url" value="${db.url}" />
   			<param name="user" value="${db.user}"/>
   			<param name="password" value="${db.pass}"/>

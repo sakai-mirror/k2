@@ -23,7 +23,7 @@
   </filter>
   <filter>
     <filter-name>sakai.request</filter-name>
-    <filter-class>org.sakaiproject.kernel.webapp.filter.SakaiRequestFilter </filter-class>
+    <filter-class>org.sakaiproject.kernel.webapp.filter.NonTransactionalSakaiRequestFilter </filter-class>
   </filter>
   <filter-mapping>
     <filter-name>sakai.authn</filter-name>

@@ -34,11 +34,17 @@ import java.io.File;
 import javax.jcr.AccessDeniedException;
 import javax.jcr.RepositoryException;
 import javax.security.auth.Subject;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
+import javax.transaction.xa.XAException;
+import javax.transaction.xa.Xid;
 
 /**
- * This JCR Session impl overrides the XASession impl to allow us to create an
- * injected access manager from Guice. This will allow the Access Manager to
- * call on whatever core services it requires.
+ * This JCR Session impl overrides the XASession impl to allow us to create an injected
+ * access manager from Guice. This will allow the Access Manager to call on whatever core
+ * services it requires.
  */
 public class SakaiXASessionImpl extends XASessionImpl {
 
@@ -59,10 +65,48 @@ public class SakaiXASessionImpl extends XASessionImpl {
    * @throws RepositoryException
    */
   public SakaiXASessionImpl(SakaiRepositoryImpl rep, Injector injector,
-      AuthContext loginContext, WorkspaceConfig wspConfig)
-      throws AccessDeniedException, RepositoryException {
+      AuthContext loginContext, WorkspaceConfig wspConfig, TransactionManager transactionManager) throws AccessDeniedException,
+      RepositoryException {
     super(prepareInjector(rep, injector), loginContext, wspConfig);
     setInjector(injector);
+    bind(transactionManager);
+  }
+
+  /**
+   * @param rep
+   * @param subject
+   * @param wspConfig
+   * @throws AccessDeniedException
+   * @throws RepositoryException
+   */
+  public SakaiXASessionImpl(SakaiRepositoryImpl rep, Injector injector, Subject subject,
+      WorkspaceConfig wspConfig, TransactionManager transactionManager)
+      throws AccessDeniedException, RepositoryException {
+    super(prepareInjector(rep, injector), subject, wspConfig);
+    setInjector(injector);
+    bind(transactionManager);
+
+  }
+
+  /**
+   * @param transactionManager
+   * @throws RepositoryException 
+   */
+  private void bind(TransactionManager transactionManager) throws RepositoryException {
+    try {
+      Transaction transaction = transactionManager.getTransaction();
+      if (transaction != null) {
+        transaction.enlistResource(getXAResource());
+      }
+    } catch (IllegalStateException e) {
+      throw new RepositoryException(e.getMessage(), e);
+    } catch (RollbackException e) {
+      throw new RepositoryException(e.getMessage(), e);
+    } catch (SystemException e) {
+      throw new RepositoryException(e.getMessage(), e);
+    } catch (Exception e) {
+      throw new RepositoryException(e.getMessage(), e);
+    }
   }
 
   /**
@@ -82,15 +126,14 @@ public class SakaiXASessionImpl extends XASessionImpl {
    * @param injector2
    * @return
    */
-  private static RepositoryImpl prepareInjector(SakaiRepositoryImpl rep,
-      Injector injector) {
+  private static RepositoryImpl prepareInjector(SakaiRepositoryImpl rep, Injector injector) {
     injectorHolder.set(injector);
     return rep;
   }
 
   /**
-   * Get the injector, either from the thread local or from the field. During
-   * construction the thread local will be set and used.
+   * Get the injector, either from the thread local or from the field. During construction
+   * the thread local will be set and used.
    * 
    * @return
    */
@@ -102,29 +145,14 @@ public class SakaiXASessionImpl extends XASessionImpl {
   }
 
   /**
-   * @param rep
-   * @param subject
-   * @param wspConfig
-   * @throws AccessDeniedException
-   * @throws RepositoryException
-   */
-  public SakaiXASessionImpl(SakaiRepositoryImpl rep, Injector injector,
-      Subject subject, WorkspaceConfig wspConfig) throws AccessDeniedException,
-      RepositoryException {
-    super(prepareInjector(rep, injector), subject, wspConfig);
-    setInjector(injector);
-  }
-
-  /**
    * {@inheritDoc}
    * 
    * @see org.apache.jackrabbit.core.SessionImpl#createAccessManager(javax.security.auth.Subject,
    *      org.apache.jackrabbit.core.HierarchyManager)
    */
   @Override
-  protected AccessManager createAccessManager(Subject subject,
-      HierarchyManager hierMgr) throws AccessDeniedException,
-      RepositoryException {
+  protected AccessManager createAccessManager(Subject subject, HierarchyManager hierMgr)
+      throws AccessDeniedException, RepositoryException {
     // AccessManagerConfig amConfig = rep.getConfig().getAccessManagerConfig();
     try {
 
@@ -146,5 +174,6 @@ public class SakaiXASessionImpl extends XASessionImpl {
       throw new RepositoryException(msg, e);
     }
   }
+  
 
 }

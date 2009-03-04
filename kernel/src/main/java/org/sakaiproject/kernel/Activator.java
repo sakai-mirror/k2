@@ -58,6 +58,7 @@ import org.sakaiproject.kernel.util.PropertiesLoader;
 import java.util.Properties;
 
 import javax.persistence.EntityManager;
+import javax.transaction.TransactionManager;
 
 /**
  * Activates the Kernel Component.
@@ -73,7 +74,8 @@ public class Activator implements ComponentActivator {
       UserEnvironmentResolverService.class, RegistryService.class,
       EntityManager.class, SiteService.class, FriendsResolverService.class,
       ProfileResolverService.class, MessagingService.class,
-      UserFactoryService.class, BeanConverter.class, PresenceService.class };
+      UserFactoryService.class, BeanConverter.class, PresenceService.class,
+      TransactionManager.class };
   private static final Log LOG = LogFactory.getLog(Activator.class);
   @SuppressWarnings("unused")
   private Kernel kernel;

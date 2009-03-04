@@ -29,23 +29,26 @@ import org.apache.jackrabbit.core.security.AuthContext;
 
 import javax.jcr.AccessDeniedException;
 import javax.jcr.RepositoryException;
+import javax.transaction.TransactionManager;
 
 /**
- * Extends the standard repository impl to allow the Guice injector to be passed
- * through.
+ * Extends the standard repository impl to allow the Guice injector to be passed through.
  */
 public class SakaiRepositoryImpl extends RepositoryImpl {
 
   private Injector injector;
+  private TransactionManager transactionManager;
 
   /**
    * @param repConfig
+   * @param transactionManager
    * @throws RepositoryException
    */
-  public SakaiRepositoryImpl(RepositoryConfig repConfig, Injector injector)
-      throws RepositoryException {
+  public SakaiRepositoryImpl(RepositoryConfig repConfig, Injector injector,
+      TransactionManager transactionManager) throws RepositoryException {
     super(repConfig);
     this.injector = injector;
+    this.transactionManager = transactionManager;
   }
 
   /**
@@ -56,9 +59,9 @@ public class SakaiRepositoryImpl extends RepositoryImpl {
    */
   @Override
   protected SessionImpl createSessionInstance(AuthContext loginContext,
-      WorkspaceConfig wspConfig) throws AccessDeniedException,
-      RepositoryException {
-    return new SakaiXASessionImpl(this, injector, loginContext, wspConfig);
+      WorkspaceConfig wspConfig) throws AccessDeniedException, RepositoryException {
+    return new SakaiXASessionImpl(this, injector, loginContext, wspConfig,
+        transactionManager);
   }
 
   /**
@@ -80,5 +83,6 @@ public class SakaiRepositoryImpl extends RepositoryImpl {
   protected NamespaceRegistryImpl getNamespaceRegistry() {
     return super.getNamespaceRegistry();
   }
+
 
 }

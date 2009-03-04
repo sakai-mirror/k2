@@ -59,6 +59,7 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Workspace;
+import javax.transaction.TransactionManager;
 
 @Singleton
 public class RepositoryBuilder implements InitializationAction {
@@ -162,6 +163,8 @@ public class RepositoryBuilder implements InitializationAction {
 
   private String nodeTypeConfiguration;
 
+  private TransactionManager transactionManager;
+
   // private String repositoryConfig;
 
   // private String repositoryHome;
@@ -224,7 +227,7 @@ public class RepositoryBuilder implements InitializationAction {
       @Named(NAME_REPOSITORY_CONFIG_LOCATION) String repositoryConfigTemplate,
       @Named(NAME_NODE_TYPE_CONFIGURATION) String nodeTypeConfiguration,
       @Named(NAME_NAMESPACES_MAP) String namespacesConfiguration,
-      Injector injector) throws IOException, RepositoryException {
+      Injector injector, TransactionManager transactionManager) throws IOException, RepositoryException {
 
     dbURL = dbURL.replaceAll("&(?!amp;)", "&amp;");
 
@@ -264,6 +267,7 @@ public class RepositoryBuilder implements InitializationAction {
     this.repositoryHome = repositoryHome;
     this.namespacesConfiguration = namespacesConfiguration;
     this.nodeTypeConfiguration = nodeTypeConfiguration;
+    this.transactionManager = transactionManager;
 
   }
 
@@ -288,7 +292,7 @@ public class RepositoryBuilder implements InitializationAction {
 
       RepositoryConfig rc = RepositoryConfig.create(bais, repositoryHome);
 
-      repository = new SakaiRepositoryImpl(rc, injector);
+      repository = new SakaiRepositoryImpl(rc, injector, transactionManager);
 
       Runtime.getRuntime().addShutdownHook(new Thread() {
         /**

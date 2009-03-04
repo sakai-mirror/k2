@@ -41,6 +41,13 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.Status;
+import javax.transaction.SystemException;
+import javax.transaction.TransactionManager;
 
 /**
  * 
@@ -62,6 +69,8 @@ public class SakaiRequestFilter implements Filter {
 
   private boolean noSession = false;
 
+  private TransactionManager transactionManager;
+
   /**
    * {@inheritDoc}
    * 
@@ -74,6 +83,7 @@ public class SakaiRequestFilter implements Filter {
         .getService(SessionManagerService.class);
     cacheManagerService = kernelManager.getService(CacheManagerService.class);
     userResolverService = kernelManager.getService(UserResolverService.class);
+    transactionManager = kernelManager.getService(TransactionManager.class);
     LOG.info(" SessionManagerService " + sessionManagerService);
     LOG.info(" Cache Manager Service " + cacheManagerService);
     noSession = "true".equals(config.getInitParameter(NO_SESSION));
@@ -106,7 +116,7 @@ public class SakaiRequestFilter implements Filter {
     SakaiServletResponse wresponse = new SakaiServletResponse(response);
     sessionManagerService.bindRequest(wrequest);
     try {
-
+      begin();
       if (timeOn) {
         long start = System.currentTimeMillis();
         try {
@@ -120,20 +130,35 @@ public class SakaiRequestFilter implements Filter {
       } else {
         chain.doFilter(wrequest, wresponse);
       }
-
+      commit();
     } catch (SecurityException se) {
+      rollback();
       // catch any Security exceptions and send a 401
       wresponse.reset();
       wresponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, se.getMessage());
     } catch (UnauthorizedException ape) {
+      rollback();
       // catch any Unauthorized exceptions and send a 401
       wresponse.reset();
       wresponse
           .sendError(HttpServletResponse.SC_UNAUTHORIZED, ape.getMessage());
     } catch (PermissionDeniedException pde) {
+      rollback();
       // catch any permission denied exceptions, and send a 403
       wresponse.reset();
       wresponse.sendError(HttpServletResponse.SC_FORBIDDEN, pde.getMessage());
+    } catch  ( RuntimeException e ) {
+      rollback();
+      throw e;
+    } catch (IOException e ) {
+      rollback();
+      throw e;
+    } catch (ServletException e ) {
+      rollback();
+      throw e;
+    } catch ( Throwable t ) {  
+      rollback();
+      throw new ServletException(t.getMessage(),t);
     } finally {
       wresponse.commitStatus(sessionManagerService);
       cacheManagerService.unbind(CacheScope.REQUEST);
@@ -145,6 +170,49 @@ public class SakaiRequestFilter implements Filter {
       }
     }
 
+  }
+
+  /**
+   * @throws SystemException 
+   * @throws NotSupportedException 
+   * 
+   */
+  protected void begin() throws NotSupportedException, SystemException {
+    transactionManager.begin();
+  }
+
+  /**
+   * @throws SystemException 
+   * @throws SecurityException 
+   * 
+   */
+  protected void commit() throws SecurityException, SystemException {
+    try {
+      if ( Status.STATUS_NO_TRANSACTION != transactionManager.getStatus() ) {
+        transactionManager.commit();
+      }
+    } catch ( RollbackException e ) {
+      LOG.debug(e);
+    } catch (IllegalStateException e ) {
+      LOG.debug(e);    
+    } catch ( HeuristicMixedException e ) {
+      LOG.warn(e);    
+    } catch ( HeuristicRollbackException e) {
+      LOG.warn(e);    
+    }
+  }
+
+  /**
+   * 
+   */
+  protected void rollback() {  
+    try {
+      transactionManager.rollback();
+    } catch (IllegalStateException e) {
+      LOG.debug(e);
+    } catch (Exception e) {
+      LOG.error(e.getMessage(),e);
+    }
   }
 
 }

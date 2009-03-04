@@ -59,6 +59,7 @@
               </includes>
               <excludes>
                 <exclude>**/commons-fileupload-sdata/**</exclude>
+                <exclude>**/org/apache/jackrabbit/**</exclude>
               </excludes>
               <aggregate>true</aggregate>
               <useDefaultExcludes>true</useDefaultExcludes>
