@@ -41,11 +41,11 @@ public class KernelConstants {
    * be set in the kernel properties file.
    */
   public static final String TTL = "userenv.ttl";
- 
+
   public static final String PROP_ANON_ACCOUNTING = "rest.user.anonymous.account.creation";
   public static final String ENTITY_MANAGER_SCOPE = "jpa.entitymanager.scope";
 
-  
+
   public static final String JDBC_DRIVER_NAME = "jdbc.driver";
   public static final String JDBC_URL = "jdbc.url";
   public static final String JDBC_USERNAME = "jdbc.username";
@@ -69,18 +69,18 @@ public class KernelConstants {
    * The Name of the userenv file in the system.
    */
   public static final String USERENV = "userenv";
-  
+
   /**
-   * The name of the profile file. 
+   * The name of the profile file.
    */
   public static final String PROFILE_JSON = "profile.json";
 
   /**
-   * The name of the friends file 
+   * The name of the friends file
    */
   public static final String FRIENDS_FILE = "friends.json";
 
-  
+
   /**
    * Attribute used in the session to store a list of group memberships.
    */
@@ -98,9 +98,9 @@ public class KernelConstants {
    * The name of the registry used for this type of service.
    */
   public static final String USER_PROVIDER_REGISTRY = "user.provider.registry";
-  
+
   public static final String JSON_CLASSMAP = "jsonconverter.classmap";
 
-
+  public static final String OUTBOX = "outbox";
 
 }
