@@ -95,7 +95,7 @@ public class PresenceServiceImpl implements PresenceService {
       String[] locationStatus = StringUtils.split(currentStatus, ':', STATUS_SIZE);
       if (locationStatus.length > TIMESTAMP_ELEMENT) {
         // timed out ?
-        long lastTs = Long.parseLong(locationStatus[2]);
+        long lastTs = Long.parseLong(locationStatus[TIMESTAMP_ELEMENT]);
         if (lastTs > timeout) {
           return locationStatus;
         }
@@ -111,8 +111,10 @@ public class PresenceServiceImpl implements PresenceService {
    *      java.util.List)
    */
   public Map<String, String> online(List<String> connections) {
+
     Map<String, String> online = Maps.newHashMap();
     for (String uuid : connections) {
+      
       online.put(uuid, getStatus(uuid));
     }
     return online;
@@ -133,6 +135,7 @@ public class PresenceServiceImpl implements PresenceService {
           onlineMap.put(e.getKey(), currentStatus[STATUS_ELEMENT]);
         }
       }
+      return onlineMap;
     }
     return ImmutableMap.of();
   }
