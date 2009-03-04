@@ -17,7 +17,7 @@
  */
 package org.sakaiproject.kernel.jcr.smartNode;
 
-import org.sakaiproject.kernel.jcr.api.SmartNodeHandler;
+import org.sakaiproject.kernel.api.jcr.SmartNodeHandler;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
@@ -31,7 +31,7 @@ public abstract class JcrSmartNodeHandler implements SmartNodeHandler {
   /**
    * {@inheritDoc}
    *
-   * @see org.sakaiproject.kernel.jcr.api.SmartNodeHandler#handle(javax.jcr.Node)
+   * @see org.sakaiproject.kernel.api.jcr.SmartNodeHandler#handle(javax.jcr.Node)
    */
   public void handle(HttpServletRequest request, HttpServletResponse response,
       Node node, String statement) throws RepositoryException {

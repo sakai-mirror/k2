@@ -25,6 +25,7 @@ import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.messaging.Message;
+import org.sakaiproject.kernel.api.messaging.OutgoingMessageHandler;
 import org.sakaiproject.kernel.jcr.api.JcrContentListener;
 
 import java.io.IOException;

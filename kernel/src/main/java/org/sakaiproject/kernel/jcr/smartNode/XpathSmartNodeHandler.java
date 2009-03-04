@@ -21,7 +21,7 @@ import com.google.inject.Inject;
 
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
-import org.sakaiproject.kernel.jcr.api.SmartNodeHandler;
+import org.sakaiproject.kernel.api.jcr.SmartNodeHandler;
 
 import javax.jcr.query.Query;
 

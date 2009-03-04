@@ -15,21 +15,15 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.jcr.api;
+package org.sakaiproject.kernel.api.messaging;
 
 import org.sakaiproject.kernel.api.Provider;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 /**
- * Interface for handlers of smart folder actions.
+ *
  */
-public interface SmartNodeHandler extends Provider<String> {
-  String REGISTRY = "smartNode.registry";
+public interface OutgoingMessageHandler extends Provider<String> {
+  public static final String REGISTRY = "outgoing.message";
 
-  void handle(HttpServletRequest request, HttpServletResponse response,
-      Node node, String statement) throws RepositoryException;
+  void handle(String userID, String filePath, String fileName, Message message);
 }

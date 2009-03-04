@@ -20,7 +20,7 @@ package org.sakaiproject.kernel.jcr.smartNode;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
-import org.sakaiproject.kernel.jcr.api.SmartNodeHandler;
+import org.sakaiproject.kernel.api.jcr.SmartNodeHandler;
 
 import java.util.ArrayList;
 import java.util.List;
