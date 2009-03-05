@@ -47,6 +47,7 @@ import org.sakaiproject.kernel.api.messaging.EmailMessage;
 import org.sakaiproject.kernel.api.messaging.Message;
 import org.sakaiproject.kernel.api.messaging.MessagingService;
 import org.sakaiproject.kernel.api.messaging.MultipartMessage;
+import org.sakaiproject.kernel.api.messaging.OutgoingMessageHandler;
 import org.sakaiproject.kernel.api.presence.PresenceService;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
@@ -82,6 +83,7 @@ import org.sakaiproject.kernel.jcr.smartNode.SmartNodeHandlerListProvider;
 import org.sakaiproject.kernel.jcr.support.JCRNodeFactoryServiceImpl;
 import org.sakaiproject.kernel.memory.CacheManagerServiceImpl;
 import org.sakaiproject.kernel.messaging.JmsSessionProvider;
+import org.sakaiproject.kernel.messaging.OutgoingMessageHandlerListProvider;
 import org.sakaiproject.kernel.messaging.email.EmailMessagingService;
 import org.sakaiproject.kernel.messaging.email.MailSessionProvider;
 import org.sakaiproject.kernel.model.UserEnvironmentBean;
@@ -343,5 +345,11 @@ public class KernelModule extends AbstractModule {
     };
     bind(smartFolderHandlerList).toProvider(SmartNodeHandlerListProvider.class)
         .asEagerSingleton();
+
+    // bring in the outgoing message handler so it can register
+    TypeLiteral<List<OutgoingMessageHandler>> outgoingMessageHandlerList = new TypeLiteral<List<OutgoingMessageHandler>>() {
+    };
+    bind(outgoingMessageHandlerList).toProvider(
+        OutgoingMessageHandlerListProvider.class).asEagerSingleton();
   }
 }

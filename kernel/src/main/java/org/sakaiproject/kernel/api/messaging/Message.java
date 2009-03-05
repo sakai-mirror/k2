@@ -50,7 +50,7 @@ public interface Message extends Serializable {
 
     /**
      * Create a field based on a name.
-     * 
+     *
      * @param jsonString
      *          the name of the field
      */
@@ -74,12 +74,9 @@ public interface Message extends Serializable {
 
     /** An email. */
     EMAIL("email"),
-    /** A short private message. */
-    NOTIFICATION("notification"),
-    /** A message to a specific user that can be seen only by that user. */
-    PRIVATE_MESSAGE("privateMessage"),
-    /** A message to a specific user that can be seen by more than that user. */
-    PUBLIC_MESSAGE("publicMessage");
+    /** A message that can be delivered within the system **/
+    INTERNAL("internalMessage");
+
     /**
      * The type of message.
      */
@@ -87,7 +84,7 @@ public interface Message extends Serializable {
 
     /**
      * Create a message type based on a string token.
-     * 
+     *
      * @param jsonString
      *          the type of message
      */
@@ -106,7 +103,7 @@ public interface Message extends Serializable {
 
   /**
    * Generic getter for a field.
-   * 
+   *
    * @param key
    *          the key of the field to get.
    * @return the value found for the requested field. null if not found.
@@ -115,7 +112,7 @@ public interface Message extends Serializable {
 
   /**
    * Generic getter for a field. Equivalent to getField(key.toString()).
-   * 
+   *
    * @param <T>
    *          the type to be returned.
    * @param key
@@ -126,7 +123,7 @@ public interface Message extends Serializable {
 
   /**
    * Retrieves all fields stored on the message.
-   * 
+   *
    * @return {@link java.util.Map}<String, Object> of fields with non-null keys
    *         and values.
    */
@@ -134,7 +131,7 @@ public interface Message extends Serializable {
 
   /**
    * Generic setter for a field.
-   * 
+   *
    * @param <T>
    *          the type of the value being set.
    * @param key
@@ -146,7 +143,7 @@ public interface Message extends Serializable {
 
   /**
    * Generic setter for a field. Equivalent to setField(key.toString, value).
-   * 
+   *
    * @param key
    *          the field to set a value to.
    * @param value
@@ -156,7 +153,7 @@ public interface Message extends Serializable {
 
   /**
    * Add a header to the message.
-   * 
+   *
    * @param key
    *          key of the header.
    * @param value
@@ -166,7 +163,7 @@ public interface Message extends Serializable {
 
   /**
    * Remove a header from the message.
-   * 
+   *
    * @param key
    *          key of header to remove.
    */
@@ -174,7 +171,7 @@ public interface Message extends Serializable {
 
   /**
    * Removes a field from the message.
-   * 
+   *
    * @param key
    *          the key of the field to be removed.
    */
@@ -182,7 +179,7 @@ public interface Message extends Serializable {
 
   /**
    * Removes a field from the message.
-   * 
+   *
    * @param key
    *          the key of the field to be removed.
    */
@@ -190,7 +187,7 @@ public interface Message extends Serializable {
 
   /**
    * Gets the main text of the message.
-   * 
+   *
    * @return the main text of the message
    */
   Serializable getBody();
@@ -198,7 +195,7 @@ public interface Message extends Serializable {
   /**
    * Sets the main text of the message. HTML attributes are allowed and are
    * sanitized by the container
-   * 
+   *
    * @param newBody
    *          the main text of the message
    */
@@ -206,7 +203,7 @@ public interface Message extends Serializable {
 
   /**
    * Gets the title of the message.
-   * 
+   *
    * @return the title of the message
    */
   String getTitle();
@@ -214,7 +211,7 @@ public interface Message extends Serializable {
   /**
    * Sets the title of the message. HTML attributes are allowed and are
    * sanitized by the container.
-   * 
+   *
    * @param newTitle
    *          the title of the message
    */
@@ -222,7 +219,7 @@ public interface Message extends Serializable {
 
   /**
    * Gets the type of the message.
-   * 
+   *
    * @return the type of message
    * @see Type
    */
@@ -230,7 +227,7 @@ public interface Message extends Serializable {
 
   /**
    * Sets the type of the message.
-   * 
+   *
    * @param newType
    *          the type of message (enum Message.Type)
    * @see Type
