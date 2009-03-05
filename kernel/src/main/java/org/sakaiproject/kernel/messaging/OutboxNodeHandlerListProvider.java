@@ -19,36 +19,26 @@
 package org.sakaiproject.kernel.messaging;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 
-import org.sakaiproject.kernel.api.Registry;
-import org.sakaiproject.kernel.api.RegistryService;
-import org.sakaiproject.kernel.api.messaging.Message;
-import org.sakaiproject.kernel.api.messaging.OutgoingMessageHandler;
+import org.sakaiproject.kernel.api.messaging.OutboxNodeHandler;
 
-public class InternalOutgoingMessageHandler implements OutgoingMessageHandler {
+import java.util.ArrayList;
+import java.util.List;
 
-  private static final String key = Message.Type.INTERNAL.toString();
-  private static final int priority = 0;
+public class OutboxNodeHandlerListProvider implements
+    Provider<List<OutboxNodeHandler>> {
 
-  private Registry<String, OutgoingMessageHandler> registry;
+  private ArrayList<OutboxNodeHandler> handlers;
 
   @Inject
-  public InternalOutgoingMessageHandler(RegistryService registryService) {
-    registry = registryService.getRegistry(OutgoingMessageHandler.REGISTRY);
-    registry.add(this);
+  public OutboxNodeHandlerListProvider(
+      InternalMessageHandler internalOutgoingMessageHandler) {
+    handlers = new ArrayList<OutboxNodeHandler>();
+    handlers.add(internalOutgoingMessageHandler);
   }
 
-  public void handle(String userID, String filePath, String fileName,
-      Message message) {
-
+  public List<OutboxNodeHandler> get() {
+    return handlers;
   }
-
-  public String getKey() {
-    return key;
-  }
-
-  public int getPriority() {
-    return priority;
-  }
-
 }
