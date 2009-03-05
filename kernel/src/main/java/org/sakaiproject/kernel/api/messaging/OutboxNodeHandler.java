@@ -19,11 +19,13 @@ package org.sakaiproject.kernel.api.messaging;
 
 import org.sakaiproject.kernel.api.Provider;
 
+import javax.jcr.Node;
+
 /**
  *
  */
-public interface OutgoingMessageHandler extends Provider<String> {
+public interface OutboxNodeHandler extends Provider<String> {
   public static final String REGISTRY = "outgoing.message";
 
-  void handle(String userID, String filePath, String fileName, Message message);
+  void handle(String userID, String filePath, String fileName, Node node);
 }

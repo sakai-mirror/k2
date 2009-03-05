@@ -24,14 +24,11 @@ import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
-import org.sakaiproject.kernel.api.messaging.Message;
-import org.sakaiproject.kernel.api.messaging.OutgoingMessageHandler;
+import org.sakaiproject.kernel.api.messaging.OutboxNodeHandler;
 import org.sakaiproject.kernel.jcr.api.JcrContentListener;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-
+import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
 /**
@@ -40,12 +37,12 @@ import javax.jcr.RepositoryException;
 public class OutboxListener implements JcrContentListener {
 
   private JCRNodeFactoryService jcrNodeFactory;
-  private Registry<String, OutgoingMessageHandler> registry;
+  private Registry<String, OutboxNodeHandler> registry;
 
   @Inject
   public OutboxListener(JCRNodeFactoryService jcrNodeFactory,
       RegistryService registryService) {
-    registry = registryService.getRegistry(OutgoingMessageHandler.REGISTRY);
+    registry = registryService.getRegistry(OutboxNodeHandler.REGISTRY);
   }
 
   /**
@@ -59,26 +56,14 @@ public class OutboxListener implements JcrContentListener {
     if (filePath.endsWith(KernelConstants.OUTBOX)) {
       try {
         // get the input stream from jcr
-        InputStream is = jcrNodeFactory.getInputStream(filePath + fileName);
+        Node n = jcrNodeFactory.getNode(filePath + fileName);
 
-        // convert to an object
-        ObjectInputStream ois = new ObjectInputStream(is);
-        Object obj = ois.readObject();
-
-        // make sure we have message
-        if (obj instanceof Message) {
-          Message msg = (Message) obj;
-
-          // call up the appropriate handler and pass off
-          OutgoingMessageHandler handler = registry.getMap().get(msg.getType());
-          if (handler != null) {
-            handler.handle(userID, filePath, fileName, msg);
-          }
+        Property outboxItemType = n.getProperty("sakaijcr:deliverableType");
+        // call up the appropriate handler and pass off
+        OutboxNodeHandler handler = registry.getMap().get(outboxItemType);
+        if (handler != null) {
+          handler.handle(userID, filePath, fileName, n);
         }
-      } catch (IOException e) {
-        //
-      } catch (ClassNotFoundException e) {
-        //
       } catch (JCRNodeFactoryServiceException e) {
         //
       } catch (RepositoryException e) {
