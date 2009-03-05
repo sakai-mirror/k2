@@ -33,6 +33,8 @@ import org.apache.jackrabbit.spi.Path.Element;
 public class SakaiAppendRecord extends AppendRecord {
 
   private boolean hasdata;
+  
+  
 
   /**
    * @param journal
@@ -41,6 +43,7 @@ public class SakaiAppendRecord extends AppendRecord {
   public SakaiAppendRecord(AbstractJournal journal, String producerId) {
     super(journal, producerId);
     hasdata = false;
+   
   }
 
   /**
@@ -170,6 +173,17 @@ public class SakaiAppendRecord extends AppendRecord {
     // ignore this as there is always another write if the data represents a record
     super.writeString(s);
   }
-  
+  /**
+   * {@inheritDoc}
+   * @see org.apache.jackrabbit.core.journal.AppendRecord#update()
+   */
+  @Override
+  public void update() throws JournalException {
+    if (!hasData()) {
+      cancelUpdate();
+      return;
+    }
+    super.update();
+  }
   
 }

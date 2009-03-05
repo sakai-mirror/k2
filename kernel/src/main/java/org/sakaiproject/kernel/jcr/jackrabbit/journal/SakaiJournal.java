@@ -17,12 +17,8 @@
  */
 package org.sakaiproject.kernel.jcr.jackrabbit.journal;
 
-import org.apache.jackrabbit.core.journal.AppendRecord;
 import org.apache.jackrabbit.core.journal.DatabaseJournal;
-import org.apache.jackrabbit.core.journal.JournalException;
 import org.apache.jackrabbit.core.journal.RecordProducer;
-
-import java.io.InputStream;
 
 /**
  * 
@@ -39,22 +35,5 @@ public class SakaiJournal extends DatabaseJournal {
     return new SakaiRecordProducer(this, identifier);
   }
 
-  /**
-   * {@inheritDoc}
-   * 
-   * @see org.apache.jackrabbit.core.journal.DatabaseJournal#append(org.apache.jackrabbit.core.journal.AppendRecord,
-   *      java.io.InputStream, int)
-   */
-  @Override
-  protected void append(AppendRecord record, InputStream in, int length)
-      throws JournalException {
-    if (record instanceof SakaiAppendRecord) {
-      SakaiAppendRecord sakaiAppendRecord = (SakaiAppendRecord) record;
-      if (!sakaiAppendRecord.hasData()) {
-        record.cancelUpdate();
-        return;
-      }
-    }
-    super.append(record, in, length);
-  }
+  
 }
