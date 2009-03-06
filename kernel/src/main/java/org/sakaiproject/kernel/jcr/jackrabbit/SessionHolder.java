@@ -35,17 +35,6 @@ public class SessionHolder implements ThreadBound {
 
   private boolean keepLoggedIn = false;
 
-  @Override
-  protected void finalize() throws Throwable {
-    try {
-      if (session != null) {
-        session.logout();
-      }
-    } catch (Throwable t) {
-      log.warn("Failed to close session ", t);
-    }
-    super.finalize();
-  }
 
   public SessionHolder(RepositoryBuilder repositoryBuilder,
       Credentials repositoryCredentials, String workspace)

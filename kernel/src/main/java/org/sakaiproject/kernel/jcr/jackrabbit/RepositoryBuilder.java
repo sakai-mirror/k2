@@ -89,24 +89,21 @@ public class RepositoryBuilder implements InitializationAction {
   private static final String PERSISTANCE_MANAGER = "\\$\\{persistance.manager.class\\}";
 
   /*
-   * These constants are the default Sakai Properties we will use if the values
-   * are not custom injected.
+   * These constants are the default Sakai Properties we will use if the values are not
+   * custom injected.
    */
   /*
    * public static final String DEFAULT_DBDIALECT_PROP =
    * "vendor@org.sakaiproject.db.api.SqlService";
    * 
-   * public static final String DEFAULT_DBUSER_PROP =
-   * "username@javax.sql.BaseDataSource";
+   * public static final String DEFAULT_DBUSER_PROP = "username@javax.sql.BaseDataSource";
    * 
-   * public static final String DEFAULT_DBPASS_PROP =
-   * "password@javax.sql.BaseDataSource";
+   * public static final String DEFAULT_DBPASS_PROP = "password@javax.sql.BaseDataSource";
    * 
    * public static final String DEFAULT_DBDRIVER_PROP =
    * "driverClassName@javax.sql.BaseDataSource";
    * 
-   * public static final String DEFAULT_DBURL_PROP =
-   * "url@javax.sql.BaseDataSource";
+   * public static final String DEFAULT_DBURL_PROP = "url@javax.sql.BaseDataSource";
    */
   public static final String DEFAULT_DSPERSISTMNGR_PROP = "dataSourcePersistanceManager@org.sakaiproject.kernel.api.jcr.JCRService.repositoryBuilder";
 
@@ -125,21 +122,18 @@ public class RepositoryBuilder implements InitializationAction {
   public static final String NAME_DB_CONTENTONFILESYSTEM = "contentOnFilesystem"
       + BASE_NAME;
 
-  public static final String NAME_DB_USESHARED_FS_BLOB = "useSharedFSBlob"
-      + BASE_NAME;
+  public static final String NAME_DB_USESHARED_FS_BLOB = "useSharedFSBlob" + BASE_NAME;
 
   public static final String NAME_DB_SHARED_FS_BLOB_LOCATION = "sharedFSBlobLocation"
       + BASE_NAME;
 
   public static final String NAME_SERVER_ID = "serverId";
 
-  public static final String NAME_SERVER_LOCATION = "sharedLocation"
-      + BASE_NAME;
+  public static final String NAME_SERVER_LOCATION = "sharedLocation" + BASE_NAME;
 
   public static final String NAME_NAMESPACES_MAP = "namespaces" + BASE_NAME;
 
-  public static final String NAME_REPOSITORY_HOME = "repositoryHome"
-      + BASE_NAME;
+  public static final String NAME_REPOSITORY_HOME = "repositoryHome" + BASE_NAME;
 
   public static final String NAME_REPOSITORY_CONFIG_LOCATION = "repositoryConfigTemplate"
       + BASE_NAME;
@@ -196,18 +190,12 @@ public class RepositoryBuilder implements InitializationAction {
 
   private static Map<String, String> persistanceManagers = new HashMap<String, String>();
   static {
-    persistanceManagers.put("mysql", MySqlSharedPersistenceManager.class
-        .getName());
-    persistanceManagers.put("oracle", OracleSharedPersistenceManager.class
-        .getName());
-    persistanceManagers.put("oracle9", Oracle9SharedPersistenceManager.class
-        .getName());
-    persistanceManagers.put("mssql", MSSqlSharedPersistenceManager.class
-        .getName());
-    persistanceManagers.put("derby", DerbySharedPersistenceManager.class
-        .getName());
-    persistanceManagers.put("default", BundleDbSharedPersistenceManager.class
-        .getName());
+    persistanceManagers.put("mysql", MySqlSharedPersistenceManager.class.getName());
+    persistanceManagers.put("oracle", OracleSharedPersistenceManager.class.getName());
+    persistanceManagers.put("oracle9", Oracle9SharedPersistenceManager.class.getName());
+    persistanceManagers.put("mssql", MSSqlSharedPersistenceManager.class.getName());
+    persistanceManagers.put("derby", DerbySharedPersistenceManager.class.getName());
+    persistanceManagers.put("default", BundleDbSharedPersistenceManager.class.getName());
   }
 
   public Repository getInstance() {
@@ -226,22 +214,21 @@ public class RepositoryBuilder implements InitializationAction {
       @Named(NAME_REPOSITORY_HOME) String repositoryHome,
       @Named(NAME_REPOSITORY_CONFIG_LOCATION) String repositoryConfigTemplate,
       @Named(NAME_NODE_TYPE_CONFIGURATION) String nodeTypeConfiguration,
-      @Named(NAME_NAMESPACES_MAP) String namespacesConfiguration,
-      Injector injector, TransactionManager transactionManager) throws IOException, RepositoryException {
+      @Named(NAME_NAMESPACES_MAP) String namespacesConfiguration, Injector injector,
+      TransactionManager transactionManager) throws IOException, RepositoryException {
 
     dbURL = dbURL.replaceAll("&(?!amp;)", "&amp;");
 
     String persistanceManagerClass = persistanceManagers.get(dbDialect);
     log.info(MessageFormat.format("\nJCR Repository Config is \n"
-        + "\trepositoryConfig = {0} \n" + "\tdbURL = {1}\n"
-        + "\tdbUser = {2} \n" + "\tdbDriver = {4} \n" + "\tdbDialect = {5} \n"
-        + "\trepository Home = {6}\n" + "\tcontentOnFilesystem = {7}\n"
-        + "\tpersistanceManageerClass= {8}\n", new Object[] {
-        repositoryConfigTemplate, dbURL, dbUser, dbPass, dbDriver, dbDialect,
-        repositoryHome, contentOnFilesystem, persistanceManagerClass }));
+        + "\trepositoryConfig = {0} \n" + "\tdbURL = {1}\n" + "\tdbUser = {2} \n"
+        + "\tdbDriver = {4} \n" + "\tdbDialect = {5} \n" + "\trepository Home = {6}\n"
+        + "\tcontentOnFilesystem = {7}\n" + "\tpersistanceManageerClass= {8}\n",
+        new Object[] { repositoryConfigTemplate, dbURL, dbUser, dbPass, dbDriver,
+            dbDialect, repositoryHome, contentOnFilesystem, persistanceManagerClass }));
 
-    contentStr = ResourceLoader.readResource(repositoryConfigTemplate, this
-        .getClass().getClassLoader());
+    contentStr = ResourceLoader.readResource(repositoryConfigTemplate, this.getClass()
+        .getClassLoader());
 
     contentStr = contentStr.replaceAll(DB_URL, dbURL);
     contentStr = contentStr.replaceAll(DB_USER, dbUser);
@@ -249,14 +236,12 @@ public class RepositoryBuilder implements InitializationAction {
     contentStr = contentStr.replaceAll(DB_DRIVER, dbDriver);
     contentStr = contentStr.replaceAll(DB_DIALECT, dbDialect);
     contentStr = contentStr.replaceAll(CONTENT_ID_DB, contentOnFilesystem);
-    contentStr = contentStr.replaceAll(USE_SHARED_FS_BLOB_STORE,
-        useSharedFSBlobStore);
-    contentStr = contentStr.replaceAll(SHARED_CONTENT_BLOB_LOCATION,
-        sharedFSBlobLocation);
+    contentStr = contentStr.replaceAll(USE_SHARED_FS_BLOB_STORE, useSharedFSBlobStore);
+    contentStr = contentStr
+        .replaceAll(SHARED_CONTENT_BLOB_LOCATION, sharedFSBlobLocation);
     contentStr = contentStr.replaceAll(CLUSTER_NODE_ID, serverId);
     contentStr = contentStr.replaceAll(JOURNAL_LOCATION, journalLocation);
-    contentStr = contentStr.replaceAll(PERSISTANCE_MANAGER,
-        persistanceManagerClass);
+    contentStr = contentStr.replaceAll(PERSISTANCE_MANAGER, persistanceManagerClass);
 
     if (log.isDebugEnabled())
       log.debug("Repositroy Config is \n" + contentStr);
@@ -329,8 +314,7 @@ public class RepositoryBuilder implements InitializationAction {
         log
             .debug("An A No current connection exception from the version manager is normal, if the version manager hasnt been used");
       } catch (Exception ex) {
-        log.debug("Repository Shutdown failed, this may be normal "
-            + ex.getMessage());
+        log.debug("Repository Shutdown failed, this may be normal " + ex.getMessage());
       }
       repository = null;
     }
@@ -338,8 +322,8 @@ public class RepositoryBuilder implements InitializationAction {
   }
 
   @SuppressWarnings("unchecked")
-  private void setup(String namespacesConfiguration,
-      String nodeTypeConfiguration) throws RepositoryException, IOException {
+  private void setup(String namespacesConfiguration, String nodeTypeConfiguration)
+      throws RepositoryException, IOException {
     SakaiJCRCredentials ssp = new SakaiJCRCredentials();
 
     Session s = repository.login(ssp);
@@ -352,8 +336,8 @@ public class RepositoryBuilder implements InitializationAction {
       InputStream in = null;
       Map<String, String> namespaces = new HashMap<String, String>();
       try {
-        in = ResourceLoader.openResource(namespacesConfiguration, this
-            .getClass().getClassLoader());
+        in = ResourceLoader.openResource(namespacesConfiguration, this.getClass()
+            .getClassLoader());
         namespaces = (Map<String, String>) parser.fromXML(in, namespaces);
       } finally {
         try {
@@ -367,20 +351,19 @@ public class RepositoryBuilder implements InitializationAction {
           reg.getPrefix(e.getValue());
         } catch (NamespaceException nex) {
           try {
-            log.info("Registering Namespage [" + e.getKey() + "] ["
-                + e.getValue() + "]");
+            log.info("Registering Namespage [" + e.getKey() + "] [" + e.getValue() + "]");
             reg.registerNamespace(e.getKey(), e.getValue());
           } catch (Exception ex) {
             throw new RuntimeException("Failed to register namespace prefix ("
-                + e.getKey() + ") with uri (" + e.getValue()
-                + ") in workspace: " + w.getName(), ex);
+                + e.getKey() + ") with uri (" + e.getValue() + ") in workspace: "
+                + w.getName(), ex);
           }
         }
       }
       try {
         @SuppressWarnings("unused")
-        String nodeTypes = ResourceLoader.readResource(nodeTypeConfiguration,
-            this.getClass().getClassLoader());
+        String nodeTypes = ResourceLoader.readResource(nodeTypeConfiguration, this
+            .getClass().getClassLoader());
         in = ResourceLoader.openResource(nodeTypeConfiguration, this.getClass()
             .getClassLoader());
         NodeTypeManagerImpl ntm = (NodeTypeManagerImpl) w.getNodeTypeManager();
@@ -403,5 +386,6 @@ public class RepositoryBuilder implements InitializationAction {
     }
 
   }
+
 
 }

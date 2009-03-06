@@ -193,6 +193,7 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
       currentSession = sh.getSession();
       sh.keepLoggedIn();
     }
+    LOG.info("Replacing "+currentSession+" with "+session);
     if (session == null) {
       clearSessionHolder();
     } else {

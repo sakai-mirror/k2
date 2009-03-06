@@ -18,8 +18,8 @@
 package org.sakaiproject.kernel.api.authz;
 
 /**
- * A permission query is a container for permissions that is connected with an
- * object and a user to resolve a permission question
+ * A permission query is a container for permissions that is connected with an object and
+ * a user to resolve a permission question
  */
 public interface PermissionQuery {
 
@@ -35,18 +35,30 @@ public interface PermissionQuery {
    * Standard remove statement key. (there can be more than read,write,remove)
    */
   public static final String REMOVE = "remove";
+  /**
+   * Read statement key for administrative properties and nodes.
+   */
+  public static final String ADMIN_READ = "aread";
+  /**
+   * Write statement key for administrative properties and nodes.
+   */
+  public static final String ADMIN_WRITE = "awrite";
+  /**
+   * Remove statement key for administrative properties and nodes.
+   */
+  public static final String ADMIN_REMOVE = "aremove";
 
   /**
-   * @return a list of statements that should be evaluated in order to represent
-   *         this query.
+   * @return a list of statements that should be evaluated in order to represent this
+   *         query.
    */
   Iterable<QueryStatement> statements();
 
   /**
-   * Get a token for this permission query on the supplied resource. The method
-   * must return the same QueryToken for the same permission on the same
-   * resource, as this is used to identify the results of this permission query
-   * against the supplied resource in a cache.
+   * Get a token for this permission query on the supplied resource. The method must
+   * return the same QueryToken for the same permission on the same resource, as this is
+   * used to identify the results of this permission query against the supplied resource
+   * in a cache.
    * 
    * @param resourceReference
    * @return the token representing the query on the resource.

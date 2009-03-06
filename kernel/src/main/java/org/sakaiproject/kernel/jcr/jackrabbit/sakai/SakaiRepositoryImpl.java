@@ -27,8 +27,14 @@ import org.apache.jackrabbit.core.config.WorkspaceConfig;
 import org.apache.jackrabbit.core.fs.FileSystem;
 import org.apache.jackrabbit.core.security.AuthContext;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.jcr.AccessDeniedException;
+import javax.jcr.LoginException;
+import javax.jcr.NoSuchWorkspaceException;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.transaction.TransactionManager;
 
 /**
@@ -38,6 +44,11 @@ public class SakaiRepositoryImpl extends RepositoryImpl {
 
   private Injector injector;
   private TransactionManager transactionManager;
+  private ThreadLocal<Map<String, Session>> systemThreadSession = new ThreadLocal<Map<String,Session>>() {
+    protected java.util.Map<String,Session> initialValue() {
+      return new HashMap<String, Session>();
+    };
+  };
 
   /**
    * @param repConfig
@@ -61,7 +72,28 @@ public class SakaiRepositoryImpl extends RepositoryImpl {
   protected SessionImpl createSessionInstance(AuthContext loginContext,
       WorkspaceConfig wspConfig) throws AccessDeniedException, RepositoryException {
     return new SakaiXASessionImpl(this, injector, loginContext, wspConfig,
-        transactionManager);
+          transactionManager);
+  }
+  
+  
+
+  /**
+   * @param workspaceName
+   * @return
+   * @throws LoginException
+   * @throws NoSuchWorkspaceException
+   * @throws RepositoryException
+   */
+  Session createReadOnlySystemSession(String workspaceName) throws LoginException,
+      NoSuchWorkspaceException, RepositoryException {
+    Map<String, Session> sessionMap = systemThreadSession.get();
+    // since this is a thread local map no sync is requried.
+    Session session = sessionMap.get(workspaceName);
+    if (session == null) {
+      session = login(new SakaiJCRCredentials(), workspaceName);
+      sessionMap.put(workspaceName, session);
+    }
+    return session;
   }
 
   /**
@@ -83,6 +115,5 @@ public class SakaiRepositoryImpl extends RepositoryImpl {
   protected NamespaceRegistryImpl getNamespaceRegistry() {
     return super.getNamespaceRegistry();
   }
-
 
 }

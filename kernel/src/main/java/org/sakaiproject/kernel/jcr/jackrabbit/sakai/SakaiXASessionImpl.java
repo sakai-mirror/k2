@@ -38,8 +38,6 @@ import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
-import javax.transaction.xa.XAException;
-import javax.transaction.xa.Xid;
 
 /**
  * This JCR Session impl overrides the XASession impl to allow us to create an injected
@@ -85,9 +83,30 @@ public class SakaiXASessionImpl extends XASessionImpl {
     super(prepareInjector(rep, injector), subject, wspConfig);
     setInjector(injector);
     bind(transactionManager);
-
+  }
+  
+  /**
+   * {@inheritDoc}
+   * @see org.apache.jackrabbit.core.XASessionImpl#logout()
+   */
+  @Override
+  public synchronized void logout() {
+    super.logout();
   }
 
+  /**
+   * {@inheritDoc}
+   * @see java.lang.Object#finalize()
+   */
+  @Override
+  protected void finalize() throws Throwable {
+    try {
+      logout();
+    } catch ( Exception ex ) {
+      LOG.warn("Failed to logout of finalizing session");
+    }
+    super.finalize();
+  }
   /**
    * @param transactionManager
    * @throws RepositoryException 

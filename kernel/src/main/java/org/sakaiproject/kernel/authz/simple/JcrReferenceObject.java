@@ -23,6 +23,7 @@ import org.sakaiproject.kernel.api.UpdateFailedException;
 import org.sakaiproject.kernel.api.authz.AccessControlStatement;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
 import org.sakaiproject.kernel.api.authz.ReferencedObject;
+import org.sakaiproject.kernel.api.jcr.JCRConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,8 +41,6 @@ import javax.jcr.Value;
  */
 public class JcrReferenceObject implements ReferencedObject {
 
-  private static final String ACL_PROPERTY = "acl:acl";
-  public static final String OWNER_PROPERTY = "acl:owner";
   private List<AccessControlStatement> acl;
   private List<AccessControlStatement> inheritableAcl;
   private String path;
@@ -62,7 +61,7 @@ public class JcrReferenceObject implements ReferencedObject {
     acl = new ArrayList<AccessControlStatement>();
     inheritableAcl = new ArrayList<AccessControlStatement>();
     try {
-      Property property = node.getProperty(ACL_PROPERTY);
+      Property property = node.getProperty(JCRConstants.ACL_ACL);
       for (Value aclSpec : property.getValues()) {
         AccessControlStatement acs = new JcrAccessControlStatementImpl(aclSpec
             .getString());
@@ -79,7 +78,7 @@ public class JcrReferenceObject implements ReferencedObject {
     }
     
     try {
-      Property property = node.getProperty(OWNER_PROPERTY);
+      Property property = node.getProperty(JCRConstants.ACL_OWNER);
       owner = property.getString();
     } catch (PathNotFoundException pnfe) {
 
@@ -177,7 +176,7 @@ public class JcrReferenceObject implements ReferencedObject {
         values[i++] = acs.toString();
       }
       values[i] = newAcs.toString();
-      node.setProperty(ACL_PROPERTY, values);
+      node.setProperty(JCRConstants.ACL_ACL, values);
       node.save();
 
       acl.add(newAcs);
@@ -214,7 +213,7 @@ public class JcrReferenceObject implements ReferencedObject {
         }
       }
       String[] values = newValues.toArray(new String[0]);
-      node.setProperty(ACL_PROPERTY, values);
+      node.setProperty(JCRConstants.ACL_ACL, values);
       node.save();
 
       acl.removeAll(toRemove);
@@ -240,7 +239,7 @@ public class JcrReferenceObject implements ReferencedObject {
       for (AccessControlStatement acs : newAcl) {
         values[i++] = acs.toString();
       }
-      node.setProperty(ACL_PROPERTY, values);
+      node.setProperty(JCRConstants.ACL_ACL, values);
       node.save();
 
       acl = Lists.newArrayList(newAcl);

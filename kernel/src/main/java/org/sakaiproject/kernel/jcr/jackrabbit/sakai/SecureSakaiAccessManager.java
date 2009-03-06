@@ -18,17 +18,21 @@
 
 package org.sakaiproject.kernel.jcr.jackrabbit.sakai;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.core.HierarchyManager;
 import org.apache.jackrabbit.core.ItemId;
-import org.apache.jackrabbit.core.NodeId;
 import org.apache.jackrabbit.core.PropertyId;
 import org.apache.jackrabbit.core.security.AMContext;
 import org.apache.jackrabbit.core.security.AccessManager;
+import org.apache.jackrabbit.spi.Name;
+import org.apache.jackrabbit.spi.NameFactory;
+import org.apache.jackrabbit.spi.Path;
 import org.apache.jackrabbit.spi.commons.conversion.DefaultNamePathResolver;
+import org.apache.jackrabbit.spi.commons.name.NameFactoryImpl;
 import org.apache.jackrabbit.spi.commons.namespace.NamespaceResolver;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
@@ -44,14 +48,17 @@ import org.sakaiproject.kernel.authz.simple.SimpleQueryStatement;
 import org.sakaiproject.kernel.jcr.api.internal.SakaiUserPrincipal;
 import org.sakaiproject.kernel.jcr.jackrabbit.JCRAnonymousPrincipal;
 import org.sakaiproject.kernel.jcr.jackrabbit.JCRSystemPrincipal;
+import org.sakaiproject.kernel.jcr.jackrabbit.RepositoryBuilder;
 
 import java.security.Principal;
 import java.util.Set;
 
 import javax.jcr.AccessDeniedException;
+import javax.jcr.Item;
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.NoSuchWorkspaceException;
 import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.security.auth.Subject;
@@ -61,8 +68,20 @@ import javax.security.auth.Subject;
 public class SecureSakaiAccessManager implements AccessManager {
   private static final Log log = LogFactory.getLog(SecureSakaiAccessManager.class);
 
+  private static final int ADMIN_READ = 0x10;
+
+  private static final int ADMIN_WRITE = 0x20;
+
+  private static final int ADMIN_REMOVE = 0x40;
+
+  private static final NameFactory NAMEFACTORY = NameFactoryImpl.getInstance();
+
+  private static final Set<Name> ADMIN_PROPERTIES = ImmutableSet.of(NAMEFACTORY.create(
+      JCRConstants.NS_ACL_URI, JCRConstants.ACL_ACL), NAMEFACTORY.create(
+      JCRConstants.NS_ACL_URI, JCRConstants.ACL_OWNER));
+
   private static final SimplePermissionQuery[] PERMISSION_QUERIES = new SimplePermissionQuery[READ
-      | WRITE | REMOVE];
+      | WRITE | REMOVE | ADMIN_READ | ADMIN_WRITE | ADMIN_REMOVE];
 
   private static final boolean debug = log.isDebugEnabled();
 
@@ -83,6 +102,18 @@ public class SecureSakaiAccessManager implements AccessManager {
         PERMISSION_QUERIES[i].addQueryStatement(new SimpleQueryStatement(
             PermissionQuery.REMOVE));
       }
+      if ((i & ADMIN_READ) == ADMIN_READ) {
+        PERMISSION_QUERIES[i].addQueryStatement(new SimpleQueryStatement(
+            PermissionQuery.ADMIN_READ));
+      }
+      if ((i & ADMIN_WRITE) == ADMIN_WRITE) {
+        PERMISSION_QUERIES[i].addQueryStatement(new SimpleQueryStatement(
+            PermissionQuery.ADMIN_WRITE));
+      }
+      if ((i & ADMIN_REMOVE) == ADMIN_REMOVE) {
+        PERMISSION_QUERIES[i].addQueryStatement(new SimpleQueryStatement(
+            PermissionQuery.ADMIN_REMOVE));
+      }
     }
 
   }
@@ -93,7 +124,6 @@ public class SecureSakaiAccessManager implements AccessManager {
    */
   private Subject subject;
 
-  @SuppressWarnings("unused")
   private HierarchyManager hierMgr;
 
   /**
@@ -120,7 +150,6 @@ public class SecureSakaiAccessManager implements AccessManager {
    */
   protected String sakaiUserId = null;
 
-  @SuppressWarnings("unused")
   private DefaultNamePathResolver pathResolver;
 
   /**
@@ -155,7 +184,9 @@ public class SecureSakaiAccessManager implements AccessManager {
 
   private CacheManagerService cacheManagerService;
 
-  private Object sessionLock = new Object();
+  private RepositoryBuilder repositoryBuilder;
+
+  private String workspaceName;
 
   private static int ncalls;
 
@@ -177,10 +208,12 @@ public class SecureSakaiAccessManager implements AccessManager {
 
   @Inject
   public SecureSakaiAccessManager(JCRService jcrService,
-      AuthzResolverService authzResolverService, CacheManagerService cacheManagerService)
-      throws ComponentActivatorException, RepositoryException {
+      AuthzResolverService authzResolverService, CacheManagerService cacheManagerService,
+      RepositoryBuilder repositoryBuilder) throws ComponentActivatorException,
+      RepositoryException {
     this.authzResolverService = authzResolverService;
     this.jcrService = jcrService;
+    this.repositoryBuilder = repositoryBuilder;
     this.cacheManagerService = cacheManagerService;
   }
 
@@ -196,9 +229,11 @@ public class SecureSakaiAccessManager implements AccessManager {
       throw new IllegalStateException("already initialized");
     }
 
+    workspaceName = context.getWorkspaceName();
     cache = cacheManagerService.getCache("jcr-accessmanager", CacheScope.INSTANCE);
 
     subject = context.getSubject();
+
     hierMgr = context.getHierarchyManager();
     resolver = context.getNamespaceResolver();
     pathResolver = new DefaultNamePathResolver(resolver, true);
@@ -275,42 +310,91 @@ public class SecureSakaiAccessManager implements AccessManager {
     }
     try {
       ncalls++;
-      // this is the system just grant
-      if (sakaisystem) {
-        nadmin++;
-        return true;
-      }
-      // check for a security manager bypass
-      String requestGrant = authzResolverService.getRequestGrant();
-      if (requestGrant != null) {
-        nrequestgrant++;
-        return true;
-      }
-      // anon is never allowed to write
-      if (anonymous
-          && ((permission & AccessManager.WRITE) == AccessManager.WRITE
-              || (permission & AccessManager.REMOVE) == AccessManager.REMOVE)) {
-        nanondnied++;
-        return false;
-      }
-      if (session == null) {
-        synchronized (sessionLock) {
-          session = jcrService.getSession();
-        }
-      }
       if (!checking.get()) {
+        Session userSession = null;
+        boolean sessionReplaced = false;
         try {
+
           // in checking so dont recurse.
           checking.set(true);
+          // this is the system just grant
+          if (sakaisystem) {
+            nadmin++;
+            return true;
+          }
+          // check for a security manager bypass
+          String requestGrant = authzResolverService.getRequestGrant();
+          if (requestGrant != null) {
+            nrequestgrant++;
+            return true;
+          }
+          // anon is never allowed to write
+          if (anonymous
+              && ((permission & AccessManager.WRITE) == AccessManager.WRITE || (permission & AccessManager.REMOVE) == AccessManager.REMOVE)) {
+            nanondnied++;
+            return false;
+          }
+          if (session == null) {
+            // Sessions and the associated access managers are bound to a single thread,
+            // and so no synchronization block is required.
+            session = ((SakaiRepositoryImpl) repositoryBuilder.getInstance())
+                .createReadOnlySystemSession(workspaceName);
+          }
+
+          userSession = jcrService.setSession(session);
+
+          sessionReplaced = true;
+
           nresolve++;
           Node node = null;
-          if (item.denotesNode()) {
-            NodeId nid = (NodeId) item;
-            node = session.getNodeByUUID(nid.getUUID().toString());
-          } else {
-            PropertyId propertyId = (PropertyId) item;
-            node = session.getNodeByUUID(propertyId.getParentId().toString());
+
+          // we cant do a session.getNodeByUUID as this will pull the node that hasnt been
+          // created into the ItemStateManager
+          // If the node is in the active session, then permission is already granted
+          // We have to convert the itemId into a state that works for this ode
+          log.info("Resolving " + item.toString());
+
+          // item will have the node name, we should check this to see if we need to
+          // translate the permission
+          // into a different form (eg write to an acl requires aclwrite and not just
+          // write)
+          if (isAclItem(item)) {
+            permission = permission * 0x10;
           }
+
+          if (!item.denotesNode()) {
+            PropertyId propertyId = (PropertyId) item;
+            item = propertyId.getParentId();
+          }
+          Path path = hierMgr.getPath(item);
+
+          /*
+           * The item may not have been written to the system session, so we must find the
+           * first saved item. This means that we are assuming that the user can do
+           * whatever they like to new nodes, but they have to have permission to perform
+           * the operation on the first parent node that does exist, regardless of what
+           * they have stated on the new nodes. This is a) correct b) expedient c) ensures
+           * that new nodes can be added the escalate permissions without the user having
+           * permission to do so.
+           */
+          for (;;) {
+            String jcrPath = pathResolver.getJCRPath(path);
+            try {
+              log.info("Searching for " + jcrPath + " usign " + session);
+              Item realItem = session.getItem(jcrPath);
+              if (realItem.isNode()) {
+                log.info("Got " + realItem);
+                node = (Node) realItem;
+                break;
+              } else {
+                path = path.subPath(0, path.getLength() - 1);
+              }
+            } catch (PathNotFoundException e) {
+              // if the path gets to 0 the loop will stop with an exception.
+              path = path.subPath(0, path.getLength() - 1);
+            }
+          }
+
           // find the first NT_FILE or NT_FOLDER parent
           String nodeType = node.getPrimaryNodeType().getName();
           Node rootNode = session.getRootNode();
@@ -324,6 +408,8 @@ public class SecureSakaiAccessManager implements AccessManager {
             node = parent;
             nodeType = node.getPrimaryNodeType().getName();
           }
+
+          // get a pre compiled permission query.
           PermissionQuery spq = PERMISSION_QUERIES[permission];
           String resourceReference = node.getPath();
           String queryKey = spq.getQueryToken(resourceReference);
@@ -336,10 +422,11 @@ public class SecureSakaiAccessManager implements AccessManager {
           }
 
           // the node is now located on a File or Folder, this the path we are
-          // intereted in working on.
+          // interested in working on.
 
           try {
             // potentially expensive call.
+
             authzResolverService.check(resourceReference, spq);
             cache
                 .put(sakaiUserId + ":" + queryKey, new ExpiringGrant<Boolean>(true, TTL));
@@ -355,10 +442,24 @@ public class SecureSakaiAccessManager implements AccessManager {
             }
             return false;
           }
-
+        } catch (RuntimeException e) {
+          log.error(e); // remove later
+          throw e;
+        } catch (ItemNotFoundException e) {
+          log.error(e); // remove later
+          throw e;
+        } catch (RepositoryException e) {
+          log.error(e); // remove later
+          throw e;
+        } catch (Exception ex) {
+          log.error(ex); // remove later
+          throw new RepositoryException(ex.getMessage(), ex);
         } finally {
           // out of checking
           checking.set(false);
+          if (sessionReplaced) {
+            jcrService.setSession(userSession);
+          }
         }
       } else {
         // internal just exit with granted
@@ -406,6 +507,19 @@ public class SecureSakaiAccessManager implements AccessManager {
         nresolve = 0;
       }
     }
+  }
+
+  /**
+   * @param item
+   * @return
+   */
+  private boolean isAclItem(ItemId item) {
+    if (!item.denotesNode()) {
+      PropertyId propertyId = (PropertyId) item;
+
+      return ADMIN_PROPERTIES.contains(propertyId.getName());
+    }
+    return false;
   }
 
   /*

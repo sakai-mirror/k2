@@ -21,11 +21,11 @@ package org.sakaiproject.kernel.api.jcr;
 import javax.jcr.Session;
 
 /**
- * This Interface defines some of the item names that are defined in the jcr
- * spec 1.0, using the default prefixes 'jcr', 'nt' and 'mix'. Please note that
- * those prefixes can by redefined by an application using the
- * {@link Session#setNamespacePrefix(String, String)} method. As a result, the
- * constants may not refer to the respective items.
+ * This Interface defines some of the item names that are defined in the jcr spec 1.0,
+ * using the default prefixes 'jcr', 'nt' and 'mix'. Please note that those prefixes can
+ * by redefined by an application using the
+ * {@link Session#setNamespacePrefix(String, String)} method. As a result, the constants
+ * may not refer to the respective items.
  */
 public interface JCRConstants {
   /**
@@ -311,5 +311,41 @@ public interface JCRConstants {
 
   public static final String MIX_ACL = "acl:properties-mix";
 
+  public static final String ACL_ACL = "acl:acl";
+  
+  public static final String ACL_OWNER = "acl:owner";
+
   public static final String JCR_SMARTNODE = "sakaijcr:smartNode";
+
+  // reserved namespace for items defined by built-in node types
+  public static final String NS_JCR_PREFIX = "jcr";
+  public static final String NS_JCR_URI = "http://www.jcp.org/jcr/1.0";
+
+  // reserved namespace for built-in primary node types
+  public static final String NS_NT_PREFIX = "nt";
+  public static final String NS_NT_URI = "http://www.jcp.org/jcr/nt/1.0";
+
+  // reserved namespace for built-in mixin node types
+  public static final String NS_MIX_PREFIX = "mix";
+  public static final String NS_MIX_URI = "http://www.jcp.org/jcr/mix/1.0";
+
+  // reserved namespace used in the system view XML serialization format
+  public static final String NS_SV_PREFIX = "sv";
+  public static final String NS_SV_URI = "http://www.jcp.org/jcr/sv/1.0";
+
+  public static final String NS_SAKAIHJCR_PREFIX = "sakaijcr";
+  public static final String NS_SAKAIHJCR_URI = "http://www.sakaiproject.org/CHS/jcr/jackrabbit/1.0";
+
+  public static final String NS_SAKAIH_PREFIX = "sakai";
+  public static final String NS_SAKAIH_URI = "http://www.sakaiproject.org/CHS/jcr/sakai/1.0";
+
+  public static final String NS_CHEF_PREFIX = "CHEF";
+  public static final String NS_CHEF_URI = "http://www.sakaiproject.org/CHS/jcr/chef/1.0";
+
+  public static final String NS_DAV_PREFIX = "DAV";
+  public static final String NS_DAV_URI = "http://www.sakaiproject.org/CHS/jcr/dav/1.0";
+
+  public static final String NS_ACL_PREFIX = "acl";
+  public static final String NS_ACL_URI = "http://www.jcp.org/acl/sv/1.0";
+
 }

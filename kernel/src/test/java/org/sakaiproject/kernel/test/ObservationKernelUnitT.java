@@ -41,6 +41,7 @@ import org.sakaiproject.kernel.api.UpdateFailedException;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
 import org.sakaiproject.kernel.api.authz.SubjectPermissions;
 import org.sakaiproject.kernel.api.authz.UserSubjects;
+import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
@@ -124,7 +125,7 @@ public class ObservationKernelUnitT extends KernelIntegrationBase {
           + ".json", ObservationKernelUnitT.class.getClassLoader());
       Node n = jcrNodeFactoryService.setInputStream(userEnvironmentPath, in,
           RestProvider.CONTENT_TYPE);
-      n.setProperty(JcrReferenceObject.OWNER_PROPERTY, userName);
+      n.setProperty(JCRConstants.ACL_OWNER, userName);
       n.save();
       session.save();
       in.close();
