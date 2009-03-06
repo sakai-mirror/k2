@@ -51,12 +51,14 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
 
   private static final String JCR_SESSION_HOLDER = "sh";
 
+  private static final boolean debug = LOG.isDebugEnabled();
+
   /**
    * The injected 170 repository
    */
   private RepositoryBuilder repositoryBuilder = null;
 
-//  private Credentials repositoryCredentialsX;
+  // private Credentials repositoryCredentialsX;
 
   private boolean requestScope = true;
 
@@ -65,15 +67,15 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
   private Injector injector;
 
   /**
-   * @throws RepositoryException 
+   * @throws RepositoryException
    * 
    */
   @Inject
   public JCRServiceImpl(RepositoryBuilder repositoryBuilder,
       CacheManagerService cacheManager,
       @Named(JCRService.NAME_REQUEST_SCOPE) boolean requestScope,
-      List<EventRegistration> registrations,
-      Injector injector) throws RepositoryException {
+      List<EventRegistration> registrations, Injector injector)
+      throws RepositoryException {
     this.repositoryBuilder = repositoryBuilder;
     this.cacheManager = cacheManager;
     this.requestScope = requestScope;
@@ -99,12 +101,10 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
     SessionHolder sh = getSessionHolder();
     if (sh == null) {
       long t1 = System.currentTimeMillis();
-      sh = new SessionHolder(repositoryBuilder, null,
-          DEFAULT_WORKSPACE);
+      sh = new SessionHolder(repositoryBuilder, null, DEFAULT_WORKSPACE);
       setSesssionHolder(sh);
-      if (LOG.isDebugEnabled())
-        LOG.debug("Session Start took " + (System.currentTimeMillis() - t1)
-            + "ms");
+      if (debug)
+        LOG.debug("Session Start took " + (System.currentTimeMillis() - t1) + "ms");
     }
     session = sh.getSession();
     return session;
@@ -115,13 +115,12 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
     SessionHolder sh = getSessionHolder();
     if (sh == null) {
       long t1 = System.currentTimeMillis();
-      
+
       sh = new SessionHolder(repositoryBuilder, new SakaiJCRCredentials(),
           DEFAULT_WORKSPACE);
       setSesssionHolder(sh);
-      if (LOG.isDebugEnabled())
-        LOG.debug("Session Start took " + (System.currentTimeMillis() - t1)
-            + "ms");
+      if (debug)
+        LOG.debug("Session Start took " + (System.currentTimeMillis() - t1) + "ms");
     }
     session = sh.getSession();
     return session;
@@ -182,9 +181,7 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
   /*
    * (non-Javadoc)
    * 
-   * @see
-   * org.sakaiproject.kernel.api.jcr.JCRService#setCurrentSession(javax.jcr.
-   * Session)
+   * @see org.sakaiproject.kernel.api.jcr.JCRService#setCurrentSession(javax.jcr. Session)
    */
   public Session setSession(Session session) {
     Session currentSession = null;
@@ -193,7 +190,8 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
       currentSession = sh.getSession();
       sh.keepLoggedIn();
     }
-    LOG.info("Replacing "+currentSession+" with "+session);
+    if (debug)
+      LOG.debug("Replacing " + currentSession + " with " + session);
     if (session == null) {
       clearSessionHolder();
     } else {
@@ -229,6 +227,7 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.jcr.JCRService#getObservationManager()
    */
   public ObservationManager getObservationManager() {
@@ -250,13 +249,12 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
     }
     return observationManager;
   }
-  
+
   /**
    * @return the injector
    */
   public Injector getInjector() {
     return injector;
   }
-
 
 }

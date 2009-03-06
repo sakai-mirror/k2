@@ -352,8 +352,9 @@ public class SecureSakaiAccessManager implements AccessManager {
           // created into the ItemStateManager
           // If the node is in the active session, then permission is already granted
           // We have to convert the itemId into a state that works for this ode
-          log.info("Resolving " + item.toString());
-
+          if (debug) {
+            log.debug("Resolving " + item.toString());
+          }
           // item will have the node name, we should check this to see if we need to
           // translate the permission
           // into a different form (eg write to an acl requires aclwrite and not just
@@ -380,10 +381,14 @@ public class SecureSakaiAccessManager implements AccessManager {
           for (;;) {
             String jcrPath = pathResolver.getJCRPath(path);
             try {
-              log.info("Searching for " + jcrPath + " usign " + session);
+              if (debug) {
+                log.info("Searching for " + jcrPath + " usign " + session);
+              }
               Item realItem = session.getItem(jcrPath);
               if (realItem.isNode()) {
-                log.info("Got " + realItem);
+                if (debug) {
+                  log.info("Got " + realItem);
+                }
                 node = (Node) realItem;
                 break;
               } else {
