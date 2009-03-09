@@ -45,7 +45,7 @@ public class MultipartMessageImpl extends MessageImpl implements
   }
 
   public MultipartMessageImpl(MessagingService messagingService, String type) {
-    super(messagingService);
+    super(messagingService, type);
     parts = new ArrayList<Message>();
   }
 

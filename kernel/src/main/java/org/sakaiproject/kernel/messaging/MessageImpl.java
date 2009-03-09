@@ -40,12 +40,11 @@ public class MessageImpl implements Message {
 
   private URL bodyUrl;
   private String bodyText;
-  private String from;
 
   public MessageImpl(MessagingService messagingService, String type) {
+    data = new HashMap<String, String>();
     this.messagingService = messagingService;
     setType(type);
-    data = new HashMap<String, String>();
   }
 
   public MessageImpl(MessagingService messagingService) {
@@ -217,7 +216,7 @@ public class MessageImpl implements Message {
    * @see org.sakaiproject.kernel.api.messaging.Message#getFrom()
    */
   public String getFrom() {
-    return from;
+    return getHeader(Message.Field.FROM);
   }
 
   /**
@@ -244,7 +243,7 @@ public class MessageImpl implements Message {
    * @see org.sakaiproject.kernel.api.messaging.Message#setFrom()
    */
   public void setFrom(String from) {
-    this.from = from;
+    setHeader(Message.Field.FROM, from);
   }
 
   /**
@@ -255,7 +254,7 @@ public class MessageImpl implements Message {
   public void setText(String text) {
     this.bodyText = text;
 
-    if (getMimeType() != null) {
+    if (getMimeType() == null) {
       setHeader(Message.Field.MIME_TYPE, TEXT_PLAIN);
     }
   }
