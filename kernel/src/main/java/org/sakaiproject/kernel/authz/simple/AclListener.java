@@ -50,7 +50,7 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
 /**
- *
+ * Listens to cahnges in ACL's
  */
 public class AclListener implements EventListener, EventRegistration {
 
@@ -60,6 +60,12 @@ public class AclListener implements EventListener, EventRegistration {
   private CacheManagerService cacheManagerService;
   private JCRService jcrService;
 
+  /**
+   * @param jcrNodeFactoryService
+   * @param entityManager
+   * @param cacheManagerService
+   * @param jcrService
+   */
   @Inject
   public AclListener(JCRNodeFactoryService jcrNodeFactoryService,
       EntityManager entityManager, CacheManagerService cacheManagerService,
@@ -178,6 +184,10 @@ public class AclListener implements EventListener, EventRegistration {
     }
   }
 
+  /**
+   * @param acs
+   * @return
+   */
   private AclIndexBean convert(AccessControlStatement acs) {
     AclIndexBean bean = new AclIndexBean();
     bean.setKey(acs.getStatementKey());
@@ -186,6 +196,11 @@ public class AclListener implements EventListener, EventRegistration {
     return bean;
   }
 
+  /**
+   * @param stmt
+   * @param list
+   * @return
+   */
   private AclIndexBean inList(AccessControlStatement stmt, List<?> list) {
     AclIndexBean found = null;
 
@@ -213,19 +228,25 @@ public class AclListener implements EventListener, EventRegistration {
     return found;
   }
 
+  /**
+   * {@inheritDoc}
+   * @see javax.jcr.observation.EventListener#onEvent(javax.jcr.observation.EventIterator)
+   */
   public void onEvent(EventIterator events) {
     try {
       jcrService.loginSystem();
       for (; events.hasNext();) {
         Event e = events.nextEvent();
 
-        try {
-          String path = e.getPath();
-          if (path.endsWith(JCRConstants.MIX_ACL)) {
-            handleEvent(e.getType(), e.getUserID(), path);
+        if (!jcrService.isExternalEvent(e)) {
+          try {
+            String path = e.getPath();
+            if (path.endsWith(JCRConstants.MIX_ACL)) {
+              handleEvent(e.getType(), e.getUserID(), path);
+            }
+          } catch (Exception e1) {
+            LOG.warn("Failed to process event " + e1.getMessage(), e1);
           }
-        } catch (Exception e1) {
-          LOG.warn("Failed to process event " + e1.getMessage(), e1);
         }
       }
     } catch (LoginException e) {

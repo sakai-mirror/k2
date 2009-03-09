@@ -22,6 +22,7 @@ import com.google.inject.name.Named;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jackrabbit.core.observation.EventImpl;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
 
@@ -31,6 +32,7 @@ import javax.jcr.Node;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.observation.Event;
 import javax.jcr.observation.ObservationManager;
 
 /* This is mostly the same as the JCRServiceImpl, except you are never bound to a 
@@ -156,5 +158,13 @@ public class UnboundJCRServiceImpl implements JCRService {
     return observationManager;
   }
 
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.jcr.JCRService#isExternalEvent(javax.jcr.observation.Event)
+   */
+  public boolean isExternalEvent(Event event) {
+    EventImpl eventImpl = (EventImpl) event;
+    return eventImpl.isExternal();
+  }
 
 }

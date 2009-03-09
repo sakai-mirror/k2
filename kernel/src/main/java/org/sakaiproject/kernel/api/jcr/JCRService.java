@@ -23,6 +23,7 @@ import javax.jcr.Node;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.observation.Event;
 import javax.jcr.observation.ObservationManager;
 
 /**
@@ -135,5 +136,12 @@ public interface JCRService {
    * @throws LoginException 
    */
   Session loginSystem() throws LoginException, RepositoryException;
+
+  /**
+   * Is the event external ie not from this node in cluster.
+   * @param event
+   * @return true if from another node in the cluster.
+   */
+  boolean isExternalEvent(Event event);
 
 }

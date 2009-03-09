@@ -24,6 +24,7 @@ import com.google.inject.name.Named;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jackrabbit.core.observation.EventImpl;
 import org.sakaiproject.kernel.api.RequiresStop;
 import org.sakaiproject.kernel.api.jcr.EventRegistration;
 import org.sakaiproject.kernel.api.jcr.JCRService;
@@ -39,6 +40,7 @@ import javax.jcr.Node;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.observation.Event;
 import javax.jcr.observation.ObservationManager;
 
 @Singleton
@@ -255,6 +257,15 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
    */
   public Injector getInjector() {
     return injector;
+  }
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.jcr.JCRService#isExternalEvent(javax.jcr.observation.Event)
+   */
+  public boolean isExternalEvent(Event event) {
+    EventImpl eventImpl = (EventImpl) event;
+    return eventImpl.isExternal();
   }
 
 }

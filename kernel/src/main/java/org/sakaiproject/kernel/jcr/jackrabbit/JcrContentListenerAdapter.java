@@ -40,11 +40,9 @@ import javax.jcr.observation.ObservationManager;
 /**
  * 
  */
-public class JcrContentListenerAdapter implements EventListener,
-    EventRegistration {
+public class JcrContentListenerAdapter implements EventListener, EventRegistration {
 
-  private static final Log LOG = LogFactory
-      .getLog(JcrContentListenerAdapter.class);
+  private static final Log LOG = LogFactory.getLog(JcrContentListenerAdapter.class);
   private static final String DATA_NODE = "/" + JCRConstants.JCR_CONTENT + "/"
       + JCRConstants.JCR_DATA;
   private List<JcrContentListener> listeners;
@@ -59,8 +57,7 @@ public class JcrContentListenerAdapter implements EventListener,
    */
   @Inject
   public JcrContentListenerAdapter(List<JcrContentListener> listeners,
-      CacheManagerService cacheManager, JCRService jcrService)
-      throws RepositoryException {
+      CacheManagerService cacheManager, JCRService jcrService) throws RepositoryException {
     this.listeners = listeners;
     this.cacheManager = cacheManager;
     this.jcrService = jcrService;
@@ -73,12 +70,10 @@ public class JcrContentListenerAdapter implements EventListener,
    * 
    * @see org.sakaiproject.kernel.api.jcr.EventRegistration#register(javax.jcr.observation.ObservationManager)
    */
-  public void register(ObservationManager observationManager)
-      throws RepositoryException {
-    observationManager
-        .addEventListener(this, Event.PROPERTY_ADDED | Event.PROPERTY_CHANGED
-            | Event.PROPERTY_REMOVED, "/", true, null, new String[] {
-            JCRConstants.NT_RESOURCE, JCRConstants.NT_UNSTRUCTURED }, false);
+  public void register(ObservationManager observationManager) throws RepositoryException {
+    observationManager.addEventListener(this, Event.PROPERTY_ADDED
+        | Event.PROPERTY_CHANGED | Event.PROPERTY_REMOVED, "/", true, null, new String[] {
+        JCRConstants.NT_RESOURCE, JCRConstants.NT_UNSTRUCTURED }, false);
     LOG.info("Registerd  " + this.getClass().getName());
   }
 
@@ -96,14 +91,15 @@ public class JcrContentListenerAdapter implements EventListener,
       for (; events.hasNext();) {
         try {
           Event event = events.nextEvent();
-          String path = event.getPath();
-          if (path.endsWith(DATA_NODE)) {
-            String filePath = path.substring(0, path.length()
-                - DATA_NODE.length());
-            String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
-            for (JcrContentListener listener : listeners) {
-              listener.onEvent(event.getType(), event.getUserID(), filePath,
-                  fileName);
+          if (!jcrService.isExternalEvent(event)) {
+            // only listen to internal events
+            String path = event.getPath();
+            if (path.endsWith(DATA_NODE)) {
+              String filePath = path.substring(0, path.length() - DATA_NODE.length());
+              String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
+              for (JcrContentListener listener : listeners) {
+                listener.onEvent(event.getType(), event.getUserID(), filePath, fileName);
+              }
             }
           }
         } catch (Exception rex) {
