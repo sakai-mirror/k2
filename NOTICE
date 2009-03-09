@@ -20,6 +20,12 @@ for Sakai Kernel 2.
 Some code is (c) Apache Software Foundation (http://www.apache.org)
 (portions of Apache Jackrabbit, Apache Shindig, Apache Commons File Upload)
 
+The distribution downloads and includes WordNet Synonyms from 
+http://wordnet.princeton.edu which are licensed under the
+WordNet 3.0 License http://wordnet.princeton.edu/license
+
+
+
 This distribution includes cryptographic software.  The country in
 which you currently reside may have restrictions on the import,
 possession, use, and/or re-export to another country, of
