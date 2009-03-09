@@ -22,8 +22,13 @@ import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * Utility class for working on the file system.
@@ -42,8 +47,8 @@ public class FileUtil {
           deleteAll(fc);
         }
       }
-      if ( !f.delete() ) {
-        LOG.warn("Failed to delete file "+f);
+      if (!f.delete()) {
+        LOG.warn("Failed to delete file " + f);
       }
     }
   }
@@ -58,7 +63,7 @@ public class FileUtil {
     FileFilter ff = new FileFilter() {
 
       public boolean accept(File pathname) {
-       
+
         if (pathname.isDirectory()) {
           return true;
         }
@@ -78,7 +83,7 @@ public class FileUtil {
   private static void addFile(File f, List<File> list, FileFilter ff) {
     if (f.exists()) {
       if (f.isDirectory()) {
-         for (File fn : f.listFiles(ff)) {
+        for (File fn : f.listFiles(ff)) {
           if (fn.isDirectory()) {
             addFile(fn, list, ff);
           } else {
@@ -87,6 +92,49 @@ public class FileUtil {
         }
       } else if (ff.accept(f)) {
         list.add(f);
+      }
+    }
+  }
+
+  public static void unpack(InputStream source, File destination) throws IOException {
+    ZipInputStream zin = new ZipInputStream(source);
+    ZipEntry zipEntry = null;
+    FileOutputStream fout = null;
+    try {
+      byte[] buffer = new byte[4096];
+      while ((zipEntry = zin.getNextEntry()) != null) {
+
+        long ts = zipEntry.getTime();
+        // the zip entry needs to be a full path from the
+        // searchIndexDirectory... hence this is correct
+
+        File f = new File(destination, zipEntry.getName());
+        if (LOG.isInfoEnabled()) {
+          LOG.info("         Unpack " + f.getAbsolutePath());
+        }
+        f.getParentFile().mkdirs();
+
+        if (!zipEntry.isDirectory()) {
+          fout = new FileOutputStream(f);
+          int len;
+          while ((len = zin.read(buffer)) > 0) {
+            fout.write(buffer, 0, len);
+          }
+          zin.closeEntry();
+          fout.close();
+        }
+        f.setLastModified(ts);
+      }
+    } finally {
+      try {
+        fout.close();
+      } catch (Exception ex) {
+        LOG.warn("Exception closing file output stream", ex);
+      }
+      try {
+        zin.close();
+      } catch (Exception ex) {
+        LOG.warn("Exception closing file input stream", ex);
       }
     }
   }

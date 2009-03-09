@@ -22,15 +22,81 @@
           <forkMode>always</forkMode>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate</id>
+            <phase>generate-resources</phase>
+            <configuration>
+              <tasks>
+                <taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+                <property name="compile_classpath" refid="maven.compile.classpath" />
+                <property name="wordnet_exists" value="false" />
+                <available file="${basedir}/generated-src/main/resources/wordnet/wordnetindex.zip"
+                  property="wordnet_exists" value="true" />
+                <if>
+                  <equals arg1="${wordnet_exists}" arg2="true" />
+                  <then>
+                    <echo>Wordnet Index Exists, no need to rebuild, to force a rebuid remove
+                      ${basedir}/generated-src/main/resources/wordnet/wordnetindex.zip</echo>
+                  </then>
+                  <else>
+                    <property name="compile_classpath" refid="maven.compile.classpath" />
+                 <!-- Generate the Wordnet index -->
+                    <mkdir dir="${basedir}/target/wordnet" />
+                    <get src="http://www.cogsci.princeton.edu/2.0/WNprolog-2.0.tar.gz" dest="${basedir}/target/wordnet/WNprolog-2.0.tar.gz" />
+                    <gunzip src="${basedir}/target/wordnet/WNprolog-2.0.tar.gz" dest="${basedir}/target/wordnet/WNprolog-2.0.tar" />
+                    <untar src="${basedir}/target/wordnet/WNprolog-2.0.tar" dest="${basedir}/target/wordnet/WNprolog-2.0" />
+                    <mkdir dir="${basedir}/target/working" />
+                    <java classname="org.apache.lucene.wordnet.Syns2Index" classpathref="maven.compile.classpath">
+                      <arg value="${basedir}/target/wordnet/WNprolog-2.0/prolog/wn_s.pl" />
+                      <arg value="${basedir}/target/wordnet/woking/index" />
+                    </java>
+                    <mkdir dir="${basedir}/generated-src/main/resources/wordnet" />
+                    <zip destfile="${basedir}/generated-src/main/resources/wordnet/wordnetindex.zip"
+                      basedir="${basedir}/target/wordnet/woking/index" />
+                  </else>
+                </if>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>ant-contrib</groupId>
+            <artifactId>ant-contrib</artifactId>
+            <version>20020829</version>
+          </dependency>
+        </dependencies>
+      </plugin>
     </plugins>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>generated-src/main/resources</directory>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </resource>
+    </resources>
   </build>
   <dependencies>
-	<dependency>
+    <dependency>
       <groupId>org.subethamail</groupId>
       <artifactId>subethasmtp-wiser</artifactId>
       <version>1.2</version>
-	  <scope>test</scope>
-	</dependency>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.sakaiproject.kernel2.agnostic</groupId>
       <artifactId>common</artifactId>
@@ -161,10 +227,15 @@
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>jaxrs-api</artifactId>
       <scope>provided</scope>
-	</dependency>
-	<dependency>
+    </dependency>
+    <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-wordnet</artifactId>
+      <version>2.2.0</version>
     </dependency>
   </dependencies>
 </project>

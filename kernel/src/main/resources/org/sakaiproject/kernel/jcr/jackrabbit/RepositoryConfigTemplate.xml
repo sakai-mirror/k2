@@ -254,6 +254,8 @@
             <param name="enableConsistencyCheck" value="false"/>
             <param name="autoRepair" value="true"/>
             <param name="analyzer" value="org.apache.lucene.analysis.standard.StandardAnalyzer"/>
+            <param name="synonymProviderClass" value="org.sakaiproject.kernel.jcr.jackrabbit.search.wordnet.WordnetSynonymProvider"/>
+            <param name="synonymProviderConfigPath" value="wordnetx/index.location" />
             <param name="queryClass" value="org.apache.jackrabbit.core.query.QueryImpl"/>
             <!-- setting this to true will cause all the results to be returned at once -->
             <param name="respectDocumentOrder" value="false"/>
