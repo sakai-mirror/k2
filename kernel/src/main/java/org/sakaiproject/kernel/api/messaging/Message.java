@@ -18,6 +18,7 @@
 package org.sakaiproject.kernel.api.messaging;
 
 import java.io.Serializable;
+import java.net.URL;
 import java.util.Map;
 
 /**
@@ -29,20 +30,24 @@ public interface Message extends Serializable {
   public static final String TYPE = "Message";
 
   /**
-   * An enumeration of field names in a message.
+   * An enumeration of field names in a message. The list is by no means
+   * exhaustive.
    */
   public static enum Field {
 
-    /** the field name for the sender. */
+    /** field name for the sender. */
     FROM("From"),
-    /** the field name for body. */
+    /** field name for recipients */
+    TO("To"),
+    /** field name for body. */
     BODY("Body"),
-    /** the field name for title. */
+    /** field name for title. */
     TITLE("Title"),
-    /** the field name for type. */
+    /** field name for type. */
     TYPE("Type"),
-    /** headers for the message */
-    HEADERS("Headers");
+    /** field name for body mime type */
+    MIME_TYPE("Mime-Type");
+
     /**
      * the name of the field.
      */
@@ -108,7 +113,7 @@ public interface Message extends Serializable {
    *          the key of the field to get.
    * @return the value found for the requested field. null if not found.
    */
-  Serializable getField(String key);
+  String getHeader(String key);
 
   /**
    * Generic getter for a field. Equivalent to getField(key.toString()).
@@ -119,7 +124,7 @@ public interface Message extends Serializable {
    *          the key of the field to get.
    * @return the value found for the requested field. null if not found.
    */
-  Serializable getField(Enum<?> key);
+  String getHeader(Enum<?> key);
 
   /**
    * Retrieves all fields stored on the message.
@@ -127,7 +132,7 @@ public interface Message extends Serializable {
    * @return {@link java.util.Map}<String, Object> of fields with non-null keys
    *         and values.
    */
-  Map<String, Serializable> getFields();
+  Map<String, String> getHeaders();
 
   /**
    * Generic setter for a field.
@@ -139,7 +144,7 @@ public interface Message extends Serializable {
    * @param value
    *          the value to set.
    */
-  void setField(String key, Serializable value);
+  void setHeader(String key, String value);
 
   /**
    * Generic setter for a field. Equivalent to setField(key.toString, value).
@@ -149,23 +154,13 @@ public interface Message extends Serializable {
    * @param value
    *          the value to set.
    */
-  void setField(Enum<?> key, Serializable value);
+  void setHeader(Enum<?> key, String value);
 
   /**
-   * Add a header to the message.
+   * Removes a field from the message.
    *
    * @param key
-   *          key of the header.
-   * @param value
-   *          value of the header.
-   */
-  void setHeader(String key, String value);
-
-  /**
-   * Remove a header from the message.
-   *
-   * @param key
-   *          key of header to remove.
+   *          the key of the field to be removed.
    */
   void removeHeader(String key);
 
@@ -175,38 +170,68 @@ public interface Message extends Serializable {
    * @param key
    *          the key of the field to be removed.
    */
-  void removeField(String key);
+  void removeHeader(Enum<?> key);
 
   /**
-   * Removes a field from the message.
+   * Get the sender of the message.
    *
-   * @param key
-   *          the key of the field to be removed.
+   * @return
    */
-  void removeField(Enum<?> key);
+  String getFrom();
 
   /**
-   * Gets the main text of the message.
+   * Set the sender of the message.
+   */
+  void setFrom(String from);
+
+  String getTo();
+
+  void addTo(String to);
+
+  /**
+   * Is the body of the message text?
    *
-   * @return the main text of the message
+   * @return
    */
-  Serializable getBody();
+  boolean isBodyText();
 
   /**
-   * Sets the main text of the message. HTML attributes are allowed and are
-   * sanitized by the container
+   * Gets the body of the message as a URI. Return null if the body is not set
+   * or set to text.
+   *
+   * @return the body of the message. null if not set of text.
+   */
+  URL getBody();
+
+  /**
+   * Sets the body of the message to URI.
    *
    * @param newBody
    *          the main text of the message
    */
-  void setBody(Serializable newBody);
+  void setBody(URL body);
+
+  /**
+   * Gets the body as a String.
+   *
+   * @return String version of the body.
+   */
+  String getText();
+
+  /**
+   * Sets the body to a String. Defaults the mime type to "text/plain" if mime
+   * type is not set.
+   *
+   * @param text
+   */
+  void setText(String text);
 
   /**
    * Gets the title of the message.
    *
    * @return the title of the message
    */
-  String getTitle();
+  String getSubject();
 
   /**
    * Sets the title of the message. HTML attributes are allowed and are
@@ -215,7 +240,7 @@ public interface Message extends Serializable {
    * @param newTitle
    *          the title of the message
    */
-  void setTitle(String newTitle);
+  void setSubject(String subject);
 
   /**
    * Gets the type of the message.
@@ -234,5 +259,25 @@ public interface Message extends Serializable {
    */
   void setType(String newType);
 
-  void send();
+  /**
+   * Gets the mime type of the message content.
+   *
+   * @return
+   */
+  String getMimeType();
+
+  /**
+   * Sets the mime type of the message content.
+   *
+   * @param mimeType
+   */
+  void setMimeType(String mimeType);
+
+  /**
+   * Send the message. The implementation by which this is sent depends on how
+   * the class was created. The implementation shouldn't be a concern.
+   *
+   * @throws MessagingException
+   */
+  void send() throws MessagingException;
 }

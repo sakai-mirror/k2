@@ -21,7 +21,7 @@ package org.sakaiproject.kernel.messaging;
 import org.sakaiproject.kernel.api.messaging.Message;
 import org.sakaiproject.kernel.api.messaging.MessagingService;
 
-import java.io.Serializable;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,46 +30,50 @@ import java.util.Map;
  */
 public class MessageImpl implements Message {
 
+  public static final String TEXT_PLAIN = "text/plain";
+  public static final String TEXT_HTML = "text/html";
+
   private static final long serialVersionUID = 1L;
 
   private final MessagingService messagingService;
-  private final HashMap<String, Serializable> data;
+  private final HashMap<String, String> data;
+
+  private URL bodyUrl;
+  private String bodyText;
+  private String from;
+
+  public MessageImpl(MessagingService messagingService, String type) {
+    this.messagingService = messagingService;
+    setType(type);
+    data = new HashMap<String, String>();
+  }
 
   public MessageImpl(MessagingService messagingService) {
-    this.messagingService = messagingService;
-    data = new HashMap<String, Serializable>();
+    this(messagingService, Message.Type.INTERNAL.toString());
   }
 
   /**
    * {@inheritDoc}
    *
-   * @param key
-   * @param value
-   * @see Message#setHeader(java.lang.String, java.lang.String)
+   * @see org.sakaiproject.kernel.api.messaging.Message#getTo()
    */
-  @SuppressWarnings("unchecked")
-  public void setHeader(String key, String value) {
-    HashMap<String, String> headers = (HashMap<String, String>) getField(
-        Message.Field.HEADERS);
-    if (headers == null) {
-      headers = new HashMap<String, String>();
-    }
-    headers.put(key, value);
+  public String getTo() {
+    return getHeader(Message.Field.TO);
   }
 
   /**
    * {@inheritDoc}
    *
-   * @param key
-   * @see Message#removeField(java.lang.String)
+   * @see org.sakaiproject.kernel.api.messaging.Message#addTo()
    */
-  @SuppressWarnings("unchecked")
-  public void removeHeader(String key) {
-    HashMap<String, String> headers = (HashMap<String, String>) getField(
-        Message.Field.HEADERS);
-    if (headers != null) {
-      headers.remove(key);
+  public void addTo(String to) {
+    String msgTo = getHeader(Message.Field.TO);
+    if (msgTo != null) {
+      msgTo += ", " + to;
+    } else {
+      msgTo = to;
     }
+    setHeader(Message.Field.TO, msgTo);
   }
 
   /**
@@ -77,16 +81,16 @@ public class MessageImpl implements Message {
    *
    * @see org.sakaiproject.kernel.api.messaging.Message#getBody()
    */
-  public Serializable getBody() {
-    return getField(Message.Field.BODY.toString());
+  public URL getBody() {
+    return bodyUrl;
   }
 
   /**
    * {@inheritDoc}
    *
-   * @see org.sakaiproject.kernel.api.messaging.Message#getField(java.lang.String)
+   * @see org.sakaiproject.kernel.api.messaging.Message#getHeader(java.lang.String)
    */
-  public Serializable getField(String key) {
+  public String getHeader(String key) {
     return data.get(key);
   }
 
@@ -95,23 +99,23 @@ public class MessageImpl implements Message {
    * @param <T>
    * @param key
    * @return
-   * @see Message#getField(java.lang.Enum)
+   * @see Message#getHeader(java.lang.Enum)
    */
-  public Serializable getField(Enum<?> key) {
-    return getField(key.toString());
+  public String getHeader(Enum<?> key) {
+    return getHeader(key.toString());
   }
 
-  public Map<String, Serializable> getFields() {
+  public Map<String, String> getHeaders() {
     return data;
   }
 
   /**
    * {@inheritDoc}
    *
-   * @see org.sakaiproject.kernel.api.messaging.Message#getTitle()
+   * @see org.sakaiproject.kernel.api.messaging.Message#getSubject()
    */
-  public String getTitle() {
-    return (String) getField(Message.Field.TITLE.toString());
+  public String getSubject() {
+    return getHeader(Message.Field.TITLE.toString());
   }
 
   /**
@@ -120,24 +124,24 @@ public class MessageImpl implements Message {
    * @see org.sakaiproject.kernel.api.messaging.Message#getType()
    */
   public String getType() {
-    return (String) getField(Message.Field.TYPE.toString());
+    return getHeader(Message.Field.TYPE.toString());
   }
 
   /**
    * {@inheritDoc}
    *
-   * @see org.sakaiproject.kernel.api.messaging.Message#removeField(Enum)
+   * @see org.sakaiproject.kernel.api.messaging.Message#removeHeader(Enum)
    */
-  public void removeField(Enum<?> key) {
-    removeField(key.toString());
+  public void removeHeader(Enum<?> key) {
+    removeHeader(key.toString());
   }
 
   /**
    * {@inheritDoc}
    *
-   * @see org.sakaiproject.kernel.api.messaging.Message#removeField(String)
+   * @see org.sakaiproject.kernel.api.messaging.Message#removeHeader(String)
    */
-  public void removeField(String key) {
+  public void removeHeader(String key) {
     data.remove(key);
   }
 
@@ -146,17 +150,17 @@ public class MessageImpl implements Message {
    *
    * @see org.sakaiproject.kernel.api.messaging.Message#setBody(java.lang.String)
    */
-  public void setBody(Serializable newBody) {
-    setField(Message.Field.BODY.toString(), newBody);
+  public void setBody(String newBody) {
+    setHeader(Message.Field.BODY.toString(), newBody);
   }
 
   /**
    * {@inheritDoc}
    *
-   * @see org.sakaiproject.kernel.api.messaging.Message#setField(java.lang.String,
+   * @see org.sakaiproject.kernel.api.messaging.Message#setHeader(java.lang.String,
    *      java.lang.Object)
    */
-  public void setField(String key, Serializable value) {
+  public void setHeader(String key, String value) {
     data.put(key, value);
   }
 
@@ -165,19 +169,19 @@ public class MessageImpl implements Message {
    *
    * @param key
    * @param value
-   * @see Message#setField(java.lang.Enum, java.io.Serializable)
+   * @see Message#setHeader(java.lang.Enum, java.io.Serializable)
    */
-  public void setField(Enum<?> key, Serializable value) {
-    setField(key.toString(), value);
+  public void setHeader(Enum<?> key, String value) {
+    setHeader(key.toString(), value);
   }
 
   /**
    * {@inheritDoc}
    *
-   * @see org.sakaiproject.kernel.api.messaging.Message#setTitle(java.lang.String)
+   * @see org.sakaiproject.kernel.api.messaging.Message#setSubject(java.lang.String)
    */
-  public void setTitle(String newTitle) {
-    setField(Message.Field.TITLE.toString(), newTitle);
+  public void setSubject(String newTitle) {
+    setHeader(Message.Field.TITLE.toString(), newTitle);
   }
 
   /**
@@ -186,7 +190,7 @@ public class MessageImpl implements Message {
    * @see org.sakaiproject.kernel.api.messaging.Message#setType(org.sakaiproject.kernel.api.messaging.Message.Type)
    */
   public void setType(String newType) {
-    setField(Message.Field.TYPE.toString(), newType);
+    setHeader(Message.Field.TYPE.toString(), newType);
   }
 
   /**
@@ -196,5 +200,81 @@ public class MessageImpl implements Message {
    */
   public void send() {
     messagingService.send(this);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @see org.sakaiproject.kernel.api.messaging.Message#isBodyText()
+   */
+  public boolean isBodyText() {
+    return bodyText != null;
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @see org.sakaiproject.kernel.api.messaging.Message#getFrom()
+   */
+  public String getFrom() {
+    return from;
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @see org.sakaiproject.kernel.api.messaging.Message#getText()
+   */
+  public String getText() {
+    return bodyText;
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @see org.sakaiproject.kernel.api.messaging.Message#setBody(java.net.URL)
+   */
+  public void setBody(URL bodyUrl) {
+    this.bodyUrl = bodyUrl;
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @see org.sakaiproject.kernel.api.messaging.Message#setFrom()
+   */
+  public void setFrom(String from) {
+    this.from = from;
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @see org.sakaiproject.kernel.api.messaging.Message#setText(java.lang.String)
+   */
+  public void setText(String text) {
+    this.bodyText = text;
+
+    if (getMimeType() != null) {
+      setHeader(Message.Field.MIME_TYPE, TEXT_PLAIN);
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @see org.sakaiproject.kernel.api.messaging.Message#getMimeType()
+   */
+  public String getMimeType() {
+    return getHeader(Message.Field.MIME_TYPE);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @see org.sakaiproject.kernel.api.messaging.Message#setMimeType(java.lang.String)
+   */
+  public void setMimeType(String mimeType) {
+    setHeader(Message.Field.MIME_TYPE, mimeType);
   }
 }

@@ -20,15 +20,16 @@ package org.sakaiproject.kernel.messaging.email;
 
 import com.google.inject.Inject;
 
-import java.io.Serializable;
-import javax.mail.Message.RecipientType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.messaging.EmailMessage;
+import org.sakaiproject.kernel.api.messaging.Message;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -44,14 +45,13 @@ import javax.mail.Multipart;
 import javax.mail.SendFailedException;
 import javax.mail.Session;
 import javax.mail.Transport;
+import javax.mail.Message.RecipientType;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimePart;
-import org.sakaiproject.kernel.api.messaging.Message;
-import org.sakaiproject.kernel.api.messaging.MultipartMessage;
 
 /**
  *
@@ -90,7 +90,7 @@ public class EmailMessageListener implements MessageListener {
       ObjectMessage objMsg = (ObjectMessage) jmsMsg;
       try {
         // get the email message and break out the parts
-        Message email = (Message) objMsg.getObject();
+        EmailMessage email = (EmailMessage) objMsg.getObject();
         handleMessage(email);
       } catch (JMSException e) {
         // log for now. We need to return a message to the sender that something
@@ -101,29 +101,22 @@ public class EmailMessageListener implements MessageListener {
       } catch (UnsupportedEncodingException e) {
         log.error(e.getMessage(), e);
       } catch (SendFailedException e) {
-        // this can also be caught by MessagingException
-        // caught here because this exception reveals if the message could not
-        // be sent to some or any of the recipients.
         log.error(e.getMessage(), e);
       } catch (MessagingException e) {
+        log.error(e.getMessage(), e);
+      } catch (IOException e) {
         log.error(e.getMessage(), e);
       }
     }
   }
 
-  @SuppressWarnings("unchecked")
-  public void handleMessage(Message email) throws AddressException,
-      UnsupportedEncodingException, SendFailedException, MessagingException {
-    String fromAddress = (String) email.getField(EmailMessage.Field.FROM);
+  public void handleMessage(EmailMessage email) throws AddressException,
+      UnsupportedEncodingException, SendFailedException, MessagingException,
+      IOException {
+    String fromAddress = email.getHeader(Message.Field.FROM);
     if (fromAddress == null) {
       throw new MessagingException("Unable to send without a 'from' address.");
     }
-
-    String content = (String) email.getBody();
-
-    // build the content type
-    String contentType =
-        (String) email.getField(EmailMessage.Field.CONTENT_TYPE);
 
     // transform to a MimeMessage
     ArrayList<String> invalids = new ArrayList<String>();
@@ -132,21 +125,20 @@ public class EmailMessageListener implements MessageListener {
     InternetAddress from = new InternetAddress(fromAddress, true);
 
     // convert and validate reply to addresses
-    List<String> replyTos = (List<String>) email.getField(
-        EmailMessage.Field.REPLY_TO);
+    String replyTos = email.getHeader(EmailMessage.Field.REPLY_TO);
     InternetAddress[] replyTo = emails2Internets(replyTos, invalids);
 
     // convert and validate the 'to' addresses
-    List<String> tos = (List<String>) email.getField(EmailMessage.Field.TO);
+    String tos = email.getHeader(Message.Field.TO);
     InternetAddress[] to = emails2Internets(tos, invalids);
 
     // convert and validate 'cc' addresses
-    List<String> cs = (List<String>) email.getField(EmailMessage.Field.CC);
-    InternetAddress[] cc = emails2Internets(cs, invalids);
+    String ccs = email.getHeader(EmailMessage.Field.CC);
+    InternetAddress[] cc = emails2Internets(ccs, invalids);
 
     // convert and validate 'bcc' addresses
-    List<String> bccs = (List<String>) email.getField(EmailMessage.Field.BCC);
-    InternetAddress[] bcc = emails2Internets(tos, invalids);
+    String bccs = email.getHeader(EmailMessage.Field.BCC);
+    InternetAddress[] bcc = emails2Internets(bccs, invalids);
 
     int totalRcpts = to.length + cc.length + bcc.length;
     if (totalRcpts == 0) {
@@ -161,25 +153,24 @@ public class EmailMessageListener implements MessageListener {
     mimeMsg.setRecipients(RecipientType.BCC, bcc);
 
     // add in any additional headers
-    Map<String, Serializable> headers = (Map<String, Serializable>) email.
-        getField(Message.Field.HEADERS);
+    Map<String, String> headers = email.getHeaders();
     if (headers != null && !headers.isEmpty()) {
-      for (Entry<String, Serializable> header : headers.entrySet()) {
-        mimeMsg.setHeader(header.getKey(), (String) header.getValue());
+      for (Entry<String, String> header : headers.entrySet()) {
+        mimeMsg.setHeader(header.getKey(), header.getValue());
       }
     }
 
-    List<Message> parts = (List<Message>) email.getField(
-        MultipartMessage.Field.PARTS);
+    // add the content to the message
+    List<Message> parts = email.getParts();
     if (parts == null || parts.size() == 0) {
-      setContent(mimeMsg, content, contentType);
+      setContent(mimeMsg, email);
     } else {
       // create a multipart container
       Multipart multipart = new MimeMultipart();
 
       // create a body part for the message text
       MimeBodyPart msgBodyPart = new MimeBodyPart();
-      setContent(msgBodyPart, content, contentType);
+      setContent(msgBodyPart, email);
 
       // add the message part to the container
       multipart.addBodyPart(msgBodyPart);
@@ -204,19 +195,37 @@ public class EmailMessageListener implements MessageListener {
         log.info(emailString);
         observable.notifyObservers(emailString);
       } catch (IOException e) {
-        log.info("Transport disabled and unable to write message to log: " + e.
-            getMessage(), e);
+        log.info("Transport disabled and unable to write message to log: "
+            + e.getMessage(), e);
       }
     }
   }
 
-  private void setContent(MimePart mimePart, String content, String contentType)
-      throws MessagingException {
-    if (contentType == null) {
-      mimePart.setText(content);
+  /**
+   * Sets the content of the mime part using the content of the email message.
+   *
+   * @param mimePart
+   *          To where the content should be set.
+   * @param email
+   *          From where the content should be retrieved.
+   * @throws IOException
+   *           If the content is a URL and there is a problem opening a stream
+   *           to it.
+   * @throws MessagingException
+   *           If there is a problem setting the content to the mime part.
+   */
+  private void setContent(MimePart mimePart, EmailMessage email)
+      throws IOException, MessagingException {
+    Object content = null;
+    if (email.isBodyText()) {
+      content = email.getText();
     } else {
-      mimePart.setContent(content, contentType);
+      URL url = email.getBody();
+      URLConnection conn = url.openConnection();
+      content = conn.getContent();
     }
+
+    mimePart.setContent(content, email.getMimeType());
   }
 
   /**
@@ -226,15 +235,15 @@ public class EmailMessageListener implements MessageListener {
    * @param attachment
    * @throws MessagingException
    */
-  private void addPart(Multipart multipart, Message msg) throws
-      MessagingException {
+  private void addPart(Multipart multipart, Message msg)
+      throws MessagingException {
     MimeBodyPart part = new MimeBodyPart();
-    part.setContent((Serializable) msg.getBody(), msg.getType());
+    part.setContent(msg.getBody(), msg.getType());
     multipart.addBodyPart(part);
   }
 
   /**
-   * Converts a {@link java.util.List} of {@link EmailAddress} to
+   * Converts a {@link java.util.List} of {@link String} to
    * {@link javax.mail.internet.InternetAddress}.
    *
    * @param emails
@@ -243,28 +252,28 @@ public class EmailMessageListener implements MessageListener {
    * @throws AddressException
    * @throws UnsupportedEncodingException
    */
-  protected InternetAddress[] emails2Internets(List<String> emails,
+  protected InternetAddress[] emails2Internets(String emails,
       List<String> invalids) {
     // set the default return value
-    InternetAddress[] addrs = new InternetAddress[0];
+    InternetAddress[] iaddrs = new InternetAddress[0];
 
-    if (emails != null && !emails.isEmpty()) {
+    if (emails != null && emails.length() > 0) {
+      String[] addrs = emails.split(",");
       ArrayList<InternetAddress> laddrs = new ArrayList<InternetAddress>();
-      for (int i = 0; i < emails.size(); i++) {
-        String email = emails.get(i);
+      for (String addr : addrs) {
         try {
-          InternetAddress ia = new InternetAddress(email, true);
+          InternetAddress ia = new InternetAddress(addr, true);
           laddrs.add(ia);
         } catch (AddressException e) {
-          invalids.add(email);
+          invalids.add(addr);
         }
       }
       if (!laddrs.isEmpty()) {
-        addrs = laddrs.toArray(addrs);
+        iaddrs = laddrs.toArray(iaddrs);
       }
     }
 
-    return addrs;
+    return iaddrs;
   }
 
   void addObserver(Observer ob) {

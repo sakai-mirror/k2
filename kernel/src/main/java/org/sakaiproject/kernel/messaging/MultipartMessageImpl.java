@@ -26,8 +26,9 @@ import org.sakaiproject.kernel.api.messaging.Message;
 import org.sakaiproject.kernel.api.messaging.MessagingService;
 import org.sakaiproject.kernel.api.messaging.MultipartMessage;
 
-import java.io.Serializable;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -37,8 +38,15 @@ public class MultipartMessageImpl extends MessageImpl implements
 
   private static final long serialVersionUID = 1L;
 
+  private final ArrayList<Message> parts;
+
   public MultipartMessageImpl(MessagingService messagingService) {
+    this(messagingService, Message.Type.INTERNAL.toString());
+  }
+
+  public MultipartMessageImpl(MessagingService messagingService, String type) {
     super(messagingService);
+    parts = new ArrayList<Message>();
   }
 
   /**
@@ -48,7 +56,7 @@ public class MultipartMessageImpl extends MessageImpl implements
    * @param attachment
    * @see MultipartMessage#addAttachment(java.lang.String, java.io.Serializable)
    */
-  public void addAttachment(String mimeType, Serializable attachment) {
+  public void addAttachment(String mimeType, URL attachment) {
     MessageImpl msg = new MessageImpl(null);
     msg.setType(mimeType);
     msg.setBody(attachment);
@@ -61,14 +69,18 @@ public class MultipartMessageImpl extends MessageImpl implements
    * @param message
    * @see MultipartMessage#addPart(org.sakaiproject.kernel.api.messaging.Message)
    */
-  @SuppressWarnings("unchecked")
   public void addPart(Message message) {
-    ArrayList<Message> parts = (ArrayList<Message>) getField(
-        MultipartMessage.Field.PARTS);
-    if (parts == null || parts.isEmpty()) {
-      parts = new ArrayList<Message>();
-    }
     parts.add(message);
-    setField(MultipartMessage.Field.PARTS, parts);
   }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @see org.sakaiproject.kernel.api.messaging.MultipartMessage#getParts()
+   */
+  public List<Message> getParts() {
+    return parts;
+  }
+
+
 }

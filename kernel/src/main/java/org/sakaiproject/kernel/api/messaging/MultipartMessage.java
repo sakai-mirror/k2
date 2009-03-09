@@ -23,40 +23,38 @@
 
 package org.sakaiproject.kernel.api.messaging;
 
-import java.io.Serializable;
+import java.net.URL;
+import java.util.List;
 
 /**
- * 
- * @author chall39
+ * Message that allows parts to be added on as attachments.
  */
 public interface MultipartMessage extends Message {
 
   public static final String TYPE = "MultipartMessage";
 
-  static enum Field {
-    PARTS("Parts");
-
-    public final String niceName;
-
-    Field(String niceName) {
-      this.niceName = niceName;
-    }
-  }
-
   /**
    * Add an attachment to the message. Convenience method for adding a part to
    * the message. This constructs a new message and adds it to the message being
    * called.
-   * 
+   *
    * @param mimeType
    * @param attachment
    */
-  void addAttachment(String mimeType, Serializable attachment);
+  void addAttachment(String mimeType, URL attachment);
 
   /**
    * Add a message as a part of the calling message.
-   * 
+   *
    * @param message
    */
   void addPart(Message message);
+
+  /**
+   * Get all parts added to the message.
+   *
+   * @return all parts added to the message. Empty non-null list if no parts
+   *         found.
+   */
+  List<Message> getParts();
 }

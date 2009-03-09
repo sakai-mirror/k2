@@ -72,7 +72,7 @@ public class EmailMessageListenerT {
     // pass a null service because we're starting after when the service is used
     email.setFrom("jmssend@example.com");
     email.addTo("random@example.com");
-    email.setBody("This is some test text.");
+    email.setText("This is some test text.");
 
     listener.onMessage(msg);
   }
@@ -82,7 +82,7 @@ public class EmailMessageListenerT {
     // pass a null service because we're starting after when the service is used
     email.setFrom("send@example.com");
     email.addTo("random@example.com");
-    email.setBody("This is some test text.");
+    email.setText("This is some test text.");
 
     listener.handleMessage(email);
   }
@@ -91,7 +91,7 @@ public class EmailMessageListenerT {
   public void invalidFrom() throws Exception {
     // pass a null service because we're starting after when the service is used
     email.addTo("invalidfrom@example.com");
-    email.setBody("This is some test text.");
+    email.setText("This is some test text.");
 
     try {
       listener.handleMessage(email);
@@ -105,7 +105,7 @@ public class EmailMessageListenerT {
   public void noRcpts() throws Exception {
     // pass a null service because we're starting after when the service is used
     email.setFrom("norcpts@example.com");
-    email.setBody("This is some test text.");
+    email.setText("This is some test text.");
 
     try {
       listener.handleMessage(email);
@@ -120,11 +120,11 @@ public class EmailMessageListenerT {
     // pass a null service because we're starting after when the service is used
     email.setFrom("attachments@example.com");
     email.addTo("random@example.com");
-    email.setBody("This is some test text.");
+    email.setText("This is some test text.");
     File f1 = File.createTempFile("test1", null);
     File f2 = File.createTempFile("test2", null);
-    email.addAttachment("text/plain", f1);
-    email.addAttachment("text/plain", f2);
+    email.addAttachment("text/plain", f1.toURL());
+    email.addAttachment("text/plain", f2.toURL());
 
     final StringBuilder emailString = new StringBuilder();
     listener.addObserver(new Observer() {
@@ -162,9 +162,9 @@ public class EmailMessageListenerT {
     // pass a null service because we're starting after when the service is used
     email.setFrom("attachments@example.com");
     email.addTo("random@example.com");
-    email.setBody("This is some test text.");
+    email.setText("This is some test text.");
     File f1 = new File("test1.tmp");
-    email.addAttachment("text/plain", f1);
+    email.addAttachment("text/plain", f1.toURL());
 
     final StringBuilder emailString = new StringBuilder();
     listener.addObserver(new Observer() {
