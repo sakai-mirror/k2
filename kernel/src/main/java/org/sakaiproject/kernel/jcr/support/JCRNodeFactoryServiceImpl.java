@@ -127,6 +127,9 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
    */
   public Node createFolder(String folderPath)
       throws JCRNodeFactoryServiceException {
+    if ( folderPath.length() > 0 && folderPath.endsWith("/") ) {
+      folderPath = folderPath.substring(0,folderPath.length()-2);
+    }
     return createNode(folderPath, null, JCRConstants.NT_FOLDER);
   }
 

@@ -37,7 +37,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
 /**
- * 
+ *
  */
 public class JcrReferenceObject implements ReferencedObject {
 
@@ -77,7 +77,7 @@ public class JcrReferenceObject implements ReferencedObject {
     } catch (Exception ex) {
       ex.printStackTrace();
     }
-    
+
     Node ownerNode = node;
     Node rootNode = node.getSession().getRootNode();
     while (owner == null) {
@@ -121,7 +121,7 @@ public class JcrReferenceObject implements ReferencedObject {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.authz.ReferencedObject#getAccessControlList()
    */
   public List<AccessControlStatement> getAccessControlList() {
@@ -130,7 +130,7 @@ public class JcrReferenceObject implements ReferencedObject {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.authz.ReferencedObject#getInheritableAccessControlList()
    */
   public List<AccessControlStatement> getInheritableAccessControlList() {
@@ -139,7 +139,7 @@ public class JcrReferenceObject implements ReferencedObject {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.authz.ReferencedObject#getKey()
    */
   public String getKey() {
@@ -148,7 +148,7 @@ public class JcrReferenceObject implements ReferencedObject {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.authz.ReferencedObject#getParent()
    */
   public ReferencedObject getParent() {
@@ -157,7 +157,7 @@ public class JcrReferenceObject implements ReferencedObject {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.authz.ReferencedObject#isRoot()
    */
   public boolean isRoot() {
@@ -170,7 +170,7 @@ public class JcrReferenceObject implements ReferencedObject {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.authz.ReferencedObject#addAccessControlStatement(org.sakaiproject.kernel.api.authz.AccessControlStatement)
    */
   public void addAccessControlStatement(AccessControlStatement newAcs)
@@ -207,7 +207,7 @@ public class JcrReferenceObject implements ReferencedObject {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.authz.ReferencedObject#removeAccessControlStatement(org.sakaiproject.kernel.api.authz.AccessControlStatement)
    */
   // TODO test coverage required.
@@ -240,7 +240,7 @@ public class JcrReferenceObject implements ReferencedObject {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.authz.ReferencedObject#setAccessControlList(java.util.List)
    */
   public void setAccessControlList(List<AccessControlStatement> newAcl) {
@@ -271,7 +271,7 @@ public class JcrReferenceObject implements ReferencedObject {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.authz.ReferencedObject#getOwner()
    */
   public String getOwner() {
@@ -280,7 +280,7 @@ public class JcrReferenceObject implements ReferencedObject {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.authz.ReferencedObject#isPermanent()
    */
   public boolean isPermanent() {

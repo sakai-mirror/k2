@@ -356,14 +356,10 @@ public class SimpleJcrUserEnvironmentResolverService implements
 
       userEnvNode.save();
       
-      // make the private and shares spaces for the user owned by this used.      
-      Node userPrivateNode = jcrNodeFactoryService.createFolder(userFactoryService.getUserPrivatePath(u.getUuid()));
-      userPrivateNode.setProperty(JCRConstants.ACL_OWNER, u.getUuid());
-      userPrivateNode.save();
+      // make the private and shares spaces for the user owned by this used.   
+      setOwner(userFactoryService.getUserPrivatePath(u.getUuid()),u.getUuid());
+      setOwner(userFactoryService.getUserSharedPrivatePath(u.getUuid()),u.getUuid());
 
-      Node userSharedPrivateNode = jcrNodeFactoryService.createFolder(userFactoryService.getUserSharedPrivatePath(u.getUuid()));
-      userSharedPrivateNode.setProperty(JCRConstants.ACL_OWNER, u.getUuid());
-      userSharedPrivateNode.save();
 
 
  
@@ -395,5 +391,24 @@ public class SimpleJcrUserEnvironmentResolverService implements
     }
     return null;
 
+  }
+
+  /**
+   * @param userPrivatePath
+   * @param uuid
+   * @throws RepositoryException 
+   * @throws JCRNodeFactoryServiceException 
+   */
+  private void setOwner(String path, String uuid) throws RepositoryException, JCRNodeFactoryServiceException {
+    Node node = null;
+    try {
+      node = jcrNodeFactoryService.getNode(path);
+    } catch (JCRNodeFactoryServiceException e) {
+    }
+    if ( node == null ) {
+      node = jcrNodeFactoryService.createFolder(path);
+    }
+    node.setProperty(JCRConstants.ACL_OWNER, uuid);
+    node.save();
   }
 }
