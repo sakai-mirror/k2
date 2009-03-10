@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.UpdateFailedException;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
+import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.memory.Cache;
@@ -354,6 +355,18 @@ public class SimpleJcrUserEnvironmentResolverService implements
               .sha1Hash(password));
 
       userEnvNode.save();
+      
+      // make the private and shares spaces for the user owned by this used.      
+      Node userPrivateNode = jcrNodeFactoryService.createFolder(userFactoryService.getUserPrivatePath(u.getUuid()));
+      userPrivateNode.setProperty(JCRConstants.ACL_OWNER, u.getUuid());
+      userPrivateNode.save();
+
+      Node userSharedPrivateNode = jcrNodeFactoryService.createFolder(userFactoryService.getUserSharedPrivatePath(u.getUuid()));
+      userSharedPrivateNode.setProperty(JCRConstants.ACL_OWNER, u.getUuid());
+      userSharedPrivateNode.save();
+
+
+ 
 
       userEnvironmentBean.seal();
       return userEnvironmentBean;

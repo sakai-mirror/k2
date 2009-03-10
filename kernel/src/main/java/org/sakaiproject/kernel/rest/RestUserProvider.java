@@ -96,7 +96,7 @@ public class RestUserProvider implements RestProvider {
       SessionManagerService sessionManagerService,
       AuthenticationManagerService authenticationManagerService,
       ProfileResolverService profileResolverService,
-      @Named(KernelConstants.PROP_ANON_ACCOUNTING) String anonymousAccounting,
+      @Named(KernelConstants.PROP_ANON_ACCOUNTING) boolean anonymousAccounting,
       AuthzResolverService authzResolverService) {
     Registry<String, RestProvider> restRegistry = registryService
         .getRegistry(RestProvider.REST_REGISTRY);
@@ -109,7 +109,7 @@ public class RestUserProvider implements RestProvider {
     this.sessionManagerService = sessionManagerService;
     this.authenticationManagerService = authenticationManagerService;
     this.profileResolverService = profileResolverService;
-    this.anonymousAccounting = "true".equals(anonymousAccounting);
+    this.anonymousAccounting = anonymousAccounting;
     this.authzResolverService = authzResolverService;
 
   }
@@ -329,10 +329,20 @@ public class RestUserProvider implements RestProvider {
           USER_TYPE_PARAM + " is empty");
     }
 
-    String loggedInUser = request.getRemoteUser();
-    if (loggedInUser == null | "anon".equals(loggedInUser)) {
-      // if this allows anon users to create users
+    if (anonymousAccounting) {
       authzResolverService.setRequestGrant("Creating User For Anon User");
+    } else {
+      String loggedInUser = request.getRemoteUser();
+      if (loggedInUser == null || "anon".equals(loggedInUser)) {
+        throw new RestServiceFaultException(HttpServletResponse.SC_FORBIDDEN,"User Creation is not allowed");
+      } else {
+        UserEnvironment ue = userEnvironmentResolverService.resolve(loggedInUser);
+        if ( ue.isSuperUser() ) {
+          authzResolverService.setRequestGrant("Creating User For Super User");
+        } else {
+          throw new RestServiceFaultException(HttpServletResponse.SC_FORBIDDEN,"User Creation is only allowed by Super Users");          
+        }
+      }
     }
     try {
 
@@ -366,9 +376,7 @@ public class RestUserProvider implements RestProvider {
       r.put("uuid", u.getUuid());
       return r;
     } finally {
-      if (loggedInUser == null | "anon".equals(loggedInUser)) {
         authzResolverService.clearRequestGrant();
-      }
     }
 
   }

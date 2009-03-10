@@ -85,7 +85,7 @@ public class AclListener implements EventListener, EventRegistration {
   public void register(ObservationManager observationManager)
       throws RepositoryException {
     observationManager.addEventListener(this, Event.PROPERTY_ADDED
-        | Event.PROPERTY_CHANGED | Event.PROPERTY_REMOVED, "/", false, null,
+        | Event.PROPERTY_CHANGED | Event.PROPERTY_REMOVED, "/", true, null,
         new String[] { JCRConstants.NT_FILE, JCRConstants.NT_FOLDER }, false);
 
   }

@@ -54,7 +54,8 @@ public class JcrReferenceObject implements ReferencedObject {
    * @param n
    * @throws RepositoryException
    */
-  public JcrReferenceObject(Node node, AuthzResolverService authzResolverService) throws RepositoryException {
+  public JcrReferenceObject(Node node, AuthzResolverService authzResolverService)
+      throws RepositoryException {
     this.node = node;
     this.authzResolverService = authzResolverService;
     path = node.getPath();
@@ -77,14 +78,24 @@ public class JcrReferenceObject implements ReferencedObject {
       ex.printStackTrace();
     }
     
-    try {
-      Property property = node.getProperty(JCRConstants.ACL_OWNER);
-      owner = property.getString();
-    } catch (PathNotFoundException pnfe) {
-
-      // no acl on this node
-    } catch (Exception ex) {
-      ex.printStackTrace();
+    Node ownerNode = node;
+    Node rootNode = node.getSession().getRootNode();
+    while (owner == null) {
+      try {
+        Property property = ownerNode.getProperty(JCRConstants.ACL_OWNER);
+        owner = property.getString();
+        break;
+      } catch (PathNotFoundException pnfe) {
+      } catch (Exception ex) {
+        ex.printStackTrace();
+      }
+      if ( rootNode.equals(ownerNode) ) {
+        break;
+      }
+      ownerNode = ownerNode.getParent();
+      if ( ownerNode != null  || rootNode.equals(ownerNode) ) {
+        break;
+      }
     }
 
     Node parent = null;
@@ -186,11 +197,11 @@ public class JcrReferenceObject implements ReferencedObject {
 
       authzResolverService.invalidateAcl(this);
     } catch (NumberFormatException e) {
-      throw new UpdateFailedException("Unable to update ACL in node " + path
-          + " :" + e.getMessage());
+      throw new UpdateFailedException("Unable to update ACL in node " + path + " :"
+          + e.getMessage());
     } catch (RepositoryException e) {
-      throw new UpdateFailedException("Unable to update ACL in node " + path
-          + " :" + e.getMessage());
+      throw new UpdateFailedException("Unable to update ACL in node " + path + " :"
+          + e.getMessage());
     }
   }
 
@@ -218,12 +229,12 @@ public class JcrReferenceObject implements ReferencedObject {
 
       acl.removeAll(toRemove);
       inheritableAcl.removeAll(toRemove);
-      
+
       authzResolverService.invalidateAcl(this);
 
     } catch (RepositoryException e) {
-      throw new UpdateFailedException("Unable to update ACL in node " + path
-          + " :" + e.getMessage());
+      throw new UpdateFailedException("Unable to update ACL in node " + path + " :"
+          + e.getMessage());
     }
   }
 
@@ -252,14 +263,15 @@ public class JcrReferenceObject implements ReferencedObject {
       authzResolverService.invalidateAcl(this);
 
     } catch (RepositoryException e) {
-      throw new UpdateFailedException("Unable to update ACL in node " + path
-          + " :" + e.getMessage());
+      throw new UpdateFailedException("Unable to update ACL in node " + path + " :"
+          + e.getMessage());
     }
 
   }
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.authz.ReferencedObject#getOwner()
    */
   public String getOwner() {
@@ -268,6 +280,7 @@ public class JcrReferenceObject implements ReferencedObject {
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.authz.ReferencedObject#isPermanent()
    */
   public boolean isPermanent() {

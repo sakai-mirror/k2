@@ -32,6 +32,6 @@ public interface StartupAction
 	 * @return true if the session should be held open.
 	 * @throws RepositoryStartupException 
 	 */
-	boolean startup(Session s) throws RepositoryStartupException;
+	void startup(Session s) throws RepositoryStartupException;
 
 }

@@ -17,6 +17,7 @@
  */
 package org.sakaiproject.kernel;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -25,28 +26,24 @@ import org.sakaiproject.kernel.authz.simple.AclListener;
 import org.sakaiproject.kernel.jcr.jackrabbit.JcrContentListenerAdapter;
 import org.sakaiproject.kernel.jcr.jackrabbit.JcrSynchronousContentListenerAdapter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Provides a list of EventRegistrations
  */
-public class EventRegistrationProvider implements
-    Provider<List<EventRegistration>> {
+public class EventRegistrationProvider implements Provider<List<EventRegistration>> {
 
-  private List<EventRegistration> eventRegistrations = new ArrayList<EventRegistration>();
+  private List<EventRegistration> eventRegistrations;
 
   /**
    * 
    */
   @Inject
-  public EventRegistrationProvider(
-      JcrContentListenerAdapter jcrContentListenerAdapter,
+  public EventRegistrationProvider(JcrContentListenerAdapter jcrContentListenerAdapter,
       JcrSynchronousContentListenerAdapter jcrSynchronousContentListenerAdapter,
       AclListener aclListener) {
-    eventRegistrations.add(jcrContentListenerAdapter);
-    eventRegistrations.add(aclListener);
-    eventRegistrations.add(jcrSynchronousContentListenerAdapter);
+    eventRegistrations = Lists.immutableList((EventRegistration) aclListener,
+        jcrContentListenerAdapter, jcrSynchronousContentListenerAdapter);
   }
 
   /**

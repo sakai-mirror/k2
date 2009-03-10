@@ -63,7 +63,7 @@ public class PopulateBaseRepositoryAcls implements StartupAction {
    * 
    * @see org.sakaiproject.kernel.jcr.api.internal.StartupAction#startup(javax.jcr.Session)
    */
-  public boolean startup(Session s) throws RepositoryStartupException {
+  public void startup(Session s) throws RepositoryStartupException {
     try {
       Map<String, List<AccessControlStatement>> aclLists = Maps.newHashMap();
 
@@ -101,7 +101,6 @@ public class PopulateBaseRepositoryAcls implements StartupAction {
         }
 
       }
-      return false;
     } catch (UpdateFailedException e) {
       throw new RepositoryStartupException(e.getMessage(), e);
     } catch (NumberFormatException e) {

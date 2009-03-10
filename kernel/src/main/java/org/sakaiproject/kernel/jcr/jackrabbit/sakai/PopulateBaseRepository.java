@@ -88,7 +88,7 @@ public class PopulateBaseRepository implements StartupAction {
    * 
    * @see org.sakaiproject.kernel.jcr.api.internal.StartupAction#startup(javax.jcr.Session)
    */
-  public boolean startup(Session s) throws RepositoryStartupException {
+  public void startup(Session s) throws RepositoryStartupException {
     try {
       InputStream in = ResourceLoader.openResource(RESOURCES_TO_LOAD, this
           .getClass().getClassLoader());
@@ -101,11 +101,13 @@ public class PopulateBaseRepository implements StartupAction {
       for (Entry<?, ?> r : p.entrySet()) {
         String[] pathSpec = StringUtils.split((String) r.getKey(), '@');
         String path = null;
+        String parentOwner = null;
         if (pathSpec.length > 1) {
           if ("userenv".equals(pathSpec[1])) {
             path = userFactoryService.getUserEnvPath(pathSpec[0]);
           } else if ("profile".equals(pathSpec[1])) {
             path = userFactoryService.getUserProfilePath(pathSpec[0]);
+            parentOwner = pathSpec[0];
           } else {
             path = pathSpec[0];
           }
@@ -170,6 +172,11 @@ public class PopulateBaseRepository implements StartupAction {
               }
             }
           }
+          // set the owner of the parent node to the current used and safe the whole lot.
+          if ( parentOwner != null ) {
+            n = n.getParent();
+            n.setProperty(JCRConstants.ACL_OWNER, parentOwner);
+          }
           
           n.save();
         } else {
@@ -185,7 +192,6 @@ public class PopulateBaseRepository implements StartupAction {
     } catch (NoSuchAlgorithmException e) {
       throw new RepositoryStartupException("Failed to populate Repository ", e);
     }
-    return false;
   }
 
 

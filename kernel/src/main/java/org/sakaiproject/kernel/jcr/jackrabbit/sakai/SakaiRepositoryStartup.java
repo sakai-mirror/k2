@@ -42,7 +42,7 @@ public class SakaiRepositoryStartup implements StartupAction {
    * {@inheritDoc}
    * @see org.sakaiproject.kernel.jcr.api.internal.StartupAction#startup(javax.jcr.Session)
    */
-  public boolean startup(Session s) {
+  public void startup(Session s) {
 
     try {
       WorkspaceImpl workspace = (WorkspaceImpl) s.getWorkspace();
@@ -77,6 +77,5 @@ public class SakaiRepositoryStartup implements StartupAction {
     } catch (Throwable t) {
       t.printStackTrace();
     }
-    return false;
   }
 }

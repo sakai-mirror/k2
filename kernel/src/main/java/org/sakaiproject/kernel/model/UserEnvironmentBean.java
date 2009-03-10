@@ -6,7 +6,7 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- *
+ 
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
@@ -137,6 +137,10 @@ public class UserEnvironmentBean implements UserEnvironment {
       // Anon
       return true;
     case OW:
+      // for owner to work, ver node must have an owner, it cannot be inherited.
+      // hence we must put this inside jcrNodeFactory, so that when a node is created the owner property is set.
+      // there is an issue for webdav that means the owner does not come through.
+      // 
       if (debug) {
         LOG.debug("Testing " + subject + " for " + uuid + " at "
             + referencedObject + " owner " + referencedObject.getOwner());
