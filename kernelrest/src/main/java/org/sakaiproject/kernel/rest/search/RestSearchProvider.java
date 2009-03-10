@@ -280,7 +280,7 @@ public class RestSearchProvider implements RestProvider, Initialisable {
         Node n = ni.nextNode();
         
         Node parentNode = n;
-        if ( !n.isNodeType(JCRConstants.NT_FILE) && n.isNodeType(JCRConstants.NT_FOLDER) ) {
+        if ( !n.isNodeType(JCRConstants.NT_FILE) && !n.isNodeType(JCRConstants.NT_FOLDER) ) {
           parentNode = n.getParent();
         }
         Map<String, Object> itemResponse = new HashMap<String, Object>();

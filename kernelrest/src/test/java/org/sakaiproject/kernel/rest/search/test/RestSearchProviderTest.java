@@ -156,7 +156,7 @@ public class RestSearchProviderTest extends BaseRestUT {
     //TODO fix the other tests.
   }
 
-//  @Test
+  @Test
   public void testSearch() throws ServletException, IOException,
       RepositoryException, JCRNodeFactoryServiceException, InterruptedException {
     setupServices();
@@ -269,7 +269,7 @@ public class RestSearchProviderTest extends BaseRestUT {
     }
   }
 
-//  @Test
+  @Test
   public void testSearchSort() throws ServletException, IOException,
       RepositoryException, JCRNodeFactoryServiceException, InterruptedException {
     setupServices();
