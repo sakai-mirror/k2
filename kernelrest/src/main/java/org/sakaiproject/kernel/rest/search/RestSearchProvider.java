@@ -21,6 +21,8 @@ package org.sakaiproject.kernel.rest.search;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
@@ -48,7 +50,6 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.InvalidQueryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
@@ -61,6 +62,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class RestSearchProvider implements RestProvider, Initialisable {
 
+  private static final Log LOG = LogFactory.getLog(RestSearchProvider.class);
   private static final RestDescription DESC = new RestDescription();
   private static final String KEY = "search";
   private static final String QUERY = "q";
@@ -262,7 +264,7 @@ public class RestSearchProvider implements RestProvider, Initialisable {
     QueryResult result = q.execute();
     NodeIterator ni = result.getNodes();
     long endMs = System.currentTimeMillis();
-    System.err.println("Executed " + sqlQuery + " in " + (endMs - startMs)
+    LOG.info("Executed " + sqlQuery + " in " + (endMs - startMs)
         + " ms " + ni.getSize() + " hits");
     Map<String, Object> results = new HashMap<String, Object>();
     List<Map<String, Object>> resultList = Lists.newArrayList();
