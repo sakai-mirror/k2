@@ -48,6 +48,7 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.InvalidQueryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
@@ -274,9 +275,14 @@ public class RestSearchProvider implements RestProvider, Initialisable {
       startPos = ni.getPosition();
       endPos = startPos;
 
+      
       for (int i = start; (i < end) && (ni.hasNext()); i++) {
         Node n = ni.nextNode();
-        Node parentNode = n.getParent();
+        
+        Node parentNode = n;
+        if ( !n.isNodeType(JCRConstants.NT_FILE) && n.isNodeType(JCRConstants.NT_FOLDER) ) {
+          parentNode = n.getParent();
+        }
         Map<String, Object> itemResponse = new HashMap<String, Object>();
         itemResponse.put("path", parentNode.getPath());
         itemResponse.put("nodeproperties", new JCRNodeMap(parentNode, 1));
