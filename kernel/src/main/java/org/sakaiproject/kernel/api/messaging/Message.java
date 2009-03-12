@@ -28,26 +28,27 @@ import java.util.Map;
  */
 public interface Message extends Serializable {
 
-  public static final String TYPE = "Message";
-
   /**
    * An enumeration of field names in a message. The list is by no means
    * exhaustive.
    */
   public static enum Field {
-
     /** field name for the sender. */
-    FROM("From"),
+    FROM("from"),
     /** field name for recipients */
-    TO("To"),
-    /** field name for body. */
-    BODY("Body"),
-    /** field name for title. */
-    TITLE("Title"),
+    TO("to"),
+    /** field name for subject */
+    SUBJECT("subject"),
     /** field name for type. */
-    TYPE("Type"),
+    TYPE("type"),
+    /** field name for text body */
+    BODY_TEXT("bodyText"),
+    /** field name for url body */
+    BODY_URL("bodyUrl"),
+    /** field name for multipart attachments */
+    PARTS("parts"),
     /** field name for body mime type */
-    MIME_TYPE("Mime-Type");
+    MIME_TYPE("mimeType");
 
     /**
      * the name of the field.
@@ -77,11 +78,10 @@ public interface Message extends Serializable {
    * The type of a message.
    */
   public static enum Type {
-
     /** An email. */
     EMAIL("email"),
     /** A message that can be delivered within the system **/
-    INTERNAL("internalMessage");
+    INTERNAL("internal");
 
     /**
      * The type of message.
@@ -286,7 +286,7 @@ public interface Message extends Serializable {
    * Add an attachment to the message. Convenience method for adding a part to
    * the message. This constructs a new message and adds it to the message being
    * called.
-   * 
+   *
    * @param mimeType
    * @param attachment
    */
@@ -294,14 +294,14 @@ public interface Message extends Serializable {
 
   /**
    * Add a message as a part of the calling message.
-   * 
+   *
    * @param message
    */
   void addPart(Message message);
 
   /**
    * Get all parts added to the message.
-   * 
+   *
    * @return all parts added to the message. Empty non-null list if no parts
    *         found.
    */

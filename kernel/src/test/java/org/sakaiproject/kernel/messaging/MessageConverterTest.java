@@ -61,11 +61,9 @@ public class MessageConverterTest {
 
     // setup 5 different calls to createMessage
     MessagingService msgServ = injector.getInstance(MessagingService.class);
-    expect(msgServ.createMessage()).andReturn(new MessageImpl(msgServ));
-    expect(msgServ.createMessage()).andReturn(new MessageImpl(msgServ));
-    expect(msgServ.createMessage()).andReturn(new MessageImpl(msgServ));
-    expect(msgServ.createMessage()).andReturn(new MessageImpl(msgServ));
-    expect(msgServ.createMessage()).andReturn(new MessageImpl(msgServ));
+    for (int i = 0; i < 10; i++) {
+      expect(msgServ.createMessage()).andReturn(new MessageImpl(msgServ));
+    }
     replay(msgServ);
 
     msg = injector.getInstance(Message.class);

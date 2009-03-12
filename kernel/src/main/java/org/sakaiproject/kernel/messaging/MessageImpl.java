@@ -122,7 +122,7 @@ public class MessageImpl implements Message {
    * @see org.sakaiproject.kernel.api.messaging.Message#getSubject()
    */
   public String getSubject() {
-    return getHeader(Message.Field.TITLE.toString());
+    return getHeader(Message.Field.SUBJECT.toString());
   }
 
   /**
@@ -158,7 +158,7 @@ public class MessageImpl implements Message {
    * @see org.sakaiproject.kernel.api.messaging.Message#setBody(java.lang.String)
    */
   public void setBody(String newBody) {
-    setHeader(Message.Field.BODY.toString(), newBody);
+    setHeader(Message.Field.BODY_URL.toString(), newBody);
   }
 
   /**
@@ -187,8 +187,8 @@ public class MessageImpl implements Message {
    *
    * @see org.sakaiproject.kernel.api.messaging.Message#setSubject(java.lang.String)
    */
-  public void setSubject(String newTitle) {
-    setHeader(Message.Field.TITLE.toString(), newTitle);
+  public void setSubject(String subject) {
+    setHeader(Message.Field.SUBJECT.toString(), subject);
   }
 
   /**

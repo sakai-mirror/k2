@@ -38,10 +38,6 @@ import java.util.Map.Entry;
  */
 public class JsonMessageConverter implements MessageConverter {
 
-  private static final String BODY_TEXT = "body-text";
-  private static final String BODY_URL = "body-url";
-  private static final String PARTS = "parts";
-
   private MessagingService messagingService;
 
   /**
@@ -66,9 +62,10 @@ public class JsonMessageConverter implements MessageConverter {
 
     // add the body
     if (msg.isBodyText()) {
-      base.element(BODY_TEXT, msg.getText());
+      base.element(Message.Field.BODY_TEXT.toString(), msg.getText());
     } else {
-      base.element(BODY_URL, msg.getBody().toExternalForm());
+      base.element(Message.Field.BODY_URL.toString(), msg.getBody()
+          .toExternalForm());
     }
 
     if (msg.getParts().size() > 0) {
@@ -78,7 +75,7 @@ public class JsonMessageConverter implements MessageConverter {
         parts.add(toString(part));
         // base.accumulate(PARTS, toString(part));
       }
-      base.element(PARTS, parts);
+      base.element(Message.Field.PARTS.toString(), parts);
     }
 
     return base.toString();
@@ -100,15 +97,15 @@ public class JsonMessageConverter implements MessageConverter {
     while (entries.hasNext()) {
       Entry entry = (Entry) entries.next();
       String key = (String) entry.getKey();
-      if (BODY_TEXT.equals(key)) {
+      if (Message.Field.BODY_TEXT.toString().equals(key)) {
         msg.setText((String) entry.getValue());
-      } else if (BODY_URL.equals(key)) {
+      } else if (Message.Field.BODY_URL.toString().equals(key)) {
         try {
           msg.setBody(new URL((String) entry.getValue()));
         } catch (MalformedURLException e) {
           msg.setText("Unable to link to body.");
         }
-      } else if (PARTS.equals(key)) {
+      } else if (Message.Field.PARTS.toString().equals(key)) {
         JSONArray array = (JSONArray) entry.getValue();
         for (Object o : array) {
           msg.addPart(toMessage((JSONObject) o));
