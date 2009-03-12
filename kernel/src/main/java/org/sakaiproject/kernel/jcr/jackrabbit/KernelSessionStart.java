@@ -25,6 +25,9 @@ import org.sakaiproject.kernel.internal.api.KernelInitializtionException;
 
 import javax.jcr.LoginException;
 import javax.jcr.RepositoryException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.SystemException;
+import javax.transaction.TransactionManager;
 
 /**
  * 
@@ -32,13 +35,15 @@ import javax.jcr.RepositoryException;
 public class KernelSessionStart implements InitializationAction {
 
   private JCRServiceImpl jcrService;
+  private TransactionManager transactionManager;
 
   /**
    * 
    */
   @Inject
-  public KernelSessionStart(JCRServiceImpl jcrService) {
+  public KernelSessionStart(JCRServiceImpl jcrService, TransactionManager transactionManager) {
     this.jcrService = jcrService;
+    this.transactionManager = transactionManager;
   }
 
   /**
@@ -48,10 +53,15 @@ public class KernelSessionStart implements InitializationAction {
    */
   public void init() throws KernelInitializtionException {
     try {
+      transactionManager.begin();
       jcrService.loginSystem();
     } catch (LoginException e) {
       throw new KernelInitializtionException(e.getMessage(), e);
     } catch (RepositoryException e) {
+      throw new KernelInitializtionException(e.getMessage(), e);
+    } catch (NotSupportedException e) {
+      throw new KernelInitializtionException(e.getMessage(), e);
+    } catch (SystemException e) {
       throw new KernelInitializtionException(e.getMessage(), e);
     }
   }

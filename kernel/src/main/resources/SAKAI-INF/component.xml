@@ -271,6 +271,21 @@
       <version>1.0.2.GA</version>
       <scope>SHARE</scope>
     </dependency>
+<!-- 
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>5.0.5</version>
+    </dependency>
+ -->
+ <!-- 
+ Required for debugging log4jdbc
+    <dependency>
+      <groupId>com.google.code</groupId>
+      <artifactId>log4jdbc3</artifactId>
+      <version>1.1</version>
+    </dependency>
+  -->
    
 
   </dependencies>

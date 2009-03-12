@@ -31,6 +31,7 @@ import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.site.SiteService;
 import org.sakaiproject.kernel.api.user.UserResolverService;
+import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.component.KernelLifecycle;
 import org.sakaiproject.kernel.user.jcr.JcrAuthenticationResolverProvider;
@@ -38,6 +39,7 @@ import org.sakaiproject.kernel.util.FileUtil;
 import org.sakaiproject.kernel.util.PathUtils;
 import org.sakaiproject.kernel.util.ResourceLoader;
 import org.sakaiproject.kernel.util.StringUtils;
+import org.sakaiproject.kernel.util.user.NullUserEnvironment;
 import org.sakaiproject.kernel.webapp.SakaiServletRequest;
 import org.sakaiproject.kernel.webapp.SakaiServletResponse;
 import org.sakaiproject.kernel.webapp.filter.SakaiAuthenticationFilter;
@@ -48,28 +50,41 @@ import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 
 import javax.jcr.AccessDeniedException;
+import javax.jcr.LoginException;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.RollbackException;
+import javax.transaction.Status;
+import javax.transaction.SystemException;
+import javax.transaction.TransactionManager;
 
 /**
- * A base class for integration tests the extender must invoke beforeClass and
- * afterClass as part of its lifecycle. It cannot be performed here as it will
- * not get invoked correctly.
+ * A base class for integration tests the extender must invoke beforeClass and afterClass
+ * as part of its lifecycle. It cannot be performed here as it will not get invoked
+ * correctly.
  */
 public class KernelIntegrationBase {
   private static final Log LOG = LogFactory.getLog(KernelIntegrationBase.class);
   private static KernelLifecycle kernelLifecycle;
   private static KernelManager kernelManager;
   private static UserEnvironmentResolverService userEnvironmentResolverService;
+  private static boolean kernelError = false;
+  private static TransactionManager transactionManager;
   private static final String USERBASE = "res://org/sakaiproject/kernel/test/sampleuserenv/";
   private static final String[] USERS = new String[] { "admin", "ib236", "ieb" };
   private static final String SITEBASE = "res://org/sakaiproject/kernel/test/samplesite/";
   private static final String[] SITES = new String[] { "site1", "site2" };
+  private static final String[] CHECKUSERS = new String[] { "admin", "user1", "user2",
+      "user3", "user4", "user5", "user6" };
 
-  public static synchronized boolean beforeClass()
-      throws ComponentActivatorException {
+  public static synchronized boolean beforeClass() throws ComponentActivatorException {
+    if (kernelError) {
+      throw new Error("Kernel Startup failed previously, test abandoned");
+    }
     if (kernelManager == null) {
       System.err.println("no kernel has been started ");
       // If there are problems with startup and shutdown, these will prevent the
@@ -87,9 +102,8 @@ public class KernelIntegrationBase {
           .println("==========================================================================");
 
       KernelManager.setTestMode();
-      System
-          .setProperty("sakai.kernel.properties",
-              "inline://core.component.locations=\ncomponent.locations=classpath:;\n");
+      System.setProperty("sakai.kernel.properties",
+          "inline://core.component.locations=\ncomponent.locations=classpath:;\n");
 
       kernelLifecycle = new KernelLifecycle();
       kernelLifecycle.start();
@@ -97,6 +111,46 @@ public class KernelIntegrationBase {
       kernelManager = new KernelManager();
       userEnvironmentResolverService = kernelManager
           .getService(UserEnvironmentResolverService.class);
+      transactionManager = kernelManager.getService(TransactionManager.class);
+
+      JCRService jcrService = kernelManager.getService(JCRService.class);
+
+      try {
+        jcrService.login();
+      } catch (LoginException e) {
+        LOG.error(e);
+      } catch (RepositoryException e) {
+        LOG.error(e);
+      }
+      
+      for (String checkUser : CHECKUSERS) {
+        UserEnvironment ub = userEnvironmentResolverService.resolve(checkUser);
+        if (ub instanceof NullUserEnvironment
+            || !checkUser.equals(ub.getUser().getUuid())) {
+          kernelError = true;
+          throw new Error(
+              "Failed to Start Kernel Correctly, didnt find the user environmnt for "
+                  + checkUser
+                  + " indicating it was not added by default. This is an error with "
+                  + "the inital population of the reository (or that user is no longer created)");
+        }
+      }
+      try {
+        if (transactionManager.getStatus() == Status.STATUS_ACTIVE) {
+          LOG.error("Uncommitted Transaction Found at test startup");
+          transactionManager.commit();
+        }
+      } catch (Exception ex) {
+        kernelError = true;
+        throw new Error("Found uncommitted transaction at kernel start ");
+      }
+      try {
+        jcrService.logout();
+      } catch (LoginException e) {
+        LOG.error(e);
+      } catch (RepositoryException e) {
+        LOG.error(e);
+      }
       return true;
     } else {
       System.err.println("Reusing the kernel ");
@@ -118,6 +172,33 @@ public class KernelIntegrationBase {
       KernelIntegrationBase.enableKernelStartup();
     } else {
       System.err.println("Keeping kernel alive ");
+    }
+    if (transactionManager != null) {
+
+      try {
+        if (transactionManager.getStatus() == Status.STATUS_ACTIVE) {
+          LOG.error("Uncommitted Transaction Found at test shutdown");
+          transactionManager.commit();
+        }
+      } catch (SecurityException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (IllegalStateException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (RollbackException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (HeuristicMixedException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (HeuristicRollbackException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (SystemException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
     }
   }
 
@@ -158,8 +239,8 @@ public class KernelIntegrationBase {
    * @throws NoSuchAlgorithmException
    */
   public static void loadTestUsers() throws IOException, AccessDeniedException,
-      RepositoryException, JCRNodeFactoryServiceException,
-      InterruptedException, NoSuchAlgorithmException {
+      RepositoryException, JCRNodeFactoryServiceException, InterruptedException,
+      NoSuchAlgorithmException {
     KernelManager km = new KernelManager();
 
     JCRNodeFactoryService jcrNodeFactoryService = km
@@ -172,39 +253,38 @@ public class KernelIntegrationBase {
       Node n = jcrNodeFactoryService.setInputStream(getUserEnvPath(user), in,
           RestProvider.CONTENT_TYPE);
 
-      n.setProperty(JcrAuthenticationResolverProvider.JCRPASSWORDHASH,
-          StringUtils.sha1Hash("password"));
-      n.save();
+      n.setProperty(JcrAuthenticationResolverProvider.JCRPASSWORDHASH, StringUtils
+          .sha1Hash("password"));
+      // n.save();
       in.close();
     }
     jcrService.getSession().save();
     jcrService.logout();
     Thread.yield();
     Thread.sleep(1000);
-    
 
   }
 
-  public static void loadTestSites() throws IOException,
-      JCRNodeFactoryServiceException, RepositoryException,
-      NoSuchAlgorithmException, InterruptedException {
+  public static void loadTestSites() throws IOException, JCRNodeFactoryServiceException,
+      RepositoryException, NoSuchAlgorithmException, InterruptedException {
     KernelManager km = new KernelManager();
     JCRNodeFactoryService jcrNodeFactoryService = km
         .getService(JCRNodeFactoryService.class);
     JCRService jcrService = km.getService(JCRService.class);
     jcrService.loginSystem();
     for (String siteName : SITES) {
-      InputStream in = ResourceLoader.openResource(SITEBASE + siteName
-          + "/groupdef.json", KernelIntegrationBase.class.getClassLoader());
-      Node n = jcrNodeFactoryService.setInputStream(KernelIntegrationBase
-          .buildUsersOwnedSitesFilePath("ib236", siteName), in,
-          RestProvider.CONTENT_TYPE);
+      InputStream in = ResourceLoader.openResource(
+          SITEBASE + siteName + "/groupdef.json", KernelIntegrationBase.class
+              .getClassLoader());
+      @SuppressWarnings("unused")
+      Node n = jcrNodeFactoryService
+          .setInputStream(KernelIntegrationBase.buildUsersOwnedSitesFilePath("ib236",
+              siteName), in, RestProvider.CONTENT_TYPE);
 
-      n.save();
+      // n.save();
       in.close();
       LOG.info("Test site saved: "
-          + KernelIntegrationBase.buildUsersOwnedSitesFilePath("ib236",
-              siteName));
+          + KernelIntegrationBase.buildUsersOwnedSitesFilePath("ib236", siteName));
     }
     jcrService.getSession().save();
     Thread.yield();
@@ -213,10 +293,8 @@ public class KernelIntegrationBase {
     jcrService.logout();
   }
 
-  protected static String buildUsersOwnedSitesFilePath(String userId,
-      String siteIndexId) {
-    String userPath = userEnvironmentResolverService
-        .getUserEnvironmentBasePath(userId);
+  protected static String buildUsersOwnedSitesFilePath(String userId, String siteIndexId) {
+    String userPath = userEnvironmentResolverService.getUserEnvironmentBasePath(userId);
     String siteNode = userPath + SiteService.PATH_MYSITES
         + PathUtils.getUserPrefix(siteIndexId) + SiteService.FILE_GROUPDEF;
     return siteNode;
@@ -231,13 +309,11 @@ public class KernelIntegrationBase {
   }
 
   /**
-   * Stops the default kernel from starting up when the lifecycle is started,
-   * used when there is a test that wants to test an aspect of the kernel
-   * startup.
+   * Stops the default kernel from starting up when the lifecycle is started, used when
+   * there is a test that wants to test an aspect of the kernel startup.
    */
   public static void disableKernelStartup() {
-    System.setProperty("sakai.kernel.properties",
-        "inline://core.component.locations=\n");
+    System.setProperty("sakai.kernel.properties", "inline://core.component.locations=\n");
   }
 
   /**

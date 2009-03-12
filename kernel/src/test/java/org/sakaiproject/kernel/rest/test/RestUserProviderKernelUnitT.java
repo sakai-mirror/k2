@@ -17,6 +17,7 @@
  */
 package org.sakaiproject.kernel.rest.test;
 
+import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
@@ -24,6 +25,8 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertTrue;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -42,9 +45,11 @@ import org.sakaiproject.kernel.webapp.SakaiServletRequest;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Locale;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -55,6 +60,8 @@ import javax.servlet.http.HttpSession;
 public class RestUserProviderKernelUnitT extends KernelIntegrationBase {
 
   
+  @SuppressWarnings("unused")
+  private static final Log LOG = LogFactory.getLog(RestUserProviderKernelUnitT.class);
   private static boolean shutdown;
 
   @BeforeClass
@@ -154,6 +161,8 @@ public class RestUserProviderKernelUnitT extends KernelIntegrationBase {
     HttpServletResponse response = createMock(HttpServletResponse.class);
     HttpSession session = createMock(HttpSession.class);
     
+
+    
     expect(request.getMethod()).andReturn("POST").anyTimes();
 
     expect(request.getParameter("firstName")).andReturn("Ian").atLeastOnce();
@@ -177,7 +186,7 @@ public class RestUserProviderKernelUnitT extends KernelIntegrationBase {
     };
     expect(response.getOutputStream()).andReturn(out).anyTimes();
 
-    /*
+    expect(request.getRemoteUser()).andReturn(null).anyTimes();
     expect(request.getRequestedSessionId()).andReturn("SESSIONID-123-1").anyTimes();
     expect(session.getId()).andReturn("SESSIONID-123-1").anyTimes();
     Cookie cookie = new Cookie("SAKAIID","SESSIONID-123-1");
@@ -186,16 +195,14 @@ public class RestUserProviderKernelUnitT extends KernelIntegrationBase {
 
     expect(request.getAttribute("_no_session")).andReturn(null).anyTimes();
     expect(request.getSession(true)).andReturn(session).anyTimes();
+    expect(request.getSession(false)).andReturn(session).anyTimes();
     expect(request.getAttribute("_uuid")).andReturn(null).anyTimes();
     expect(session.getAttribute("_u")).andReturn(null).anyTimes();
     expect(session.getAttribute("_uu")).andReturn(null).anyTimes();
     expect(request.getLocale()).andReturn(new Locale("en", "US")).anyTimes();
     expect(session.getAttribute("sakai.locale.")).andReturn(null).anyTimes();
-    response.setContentType(RestProvider.CONTENT_TYPE);
-    expectLastCall().atLeastOnce();
     response.addCookie((Cookie) anyObject());
     expectLastCall().anyTimes();
-   */
     
     replay(request, response, session);
 
@@ -215,5 +222,7 @@ public class RestUserProviderKernelUnitT extends KernelIntegrationBase {
     verify(request, response, session);
 
   }
+  
+  
 
 }

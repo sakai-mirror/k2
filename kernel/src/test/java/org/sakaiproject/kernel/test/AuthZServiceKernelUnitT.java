@@ -123,9 +123,9 @@ public class AuthZServiceKernelUnitT extends KernelIntegrationBase {
       LOG.info("Saving " + userEnvironmentPath);
       InputStream in = ResourceLoader.openResource(TEST_USERENV + userName
           + ".json", AuthZServiceKernelUnitT.class.getClassLoader());
+      @SuppressWarnings("unused")
       Node n = jcrNodeFactoryService.setInputStream(userEnvironmentPath, in,
           RestProvider.CONTENT_TYPE);
-      n.save();
       session.save();
       in.close();
     }
@@ -141,9 +141,9 @@ public class AuthZServiceKernelUnitT extends KernelIntegrationBase {
       LOG.info("Saving " + groupPath);
       InputStream in = ResourceLoader.openResource(TEST_GROUPENV + group
           + ".json", AuthZServiceKernelUnitT.class.getClassLoader());
+      @SuppressWarnings("unused")
       Node n = jcrNodeFactoryService.setInputStream(groupPath, in,
           RestProvider.CONTENT_TYPE);
-      n.save();
       session.save();
       in.close();
     }
@@ -209,7 +209,7 @@ public class AuthZServiceKernelUnitT extends KernelIntegrationBase {
         .getService(JCRNodeFactoryService.class);
     Node n = jcrNodeFactory.createFile("/test/a/b/c/d.txt",
         RestProvider.CONTENT_TYPE);
-    n.save();
+//    n.save();
     n.getSession().save();
 
     ReferencedObject ro = referenceResolverService.resolve("/test/a/b/c/d.txt");

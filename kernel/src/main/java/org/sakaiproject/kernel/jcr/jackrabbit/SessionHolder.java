@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.memory.ThreadBound;
 
 public class SessionHolder implements ThreadBound {
+  @SuppressWarnings("unused")
   private static final Log log = LogFactory.getLog(SessionHolder.class);
 
   private Session session = null;

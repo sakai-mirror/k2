@@ -174,7 +174,7 @@
     <!--
         workspace configuration template:
         used to create the initial workspace if there's no workspace yet
-    -->
+    -->    
     <Workspace name="${wsp.name}">
         <!--
             virtual file system of the workspace:
@@ -189,17 +189,21 @@
         -->
 
         <PersistenceManager class="${persistance.manager.class}">
-            <param name="bundleCacheSize" value="128" />
+            <param name="bundleCacheSize" value="8" />
+            <param name="minBlobSize" value="1024" />
             <param name="url" value="${db.url}" />
             <param name="user" value="${db.user}"/>
             <param name="password" value="${db.pass}"/>
             <param name="schema" value="${db.dialect}"/>
             <param name="driver" value="${db.driver}"/>
             <param name="schemaObjectPrefix" value="jcr_${wsp.name}_"/>
+            <!-- 
             <param name="externalBLOBs" value="true"/>
             <param name="externalBLOBs" value="${content.filesystem}"/>
             <param name="useSharedFsBlobStore" value="${content.shared}" />
             <param name="sharedLocation" value="${content.shared.location}/${wsp.name}" />
+               -->
+          
         </PersistenceManager>
 
         <!--
@@ -293,16 +297,20 @@
         -->
 
         <PersistenceManager class="${persistance.manager.class}">
-            <param name="bundleCacheSize" value="128" />
+            <param name="bundleCacheSize" value="8" />
+            <param name="minBlobSize" value="1024" />
             <param name="url" value="${db.url}" />
             <param name="user" value="${db.user}"/>
             <param name="password" value="${db.pass}"/>
             <param name="schema" value="${db.dialect}"/>
             <param name="driver" value="${db.driver}"/>
             <param name="schemaObjectPrefix" value="jcrv_"/>
+            <!-- 
             <param name="externalBLOBs" value="${content.filesystem}"/>
             <param name="useSharedFsBlobStore" value="${content.shared}" />
             <param name="sharedLocation" value="${content.shared.location}/version" />
+            -->
+          
         </PersistenceManager>
 
     </Versioning>
@@ -341,4 +349,20 @@
        </Journal>
     </Cluster>
     
+    <!--  Configures the data store -->
+     <DataStore class="org.apache.jackrabbit.core.data.FileDataStore"/> 
+<!-- 
+    <DataStore class="org.apache.jackrabbit.core.data.db.DbDataStore">
+        <param name="url" value="${db.url}"/>
+        <param name="user" value="${db.user}"/>
+        <param name="password" value="${db.pass}"/>
+        <param name="databaseType" value="${db.dialect}"/>
+        <param name="driver" value="${db.driver}"/>
+        <param name="minRecordLength" value="1024"/>
+        <param name="maxConnections" value="10"/>
+        <param name="copyWhenReading" value="true"/>
+        <param name="tablePrefix" value=""/>
+        <param name="schemaObjectPrefix" value="jcrds_"/>
+    </DataStore>
+    -->
 </Repository>

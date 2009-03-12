@@ -146,9 +146,10 @@ public class FriendsBean {
     InputStream in = new ByteArrayInputStream(json.getBytes(StringUtils.UTF8));
     try {
       System.err.println("Saving Friends Bean "+userPath);
+      @SuppressWarnings("unused")
       Node n = jcrNodeFactoryService.setInputStream(userPath, in,
           RestProvider.CONTENT_TYPE);
-      n.save();
+//      n.save();
       System.err.println("Done Saving Friends Bean "+userPath);
     } finally {
       try {

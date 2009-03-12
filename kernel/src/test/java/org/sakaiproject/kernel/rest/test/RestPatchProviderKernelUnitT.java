@@ -94,6 +94,7 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
     ReferencedObject ro = referenceResolverService.resolve("/");
     ro.addAccessControlStatement(new JcrAccessControlStatementImpl(
         "k:*,s:US:user1,g:1,p:1"));
+    jcrService.getSession().save();
     jcrService.logout();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -156,6 +157,7 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
     ReferencedObject ro = referenceResolverService.resolve("/");
     ro.addAccessControlStatement(new JcrAccessControlStatementImpl(
         "k:*,s:US:user1,g:1,p:1"));
+    jcrService.getSession().save();
     jcrService.logout();
 
     
@@ -183,7 +185,7 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
             .getBytes(StringUtils.UTF8));
     Node n = jcrNodeFactoryService.setInputStream("/a/test/file2", in,
         RestProvider.CONTENT_TYPE);
-    n.save();
+    n.getSession().save();
 
     String[] elements = new String[] { "patch", "f", "a", "test", "file2" };
 
@@ -198,7 +200,7 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
     n = jcrNodeFactoryService.getNode("/a/test/file2");
     assertNotNull(n);
     String result = IOUtils.readFully(jcrNodeFactoryService
-        .getInputStream("/a/test/file"), StringUtils.UTF8);
+        .getInputStream("/a/test/file2"), StringUtils.UTF8);
     assertEquals("{\"a\":\"a1\",\"c\":\"c3\"}", result);
 
     verifyMocks();
@@ -230,6 +232,10 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
     expect(request.getParameterValues("a")).andReturn(
         new String[] { "u", "r", "u", "r" });
     expect(request.getParameterValues("i")).andReturn(null);
+    
+    // not expecting this but need it to get exceptions out.
+    response.setContentType(RestProvider.CONTENT_TYPE);
+    expectLastCall().anyTimes();
 
     replayMocks();
 
@@ -267,9 +273,10 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
     ByteArrayInputStream in = new ByteArrayInputStream(
         "{\"a\":\"a1\",\"b\":\"b1\",\"c\":\"c3\",\"d\":\"d1\"}"
             .getBytes(StringUtils.UTF8));
+    @SuppressWarnings("unused")
     Node n = jcrNodeFactoryService.setInputStream("/a/test/file2", in,
         RestProvider.CONTENT_TYPE);
-    n.save();
+//    n.save();
     jcrService.logout();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -286,7 +293,11 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
         new String[] { "u", "r", "u", "r" });
     expect(request.getParameterValues("i")).andReturn(null);
 
+    // not expecting this but need it to get exceptions out.
+    response.setContentType(RestProvider.CONTENT_TYPE);
+    expectLastCall().anyTimes();
 
+    
     replayMocks();
 
     String[] elements = new String[] { "patch", "f", "a", "test", "file2" };

@@ -183,7 +183,7 @@ public class JcrAuthenticationResolverProvider implements
             if (superUser || nonce.equals(hash)) {
               nonce = StringUtils.sha1Hash(newIdPwPrincipal.getPassword());
               n.setProperty(JCRPASSWORDHASH, nonce);
-              n.save();
+//              n.save();
               return true; // success
             } else {
               throw new SecurityException(

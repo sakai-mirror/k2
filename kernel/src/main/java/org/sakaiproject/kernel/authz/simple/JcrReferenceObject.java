@@ -188,7 +188,7 @@ public class JcrReferenceObject implements ReferencedObject {
       }
       values[i] = newAcs.toString();
       node.setProperty(JCRConstants.ACL_ACL, values);
-      node.save();
+//      node.save();
 
       acl.add(newAcs);
       if (newAcs.isPropagating()) {
@@ -225,7 +225,7 @@ public class JcrReferenceObject implements ReferencedObject {
       }
       String[] values = newValues.toArray(new String[0]);
       node.setProperty(JCRConstants.ACL_ACL, values);
-      node.save();
+//      node.save();
 
       acl.removeAll(toRemove);
       inheritableAcl.removeAll(toRemove);
@@ -251,7 +251,7 @@ public class JcrReferenceObject implements ReferencedObject {
         values[i++] = acs.toString();
       }
       node.setProperty(JCRConstants.ACL_ACL, values);
-      node.save();
+//      node.save();
 
       acl = Lists.newArrayList(newAcl);
       inheritableAcl = Lists.newArrayList();

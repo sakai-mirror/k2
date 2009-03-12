@@ -32,6 +32,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
  */
 public class JmsSessionProvider implements Provider<Session> {
 
+  @SuppressWarnings("unused")
   private ConnectionFactory connectionFactory;
 
   @Inject

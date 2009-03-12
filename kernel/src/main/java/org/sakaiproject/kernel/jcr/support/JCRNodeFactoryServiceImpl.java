@@ -43,15 +43,16 @@ import javax.jcr.Value;
 import javax.jcr.ValueFactory;
 
 /**
- * @author ieb This is a support service to make it easier to treat a JCR
- *         service as a Filing System.
- *
+ * @author ieb This is a support service to make it easier to treat a JCR service as a
+ *         Filing System.
+ * 
  **/
 @Singleton
 public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
 
-  private static final Log log = LogFactory
-      .getLog(JCRNodeFactoryServiceImpl.class);
+  private static final Log log = LogFactory.getLog(JCRNodeFactoryServiceImpl.class);
+
+  private static final boolean debug = log.isDebugEnabled();
 
   private JCRService jcrService;
 
@@ -60,8 +61,7 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
     this.jcrService = jcrService;
   }
 
-  private void populateFile(Node node, String mimeType)
-      throws RepositoryException {
+  private void populateFile(Node node, String mimeType) throws RepositoryException {
     // JCR Types
     if (jcrService.needsMixin(node, JCRConstants.MIX_REFERENCEABLE)) {
       node.addMixin(JCRConstants.MIX_REFERENCEABLE);
@@ -75,10 +75,8 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
     if (jcrService.needsMixin(node, JCRConstants.MIX_ACL)) {
       node.addMixin(JCRConstants.MIX_ACL);
     }
-    Node resource = node.addNode(JCRConstants.JCR_CONTENT,
-        JCRConstants.NT_UNSTRUCTURED);
-    resource
-        .setProperty(JCRConstants.JCR_LASTMODIFIED, new GregorianCalendar());
+    Node resource = node.addNode(JCRConstants.JCR_CONTENT, JCRConstants.NT_UNSTRUCTURED);
+    resource.setProperty(JCRConstants.JCR_LASTMODIFIED, new GregorianCalendar());
     resource.setProperty(JCRConstants.JCR_MIMETYPE,
         mimeType == null ? "application/octet-stream" : mimeType);
     resource.setProperty(JCRConstants.JCR_DATA, "");
@@ -88,7 +86,9 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
 
   private void populateFolder(Node node) throws RepositoryException {
     // JCR Types
-    log.debug("Doing populate Folder");
+    if (debug) {
+      log.debug("Doing populate Folder");
+    }
     if (jcrService.needsMixin(node, JCRConstants.MIX_LOCKABLE)) {
       node.addMixin(JCRConstants.MIX_LOCKABLE);
     }
@@ -108,9 +108,8 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
 
   /*
    * (non-Javadoc)
-   *
-   * @see
-   * org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService#createFile
+   * 
+   * @see org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService#createFile
    * (java.lang.String)
    */
   public Node createFile(String filePath, String mimeType)
@@ -120,24 +119,22 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
 
   /*
    * (non-Javadoc)
-   *
-   * @see
-   * org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService#createFolder
+   * 
+   * @see org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService#createFolder
    * (java.lang.String)
    */
-  public Node createFolder(String folderPath)
-      throws JCRNodeFactoryServiceException {
-    if ( folderPath.length() > 0 && folderPath.endsWith("/") ) {
-      folderPath = folderPath.substring(0,folderPath.length()-2);
+  public Node createFolder(String folderPath) throws JCRNodeFactoryServiceException {
+    if (folderPath.length() > 0 && folderPath.endsWith("/")) {
+      folderPath = folderPath.substring(0, folderPath.length() - 2);
     }
     return createNode(folderPath, null, JCRConstants.NT_FOLDER);
   }
 
   /**
-   * Create a new node. Nodes are of the form
-   * nt:folder/nt:folder/nt:folder/nt:file nt:folders have properties nt:files
-   * have properties nt:files have a nt:resource subnode
-   *
+   * Create a new node. Nodes are of the form nt:folder/nt:folder/nt:folder/nt:file
+   * nt:folders have properties nt:files have properties nt:files have a nt:resource
+   * subnode
+   * 
    * @param id
    * @param string
    * @param collection
@@ -148,6 +145,8 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
   private Node createNode(String id, String mimeType, String type)
       throws JCRNodeFactoryServiceException {
     Node node = null;
+    Node currentNode = null;
+    String savedNode = null;
     try {
       Session s = jcrService.getSession();
       Node n = getNodeFromSession(s, id);
@@ -166,7 +165,9 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
       if (n == null) {
         n = s.getRootNode();
       }
-      log.debug("VPath is " + vpath);
+      if (debug) {
+        log.debug("VPath is " + vpath);
+      }
       String relPath = id.substring(vpath.length());
       // Node rootNode = s.getRootNode();
       if (relPath.startsWith("/")) {
@@ -174,62 +175,41 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
       }
 
       String[] pathElements = relPath.split("/");
-      log.debug("RelPath is " + relPath + " split into " + pathElements.length
-          + " elements ");
-      for (String pathel : pathElements) {
-        log.debug("       Path Element is [" + pathel + "]");
+      if (debug) {
+        log.debug("RelPath is " + relPath + " split into " + pathElements.length
+            + " elements ");
+        for (String pathel : pathElements) {
+          log.debug("       Path Element is [" + pathel + "]");
+        }
       }
 
-      Node currentNode = n;
-      for (int i = 0; i < pathElements.length; i++) {
+      currentNode = n;
+      int i = 0;
+      for( ; i< pathElements.length; i++ ) {
         try {
-          log.debug("Getting " + pathElements[i] + " under " + currentNode);
+          savedNode = pathElements[i];
           currentNode = currentNode.getNode(pathElements[i]);
-          if (!currentNode.isNodeType(JCRConstants.NT_FOLDER)
-              && !currentNode.isNodeType(JCRConstants.NT_BASE)) {
-            throw new JCRNodeFactoryServiceException(
-                "Cant create collection or a folder inside a node that is not a folder "
-                    + currentNode.getPath());
-          }
-
-        } catch (PathNotFoundException pnfe) {
-          if (log.isDebugEnabled()) {
-            log.debug("Not Found " + pnfe.getMessage() + " ");
-          }
-          if (i < pathElements.length - 1
-              || JCRConstants.NT_FOLDER.equals(type)) {
-            if (log.isDebugEnabled()) {
-              log.debug("Adding Node " + pathElements[i] + " as "
-                  + JCRConstants.NT_FOLDER + " to " + currentNode.getPath());
-            }
-            Node newNode = currentNode.addNode(pathElements[i],
-                JCRConstants.NT_FOLDER);
-            populateFolder(newNode);
-            currentNode.save();
-            currentNode = newNode;
-            if (log.isDebugEnabled()) {
-              log.debug("Adding Node Complete");
-            }
-          } else {
-            if (log.isDebugEnabled()) {
-              log.debug("Adding Node " + pathElements[i] + " as " + type
-                  + " to " + currentNode.getPath());
-            }
-            Node newNode = currentNode.addNode(pathElements[i],
-                JCRConstants.NT_FILE);
-            populateFile(newNode, mimeType);
-            currentNode.save();
-            currentNode = newNode;
-            if (log.isDebugEnabled()) {
-              log.debug("Adding Node Complete");
-            }
-
-          }
-        }
-        if (currentNode.isCheckedOut()) {
-          currentNode.save();
+          
+        } catch ( PathNotFoundException pnfe ) {
+          break;
         }
       }
+      @SuppressWarnings("unused")
+      Node lastComittedNode = currentNode;
+      for( ; i < pathElements.length; i++ ) {
+        if (i < pathElements.length - 1 || JCRConstants.NT_FOLDER.equals(type)) {
+          savedNode = pathElements[i];
+          Node newNode = currentNode.addNode(pathElements[i], JCRConstants.NT_FOLDER);
+          populateFolder(newNode);
+          currentNode = newNode;          
+        } else {
+          savedNode = pathElements[i];
+          Node newNode = currentNode.addNode(pathElements[i], JCRConstants.NT_FILE);
+          populateFile(newNode, mimeType);
+          currentNode = newNode;          
+        }
+      }
+//      lastComittedNode.save();
       node = currentNode;
       if (node == null) {
         log.error("Failed to create Node " + id + " got null ");
@@ -238,8 +218,8 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
       } else if (!id.equals(node.getPath())) {
 
         log.error("Failed to create Node " + id + " got" + node.getPath());
-        throw new JCRNodeFactoryServiceException("Failed to create node " + id
-            + " got " + node.getPath());
+        throw new JCRNodeFactoryServiceException("Failed to create node " + id + " got "
+            + node.getPath());
       }
 
     } catch (AccessDeniedException ax) {
@@ -247,6 +227,20 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
     } catch (RepositoryException rex) {
       log.warn("Unspecified Repository Failiure ", rex);
       log.error("Unspecified Repository Failiure " + rex.getMessage());
+      if ( currentNode != null ) {
+        
+        try {
+          log.info("Current Node was "+currentNode.getPath()+" saving "+savedNode);
+        } catch (RepositoryException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      } else {
+        log.info("Current Node was null saving "+savedNode);
+      }
+    }
+    if ( node == null ) {
+     log.error("NODE IS NULL after Create! ");
     }
     return node;
 
@@ -268,7 +262,9 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
     try {
       i = s.getItem(id);
     } catch (PathNotFoundException e) {
-      log.debug("getNodeFromSession: Node Does Not Exist :" + id);
+      if ( debug ) {
+        log.debug("getNodeFromSession: Node Does Not Exist :" + id);
+      }
       return null;
     }
     Node n = null;
@@ -276,8 +272,7 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
       if (i.isNode()) {
         n = (Node) i;
       } else {
-        throw new JCRNodeFactoryServiceException(
-            "Path does not point to a node");
+        throw new JCRNodeFactoryServiceException("Path does not point to a node");
       }
     }
     return n;
@@ -291,7 +286,7 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
     int pre = absPath.lastIndexOf("/");
     if (pre > 0) {
       String parentPath = absPath.substring(0, pre);
-      if (log.isDebugEnabled()) {
+      if (debug) {
         log.debug("Parent path is [" + parentPath + "]");
       }
       return parentPath;
@@ -302,6 +297,9 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
   public Node setInputStream(String id, InputStream in, String mimeType)
       throws JCRNodeFactoryServiceException, RepositoryException {
     Node newNode = createNode(id, mimeType, JCRConstants.NT_FILE);
+    if (newNode == null) {
+      log.error("Node is Null after create ");
+    }
     Session s = newNode.getSession();
     ValueFactory vf = s.getValueFactory();
     Value v = vf.createValue(in);
@@ -320,9 +318,8 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
         Property property = contentNode.getProperty(JCRConstants.JCR_DATA);
         return property.getStream();
       }
-      throw new JCRNodeFactoryServiceException(
-          "Failed to open input stream for node, " + id
-              + " as it does not exist");
+      throw new JCRNodeFactoryServiceException("Failed to open input stream for node, "
+          + id + " as it does not exist");
     } catch (AccessDeniedException ax) {
       throw new PermissionDeniedException(ax.getMessage(), ax);
     }

@@ -26,6 +26,11 @@ import org.sakaiproject.kernel.internal.api.KernelInitializtionException;
 
 import javax.jcr.LoginException;
 import javax.jcr.RepositoryException;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+import javax.transaction.TransactionManager;
 
 /**
  * 
@@ -33,13 +38,15 @@ import javax.jcr.RepositoryException;
 public class KernelSessionStop implements InitializationAction {
 
   private JCRService jcrService;
+  private TransactionManager transactionManager;
 
   /**
    * 
    */
   @Inject
-  public KernelSessionStop(JCRService jcrService) {
+  public KernelSessionStop(JCRService jcrService, TransactionManager transactionManager) {
     this.jcrService = jcrService;
+    this.transactionManager = transactionManager;
   }
 
   /**
@@ -49,10 +56,24 @@ public class KernelSessionStop implements InitializationAction {
    */
   public void init() throws KernelInitializtionException {
     try {
+      jcrService.getSession().save();
+      transactionManager.commit();
       jcrService.logout();
     } catch (LoginException e) {
       throw new KernelInitializtionException(e.getMessage(), e);
     } catch (RepositoryException e) {
+      throw new KernelInitializtionException(e.getMessage(), e);
+    } catch (SecurityException e) {
+      throw new KernelInitializtionException(e.getMessage(), e);
+    } catch (IllegalStateException e) {
+      throw new KernelInitializtionException(e.getMessage(), e);
+    } catch (RollbackException e) {
+      throw new KernelInitializtionException(e.getMessage(), e);
+    } catch (HeuristicMixedException e) {
+      throw new KernelInitializtionException(e.getMessage(), e);
+    } catch (HeuristicRollbackException e) {
+      throw new KernelInitializtionException(e.getMessage(), e);
+    } catch (SystemException e) {
       throw new KernelInitializtionException(e.getMessage(), e);
     }
   }

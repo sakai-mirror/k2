@@ -84,7 +84,6 @@ public class JmsMessagingService implements MessagingService {
       ByteArrayInputStream bais = new ByteArrayInputStream(json
           .getBytes("UTF-8"));
       Node n = jcrNodeFactory.setInputStream(path, bais, "application/json");
-      n.save();
     } catch (JCRNodeFactoryServiceException e) {
       // FIXME do something here
     } catch (RepositoryException e) {

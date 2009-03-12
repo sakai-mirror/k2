@@ -82,7 +82,6 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
    * @see org.sakaiproject.kernel.api.authz.AuthzResolverService#check(java.lang.String,
    *      org.sakaiproject.kernel.api.authz.PermissionQuery)
    */
-  @java.lang.SuppressWarnings("unchecked")
   @SuppressWarnings(value = { "WMI_WRONG_MAP_ITERATOR" }, justification = " Invalid, the acl get is not from an Entry set")
   public void check(String resourceReference, PermissionQuery permissionQuery)
       throws PermissionDeniedException {

@@ -369,7 +369,7 @@ public class RestUserProvider implements RestProvider {
       profileMap.put("email", email);
 
       userProfile.setProperties(profileMap);
-      userProfile.save();
+//      userProfile.save();
 
       Map<String, Object> r = new HashMap<String, Object>();
       r.put("response", "OK");

@@ -92,6 +92,7 @@ public class PopulateBaseRepository implements StartupAction {
     try {
       InputStream in = ResourceLoader.openResource(RESOURCES_TO_LOAD, this
           .getClass().getClassLoader());
+      
       Properties p = new Properties();
       try {
         p.load(in);
@@ -177,12 +178,14 @@ public class PopulateBaseRepository implements StartupAction {
             n = n.getParent();
             n.setProperty(JCRConstants.ACL_OWNER, parentOwner);
           }
+          LOG.info("Added Startup File at "+n.getPath());
           
-          n.save();
+//          n.save();
         } else {
           LOG.info("Starting Node already exists " + path);
         }
       }
+      
     } catch (IOException e) {
       throw new RepositoryStartupException("Failed to populate Repository ", e);
     } catch (RepositoryException e) {

@@ -25,15 +25,11 @@ import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.internal.api.InitializationAction;
 import org.sakaiproject.kernel.jcr.api.internal.RepositoryStartupException;
 import org.sakaiproject.kernel.jcr.api.internal.StartupAction;
-import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
 
 import java.util.Iterator;
 import java.util.List;
 
-import javax.jcr.Repository;
 import javax.jcr.Session;
-import javax.transaction.Status;
-import javax.transaction.TransactionManager;
 
 /**
  * A Kernel initalization action to initialize the JCR repository. This class performs
@@ -45,17 +41,15 @@ public class RepositoryInitializationAction implements InitializationAction {
   private static final Log LOG = LogFactory.getLog(RepositoryInitializationAction.class);
   private List<StartupAction> startupActions;
   private JCRService jcrService;
-  private TransactionManager transactionManager;
 
   /**
    * Create the repository initialization action.
    */
   @Inject
   public RepositoryInitializationAction(JCRService jcrService,
-      List<StartupAction> startupActions, TransactionManager transactionManager) {
+      List<StartupAction> startupActions) {
     this.jcrService = jcrService;
     this.startupActions = startupActions;
-    this.transactionManager = transactionManager;
 
   }
 
@@ -66,46 +60,18 @@ public class RepositoryInitializationAction implements InitializationAction {
    * @see org.sakaiproject.kernel.internal.api.InitializationAction#init()
    */
   public void init() throws RepositoryStartupException {
-    Repository repository = jcrService.getRepository();
-    SakaiJCRCredentials ssp = new SakaiJCRCredentials();
     Session s = null;
     try {
       LOG.info("Starting " + startupActions);
-      transactionManager.begin();
-      s = repository.login(ssp);
+      s = jcrService.getSession();
       if (startupActions != null) {
         for (Iterator<StartupAction> i = startupActions.iterator(); i.hasNext();) {
           StartupAction startUpAction = i.next();
           startUpAction.startup(s);
-          s.save();
         }
       }
-      s.save();
-      transactionManager.commit();
     } catch (Exception e) {
-      try {
-        transactionManager.rollback();
-      } catch (Exception ex) {
-        LOG.warn("Failed to rollback startup Trasaction on Repository Startup "
-            + ex.getMessage(), ex);
-      }
       throw new RepositoryStartupException("Failed to initialization on respository ", e);
-    } finally {
-      try {
-        if (transactionManager.getStatus() == Status.STATUS_ACTIVE) {
-          transactionManager.rollback();
-        }
-      } catch (Exception ex) {
-        LOG.warn("Failed to rollback startup Trasaction on Repository Startup "
-            + ex.getMessage(), ex);
-      }
-      try {
-        if (s != null) {
-          s.logout();
-        }
-      } catch (Exception e) {
-        LOG.warn("Failed to logout of repository", e);
-      }
     }
 
   }

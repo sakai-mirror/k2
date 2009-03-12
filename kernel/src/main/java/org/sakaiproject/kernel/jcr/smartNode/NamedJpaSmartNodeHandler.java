@@ -56,10 +56,12 @@ public class NamedJpaSmartNodeHandler implements SmartNodeHandler {
    *
    * @see org.sakaiproject.kernel.api.jcr.SmartNodeHandler#handle(javax.jcr.Node)
    */
+  @SuppressWarnings("unchecked")
   public void handle(HttpServletRequest request, HttpServletResponse response,
       Node node, String statement) throws RepositoryException {
     javax.persistence.Query jpaQuery = entityManager
         .createNamedQuery(statement);
+    @SuppressWarnings("unused")
     List results = jpaQuery.getResultList();
   }
 

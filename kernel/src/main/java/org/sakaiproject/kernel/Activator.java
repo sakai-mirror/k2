@@ -109,6 +109,7 @@ public class Activator implements ComponentActivator {
           "Failed to start Kernel Component ", e);
     }
 
+    
     try {
       injector.getInstance(KernelInitialization.class).initKernel();
     } catch (KernelInitializtionException e1) {

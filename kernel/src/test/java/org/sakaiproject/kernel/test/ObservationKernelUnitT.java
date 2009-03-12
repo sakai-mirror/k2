@@ -51,7 +51,6 @@ import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
-import org.sakaiproject.kernel.authz.simple.JcrReferenceObject;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
 import org.sakaiproject.kernel.model.UserEnvironmentBean;
 import org.sakaiproject.kernel.session.SessionImpl;
@@ -94,7 +93,7 @@ public class ObservationKernelUnitT extends KernelIntegrationBase {
 
   @BeforeClass
   public static void beforeThisClass() throws ComponentActivatorException,
-      RepositoryException, JCRNodeFactoryServiceException, IOException {
+      RepositoryException, JCRNodeFactoryServiceException, IOException, InterruptedException {
     shutdown = KernelIntegrationBase.beforeClass();
 
     // get some services
@@ -126,8 +125,7 @@ public class ObservationKernelUnitT extends KernelIntegrationBase {
       Node n = jcrNodeFactoryService.setInputStream(userEnvironmentPath, in,
           RestProvider.CONTENT_TYPE);
       n.setProperty(JCRConstants.ACL_OWNER, userName);
-      n.save();
-      session.save();
+//      n.save();
       in.close();
     }
 
@@ -142,14 +140,17 @@ public class ObservationKernelUnitT extends KernelIntegrationBase {
       LOG.info("Saving " + groupPath);
       InputStream in = ResourceLoader.openResource(TEST_GROUPENV + group
           + ".json", ObservationKernelUnitT.class.getClassLoader());
+      @SuppressWarnings("unused")
       Node n = jcrNodeFactoryService.setInputStream(groupPath, in,
           RestProvider.CONTENT_TYPE);
-      n.save();
-      session.save();
+//      n.save();
       in.close();
     }
-
+    session.save();
     jcrService.logout();
+    
+    // we need to ensure that the events have fired
+    Thread.sleep(1000);
 
     // clear the security bypass
     authzResolverService.clearRequestGrant();

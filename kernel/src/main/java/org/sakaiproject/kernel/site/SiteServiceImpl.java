@@ -218,6 +218,7 @@ public class SiteServiceImpl implements SiteService {
       InputStream in = null;
       try {
         in = new ByteArrayInputStream(json.getBytes("UTF-8"));
+        @SuppressWarnings("unused")
         Node node = jcrNodeFactoryService.setInputStream(fileNode, in,
             RestProvider.CONTENT_TYPE);
 
@@ -232,7 +233,7 @@ public class SiteServiceImpl implements SiteService {
         }
         entityManager.persist(index);
         trans.commit();
-        node.save();
+//        node.save();
 
       } catch (RepositoryException e) {
         if (trans.isActive()) {

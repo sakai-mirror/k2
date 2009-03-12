@@ -307,7 +307,7 @@ public class RestPatchProvider implements RestProvider {
         }
         
       }
-      n.save();
+      n.getSession().save(); // verify changes
       Map<String, Object> outputMap = new HashMap<String, Object>();
       outputMap.put("response", "OK");
       return outputMap;

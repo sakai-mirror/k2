@@ -291,10 +291,11 @@ public class SimpleJcrUserEnvironmentResolverService implements
       System.err.println("New User at " + userEnvironmentPath + " Is "
           + userEnvironmentJson);
       bais = new ByteArrayInputStream(userEnvironmentJson.getBytes("UTF-8"));
+      @SuppressWarnings("unused")
       Node userEnvNode = jcrNodeFactoryService.setInputStream(
           userEnvironmentPath, bais, RestProvider.CONTENT_TYPE);
 
-      userEnvNode.save();
+//      userEnvNode.save();
       expire(userEnvironment.getUser().getUuid());
     } catch (Exception ex) {
       throw new UpdateFailedException(ex.getMessage(), ex);
@@ -354,7 +355,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
           JcrAuthenticationResolverProvider.JCRPASSWORDHASH, StringUtils
               .sha1Hash(password));
 
-      userEnvNode.save();
+//      userEnvNode.save();
       
       // make the private and shares spaces for the user owned by this used.   
       setOwner(userFactoryService.getUserPrivatePath(u.getUuid()),u.getUuid());
@@ -409,6 +410,6 @@ public class SimpleJcrUserEnvironmentResolverService implements
       node = jcrNodeFactoryService.createFolder(path);
     }
     node.setProperty(JCRConstants.ACL_OWNER, uuid);
-    node.save();
+//    node.save();
   }
 }
