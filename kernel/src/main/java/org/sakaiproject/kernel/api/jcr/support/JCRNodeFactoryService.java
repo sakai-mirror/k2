@@ -94,4 +94,13 @@ public interface JCRNodeFactoryService {
    */
   Node getNode(String nodePath) throws RepositoryException,
       JCRNodeFactoryServiceException;
+
+  /**
+   * Add appropriate properties to a node to provide "smart" functionality.
+   * 
+   * @param node
+   * @param language
+   * @param statement
+   */
+  void makeSmartNode(Node node, String language, String statement);
 }
