@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
+import org.sakaiproject.kernel.util.PathUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.sdata.tool.SDataAccessException;
 import org.sakaiproject.sdata.tool.api.Handler;
@@ -119,6 +120,12 @@ public class JCRCopyFunction extends JCRSDataFunction {
           + " specified by " + targetPath);
 
       Session session = jcrService.getSession();
+      
+      // create the parent if it doesnt exist.
+      String targetParent = PathUtils.getParentReference(targetPath);
+      jcrNodeFactoryService.createFolder(targetParent);
+
+      
       Workspace workspace = session.getWorkspace();
       workspace.copy(repositorySourcePath, repositoryTargetPath);
       Node n = jcrNodeFactoryService.getNode(repositoryTargetPath);
