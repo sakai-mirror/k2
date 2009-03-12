@@ -126,7 +126,7 @@ public class SiteServiceT {
     sessMgr.bindRequest(req);
   }
 
-  //@Test disabling pending KERN-157
+  @Test // disabling pending KERN-157
   public void createSite() {
     setupUser("testUser1");
     replay(request, response, session);
@@ -144,6 +144,13 @@ public class SiteServiceT {
     site.setRoles(roles);
 
     siteService.createSite(site);
+    
+    // we have to sleep as the indexer needs to run to make the next step work.
+    try {
+      Thread.sleep(1000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
 
     SiteBean siteBean = siteService.getSite(siteId);
     assertNotNull(siteBean);
@@ -153,7 +160,7 @@ public class SiteServiceT {
     verify(request, response, session);
   }
 
-  //@Test disabling pending KERN-157
+  @Test // disabling pending KERN-157
   public void createSiteNullUser() {
     setupUser(null);
     replay(request, response, session);
@@ -174,7 +181,7 @@ public class SiteServiceT {
     verify(request, response, session);
   }
 
-  //@Test disabling pending KERN-157
+  @Test // disabling pending KERN-157
   public void createDuplicateSite() {
     setupUser("testUser1");
     replay(request, response, session);
@@ -192,6 +199,12 @@ public class SiteServiceT {
     site.setRoles(roles);
 
     siteService.createSite(site);
+    // we have to sleep as the indexer needs to run to make the next step work.
+    try {
+      Thread.sleep(1000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
 
     try {
       siteService.createSite(site);
@@ -202,7 +215,7 @@ public class SiteServiceT {
     verify(request, response, session);
   }
 
-  //@Test disabling pending KERN-157
+  @Test // disabling pending KERN-157
   public void getSite() {
     setupUser("testUser1");
     replay(request, response, session);
@@ -220,6 +233,12 @@ public class SiteServiceT {
     site.setRoles(roles);
 
     siteService.createSite(site);
+    // we have to sleep as the indexer needs to run to make the next step work.
+    try {
+      Thread.sleep(1000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
     SiteBean siteGet = siteService.getSite(siteId);
     assertNotNull("Site not found when searching.", siteGet);
     assertEquals(siteGet.getId(), site.getId());
@@ -227,7 +246,7 @@ public class SiteServiceT {
     verify(request, response, session);
   }
 
-  //@Test disabling pending KERN-157
+  @Test  // disabling pending KERN-157
   public void updateSite() {
     setupUser("testUser1");
     replay(request, response, session);
