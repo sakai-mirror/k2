@@ -97,10 +97,11 @@ public interface JCRNodeFactoryService {
 
   /**
    * Add appropriate properties to a node to provide "smart" functionality.
-   * 
+   *
    * @param node
    * @param language
    * @param statement
    */
-  void makeSmartNode(Node node, String language, String statement);
+  void makeSmartNode(Node node, String language, String statement)
+      throws RepositoryException;
 }
