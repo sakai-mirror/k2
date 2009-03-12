@@ -97,6 +97,12 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
   public Session getSession() throws LoginException, RepositoryException {
     return login();
   }
+  
+  public void save() throws RepositoryException {
+    if ( hasActiveSession() ) {
+      getSession().save();
+    }
+  }
 
   public Session login() throws LoginException, RepositoryException {
     Session session = null;

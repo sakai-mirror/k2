@@ -26,6 +26,7 @@ import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.UpdateFailedException;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
+import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.memory.Cache;
@@ -74,6 +75,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
   private UserFactoryService userFactoryService;
 
   private AuthzResolverService authzResolverService;
+
 
   /**
  * 
@@ -295,8 +297,14 @@ public class SimpleJcrUserEnvironmentResolverService implements
       Node userEnvNode = jcrNodeFactoryService.setInputStream(
           userEnvironmentPath, bais, RestProvider.CONTENT_TYPE);
 
-//      userEnvNode.save();
       expire(userEnvironment.getUser().getUuid());
+      
+      Node n = userEnvNode;
+      while ( n.isNew() ) {
+        n = n.getParent();
+      }
+      n.save();
+      
     } catch (Exception ex) {
       throw new UpdateFailedException(ex.getMessage(), ex);
     } finally {
@@ -355,7 +363,6 @@ public class SimpleJcrUserEnvironmentResolverService implements
           JcrAuthenticationResolverProvider.JCRPASSWORDHASH, StringUtils
               .sha1Hash(password));
 
-//      userEnvNode.save();
       
       // make the private and shares spaces for the user owned by this used.   
       setOwner(userFactoryService.getUserPrivatePath(u.getUuid()),u.getUuid());
@@ -410,6 +417,5 @@ public class SimpleJcrUserEnvironmentResolverService implements
       node = jcrNodeFactoryService.createFolder(path);
     }
     node.setProperty(JCRConstants.ACL_OWNER, uuid);
-//    node.save();
   }
 }

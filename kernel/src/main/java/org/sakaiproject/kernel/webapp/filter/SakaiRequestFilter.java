@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.authz.PermissionDeniedException;
 import org.sakaiproject.kernel.api.authz.UnauthorizedException;
+import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
@@ -32,6 +33,7 @@ import org.sakaiproject.kernel.webapp.SakaiServletResponse;
 
 import java.io.IOException;
 
+import javax.jcr.Session;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -71,6 +73,8 @@ public class SakaiRequestFilter implements Filter {
 
   private TransactionManager transactionManager;
 
+  private JCRService jcrService;
+
   /**
    * {@inheritDoc}
    * 
@@ -79,11 +83,11 @@ public class SakaiRequestFilter implements Filter {
   public void init(FilterConfig config) throws ServletException {
     timeOn = "true".equals(config.getInitParameter(TIME_REQUEST));
     KernelManager kernelManager = new KernelManager();
-    sessionManagerService = kernelManager
-        .getService(SessionManagerService.class);
+    sessionManagerService = kernelManager.getService(SessionManagerService.class);
     cacheManagerService = kernelManager.getService(CacheManagerService.class);
     userResolverService = kernelManager.getService(UserResolverService.class);
     transactionManager = kernelManager.getService(TransactionManager.class);
+    jcrService = kernelManager.getService(JCRService.class);
     LOG.info(" SessionManagerService " + sessionManagerService);
     LOG.info(" Cache Manager Service " + cacheManagerService);
     noSession = "true".equals(config.getInitParameter(NO_SESSION));
@@ -104,8 +108,8 @@ public class SakaiRequestFilter implements Filter {
    * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
    *      javax.servlet.ServletResponse, javax.servlet.FilterChain)
    */
-  public void doFilter(ServletRequest request, ServletResponse response,
-      FilterChain chain) throws IOException, ServletException {
+  public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+      throws IOException, ServletException {
     HttpServletRequest hrequest = (HttpServletRequest) request;
     String requestedSessionID = hrequest.getRequestedSessionId();
     if (noSession) {
@@ -124,11 +128,22 @@ public class SakaiRequestFilter implements Filter {
 
         } finally {
           long end = System.currentTimeMillis();
-          LOG.info("Request took " + hrequest.getMethod() + " "
-              + hrequest.getPathInfo() + " " + (end - start) + " ms");
+          LOG.info("Request took " + hrequest.getMethod() + " " + hrequest.getPathInfo()
+              + " " + (end - start) + " ms");
         }
       } else {
         chain.doFilter(wrequest, wresponse);
+      }
+      try {
+        if (jcrService.hasActiveSession()) {
+          Session session = jcrService.getSession();
+          session.save();
+          LOG.info("Saved JCR Session");
+        } else {
+          LOG.info("No Session is active");
+        }
+      } catch (Exception e) {
+        LOG.warn(e);
       }
       commit();
     } catch (SecurityException se) {
@@ -140,25 +155,24 @@ public class SakaiRequestFilter implements Filter {
       rollback();
       // catch any Unauthorized exceptions and send a 401
       wresponse.reset();
-      wresponse
-          .sendError(HttpServletResponse.SC_UNAUTHORIZED, ape.getMessage());
+      wresponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, ape.getMessage());
     } catch (PermissionDeniedException pde) {
       rollback();
       // catch any permission denied exceptions, and send a 403
       wresponse.reset();
       wresponse.sendError(HttpServletResponse.SC_FORBIDDEN, pde.getMessage());
-    } catch  ( RuntimeException e ) {
+    } catch (RuntimeException e) {
       rollback();
       throw e;
-    } catch (IOException e ) {
+    } catch (IOException e) {
       rollback();
       throw e;
-    } catch (ServletException e ) {
+    } catch (ServletException e) {
       rollback();
       throw e;
-    } catch ( Throwable t ) {  
+    } catch (Throwable t) {
       rollback();
-      throw new ServletException(t.getMessage(),t);
+      throw new ServletException(t.getMessage(), t);
     } finally {
       wresponse.commitStatus(sessionManagerService);
       cacheManagerService.unbind(CacheScope.REQUEST);
@@ -173,8 +187,8 @@ public class SakaiRequestFilter implements Filter {
   }
 
   /**
-   * @throws SystemException 
-   * @throws NotSupportedException 
+   * @throws SystemException
+   * @throws NotSupportedException
    * 
    */
   protected void begin() throws NotSupportedException, SystemException {
@@ -182,36 +196,36 @@ public class SakaiRequestFilter implements Filter {
   }
 
   /**
-   * @throws SystemException 
-   * @throws SecurityException 
+   * @throws SystemException
+   * @throws SecurityException
    * 
    */
   protected void commit() throws SecurityException, SystemException {
     try {
-      if ( Status.STATUS_NO_TRANSACTION != transactionManager.getStatus() ) {
+      if (Status.STATUS_NO_TRANSACTION != transactionManager.getStatus()) {
         transactionManager.commit();
       }
-    } catch ( RollbackException e ) {
+    } catch (RollbackException e) {
       LOG.debug(e);
-    } catch (IllegalStateException e ) {
-      LOG.debug(e);    
-    } catch ( HeuristicMixedException e ) {
-      LOG.warn(e);    
-    } catch ( HeuristicRollbackException e) {
-      LOG.warn(e);    
+    } catch (IllegalStateException e) {
+      LOG.debug(e);
+    } catch (HeuristicMixedException e) {
+      LOG.warn(e);
+    } catch (HeuristicRollbackException e) {
+      LOG.warn(e);
     }
   }
 
   /**
    * 
    */
-  protected void rollback() {  
+  protected void rollback() {
     try {
       transactionManager.rollback();
     } catch (IllegalStateException e) {
       LOG.debug(e);
     } catch (Exception e) {
-      LOG.error(e.getMessage(),e);
+      LOG.error(e.getMessage(), e);
     }
   }
 

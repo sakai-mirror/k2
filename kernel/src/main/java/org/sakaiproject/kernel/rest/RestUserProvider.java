@@ -24,6 +24,7 @@ import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
+import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.rest.RestProvider;
@@ -83,6 +84,7 @@ public class RestUserProvider implements RestProvider {
   private AuthenticationManagerService authenticationManagerService;
   private ProfileResolverService profileResolverService;
   private AuthzResolverService authzResolverService;
+  private JCRService jcrService;
 
   /**
    * @param sessionManager
@@ -97,7 +99,8 @@ public class RestUserProvider implements RestProvider {
       AuthenticationManagerService authenticationManagerService,
       ProfileResolverService profileResolverService,
       @Named(KernelConstants.PROP_ANON_ACCOUNTING) boolean anonymousAccounting,
-      AuthzResolverService authzResolverService) {
+      AuthzResolverService authzResolverService,
+      JCRService jcrService ) {
     Registry<String, RestProvider> restRegistry = registryService
         .getRegistry(RestProvider.REST_REGISTRY);
     restRegistry.add(this);
@@ -111,6 +114,7 @@ public class RestUserProvider implements RestProvider {
     this.profileResolverService = profileResolverService;
     this.anonymousAccounting = anonymousAccounting;
     this.authzResolverService = authzResolverService;
+    this.jcrService = jcrService;
 
   }
 
@@ -369,7 +373,9 @@ public class RestUserProvider implements RestProvider {
       profileMap.put("email", email);
 
       userProfile.setProperties(profileMap);
-//      userProfile.save();
+      userProfile.save(); 
+      
+      jcrService.save();
 
       Map<String, Object> r = new HashMap<String, Object>();
       r.put("response", "OK");

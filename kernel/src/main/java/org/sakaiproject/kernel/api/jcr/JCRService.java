@@ -144,4 +144,10 @@ public interface JCRService {
    */
   boolean isExternalEvent(Event event);
 
+  /**
+   * Perform a Save
+   * @throws RepositoryException
+   */
+  void save() throws RepositoryException;
+
 }

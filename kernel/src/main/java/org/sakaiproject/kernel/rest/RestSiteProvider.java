@@ -478,6 +478,8 @@ public class RestSiteProvider implements RestProvider {
     siteService.saveSite(siteBean);
     userEnvironmentResolverService.save(newUserEnvironment);
     
+    
+    
     Map<String , Object> responseMap = new HashMap<String, Object>();
     responseMap.put("response","OK");
     return responseMap;

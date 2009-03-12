@@ -89,7 +89,6 @@ public class AclListenerT {
   public void createAcl() throws Exception {
     String path = PathUtils.getUserPrefix("testUser1") + TEST_FILE;
     Node node = jcrService.createFile(path, RestProvider.CONTENT_TYPE);
-//    node.save();
     node.getSession().save();
 
     Query query = entityManager

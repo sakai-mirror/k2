@@ -23,6 +23,7 @@ import com.google.inject.Inject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
+import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.rest.RestProvider;
@@ -44,6 +45,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
+import javax.jcr.Item;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.persistence.EntityManager;
@@ -66,17 +68,21 @@ public class SiteServiceImpl implements SiteService {
 
   private AuthzResolverService authzResolverService;
 
+  private JCRService jcrService;
+
   @Inject
   public SiteServiceImpl(EntityManager entityManager,
       JCRNodeFactoryService jcrNodeFactoryService, BeanConverter beanConverter,
       UserEnvironmentResolverService userEnvRes, SessionManagerService sessMgr,
-      AuthzResolverService authzResolverService) {
+      AuthzResolverService authzResolverService,
+      JCRService jcrService) {
     this.entityManager = entityManager;
     this.jcrNodeFactoryService = jcrNodeFactoryService;
     this.beanConverter = beanConverter;
     this.userEnvRes = userEnvRes;
     this.sessMgr = sessMgr;
     this.authzResolverService = authzResolverService;
+    this.jcrService = jcrService;
   }
 
   /**
@@ -186,7 +192,6 @@ public class SiteServiceImpl implements SiteService {
 
     try {
       authzResolverService.setRequestGrant("Saving Site into User Environment");
-      EntityTransaction trans = entityManager.getTransaction();
 
       String json = beanConverter.convertToString(site);
 
@@ -228,27 +233,19 @@ public class SiteServiceImpl implements SiteService {
         index.setId(site.getId());
         index.setName(site.getName());
         index.setRef(fileNode);
-        if (!trans.isActive()) {
-          trans.begin();
-        }
         entityManager.persist(index);
-        trans.commit();
-//        node.save();
-
-      } catch (RepositoryException e) {
-        if (trans.isActive()) {
-          trans.rollback();
+        // find the first parent.
+        Node n = node;
+        while ( n.isNew() ) {
+          n = n.getParent(); 
         }
+        n.save();
+        
+      } catch (RepositoryException e) {
         throw new SiteCreationException(e);
       } catch (JCRNodeFactoryServiceException e) {
-        if (trans.isActive()) {
-          trans.rollback();
-        }
         throw new SiteCreationException(e);
       } catch (UnsupportedEncodingException e) {
-        if (trans.isActive()) {
-          trans.rollback();
-        }
         throw new SiteCreationException(e);
       } finally {
         try {

@@ -24,6 +24,7 @@ import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
+import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
@@ -183,7 +184,8 @@ public class JcrAuthenticationResolverProvider implements
             if (superUser || nonce.equals(hash)) {
               nonce = StringUtils.sha1Hash(newIdPwPrincipal.getPassword());
               n.setProperty(JCRPASSWORDHASH, nonce);
-//              n.save();
+              // we really do want to do this.
+              n.save();
               return true; // success
             } else {
               throw new SecurityException(

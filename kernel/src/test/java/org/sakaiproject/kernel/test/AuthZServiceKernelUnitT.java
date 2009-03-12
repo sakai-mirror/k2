@@ -209,7 +209,6 @@ public class AuthZServiceKernelUnitT extends KernelIntegrationBase {
         .getService(JCRNodeFactoryService.class);
     Node n = jcrNodeFactory.createFile("/test/a/b/c/d.txt",
         RestProvider.CONTENT_TYPE);
-//    n.save();
     n.getSession().save();
 
     ReferencedObject ro = referenceResolverService.resolve("/test/a/b/c/d.txt");

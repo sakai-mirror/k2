@@ -261,15 +261,11 @@ public class RestFriendsProviderTest extends BaseRestUT {
         jcrNodeFactoryService.setInputStream(capture(stringCapture),
             capture(inputStream), capture(stringCapture2))).andReturn(node);
 
-    node.save();
-    expectLastCall();
 
     expect(
         jcrNodeFactoryService.setInputStream(capture(stringCapture),
             capture(inputStream), capture(stringCapture2))).andReturn(node);
 
-    node.save();
-    expectLastCall();
 
     Capture<Map<String, String>> mapCapture = new Capture<Map<String, String>>();
     expect(beanConverter.convertToString(capture(mapCapture))).andReturn(
@@ -599,8 +595,6 @@ public class RestFriendsProviderTest extends BaseRestUT {
             capture(inputStream), capture(stringCapture2))).andReturn(node)
         .atLeastOnce();
 
-    node.save();
-    expectLastCall().atLeastOnce();
 
     if ("request".equals(action)) {
 

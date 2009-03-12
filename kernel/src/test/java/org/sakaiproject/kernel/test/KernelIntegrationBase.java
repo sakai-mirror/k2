@@ -255,7 +255,6 @@ public class KernelIntegrationBase {
 
       n.setProperty(JcrAuthenticationResolverProvider.JCRPASSWORDHASH, StringUtils
           .sha1Hash("password"));
-      // n.save();
       in.close();
     }
     jcrService.getSession().save();
@@ -281,7 +280,6 @@ public class KernelIntegrationBase {
           .setInputStream(KernelIntegrationBase.buildUsersOwnedSitesFilePath("ib236",
               siteName), in, RestProvider.CONTENT_TYPE);
 
-      // n.save();
       in.close();
       LOG.info("Test site saved: "
           + KernelIntegrationBase.buildUsersOwnedSitesFilePath("ib236", siteName));

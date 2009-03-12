@@ -276,7 +276,6 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
     @SuppressWarnings("unused")
     Node n = jcrNodeFactoryService.setInputStream("/a/test/file2", in,
         RestProvider.CONTENT_TYPE);
-//    n.save();
     jcrService.logout();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();

@@ -209,7 +209,6 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
           currentNode = newNode;          
         }
       }
-//      lastComittedNode.save();
       node = currentNode;
       if (node == null) {
         log.error("Failed to create Node " + id + " got null ");

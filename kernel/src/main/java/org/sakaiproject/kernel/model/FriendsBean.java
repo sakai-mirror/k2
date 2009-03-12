@@ -149,7 +149,6 @@ public class FriendsBean {
       @SuppressWarnings("unused")
       Node n = jcrNodeFactoryService.setInputStream(userPath, in,
           RestProvider.CONTENT_TYPE);
-//      n.save();
       System.err.println("Done Saving Friends Bean "+userPath);
     } finally {
       try {

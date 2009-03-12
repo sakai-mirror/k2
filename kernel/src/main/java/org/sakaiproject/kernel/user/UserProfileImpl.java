@@ -116,7 +116,6 @@ public class UserProfileImpl implements UserProfile {
             HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
             "The nt:file node does not have a jcr:content child, the is not as per the JSR-170 specification, unable to create users");
       }
-//      profileNode.save();
     } finally {
       try {
         bais.close();

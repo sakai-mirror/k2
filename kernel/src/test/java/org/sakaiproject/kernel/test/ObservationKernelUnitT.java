@@ -125,7 +125,6 @@ public class ObservationKernelUnitT extends KernelIntegrationBase {
       Node n = jcrNodeFactoryService.setInputStream(userEnvironmentPath, in,
           RestProvider.CONTENT_TYPE);
       n.setProperty(JCRConstants.ACL_OWNER, userName);
-//      n.save();
       in.close();
     }
 
@@ -143,7 +142,6 @@ public class ObservationKernelUnitT extends KernelIntegrationBase {
       @SuppressWarnings("unused")
       Node n = jcrNodeFactoryService.setInputStream(groupPath, in,
           RestProvider.CONTENT_TYPE);
-//      n.save();
       in.close();
     }
     session.save();

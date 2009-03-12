@@ -460,7 +460,7 @@ public class IntegrationTest {
     ByteArrayInputStream bais = new ByteArrayInputStream(content
         .getBytes("UTF-8"));
     jcrNodeFactoryService.setInputStream("/test/testfile.txt", bais,
-        RestProvider.CONTENT_TYPE).save();
+        RestProvider.CONTENT_TYPE).getSession().save();
 
     // get the node back
     controllerServlet.service(srequest, sresponse);
@@ -550,7 +550,7 @@ public class IntegrationTest {
     ByteArrayInputStream bais = new ByteArrayInputStream(content
         .getBytes("UTF-8"));
     jcrNodeFactoryService.setInputStream("/test/testfile.txt", bais,
-        RestProvider.CONTENT_TYPE).save();
+        RestProvider.CONTENT_TYPE).getSession().save();
 
     // get the node back
     controllerServlet.service(srequest, sresponse);
@@ -581,7 +581,7 @@ public class IntegrationTest {
     ByteArrayInputStream bais = new ByteArrayInputStream(content
         .getBytes("UTF-8"));
     jcrNodeFactoryService.setInputStream("/test/testfile.txt", bais,
-        RestProvider.CONTENT_TYPE).save();
+        RestProvider.CONTENT_TYPE).getSession().save();
 
     jcrService.logout();
 
@@ -620,7 +620,7 @@ public class IntegrationTest {
     ByteArrayInputStream bais = new ByteArrayInputStream(content
         .getBytes("UTF-8"));
     jcrNodeFactoryService.setInputStream("/test/testfile.txt", bais,
-        RestProvider.CONTENT_TYPE).save();
+        RestProvider.CONTENT_TYPE).getSession().save();
 
     jcrService.logout();
 
@@ -678,7 +678,7 @@ public class IntegrationTest {
     ByteArrayInputStream bais = new ByteArrayInputStream(content
         .getBytes("UTF-8"));
     jcrNodeFactoryService.setInputStream("/test/testfile.txt", bais,
-        RestProvider.CONTENT_TYPE).save();
+        RestProvider.CONTENT_TYPE).getSession().save();
 
     jcrService.logout();
 
@@ -716,7 +716,7 @@ public class IntegrationTest {
     ByteArrayInputStream bais = new ByteArrayInputStream(content
         .getBytes("UTF-8"));
     jcrNodeFactoryService.setInputStream("/test/testfile.txt", bais,
-        RestProvider.CONTENT_TYPE).save();
+        RestProvider.CONTENT_TYPE).getSession().save();
 
     jcrService.logout();
 
@@ -755,7 +755,7 @@ public class IntegrationTest {
     ByteArrayInputStream bais = new ByteArrayInputStream(content
         .getBytes("UTF-8"));
     jcrNodeFactoryService.setInputStream("/test/testfile.txt", bais,
-        RestProvider.CONTENT_TYPE).save();
+        RestProvider.CONTENT_TYPE).getSession().save();
 
     jcrService.logout();
 

@@ -455,7 +455,6 @@ public class JCRHandler extends AbstractHandler {
 
     content.setValue(in);
 
-    n.save();
 
     return content.getLength();
   }
