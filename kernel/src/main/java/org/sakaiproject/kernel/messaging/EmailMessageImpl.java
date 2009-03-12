@@ -25,7 +25,7 @@ import org.sakaiproject.kernel.api.messaging.MessagingService;
 /**
  * Implementation of Email messages.
  */
-public class EmailMessageImpl extends MultipartMessageImpl implements
+public class EmailMessageImpl extends MessageImpl implements
     EmailMessage {
 
   private static final long serialVersionUID = 1L;

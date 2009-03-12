@@ -43,13 +43,6 @@ public interface MessagingService {
   Message createMessage();
 
   /**
-   * Create a multipart message
-   * 
-   * @returns the message
-   */
-  MultipartMessage createMultipartMessage();
-
-  /**
    * Create an email message
    * 
    * @returns the message

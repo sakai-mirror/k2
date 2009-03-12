@@ -29,7 +29,6 @@ import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.messaging.EmailMessage;
 import org.sakaiproject.kernel.api.messaging.Message;
 import org.sakaiproject.kernel.api.messaging.MessagingService;
-import org.sakaiproject.kernel.api.messaging.MultipartMessage;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -39,7 +38,6 @@ import java.io.PipedOutputStream;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jms.ConnectionFactory;
-import javax.jms.ObjectMessage;
 
 /**
  *
@@ -72,7 +70,7 @@ public class JmsMessagingService implements MessagingService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.messaging.MessagingService#send(javax.jms.Message)
    */
   public void send(final Message msg) {
@@ -113,24 +111,13 @@ public class JmsMessagingService implements MessagingService {
     }
   }
 
-  public ObjectMessage createObjectMessage() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
   public EmailMessage createEmailMessage() {
     EmailMessage em = injector.getInstance(Key.get(EmailMessage.class));
     return em;
   }
 
   public Message createMessage() {
-    Message m = injector.getInstance(Key.get(MessageImpl.class));
+    Message m = injector.getInstance(Key.get(Message.class));
     return m;
   }
-
-  public MultipartMessage createMultipartMessage() {
-    MultipartMessage mm = injector.getInstance(Key.get(MultipartMessage.class));
-    return mm;
-  }
-
 }

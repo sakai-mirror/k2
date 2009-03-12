@@ -46,7 +46,6 @@ import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.messaging.EmailMessage;
 import org.sakaiproject.kernel.api.messaging.Message;
 import org.sakaiproject.kernel.api.messaging.MessagingService;
-import org.sakaiproject.kernel.api.messaging.MultipartMessage;
 import org.sakaiproject.kernel.api.messaging.OutboxNodeHandler;
 import org.sakaiproject.kernel.api.presence.PresenceService;
 import org.sakaiproject.kernel.api.rest.RestProvider;
@@ -82,7 +81,9 @@ import org.sakaiproject.kernel.jcr.jackrabbit.sakai.StartupActionProvider;
 import org.sakaiproject.kernel.jcr.smartNode.SmartNodeHandlerListProvider;
 import org.sakaiproject.kernel.jcr.support.JCRNodeFactoryServiceImpl;
 import org.sakaiproject.kernel.memory.CacheManagerServiceImpl;
+import org.sakaiproject.kernel.messaging.EmailMessageImpl;
 import org.sakaiproject.kernel.messaging.JmsSessionProvider;
+import org.sakaiproject.kernel.messaging.MessageImpl;
 import org.sakaiproject.kernel.messaging.OutboxNodeHandlerListProvider;
 import org.sakaiproject.kernel.messaging.email.EmailMessagingService;
 import org.sakaiproject.kernel.messaging.email.MailSessionProvider;
@@ -334,11 +335,8 @@ public class KernelModule extends AbstractModule {
         Scopes.SINGLETON);
 
     // Messaging
-    bind(Message.class).annotatedWith(Names.named(Message.TYPE)).to(Message.class);
-    bind(Message.class).annotatedWith(Names.named(MultipartMessage.TYPE)).to(
-        MultipartMessage.class);
-    bind(Message.class).annotatedWith(Names.named(EmailMessage.TYPE)).to(
-        EmailMessage.class);
+    bind(Message.class).to(MessageImpl.class);
+    bind(EmailMessage.class).to(EmailMessageImpl.class);
 
     // bring this smart node handler list up early so it can register itself
     TypeLiteral<List<SmartNodeHandler>> smartFolderHandlerList = new TypeLiteral<List<SmartNodeHandler>>() {

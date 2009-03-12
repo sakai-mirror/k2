@@ -22,7 +22,9 @@ import org.sakaiproject.kernel.api.messaging.Message;
 import org.sakaiproject.kernel.api.messaging.MessagingService;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,12 +39,14 @@ public class MessageImpl implements Message {
 
   private final MessagingService messagingService;
   private final HashMap<String, String> data;
+  private final ArrayList<Message> parts;
 
   private URL bodyUrl;
   private String bodyText;
 
   public MessageImpl(MessagingService messagingService, String type) {
     data = new HashMap<String, String>();
+    parts = new ArrayList<Message>();
     this.messagingService = messagingService;
     setType(type);
   }
@@ -95,6 +99,7 @@ public class MessageImpl implements Message {
 
   /**
    * {@inheritDoc}
+   *
    * @param <T>
    * @param key
    * @return
@@ -275,5 +280,38 @@ public class MessageImpl implements Message {
    */
   public void setMimeType(String mimeType) {
     setHeader(Message.Field.MIME_TYPE, mimeType);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @param mimeType
+   * @param attachment
+   * @see MultipartMessage#addAttachment(java.lang.String, java.io.Serializable)
+   */
+  public void addAttachment(String mimeType, URL attachment) {
+    MessageImpl msg = new MessageImpl(null);
+    msg.setType(mimeType);
+    msg.setBody(attachment);
+    addPart(msg);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @param message
+   * @see MultipartMessage#addPart(org.sakaiproject.kernel.api.messaging.Message)
+   */
+  public void addPart(Message message) {
+    parts.add(message);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @see org.sakaiproject.kernel.api.messaging.MultipartMessage#getParts()
+   */
+  public List<Message> getParts() {
+    return parts;
   }
 }

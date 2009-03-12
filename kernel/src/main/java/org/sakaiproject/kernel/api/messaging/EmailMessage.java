@@ -21,7 +21,7 @@ package org.sakaiproject.kernel.api.messaging;
 /**
  * Base interface for all email objects.
  */
-public interface EmailMessage extends MultipartMessage {
+public interface EmailMessage extends Message {
 
   public static final String TYPE = "EmailMessage";
 
