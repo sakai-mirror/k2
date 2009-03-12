@@ -38,14 +38,14 @@ public class MessageImpl implements Message {
   private static final long serialVersionUID = 1L;
 
   private final MessagingService messagingService;
-  private final HashMap<String, String> data;
+  private final HashMap<String, String> headers;
   private final ArrayList<Message> parts;
 
   private URL bodyUrl;
   private String bodyText;
 
   public MessageImpl(MessagingService messagingService, String type) {
-    data = new HashMap<String, String>();
+    headers = new HashMap<String, String>();
     parts = new ArrayList<Message>();
     this.messagingService = messagingService;
     setType(type);
@@ -94,7 +94,7 @@ public class MessageImpl implements Message {
    * @see org.sakaiproject.kernel.api.messaging.Message#getHeader(java.lang.String)
    */
   public String getHeader(String key) {
-    return data.get(key);
+    return headers.get(key);
   }
 
   /**
@@ -110,7 +110,7 @@ public class MessageImpl implements Message {
   }
 
   public Map<String, String> getHeaders() {
-    return data;
+    return headers;
   }
 
   /**
@@ -146,7 +146,7 @@ public class MessageImpl implements Message {
    * @see org.sakaiproject.kernel.api.messaging.Message#removeHeader(String)
    */
   public void removeHeader(String key) {
-    data.remove(key);
+    headers.remove(key);
   }
 
   /**
@@ -165,7 +165,7 @@ public class MessageImpl implements Message {
    *      java.lang.Object)
    */
   public void setHeader(String key, String value) {
-    data.put(key, value);
+    headers.put(key, value);
   }
 
   /**

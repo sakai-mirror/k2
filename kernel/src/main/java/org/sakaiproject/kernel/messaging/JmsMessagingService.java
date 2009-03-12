@@ -20,7 +20,6 @@ package org.sakaiproject.kernel.messaging;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.google.inject.Key;
 import com.google.inject.name.Named;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -47,12 +46,15 @@ public class JmsMessagingService implements MessagingService {
 
   protected ActiveMQConnectionFactory connectionFactory = null;
 
-  private Injector injector = null;
+  private Injector injector;
+  private JCRNodeFactoryService jcrNodeFactory;
 
   @Inject
   public JmsMessagingService(@Named(PROP_ACTIVEMQ_BROKER_URL) String brokerUrl,
+      JCRNodeFactoryService jcrNodeFactory,
       Injector injector) {
     connectionFactory = new ActiveMQConnectionFactory(brokerUrl);
+    this.jcrNodeFactory = jcrNodeFactory;
     this.injector = injector;
   }
 
@@ -74,8 +76,6 @@ public class JmsMessagingService implements MessagingService {
    * @see org.sakaiproject.kernel.api.messaging.MessagingService#send(javax.jms.Message)
    */
   public void send(final Message msg) {
-    JCRNodeFactoryService jcrNodeFactoryService = injector
-        .getInstance(JCRNodeFactoryService.class);
     // FIXME get the real path for the outbox
     String path = "REPLACETHIS/userenv/messages/outbox";
     try {
@@ -96,7 +96,7 @@ public class JmsMessagingService implements MessagingService {
         }
       ).start();
 
-      Node n = jcrNodeFactoryService.setInputStream(path, pis,
+      Node n = jcrNodeFactory.setInputStream(path, pis,
           "application/x-java-serialized-object");
       oos.flush();
       pos.close();
@@ -112,12 +112,12 @@ public class JmsMessagingService implements MessagingService {
   }
 
   public EmailMessage createEmailMessage() {
-    EmailMessage em = injector.getInstance(Key.get(EmailMessage.class));
+    EmailMessage em = injector.getInstance(EmailMessage.class);
     return em;
   }
 
   public Message createMessage() {
-    Message m = injector.getInstance(Key.get(Message.class));
+    Message m = injector.getInstance(Message.class);
     return m;
   }
 }

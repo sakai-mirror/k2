@@ -45,6 +45,7 @@ import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.messaging.EmailMessage;
 import org.sakaiproject.kernel.api.messaging.Message;
+import org.sakaiproject.kernel.api.messaging.MessageConverter;
 import org.sakaiproject.kernel.api.messaging.MessagingService;
 import org.sakaiproject.kernel.api.messaging.OutboxNodeHandler;
 import org.sakaiproject.kernel.api.presence.PresenceService;
@@ -83,6 +84,7 @@ import org.sakaiproject.kernel.jcr.support.JCRNodeFactoryServiceImpl;
 import org.sakaiproject.kernel.memory.CacheManagerServiceImpl;
 import org.sakaiproject.kernel.messaging.EmailMessageImpl;
 import org.sakaiproject.kernel.messaging.JmsSessionProvider;
+import org.sakaiproject.kernel.messaging.JsonMessageConverter;
 import org.sakaiproject.kernel.messaging.MessageImpl;
 import org.sakaiproject.kernel.messaging.OutboxNodeHandlerListProvider;
 import org.sakaiproject.kernel.messaging.email.EmailMessagingService;
@@ -334,9 +336,12 @@ public class KernelModule extends AbstractModule {
     bind(javax.jms.Session.class).toProvider(JmsSessionProvider.class).in(
         Scopes.SINGLETON);
 
-    // Messaging
+    // messages
     bind(Message.class).to(MessageImpl.class);
     bind(EmailMessage.class).to(EmailMessageImpl.class);
+
+    // message serializer
+    bind(MessageConverter.class).to(JsonMessageConverter.class);
 
     // bring this smart node handler list up early so it can register itself
     TypeLiteral<List<SmartNodeHandler>> smartFolderHandlerList = new TypeLiteral<List<SmartNodeHandler>>() {
