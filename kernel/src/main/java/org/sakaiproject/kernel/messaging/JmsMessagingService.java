@@ -28,11 +28,10 @@ import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.messaging.EmailMessage;
 import org.sakaiproject.kernel.api.messaging.Message;
 import org.sakaiproject.kernel.api.messaging.MessagingService;
+import org.sakaiproject.kernel.api.serialization.BeanConverter;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
@@ -48,14 +47,16 @@ public class JmsMessagingService implements MessagingService {
 
   private Injector injector;
   private JCRNodeFactoryService jcrNodeFactory;
+  private BeanConverter beanConverter;
 
   @Inject
   public JmsMessagingService(@Named(PROP_ACTIVEMQ_BROKER_URL) String brokerUrl,
-      JCRNodeFactoryService jcrNodeFactory,
+      JCRNodeFactoryService jcrNodeFactory, BeanConverter beanConverter,
       Injector injector) {
     connectionFactory = new ActiveMQConnectionFactory(brokerUrl);
     this.jcrNodeFactory = jcrNodeFactory;
     this.injector = injector;
+    this.beanConverter = beanConverter;
   }
 
   public JmsMessagingService(ActiveMQConnectionFactory connectionFactory) {
@@ -75,32 +76,14 @@ public class JmsMessagingService implements MessagingService {
    *
    * @see org.sakaiproject.kernel.api.messaging.MessagingService#send(javax.jms.Message)
    */
-  public void send(final Message msg) {
+  public void send(Message msg) {
     // FIXME get the real path for the outbox
     String path = "REPLACETHIS/userenv/messages/outbox";
     try {
-      PipedInputStream pis = new PipedInputStream();
-      PipedOutputStream pos = new PipedOutputStream(pis);
-      final ObjectOutputStream oos = new ObjectOutputStream(pos);
-      // Write to the output stream in another thread so it doesn't all have to buffer the entire thing into memory
-      // see http://ostermiller.org/convert_java_outputstream_inputstream.html
-      new Thread(
-        new Runnable() {
-          public void run(){
-            try {
-              oos.writeObject(msg);
-            } catch (IOException e) {
-              //FIXME do something here
-            }
-          }
-        }
-      ).start();
-
-      Node n = jcrNodeFactory.setInputStream(path, pis,
-          "application/x-java-serialized-object");
-      oos.flush();
-      pos.close();
-      oos.close();
+      String json = beanConverter.convertToString(msg);
+      ByteArrayInputStream bais = new ByteArrayInputStream(json
+          .getBytes("UTF-8"));
+      Node n = jcrNodeFactory.setInputStream(path, bais, "application/json");
       n.save();
     } catch (JCRNodeFactoryServiceException e) {
       // FIXME do something here

@@ -26,7 +26,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.mail.Email;
 import org.sakaiproject.kernel.api.email.CommonsEmailHandler;
+import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.messaging.MessagingException;
+import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.messaging.JmsMessagingService;
 
 import java.io.ByteArrayOutputStream;
@@ -72,13 +74,13 @@ public class EmailMessagingService extends JmsMessagingService implements
    */
   @Inject
   public EmailMessagingService(
-      @Named(JmsMessagingService.PROP_ACTIVEMQ_BROKER_URL) String brokerUrl, Injector injector) {
-    super(brokerUrl, injector);
+      @Named(JmsMessagingService.PROP_ACTIVEMQ_BROKER_URL) String brokerUrl,
+      JCRNodeFactoryService jcrNodeFactory, BeanConverter beanConverter,
+      Injector injector) {
+    super(brokerUrl, jcrNodeFactory, beanConverter, injector);
     try {
-      Connection conn = connectionFactory.createTopicConnection();// / prob want
-                                                                  // to use
-                                                                  // username,pw
-                                                                  // here
+      // prob want to use username,pw here
+      Connection conn = connectionFactory.createTopicConnection();
       conn.setClientID("kernel.email1");
       connections.add(conn);
     } catch (JMSException e) {

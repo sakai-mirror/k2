@@ -18,6 +18,8 @@
 
 package org.sakaiproject.kernel.messaging;
 
+import com.google.inject.Inject;
+
 import org.sakaiproject.kernel.api.messaging.EmailMessage;
 import org.sakaiproject.kernel.api.messaging.Message;
 import org.sakaiproject.kernel.api.messaging.MessagingService;
@@ -30,6 +32,7 @@ public class EmailMessageImpl extends MessageImpl implements
 
   private static final long serialVersionUID = 1L;
 
+  @Inject
   public EmailMessageImpl(MessagingService messagingService) {
     super(messagingService, Message.Type.EMAIL.toString());
   }

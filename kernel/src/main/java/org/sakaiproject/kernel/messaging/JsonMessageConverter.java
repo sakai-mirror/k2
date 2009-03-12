@@ -17,6 +17,8 @@
  */
 package org.sakaiproject.kernel.messaging;
 
+import com.google.inject.Inject;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
@@ -40,18 +42,22 @@ public class JsonMessageConverter implements MessageConverter {
   private static final String BODY_URL = "body-url";
   private static final String PARTS = "parts";
 
+  private MessagingService messagingService;
+
   /**
    *
    */
-  public JsonMessageConverter() {
+  @Inject
+  public JsonMessageConverter(MessagingService messagingService) {
+    this.messagingService = messagingService;
   }
 
   /**
    * {@inheritDoc}
    *
-   * @see org.sakaiproject.kernel.api.messaging.MessageConverter#serialize(org.sakaiproject.kernel.api.messaging.Message)
+   * @see org.sakaiproject.kernel.api.messaging.MessageConverter#toString(org.sakaiproject.kernel.api.messaging.Message)
    */
-  public String serialize(Message msg) {
+  public String toString(Message msg) {
     // create the string writer and initial builder
     JSONObject base = new JSONObject();
 
@@ -65,22 +71,27 @@ public class JsonMessageConverter implements MessageConverter {
       base.element(BODY_URL, msg.getBody().toExternalForm());
     }
 
-    // add attachments
-    for (Message part : msg.getParts()) {
-      base.accumulate(PARTS, serialize(part));
+    if (msg.getParts().size() > 0) {
+      JSONArray parts = new JSONArray();
+      // add attachments
+      for (Message part : msg.getParts()) {
+        parts.add(toString(part));
+        // base.accumulate(PARTS, toString(part));
+      }
+      base.element(PARTS, parts);
     }
 
     return base.toString();
   }
 
-  public Message deserialize(String json, MessagingService messagingService)
-      throws MalformedURLException {
+  public Message toMessage(String json) {
     JSONObject jsonObj = (JSONObject) JSONSerializer.toJSON(json);
-    return deserialize(jsonObj, messagingService);
+    Message msg = toMessage(jsonObj);
+    return msg;
   }
 
-  protected Message deserialize(JSONObject jsonObj,
-      MessagingService messagingService) throws MalformedURLException {
+  @SuppressWarnings("unchecked")
+  protected Message toMessage(JSONObject jsonObj) {
     Message msg = messagingService.createMessage();
 
     // add headers
@@ -88,17 +99,22 @@ public class JsonMessageConverter implements MessageConverter {
     Iterator entries = entrySet.iterator();
     while (entries.hasNext()) {
       Entry entry = (Entry) entries.next();
-      if (BODY_TEXT.equals(entry.getKey())) {
+      String key = (String) entry.getKey();
+      if (BODY_TEXT.equals(key)) {
         msg.setText((String) entry.getValue());
-      }
-      if (BODY_URL.equals(entry.getKey())) {
-        msg.setBody(new URL((String) entry.getValue()));
-      }
-      if (PARTS.equals(entry.getKey())) {
+      } else if (BODY_URL.equals(key)) {
+        try {
+          msg.setBody(new URL((String) entry.getValue()));
+        } catch (MalformedURLException e) {
+          msg.setText("Unable to link to body.");
+        }
+      } else if (PARTS.equals(key)) {
         JSONArray array = (JSONArray) entry.getValue();
         for (Object o : array) {
-          msg.addPart(deserialize((JSONObject) o, messagingService));
+          msg.addPart(toMessage((JSONObject) o));
         }
+      } else {
+        msg.setHeader(key, (String) entry.getValue());
       }
     }
     return msg;

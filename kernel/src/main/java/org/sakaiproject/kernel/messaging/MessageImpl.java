@@ -18,6 +18,8 @@
 
 package org.sakaiproject.kernel.messaging;
 
+import com.google.inject.Inject;
+
 import org.sakaiproject.kernel.api.messaging.Message;
 import org.sakaiproject.kernel.api.messaging.MessagingService;
 
@@ -51,6 +53,7 @@ public class MessageImpl implements Message {
     setType(type);
   }
 
+  @Inject
   public MessageImpl(MessagingService messagingService) {
     this(messagingService, Message.Type.INTERNAL.toString());
   }
@@ -290,8 +293,8 @@ public class MessageImpl implements Message {
    * @see MultipartMessage#addAttachment(java.lang.String, java.io.Serializable)
    */
   public void addAttachment(String mimeType, URL attachment) {
-    MessageImpl msg = new MessageImpl(null);
-    msg.setType(mimeType);
+    Message msg = messagingService.createMessage();
+    msg.setMimeType(mimeType);
     msg.setBody(attachment);
     addPart(msg);
   }

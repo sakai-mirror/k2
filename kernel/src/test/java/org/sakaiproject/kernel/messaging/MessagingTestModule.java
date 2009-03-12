@@ -15,13 +15,33 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.api.messaging;
+package org.sakaiproject.kernel.messaging;
+
+import static org.easymock.EasyMock.createMock;
+
+import com.google.inject.AbstractModule;
+
+import org.sakaiproject.kernel.api.messaging.Message;
+import org.sakaiproject.kernel.api.messaging.MessageConverter;
+import org.sakaiproject.kernel.api.messaging.MessagingService;
 
 /**
  *
  */
-public interface MessageConverter {
-  String toString(Message msg);
+public class MessagingTestModule extends AbstractModule {
 
-  Message toMessage(String json);
+  /**
+   * {@inheritDoc}
+   *
+   * @see com.google.inject.AbstractModule#configure()
+   */
+  @Override
+  protected void configure() {
+    bind(Message.class).to(MessageImpl.class);
+
+    bind(MessageConverter.class).to(JsonMessageConverter.class);
+
+    MessagingService msgServ = createMock(MessagingService.class);
+    bind(MessagingService.class).toInstance(msgServ);
+  }
 }

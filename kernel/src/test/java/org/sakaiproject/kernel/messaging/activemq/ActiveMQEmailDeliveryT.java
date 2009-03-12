@@ -98,7 +98,7 @@ public class ActiveMQEmailDeliveryT {
    * @Test public void testUrl() { Assert.assertEquals(fact.getBrokerURL(),
    * ActiveMQConnectionFactory.DEFAULT_BROKER_URL); LOG.info("BrokerUrl: " +
    * fact.getBrokerURL());
-   * 
+   *
    * }
    */
 
@@ -140,7 +140,8 @@ public class ActiveMQEmailDeliveryT {
     // occupy
     // the same varaible. SimpleEmail etc can each be used directly.
     List<Email> emails = new ArrayList<Email>();
-    EmailMessagingService messagingService = new EmailMessagingService(vmURL, null);
+    EmailMessagingService messagingService = new EmailMessagingService(vmURL,
+        null, null, null);
     emails.add(new SimpleEmail(messagingService));
     emails.add(new MultiPartEmail(messagingService));
     emails.add(new HtmlEmail(messagingService));
