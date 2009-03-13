@@ -87,7 +87,6 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
 
     KernelManager km = new KernelManager();
     // grant permission to user 1 to do anything
-    jcrService.logout();
     jcrService.loginSystem();
     ReferenceResolverService referenceResolverService = km
         .getService(ReferenceResolverService.class);
@@ -248,7 +247,6 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
       rsp.dispatch(elements, request, response);
       fail();
     } catch (RestServiceFaultException ex) {
-      ex.printStackTrace();
       assertEquals(HttpServletResponse.SC_FORBIDDEN, ex.getStatusCode());
     }
 

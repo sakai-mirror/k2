@@ -184,7 +184,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
       LOG.debug(e);
     } catch (JCRNodeFactoryServiceException e) {
       LOG.warn("Failed to read userenv for " + userEnvPath + " cause :"
-          + e.getMessage(), e);
+          + e.getMessage());
       LOG.debug(e);
     } finally {
       try {

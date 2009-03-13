@@ -136,6 +136,7 @@ public class KernelIntegrationBase {
         }
       }
       try {
+        jcrService.save();
         if (transactionManager.getStatus() == Status.STATUS_ACTIVE) {
           LOG.error("Uncommitted Transaction Found at test startup");
           transactionManager.commit();
