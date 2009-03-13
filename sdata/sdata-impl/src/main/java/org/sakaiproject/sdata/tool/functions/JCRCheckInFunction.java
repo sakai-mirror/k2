@@ -103,7 +103,7 @@ public class JCRCheckInFunction extends JCRSDataFunction {
 
       if (target.isCheckedOut()) {
         try {
-          target = target.checkin();
+          target.checkin();
           // check the new node out again
           target.checkout();
         } catch (VersionException e) {
