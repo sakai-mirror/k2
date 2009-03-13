@@ -104,6 +104,8 @@ public class JCRCheckInFunction extends JCRSDataFunction {
       if (target.isCheckedOut()) {
         try {
           target = target.checkin();
+          // check the new node out again
+          target.checkout();
         } catch (VersionException e) {
           throw new SDataException(HttpServletResponse.SC_CONFLICT,
               "The resource or one of its decendents has a conflict that "

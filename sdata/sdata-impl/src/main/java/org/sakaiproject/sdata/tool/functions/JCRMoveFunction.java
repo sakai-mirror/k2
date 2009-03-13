@@ -131,8 +131,9 @@ public class JCRMoveFunction extends JCRSDataFunction {
       }
       if ( targetNode == null ) {
         targetNode = jcrNodeFactoryService.createFolder(targetParent);
+        // the node *must* be saved to make it available to the move.
+        targetNode.getParent().save();
       }
-      
       Workspace workspace = session.getWorkspace();
       workspace.move(repositorySourcePath, repositoryTargetPath);
      
@@ -148,27 +149,35 @@ public class JCRMoveFunction extends JCRSDataFunction {
       }
 
     } catch (AccessDeniedException e) {
+      e.printStackTrace();
       throw new SDataAccessException(HttpServletResponse.SC_FORBIDDEN, e
           .getMessage());
     } catch (ItemExistsException e) {
+      e.printStackTrace();
       throw new SDataAccessException(HttpServletResponse.SC_CONFLICT, e
           .getMessage());
     } catch (PathNotFoundException e) {
+      e.printStackTrace();
       throw new SDataAccessException(HttpServletResponse.SC_NOT_FOUND, e
           .getMessage());
     } catch (VersionException e) {
+      e.printStackTrace();
       throw new SDataAccessException(HttpServletResponse.SC_CONFLICT, e
           .getMessage());
     } catch (ConstraintViolationException e) {
+      e.printStackTrace();
       throw new SDataAccessException(HttpServletResponse.SC_CONFLICT, e
           .getMessage());
     } catch (LockException e) {
+      e.printStackTrace();
       throw new SDataAccessException(HttpServletResponse.SC_CONFLICT, e
           .getMessage());
     } catch (RepositoryException e) {
+      e.printStackTrace();
       throw new SDataAccessException(
           HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
     } catch (JCRNodeFactoryServiceException e) {
+      e.printStackTrace();
       throw new SDataAccessException(HttpServletResponse.SC_NOT_FOUND, e
           .getMessage());
     }

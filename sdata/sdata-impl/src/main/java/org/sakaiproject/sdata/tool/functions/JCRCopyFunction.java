@@ -131,6 +131,8 @@ public class JCRCopyFunction extends JCRSDataFunction {
       }
       if ( targetNode == null ) {
         targetNode = jcrNodeFactoryService.createFolder(targetParent);
+        // the node *must* be saved to make it available to the move.
+        targetNode.getParent().save();
       }
 
       
