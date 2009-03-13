@@ -268,6 +268,12 @@ public class SiteServiceT {
     site.setName("Tester Siter");
     site.setDescription("Siter forer uniter testinger");
     siteService.saveSite(site);
+    
+    try {
+      Thread.sleep(1000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
 
     SiteBean siteBean = siteService.getSite(siteId);
     assertNotNull(siteBean);
