@@ -42,6 +42,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.observation.Event;
 import javax.jcr.observation.ObservationManager;
+import javax.jcr.query.QueryManager;
 
 @Singleton
 public class JCRServiceImpl implements JCRService, RequiresStop {
@@ -274,4 +275,28 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
     return eventImpl.isExternal();
   }
 
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.kernel.api.jcr.JCRService#getQueryManager()
+   */
+  public QueryManager getQueryManager() {
+    SakaiJCRCredentials ssp = new SakaiJCRCredentials();
+    Session s = null;
+    QueryManager queryManager = null;
+    try {
+      s = getRepository().login(ssp);
+      queryManager = s.getWorkspace().getQueryManager();
+    } catch (RepositoryException e) {
+      LOG.error("Failed to get QueryManager from workspace");
+      e.printStackTrace();
+    } finally {
+      try {
+        s.logout();
+      } catch (Exception ex) {
+      }
+      ;
+    }
+    return queryManager;
+  }
 }

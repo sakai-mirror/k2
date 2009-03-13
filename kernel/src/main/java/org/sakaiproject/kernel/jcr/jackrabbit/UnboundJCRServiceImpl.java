@@ -34,6 +34,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.observation.Event;
 import javax.jcr.observation.ObservationManager;
+import javax.jcr.query.QueryManager;
 
 /* This is mostly the same as the JCRServiceImpl, except you are never bound to a 
  * particular thread.  You will need to keep track of your session, and use the logout
@@ -174,4 +175,27 @@ public class UnboundJCRServiceImpl implements JCRService {
     return eventImpl.isExternal();
   }
 
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.jcr.JCRService#getObservationManager()
+   */
+  public QueryManager getQueryManager() {
+    SakaiJCRCredentials ssp = new SakaiJCRCredentials();
+    Session s = null;
+    QueryManager queryManager = null;
+    try {
+      s = getRepository().login(ssp);
+      queryManager = s.getWorkspace().getQueryManager();
+    } catch (RepositoryException e) {
+      log.error("Failed to get QueryManager from workspace");
+      e.printStackTrace();
+    } finally {
+      try {
+        s.logout();
+      } catch (Exception ex) {
+      }
+      ;
+    }
+    return queryManager;
+  }
 }
