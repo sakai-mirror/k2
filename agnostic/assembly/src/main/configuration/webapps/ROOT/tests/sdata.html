@@ -20,7 +20,7 @@ From <input type="text" name="targetPath" value="/testdata/" /> to
 </form>
 
 <p>Copy</p>
-<form method="POST" action="/rest/sdata/f"  onsubmit="return submitToPath(this);">
+<form method="POST" action="/sdata/f"  onsubmit="return submitToPath(this);">
 From <input type="text" name="targetPath" value="/testdata/" /> to
 <input type="text" name="to" value="/testdata/" />
 <input  type="hidden" name="fn" value="cp" />
@@ -28,14 +28,14 @@ From <input type="text" name="targetPath" value="/testdata/" /> to
 </form>
 
 <p>Version History</p>
-<form method="POST" action="/rest/sdata/f"  onsubmit="return submitToPath(this);">
+<form method="GET" action=""  onsubmit="return submitToPath(this);">
 At <input type="text" name="targetPath" value="/testdata/" /> 
 <input  type="hidden" name="fn" value="vh" />
 <input type="submit" name="submit" value="Version History" />
 </form>
 
 <p>Checkin</p>
-<form method="POST" action="/rest/sdata/f"  onsubmit="return submitToPath(this);">
+<form method="POST" action=""  onsubmit="return submitToPath(this);">
 Check In <input type="text" name="targetPath" value="/testdata/" /> 
 <input  type="hidden" name="fn" value="ci" />
 <input type="submit" name="submit" value="Check In" />
