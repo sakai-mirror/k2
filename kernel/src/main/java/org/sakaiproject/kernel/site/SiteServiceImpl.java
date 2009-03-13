@@ -34,6 +34,7 @@ import org.sakaiproject.kernel.api.site.SiteException;
 import org.sakaiproject.kernel.api.site.SiteService;
 import org.sakaiproject.kernel.model.SiteBean;
 import org.sakaiproject.kernel.util.IOUtils;
+import org.sakaiproject.kernel.util.MapUtils;
 import org.sakaiproject.kernel.util.StringUtils;
 
 import java.io.ByteArrayInputStream;
@@ -67,12 +68,12 @@ public class SiteServiceImpl implements SiteService {
   public SiteServiceImpl(JCRNodeFactoryService jcrNodeFactoryService,
       BeanConverter beanConverter, SessionManagerService sessionManagerService,
       AuthzResolverService authzResolverService,
-      @Named(KernelConstants.JCR_SITE_TEMPLATES) Map<String, String> siteTemplateMap,
+      @Named(KernelConstants.JCR_SITE_TEMPLATES) String siteTemplates,
       @Named(KernelConstants.JCR_SITE_DEFAULT_TEMPLATE) String defaultTemplate) {
     this.jcrNodeFactoryService = jcrNodeFactoryService;
     this.beanConverter = beanConverter;
     this.sessionManagerService = sessionManagerService;
-    this.siteTemplateMap = siteTemplateMap;
+    this.siteTemplateMap = MapUtils.convertToImmutableMap(siteTemplates);
     this.defaultTemplate = defaultTemplate;
   }
 

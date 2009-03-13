@@ -34,7 +34,7 @@ import org.junit.Test;
 import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
-import org.sakaiproject.kernel.api.site.NonUniqueIdException;
+import org.sakaiproject.kernel.api.site.SiteException;
 import org.sakaiproject.kernel.api.site.SiteService;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.user.UserResolverService;
@@ -126,33 +126,24 @@ public class SiteServiceT {
     sessMgr.bindRequest(req);
   }
 
-  @Test // disabling pending KERN-157
-  public void createSite() {
+  @Test
+  public void createSite() throws SiteException {
     setupUser("testUser1");
     replay(request, response, session);
-    String siteId = generateSiteId();
-    SiteBean site = new SiteBean();
-    site.setId(siteId);
+    String sitePath = generateSitePath();
+    SiteBean site = siteService.createSite(sitePath, "project");
     site.setName("Test Site 1");
     site.setDescription("Site 1 for unit testing");
-    site.setType("project");
-
+   
     RoleBean[] roles = new RoleBean[1];
     roles[0] = new RoleBean();
     roles[0].setName("admin");
     roles[0].setPermissions(new String[] { "read", "write", "delete" });
     site.setRoles(roles);
 
-    siteService.createSite(site);
-    
-    // we have to sleep as the indexer needs to run to make the next step work.
-    try {
-      Thread.sleep(1000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+    site.save();
 
-    SiteBean siteBean = siteService.getSite(siteId);
+    SiteBean siteBean = siteService.getSite(sitePath);
     assertNotNull(siteBean);
     assertEquals(site.getId(), siteBean.getId());
     assertEquals(site.getName(), siteBean.getName());
@@ -160,13 +151,12 @@ public class SiteServiceT {
     verify(request, response, session);
   }
 
-  @Test // disabling pending KERN-157
-  public void createSiteNullUser() {
+  @Test
+  public void createSiteNullUser() throws SiteException {
     setupUser(null);
     replay(request, response, session);
-    String siteId = generateSiteId();
-    SiteBean site = new SiteBean();
-    site.setId(siteId);
+    String sitePath = generateSitePath();
+    SiteBean site = siteService.createSite(sitePath, "project");
     site.setName("Test Site 1");
     site.setDescription("Site 1 for unit testing");
     site.setType("project");
@@ -177,17 +167,16 @@ public class SiteServiceT {
     roles[0].setPermissions(new String[] { "read", "write", "delete" });
     site.setRoles(roles);
 
-    siteService.createSite(site);
+    site.save();
     verify(request, response, session);
   }
 
-  @Test // disabling pending KERN-157
-  public void createDuplicateSite() {
+  @Test
+  public void createDuplicateSite() throws SiteException {
     setupUser("testUser1");
     replay(request, response, session);
-    String siteId = generateSiteId();
-    SiteBean site = new SiteBean();
-    site.setId(siteId);
+    String sitePath = generateSitePath();
+    SiteBean site = siteService.createSite(sitePath, "project");
     site.setName("Test Site 2");
     site.setDescription("Site 2 for unit testing");
     site.setType("project");
@@ -198,30 +187,23 @@ public class SiteServiceT {
     roles[0].setPermissions(new String[] { "read", "write", "delete" });
     site.setRoles(roles);
 
-    siteService.createSite(site);
-    // we have to sleep as the indexer needs to run to make the next step work.
-    try {
-      Thread.sleep(1000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+    site.save();
 
     try {
-      siteService.createSite(site);
+      siteService.createSite(sitePath,"project");
       fail("Duplicate site IDs are not allowed");
-    } catch (NonUniqueIdException e) {
+    } catch (SiteException e) {
       // this is the correct response
     }
     verify(request, response, session);
   }
 
-  @Test // disabling pending KERN-157
-  public void getSite() {
+  @Test
+  public void getSite() throws SiteException {
     setupUser("testUser1");
     replay(request, response, session);
-    String siteId = generateSiteId();
-    SiteBean site = new SiteBean();
-    site.setId(siteId);
+    String sitePath = generateSitePath();
+    SiteBean site = siteService.createSite(sitePath, "project");
     site.setName("Test Site 3");
     site.setDescription("Site 3 for unit testing");
     site.setType("project");
@@ -231,28 +213,21 @@ public class SiteServiceT {
     roles[0].setName("admin");
     roles[0].setPermissions(new String[] { "read", "write", "delete" });
     site.setRoles(roles);
-
-    siteService.createSite(site);
-    // we have to sleep as the indexer needs to run to make the next step work.
-    try {
-      Thread.sleep(1000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
-    SiteBean siteGet = siteService.getSite(siteId);
+    
+    site.save();
+    SiteBean siteGet = siteService.getSite(sitePath);
     assertNotNull("Site not found when searching.", siteGet);
     assertEquals(siteGet.getId(), site.getId());
     assertEquals(siteGet.getName(), site.getName());
     verify(request, response, session);
   }
 
-  @Test  // disabling pending KERN-157
-  public void updateSite() {
+  @Test
+  public void updateSite() throws SiteException {
     setupUser("testUser1");
     replay(request, response, session);
-    String siteId = generateSiteId();
-    SiteBean site = new SiteBean();
-    site.setId(siteId);
+    String sitePath = generateSitePath();
+    SiteBean site = siteService.createSite(sitePath, "project");
     site.setName("Test Site");
     site.setDescription("Site for unit testing");
     site.setType("project");
@@ -263,19 +238,14 @@ public class SiteServiceT {
     roles[0].setPermissions(new String[] { "read", "write", "delete" });
     site.setRoles(roles);
 
-    siteService.createSite(site);
+    site.save();
 
     site.setName("Tester Siter");
     site.setDescription("Siter forer uniter testinger");
-    siteService.saveSite(site);
     
-    try {
-      Thread.sleep(1000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+    site.save();
 
-    SiteBean siteBean = siteService.getSite(siteId);
+    SiteBean siteBean = siteService.getSite(sitePath);
     assertNotNull(siteBean);
     assertEquals(site.getId(), siteBean.getId());
     assertEquals(site.getName(), siteBean.getName());
@@ -284,8 +254,8 @@ public class SiteServiceT {
     verify(request, response, session);
   }
 
-  private String generateSiteId() {
-    String siteBase = "testSite-";
+  private String generateSitePath() {
+    String siteBase = "/testSite/";
     siteBase += rand.nextLong();
     return siteBase;
   }

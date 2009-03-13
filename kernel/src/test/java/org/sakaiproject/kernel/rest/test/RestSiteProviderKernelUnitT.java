@@ -35,6 +35,7 @@ import org.junit.Test;
 import org.sakaiproject.kernel.Activator;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
+import org.sakaiproject.kernel.api.site.SiteException;
 import org.sakaiproject.kernel.model.RoleBean;
 import org.sakaiproject.kernel.model.SiteBean;
 import org.sakaiproject.kernel.rest.RestSiteProvider;
@@ -64,6 +65,21 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     KernelIntegrationBase.afterClass(shutdown);
   }
 
+  private RestSiteProvider rsp;
+
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.rest.test.BaseRestUnitT#setupServices()
+   */
+  @Override
+  public void setupServices() {
+    // TODO Auto-generated method stub
+    super.setupServices();
+    rsp = new RestSiteProvider(registryService, siteService,
+        injector.getInstance(BeanConverter.class),
+        userEnvironmentResolverService, sessionManagerService);
+
+  }
 
   @Test
   public void testCheckId() {
@@ -95,10 +111,6 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     String[] elements = new String[] { "site", "create" };
 
-    RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(BeanConverter.class),
-        userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -109,9 +121,10 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
    * 
    * @throws ServletException
    * @throws IOException
+   * @throws SiteException 
    */
   @Test
-  public void testCreate() throws ServletException, IOException {
+  public void testCreate() throws ServletException, IOException, SiteException {
 
     setupServices();
 
@@ -127,8 +140,10 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         "Description:sitethatdoesnotexist");
     expect(request.getParameter("type")).andReturn("Type:sitethatdoesnotexist");
     expect(request.getParameter("owner")).andReturn(null);
-    Capture<SiteBean> captureSiteBean = new Capture<SiteBean>();
-    siteService.createSite(capture(captureSiteBean));
+    Capture<String> sitePath = new Capture<String>();
+    Capture<String> siteType = new Capture<String>();
+    SiteBean siteBean = new SiteBean();  
+    expect(siteService.createSite(capture(sitePath), capture(siteType))).andReturn(siteBean);
     expectLastCall();
     response.setContentType("text/plain");
     expectLastCall();
@@ -137,22 +152,17 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     String[] elements = new String[] { "site", "create" };
 
-    RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(BeanConverter.class),
-        userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     String body = new String(baos.toByteArray(), "UTF-8");
     assertEquals("{\"response\":\"OK\"}", body);
 
-    assertTrue(captureSiteBean.hasCaptured());
-    SiteBean siteBean = captureSiteBean.getValue();
-    assertNotNull(siteBean);
-    assertEquals("sitethatdoesnotexist", siteBean.getId());
+    assertTrue(sitePath.hasCaptured());
+    assertTrue(siteType.hasCaptured());
+    assertEquals("sitethatdoesnotexist", sitePath.getValue());    
+    assertEquals("Type:sitethatdoesnotexist", siteType.getValue());
     assertEquals("Name:sitethatdoesnotexist", siteBean.getName());
     assertEquals("Description:sitethatdoesnotexist", siteBean.getDescription());
-    assertEquals("Type:sitethatdoesnotexist", siteBean.getType());
     assertNotNull(siteBean.getOwners());
     assertEquals(1, siteBean.getOwners().length);
     assertArrayEquals(new String[] { "user1" }, siteBean.getOwners());
@@ -185,10 +195,6 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     replayMocks();
     String[] elements = new String[] { "site", "get", "sitethatexists" };
 
-    RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(BeanConverter.class),
-        userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     String body = new String(baos.toByteArray(), "UTF-8");
@@ -225,10 +231,6 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     replayMocks();
     String[] elements = new String[] { "site", "get", "sitethatdoesnotexist" };
 
-    RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(BeanConverter.class),
-        userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -256,10 +258,6 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     replayMocks();
     String[] elements = new String[] { "site", "get" };
 
-    RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(BeanConverter.class),
-        userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -291,10 +289,6 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     String[] elements = new String[] { "site", "addOwner" };
 
-    RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(BeanConverter.class),
-        userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -326,10 +320,6 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     String[] elements = new String[] { "site", "removeOwner" };
 
-    RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(BeanConverter.class),
-        userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -362,10 +352,6 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "site", "addOwner",
         "sitethatdoesntexist" };
 
-    RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(BeanConverter.class),
-        userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -398,10 +384,6 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "site", "removeOwner",
         "sitethatdoesntexist" };
 
-    RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(BeanConverter.class),
-        userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -434,10 +416,6 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "site", "addOwner",
         "sitethatdoesntexist", "auser" };
 
-    RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(BeanConverter.class),
-        userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -469,10 +447,6 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     String[] elements = new String[] { "site", "create" };
 
-    RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(BeanConverter.class),
-        userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -504,10 +478,6 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     String[] elements = new String[] { "site", "create" };
 
-    RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(BeanConverter.class),
-        userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -539,10 +509,6 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     String[] elements = new String[] { "site", "addOwner" };
 
-    RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(BeanConverter.class),
-        userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -574,10 +540,6 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     String[] elements = new String[] { "site", "removeOwner" };
 
-    RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(BeanConverter.class),
-        userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -609,10 +571,6 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     String[] elements = new String[] { "site", "removeOwner" };
 
-    RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(BeanConverter.class),
-        userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -623,9 +581,10 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
    * 
    * @throws ServletException
    * @throws IOException
+   * @throws SiteException 
    */
   @Test
-  public void testRemoveOwnerOK() throws ServletException, IOException {
+  public void testRemoveOwnerOK() throws ServletException, IOException, SiteException {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -643,7 +602,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     siteBean.setOwners(new String[] { "user1", "user2" });
     expect(siteService.getSite("testSiteA")).andReturn(siteBean);
     Capture<SiteBean> siteBeanCapture = new Capture<SiteBean>();
-    siteService.saveSite(capture(siteBeanCapture));
+    siteService.save(capture(siteBeanCapture));
 
     response.setContentType("text/plain");
     expectLastCall();
@@ -653,10 +612,6 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "site", "removeOwner", "testSiteA",
         "user2" };
 
-    RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(BeanConverter.class),
-        userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     assertTrue(siteBeanCapture.hasCaptured());
@@ -672,9 +627,10 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
    * 
    * @throws ServletException
    * @throws IOException
+   * @throws SiteException 
    */
   @Test
-  public void testRemoveOwnerOK2() throws ServletException, IOException {
+  public void testRemoveOwnerOK2() throws ServletException, IOException, SiteException {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -692,7 +648,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     siteBean.setOwners(new String[] { "user1", "user2", "user5" });
     expect(siteService.getSite("testSiteA")).andReturn(siteBean);
     Capture<SiteBean> siteBeanCapture = new Capture<SiteBean>();
-    siteService.saveSite(capture(siteBeanCapture));
+    siteService.save(capture(siteBeanCapture));
 
     response.setContentType("text/plain");
     expectLastCall();
@@ -702,10 +658,6 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "site", "removeOwner", "testSiteA",
         "user2" };
 
-    RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(BeanConverter.class),
-        userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     assertTrue(siteBeanCapture.hasCaptured());
@@ -752,10 +704,6 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "site", "removeOwner", "testSiteA",
         "user8" };
 
-    RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(BeanConverter.class),
-        userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -788,10 +736,6 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "site", "removeOwner", "testSiteA",
         "user8" };
 
-    RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(BeanConverter.class),
-        userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -827,10 +771,6 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "site", "removeOwner", "testSiteA",
         "user2" };
 
-    RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(BeanConverter.class),
-        userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService, userResolverService);
     try {
       rsp.dispatch(elements, request, response);
       fail();
@@ -871,10 +811,6 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     String[] elements = new String[] { "site", "removeOwner", "testSiteA",
         "user1" };
 
-    RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(BeanConverter.class),
-        userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService, userResolverService);
     try {
       rsp.dispatch(elements, request, response);
       fail();
@@ -914,10 +850,6 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     String[] elements = new String[] { "site", "addOwner", "testSiteA", "user2" };
 
-    RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(BeanConverter.class),
-        userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService, userResolverService);
     try {
       rsp.dispatch(elements, request, response);
       fail();
@@ -928,7 +860,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
   }
 
   @Test
-  public void testAddOwnerOK() throws ServletException, IOException {
+  public void testAddOwnerOK() throws ServletException, IOException, SiteException {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -946,7 +878,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     siteBean.setOwners(new String[] { "user1" });
     expect(siteService.getSite("testSiteA")).andReturn(siteBean);
     Capture<SiteBean> siteBeanCapture = new Capture<SiteBean>();
-    siteService.saveSite(capture(siteBeanCapture));
+    siteService.save(capture(siteBeanCapture));
 
     response.setContentType("text/plain");
     expectLastCall();
@@ -955,10 +887,6 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     String[] elements = new String[] { "site", "addOwner", "testSiteA", "user2" };
 
-    RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(BeanConverter.class),
-        userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     assertTrue(siteBeanCapture.hasCaptured());
@@ -971,7 +899,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
   }
 
   @Test
-  public void testAddOwnerOK2() throws ServletException, IOException {
+  public void testAddOwnerOK2() throws ServletException, IOException, SiteException {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -989,7 +917,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     siteBean.setOwners(new String[] { "user1", "user5" });
     expect(siteService.getSite("testSiteA")).andReturn(siteBean);
     Capture<SiteBean> siteBeanCapture = new Capture<SiteBean>();
-    siteService.saveSite(capture(siteBeanCapture));
+    siteService.save(capture(siteBeanCapture));
 
     response.setContentType("text/plain");
     expectLastCall();
@@ -998,10 +926,6 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     String[] elements = new String[] { "site", "addOwner", "testSiteA", "user2" };
 
-    RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(BeanConverter.class),
-        userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     assertTrue(siteBeanCapture.hasCaptured());
@@ -1041,10 +965,6 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     String[] elements = new String[] { "site", "addOwner", "testSiteA", "user2" };
 
-    RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(BeanConverter.class),
-        userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -1070,10 +990,6 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     String[] elements = new String[] { "site", "addOwner", "testSiteA", "user8" };
 
-    RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(BeanConverter.class),
-        userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService, userResolverService);
     rsp.dispatch(elements, request, response);
 
     verifyMocks();
@@ -1102,10 +1018,6 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     String[] elements = new String[] { "site", "addOwner", "testSiteA", "user2" };
 
-    RestSiteProvider rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(BeanConverter.class),
-        userEnvironmentResolverService, sessionManagerService,
-        subjectPermissionService, userResolverService);
     try {
       rsp.dispatch(elements, request, response);
     } catch (SecurityException ex) {

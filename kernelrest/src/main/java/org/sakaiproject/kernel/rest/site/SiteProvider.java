@@ -66,6 +66,8 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
   private static final String OWNER_PARAM = "owner";
   private static final String USER_PARAM = "uuserid";
   private static final String MEMBERSHIP_PARAM = "membertoken";
+  private static final String NAME_PARAM = "name";
+  private static final String DESCRIPTION_PARAM = "description";
   static {
     DESC.setTitle("Site Service");
     DESC.setShortDescription("The rest service to support site management");
@@ -144,9 +146,16 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
   @Path("/create/{" + SITE_PATH_PARAM + "}")
   @Produces(MediaType.TEXT_PLAIN)
   public String createSite(@PathParam(SITE_PATH_PARAM) String path,
-      @FormParam(SITE_TYPE_PARAM) String type) {
+      @FormParam(SITE_TYPE_PARAM) String type, @FormParam(NAME_PARAM) String name,
+      @FormParam(DESCRIPTION_PARAM) String description) {
     try {
+      User u = getAuthenticatedUser();
       SiteBean siteBean = siteService.createSite(path, type);
+      siteBean.addOwner(u.getUuid());
+      siteBean.setDescription(description);
+      siteBean.setName(name);
+      userEnvironmentResolverService
+          .addMembership(u.getUuid(), siteBean.getId(), "owner");
       siteBean.save();
     } catch (SiteException e) {
       throw new WebApplicationException(e, Status.CONFLICT);

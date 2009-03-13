@@ -17,7 +17,6 @@
  */
 package org.sakaiproject.kernel.user.jcr;
 
-import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
@@ -26,12 +25,12 @@ import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.user.UserFactoryService;
 import org.sakaiproject.kernel.model.UserBean;
+import org.sakaiproject.kernel.util.MapUtils;
 import org.sakaiproject.kernel.util.PathUtils;
 import org.sakaiproject.kernel.util.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
@@ -50,7 +49,7 @@ public class JcrUserFactoryService implements UserFactoryService {
   long entropy = System.currentTimeMillis();
   private String sharedPrivatePathBase;
   private String defaultProfileTemplate;
-  private HashMap<String, String> profileTemplateMap;
+  private Map<String, String> profileTemplateMap;
   private String privatePathBase;
 
   /**
@@ -72,18 +71,10 @@ public class JcrUserFactoryService implements UserFactoryService {
     this.defaultProfileTemplate = defaultProfileTemplate;
     this.userEnvironmentBase = userEnvironmentBase;
     this.privatePathBase = privatePathBase;
-    userTemplateMap = Maps.newHashMap();
-    String[] templates = StringUtils.split(userTemplates, ';');
-    for (String template : templates) {
-      String[] nv = StringUtils.split(template, '=', 2);
-      userTemplateMap.put(nv[0].trim(), nv[1].trim());
-    }
-    profileTemplateMap = Maps.newHashMap();
-    templates = StringUtils.split(profileTemplates, ';');
-    for (String template : templates) {
-      String[] nv = StringUtils.split(template, '=', 2);
-      profileTemplateMap.put(nv[0].trim(), nv[1].trim());
-    }
+    
+   
+    userTemplateMap = MapUtils.convertToImmutableMap(userTemplates);
+    profileTemplateMap = MapUtils.convertToImmutableMap(profileTemplates);
     this.sharedPrivatePathBase =sharedPrivatePathBase;
   }
 

@@ -292,9 +292,11 @@ public class KernelIntegrationBase {
     jcrService.logout();
   }
 
-  protected static String buildUsersOwnedSitesFilePath(String userId, String siteIndexId) {
-    String userPath = userEnvironmentResolverService.getUserEnvironmentBasePath(userId);
-    String siteNode = userPath + SiteService.PATH_MYSITES
+  protected static String buildUsersOwnedSitesFilePath(String userId,
+      String siteIndexId) {
+    String userPath = userEnvironmentResolverService
+        .getUserEnvironmentBasePath(userId);
+    String siteNode = userPath + SiteService.PATH_SITE
         + PathUtils.getUserPrefix(siteIndexId) + SiteService.FILE_GROUPDEF;
     return siteNode;
   }
