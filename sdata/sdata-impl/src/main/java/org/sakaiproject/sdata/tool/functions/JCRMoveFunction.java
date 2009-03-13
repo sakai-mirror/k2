@@ -123,7 +123,15 @@ public class JCRMoveFunction extends JCRSDataFunction {
       
       // create the parent if it doesnt exist.
       String targetParent = PathUtils.getParentReference(targetPath);
-      jcrNodeFactoryService.createFolder(targetParent);
+      Node targetNode = null;
+      try {
+        targetNode = jcrNodeFactoryService.getNode(targetPath);
+      } catch ( JCRNodeFactoryServiceException e) {
+        LOG.debug("Node Does not exist ");
+      }
+      if ( targetNode == null ) {
+        targetNode = jcrNodeFactoryService.createFolder(targetParent);
+      }
       
       Workspace workspace = session.getWorkspace();
       workspace.move(repositorySourcePath, repositoryTargetPath);

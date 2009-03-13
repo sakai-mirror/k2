@@ -20,6 +20,8 @@ package org.sakaiproject.sdata.tool.configuration;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.sdata.tool.api.SDataFunction;
 import org.sakaiproject.sdata.tool.functions.JCRCheckInFunction;
 import org.sakaiproject.sdata.tool.functions.JCRCopyFunction;
@@ -40,6 +42,7 @@ import java.util.Map;
  */
 public class JCRHandlerFunctionProvider implements Provider<Map<String, SDataFunction>> {
 
+  private static final Log LOG = LogFactory.getLog(JCRHandlerFunctionProvider.class);
   private Map<String, SDataFunction> functionMap = new HashMap<String, SDataFunction>();
 
   /**
@@ -70,6 +73,7 @@ public class JCRHandlerFunctionProvider implements Provider<Map<String, SDataFun
     if ( functionMap.containsKey(f.getKey())) {
       throw new RuntimeException("Function "+f.getKey()+" Overwritten existing:"+functionMap.get(f.getKey())+"  new:"+f);
     }
+    LOG.debug("Added function "+f.getKey()+" as "+f);
     functionMap.put(f.getKey(),f);
   }
 
