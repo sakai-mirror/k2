@@ -21,10 +21,16 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 import org.sakaiproject.sdata.tool.api.SDataFunction;
+import org.sakaiproject.sdata.tool.functions.JCRCheckInFunction;
+import org.sakaiproject.sdata.tool.functions.JCRCopyFunction;
+import org.sakaiproject.sdata.tool.functions.JCRHideReleaseFunction;
 import org.sakaiproject.sdata.tool.functions.JCRMoveFunction;
 import org.sakaiproject.sdata.tool.functions.JCRNodeMetadata;
 import org.sakaiproject.sdata.tool.functions.JCRPermissionsFunction;
 import org.sakaiproject.sdata.tool.functions.JCRPropertiesFunction;
+import org.sakaiproject.sdata.tool.functions.JCRRevertFunction;
+import org.sakaiproject.sdata.tool.functions.JCRTaggingFunction;
+import org.sakaiproject.sdata.tool.functions.JCRVersionHistoryFunction;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,17 +44,42 @@ public class JCRUserHandlerFunctionProvider implements
   private Map<String, SDataFunction> functionMap = new HashMap<String, SDataFunction>();
 
   /**
-   * 
+   * @param hideRelease
+   * @param move
+   * @param node
+   * @param permission
+   * @param properties
+   * @param tagging
+   * @param jcrVersionHistoryFunction
+   * @param jcrCopyFunction
+   * @param jcrCheckInFunction
    */
   @Inject
-  public JCRUserHandlerFunctionProvider(
-      JCRMoveFunction move, JCRNodeMetadata node,
-      JCRPermissionsFunction permission, JCRPropertiesFunction properties) {
+  public JCRUserHandlerFunctionProvider(JCRHideReleaseFunction hideRelease,
+      JCRMoveFunction move, JCRNodeMetadata node, JCRPermissionsFunction permission,
+      JCRPropertiesFunction properties, JCRTaggingFunction tagging,
+      JCRVersionHistoryFunction jcrVersionHistoryFunction,
+      JCRCopyFunction jcrCopyFunction, JCRCheckInFunction jcrCheckInFunction, JCRRevertFunction jcrRevertFunction) {
+    add(hideRelease);
+    add(move);
+    add(node);
+    add(permission);
+    add(properties);
+    add(tagging);
+    add(jcrVersionHistoryFunction);
+    add(jcrCopyFunction);
+    add(jcrCheckInFunction);
+    add(jcrRevertFunction);
+  }
 
-    functionMap.put(move.getKey(), move);
-    functionMap.put(node.getKey(), node);
-    functionMap.put(permission.getKey(), permission);
-    functionMap.put(properties.getKey(), properties);
+  /**
+   * @param hideRelease
+   */
+  private void add(SDataFunction f) {
+    if ( functionMap.containsKey(f.getKey())) {
+      throw new RuntimeException("Function "+f.getKey()+" Overwritten existing:"+functionMap.get(f.getKey())+"  new:"+f);
+    }
+    functionMap.put(f.getKey(),f);
   }
 
   /**
