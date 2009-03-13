@@ -41,6 +41,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
 import javax.jcr.ValueFactory;
+import javax.jcr.nodetype.NodeType;
 
 /**
  * @author ieb This is a support service to make it easier to treat a JCR service as a
@@ -66,6 +67,10 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
     if (jcrService.needsMixin(node, JCRConstants.MIX_REFERENCEABLE)) {
       node.addMixin(JCRConstants.MIX_REFERENCEABLE);
     }
+    if (jcrService.needsMixin(node, JCRConstants.MIX_VERSIONABLE)) {
+      log.info("Adding versionable");
+      node.addMixin(JCRConstants.MIX_VERSIONABLE);
+    }
     if (jcrService.needsMixin(node, JCRConstants.MIX_LOCKABLE)) {
       node.addMixin(JCRConstants.MIX_LOCKABLE);
     }
@@ -75,6 +80,7 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
     if (jcrService.needsMixin(node, JCRConstants.MIX_ACL)) {
       node.addMixin(JCRConstants.MIX_ACL);
     }
+
     Node resource = node.addNode(JCRConstants.JCR_CONTENT, JCRConstants.NT_UNSTRUCTURED);
     resource.setProperty(JCRConstants.JCR_LASTMODIFIED, new GregorianCalendar());
     resource.setProperty(JCRConstants.JCR_MIMETYPE,
@@ -95,12 +101,18 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
     if (jcrService.needsMixin(node, JCRConstants.MIX_REFERENCEABLE)) {
       node.addMixin(JCRConstants.MIX_REFERENCEABLE);
     }
+    if (jcrService.needsMixin(node, JCRConstants.MIX_VERSIONABLE)) {
+      log.info("Adding versionable");
+      node.addMixin(JCRConstants.MIX_VERSIONABLE);
+    }
     if (jcrService.needsMixin(node, JCRConstants.MIX_SAKAIPROPERTIES)) {
       node.addMixin(JCRConstants.MIX_SAKAIPROPERTIES);
     }
     if (jcrService.needsMixin(node, JCRConstants.MIX_ACL)) {
       node.addMixin(JCRConstants.MIX_ACL);
     }
+    
+
 
     // node.setProperty(JCRConstants.JCR_LASTMODIFIED, new GregorianCalendar());
 
