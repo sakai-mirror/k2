@@ -123,8 +123,8 @@ public class EmailMessageListenerT {
     email.setText("This is some test text.");
     File f1 = File.createTempFile("test1", null);
     File f2 = File.createTempFile("test2", null);
-    email.addAttachment("text/plain", f1.toURL());
-    email.addAttachment("text/plain", f2.toURL());
+    email.addAttachment("text/plain", f1.toURI().toURL());
+    email.addAttachment("text/plain", f2.toURI().toURL());
 
     final StringBuilder emailString = new StringBuilder();
     listener.addObserver(new Observer() {
@@ -164,7 +164,7 @@ public class EmailMessageListenerT {
     email.addTo("random@example.com");
     email.setText("This is some test text.");
     File f1 = new File("test1.tmp");
-    email.addAttachment("text/plain", f1.toURL());
+    email.addAttachment("text/plain", f1.toURI().toURL());
 
     final StringBuilder emailString = new StringBuilder();
     listener.addObserver(new Observer() {
