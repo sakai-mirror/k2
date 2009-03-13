@@ -100,6 +100,9 @@ public class BaseRestUnitT {
     entityManager = km.getService(EntityManager.class);
     friendsResolverService = km.getService(FriendsResolverService.class);
 
+    // clear out any earlier state from the request cache
+    cacheManagerService.unbind(CacheScope.REQUEST);
+
     siteService = createMock(SiteService.class);
     userResolverService = createMock(UserResolverService.class);
     request = createMock(HttpServletRequest.class);

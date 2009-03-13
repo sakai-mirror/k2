@@ -22,6 +22,7 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -78,6 +79,8 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     rsp = new RestSiteProvider(registryService, siteService,
         injector.getInstance(BeanConverter.class),
         userEnvironmentResolverService, sessionManagerService);
+    
+    assertFalse(jcrService.hasActiveSession());
 
   }
 
@@ -97,7 +100,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     newSession();
-    setupAnyTimes("user1", baos);
+    setupAnyTimes("admin", baos);
 
     expect(request.getMethod()).andReturn("POST").anyTimes();
     expect(request.getParameter("id")).andReturn("sitethatexists");
@@ -130,7 +133,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     newSession();
-    setupAnyTimes("user1", baos);
+    setupAnyTimes("admin", baos);
 
     expect(request.getMethod()).andReturn("POST").anyTimes();
     expect(request.getParameter("id")).andReturn("sitethatdoesnotexist");
@@ -139,7 +142,6 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     expect(request.getParameter("description")).andReturn(
         "Description:sitethatdoesnotexist");
     expect(request.getParameter("type")).andReturn("Type:sitethatdoesnotexist");
-    expect(request.getParameter("owner")).andReturn(null);
     Capture<String> sitePath = new Capture<String>();
     Capture<String> siteType = new Capture<String>();
     SiteBean siteBean = new SiteBean();  
@@ -165,7 +167,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     assertEquals("Description:sitethatdoesnotexist", siteBean.getDescription());
     assertNotNull(siteBean.getOwners());
     assertEquals(1, siteBean.getOwners().length);
-    assertArrayEquals(new String[] { "user1" }, siteBean.getOwners());
+    assertArrayEquals(new String[] { "admin" }, siteBean.getOwners());
     verifyMocks();
   }
 
@@ -600,6 +602,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         new RoleBean("maintain", new String[] { "read", "write", "remove" }),
         new RoleBean("access", new String[] { "read" }) });
     siteBean.setOwners(new String[] { "user1", "user2" });
+    siteBean.service(siteService);
     expect(siteService.getSite("testSiteA")).andReturn(siteBean);
     Capture<SiteBean> siteBeanCapture = new Capture<SiteBean>();
     siteService.save(capture(siteBeanCapture));
@@ -646,6 +649,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         new RoleBean("maintain", new String[] { "read", "write", "remove" }),
         new RoleBean("access", new String[] { "read" }) });
     siteBean.setOwners(new String[] { "user1", "user2", "user5" });
+    siteBean.service(siteService);
     expect(siteService.getSite("testSiteA")).andReturn(siteBean);
     Capture<SiteBean> siteBeanCapture = new Capture<SiteBean>();
     siteService.save(capture(siteBeanCapture));
@@ -876,6 +880,8 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         new RoleBean("maintain", new String[] { "read", "write", "remove" }),
         new RoleBean("access", new String[] { "read" }) });
     siteBean.setOwners(new String[] { "user1" });
+    siteBean.service(siteService);
+
     expect(siteService.getSite("testSiteA")).andReturn(siteBean);
     Capture<SiteBean> siteBeanCapture = new Capture<SiteBean>();
     siteService.save(capture(siteBeanCapture));
@@ -915,6 +921,8 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
         new RoleBean("maintain", new String[] { "read", "write", "remove" }),
         new RoleBean("access", new String[] { "read" }) });
     siteBean.setOwners(new String[] { "user1", "user5" });
+    siteBean.service(siteService);
+
     expect(siteService.getSite("testSiteA")).andReturn(siteBean);
     Capture<SiteBean> siteBeanCapture = new Capture<SiteBean>();
     siteService.save(capture(siteBeanCapture));

@@ -102,6 +102,6 @@ public class SiteBean extends GroupBean {
   }
   
   public void save() throws SiteException {
-    ((SiteServiceImpl) siteService).save(this);
+   siteService.save(this);
   }
 }

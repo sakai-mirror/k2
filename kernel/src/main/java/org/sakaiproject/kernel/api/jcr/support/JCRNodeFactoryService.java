@@ -94,7 +94,7 @@ public interface JCRNodeFactoryService {
    */
   Node getNode(String nodePath) throws RepositoryException,
       JCRNodeFactoryServiceException;
-
+  
   /**
    * Add appropriate properties to a node to provide "smart" functionality.
    *
@@ -104,12 +104,13 @@ public interface JCRNodeFactoryService {
    */
   void makeSmartNode(Node node, String language, String statement)
       throws RepositoryException;
+
   /**
-   * @param path the path to the node
-   * @param uuid the uuid of the new owner.
-   * @throws RepositoryException
-   * @throws JCRNodeFactoryServiceException
+   * Set the owner of the a node.
+   * @param userPrivatePath
+   * @param uuid
+   * @throws JCRNodeFactoryServiceException 
+   * @throws RepositoryException 
    */
-  void setOwner(String path, String uuid) throws RepositoryException,
-      JCRNodeFactoryServiceException;
+  void setOwner(String path, String uuid) throws RepositoryException, JCRNodeFactoryServiceException;
 }

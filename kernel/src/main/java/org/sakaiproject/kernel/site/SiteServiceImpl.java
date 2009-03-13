@@ -64,6 +64,8 @@ public class SiteServiceImpl implements SiteService {
 
   private long entropy = System.currentTimeMillis();
 
+  private AuthzResolverService authzResolverService;
+
   @Inject
   public SiteServiceImpl(JCRNodeFactoryService jcrNodeFactoryService,
       BeanConverter beanConverter, SessionManagerService sessionManagerService,
@@ -75,6 +77,7 @@ public class SiteServiceImpl implements SiteService {
     this.sessionManagerService = sessionManagerService;
     this.siteTemplateMap = MapUtils.convertToImmutableMap(siteTemplates);
     this.defaultTemplate = defaultTemplate;
+    this.authzResolverService = authzResolverService;
   }
 
   /**
@@ -155,8 +158,6 @@ public class SiteServiceImpl implements SiteService {
       Node siteNode = jcrNodeFactoryService.setInputStream(path, bais,
           RestProvider.CONTENT_TYPE);
 
-      siteNode.save();
-
       // make the private and shares spaces for the user owned by this used.
       jcrNodeFactoryService.setOwner(buildSiteFolder(path), siteBean.getOwners()[0]);
 
@@ -193,8 +194,14 @@ public class SiteServiceImpl implements SiteService {
     try {
 
       // load the template
-      templateInputStream = jcrNodeFactoryService.getInputStream(siteTemplatePath);
-      String template = IOUtils.readFully(templateInputStream, "UTF-8");
+      authzResolverService.setRequestGrant("Loading Site Template");
+      String template = null;
+      try {
+        templateInputStream = jcrNodeFactoryService.getInputStream(siteTemplatePath);
+        template = IOUtils.readFully(templateInputStream, "UTF-8");
+      } finally {
+        authzResolverService.clearRequestGrant();
+      }
       LOG.info("Loading Site Template from " + siteTemplatePath + " as " + template);
       SiteBean siteBean = beanConverter.convertToObject(template, SiteBean.class);
 

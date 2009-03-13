@@ -109,7 +109,6 @@ public class RestSiteProvider implements RestProvider {
     DESC.addParameter(Params.NAME, "The Site Name");
     DESC.addParameter(Params.DESCRIPTION, "The Site Description");
     DESC.addParameter(Params.TYPE, "The Site Type");
-    DESC.addParameter(Params.OWNER, "The Site Owner, only available to super users");
     DESC.addResponse(String.valueOf(HttpServletResponse.SC_OK),
         "If the action completed Ok, or if the site exits");
     DESC.addResponse(String.valueOf(HttpServletResponse.SC_CONFLICT),
@@ -244,7 +243,6 @@ public class RestSiteProvider implements RestProvider {
       String name = request.getParameter(Params.NAME);
       String description = request.getParameter(Params.DESCRIPTION);
       String type = request.getParameter(Params.TYPE);
-      // String owner = request.getParameter(Params.OWNER);
       try {
 
         SiteBean site = siteService.createSite(id, type);

@@ -114,6 +114,8 @@ public class KernelIntegrationBase {
       transactionManager = kernelManager.getService(TransactionManager.class);
 
       JCRService jcrService = kernelManager.getService(JCRService.class);
+      JCRNodeFactoryService jcrNodeFactoryService = kernelManager
+          .getService(JCRNodeFactoryService.class);
 
       try {
         jcrService.login();
@@ -122,7 +124,7 @@ public class KernelIntegrationBase {
       } catch (RepositoryException e) {
         LOG.error(e);
       }
-      
+
       for (String checkUser : CHECKUSERS) {
         UserEnvironment ub = userEnvironmentResolverService.resolve(checkUser);
         if (ub instanceof NullUserEnvironment
@@ -151,6 +153,27 @@ public class KernelIntegrationBase {
         LOG.error(e);
       } catch (RepositoryException e) {
         LOG.error(e);
+      }
+
+      KernelIntegrationBase.checkNotNull(jcrService);
+
+      // check for active sessions, there should not be any
+      KernelIntegrationBase.checkFalse(jcrService.hasActiveSession());
+
+      // login as system since configuration is not visible
+      try {
+      jcrService.loginSystem();
+      Node n = jcrNodeFactoryService.getNode("/configuration/repositoryconfig.xml");
+      KernelIntegrationBase.checkNotNull(n);
+      // check we can see the template
+      n = jcrNodeFactoryService
+          .getNode("/configuration/defaults/sitetypes/project-site.json");
+      KernelIntegrationBase.checkNotNull(n);
+
+      // logout
+      jcrService.logout();
+      } catch ( Exception ex ) {
+        throw new Error(ex);
       }
       return true;
     } else {
@@ -292,10 +315,8 @@ public class KernelIntegrationBase {
     jcrService.logout();
   }
 
-  protected static String buildUsersOwnedSitesFilePath(String userId,
-      String siteIndexId) {
-    String userPath = userEnvironmentResolverService
-        .getUserEnvironmentBasePath(userId);
+  protected static String buildUsersOwnedSitesFilePath(String userId, String siteIndexId) {
+    String userPath = userEnvironmentResolverService.getUserEnvironmentBasePath(userId);
     String siteNode = userPath + SiteService.PATH_SITE
         + PathUtils.getUserPrefix(siteIndexId) + SiteService.FILE_GROUPDEF;
     return siteNode;
@@ -322,6 +343,28 @@ public class KernelIntegrationBase {
    */
   public static void enableKernelStartup() {
     System.clearProperty("sakai.kernel.properties");
+  }
+
+  /**
+   * @param siteService
+   */
+  public static void checkNotNull(Object object) {
+    if (object == null) {
+      LOG.error("Expeceted Not null ", new Exception("Traceback"));
+      throw new Error("Fatal Error on Test Startup");
+    }
+    // TODO Auto-generated method stub
+
+  }
+
+  /**
+   * @param hasActiveSession
+   */
+  public static void checkFalse(boolean check) {
+    if (check) {
+      LOG.error("Expeceted False: ", new Exception("Traceback"));
+      throw new Error("Fatal Error on Test Startup");
+    }
   }
 
 }

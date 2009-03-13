@@ -27,8 +27,6 @@ import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.UpdateFailedException;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
 import org.sakaiproject.kernel.api.authz.SubjectPermissionService;
-import org.sakaiproject.kernel.api.jcr.JCRConstants;
-import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.memory.Cache;
@@ -172,7 +170,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
     try {
       in = jcrNodeFactoryService.getInputStream(userEnvPath);
       String userEnvBody = IOUtils.readFully(in, "UTF-8");
-      System.err.println(" Loaded User Env from JCR as " + userEnvBody);
+      LOG.info(" Loaded User Env from JCR for " + userEnvPath);
       // convert to a bean, the
       UserEnvironment ue = beanConverter.convertToObject(userEnvBody,
           UserEnvironment.class);
@@ -188,8 +186,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
       LOG.warn("Failed to read userenv for " + userEnvPath + " cause :" + e.getMessage());
       LOG.debug(e);
     } catch (JCRNodeFactoryServiceException e) {
-      LOG.warn("Failed to read userenv for " + userEnvPath + " cause :"
-          + e.getMessage());
+      LOG.warn("Failed to read userenv for " + userEnvPath + " cause :" + e.getMessage());
       LOG.debug(e);
     } finally {
       try {
@@ -293,7 +290,6 @@ public class SimpleJcrUserEnvironmentResolverService implements
       System.err.println("New User at " + userEnvironmentPath + " Is "
           + userEnvironmentJson);
       bais = new ByteArrayInputStream(userEnvironmentJson.getBytes("UTF-8"));
-      @SuppressWarnings("unused")
       Node userEnvNode = jcrNodeFactoryService.setInputStream(
           userEnvironmentPath, bais, RestProvider.CONTENT_TYPE);
 

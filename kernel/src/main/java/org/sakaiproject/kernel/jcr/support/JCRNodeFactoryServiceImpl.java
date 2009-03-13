@@ -67,7 +67,6 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
       node.addMixin(JCRConstants.MIX_REFERENCEABLE);
     }
     if (jcrService.needsMixin(node, JCRConstants.MIX_VERSIONABLE)) {
-      log.info("Adding versionable");
       node.addMixin(JCRConstants.MIX_VERSIONABLE);
     }
     if (jcrService.needsMixin(node, JCRConstants.MIX_LOCKABLE)) {
@@ -101,7 +100,6 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
       node.addMixin(JCRConstants.MIX_REFERENCEABLE);
     }
     if (jcrService.needsMixin(node, JCRConstants.MIX_VERSIONABLE)) {
-      log.info("Adding versionable");
       node.addMixin(JCRConstants.MIX_VERSIONABLE);
     }
     if (jcrService.needsMixin(node, JCRConstants.MIX_SAKAIPROPERTIES)) {
@@ -370,7 +368,6 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
       node = createFolder(path);
     }
     node.setProperty(JCRConstants.ACL_OWNER, uuid);
-    node.save();
   }
 
 }
