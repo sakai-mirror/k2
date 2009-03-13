@@ -23,7 +23,6 @@ import com.google.inject.Inject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
-import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.rest.RestProvider;
@@ -45,11 +44,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
-import javax.jcr.Item;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
@@ -68,21 +65,17 @@ public class SiteServiceImpl implements SiteService {
 
   private AuthzResolverService authzResolverService;
 
-  private JCRService jcrService;
-
   @Inject
   public SiteServiceImpl(EntityManager entityManager,
       JCRNodeFactoryService jcrNodeFactoryService, BeanConverter beanConverter,
       UserEnvironmentResolverService userEnvRes, SessionManagerService sessMgr,
-      AuthzResolverService authzResolverService,
-      JCRService jcrService) {
+      AuthzResolverService authzResolverService) {
     this.entityManager = entityManager;
     this.jcrNodeFactoryService = jcrNodeFactoryService;
     this.beanConverter = beanConverter;
     this.userEnvRes = userEnvRes;
     this.sessMgr = sessMgr;
     this.authzResolverService = authzResolverService;
-    this.jcrService = jcrService;
   }
 
   /**
@@ -223,7 +216,6 @@ public class SiteServiceImpl implements SiteService {
       InputStream in = null;
       try {
         in = new ByteArrayInputStream(json.getBytes("UTF-8"));
-        @SuppressWarnings("unused")
         Node node = jcrNodeFactoryService.setInputStream(fileNode, in,
             RestProvider.CONTENT_TYPE);
 
