@@ -33,7 +33,6 @@ import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jms.ConnectionFactory;
 
@@ -83,7 +82,7 @@ public class JmsMessagingService implements MessagingService {
       String json = beanConverter.convertToString(msg);
       ByteArrayInputStream bais = new ByteArrayInputStream(json
           .getBytes("UTF-8"));
-      Node n = jcrNodeFactory.setInputStream(path, bais, "application/json");
+      jcrNodeFactory.setInputStream(path, bais, "application/json");
     } catch (JCRNodeFactoryServiceException e) {
       // FIXME do something here
     } catch (RepositoryException e) {
