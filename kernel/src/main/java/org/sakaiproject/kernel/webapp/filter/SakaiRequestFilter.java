@@ -138,9 +138,6 @@ public class SakaiRequestFilter implements Filter {
         if (jcrService.hasActiveSession()) {
           Session session = jcrService.getSession();
           session.save();
-          LOG.info("Saved JCR Session");
-        } else {
-          LOG.info("No Session is active");
         }
       } catch (Exception e) {
         LOG.warn(e);
