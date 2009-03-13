@@ -43,6 +43,7 @@ public class OutboxListener implements JcrContentListener {
   public OutboxListener(JCRNodeFactoryService jcrNodeFactory,
       RegistryService registryService) {
     registry = registryService.getRegistry(OutboxNodeHandler.REGISTRY);
+    this.jcrNodeFactory = jcrNodeFactory;
   }
 
   /**
