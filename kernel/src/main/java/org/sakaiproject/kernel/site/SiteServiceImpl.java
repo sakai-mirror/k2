@@ -19,77 +19,61 @@
 package org.sakaiproject.kernel.site;
 
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
-import org.sakaiproject.kernel.api.site.NonUniqueIdException;
-import org.sakaiproject.kernel.api.site.SiteCreationException;
 import org.sakaiproject.kernel.api.site.SiteException;
 import org.sakaiproject.kernel.api.site.SiteService;
-import org.sakaiproject.kernel.api.user.User;
-import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.model.SiteBean;
-import org.sakaiproject.kernel.model.SiteIndexBean;
 import org.sakaiproject.kernel.util.IOUtils;
-import org.sakaiproject.kernel.util.PathUtils;
+import org.sakaiproject.kernel.util.StringUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.Query;
 
 /**
  *
  */
 public class SiteServiceImpl implements SiteService {
 
-  private static final Log log = LogFactory.getLog(SiteServiceImpl.class);
+  private static final Log LOG = LogFactory.getLog(SiteServiceImpl.class);
 
-  private final EntityManager entityManager;
   private final JCRNodeFactoryService jcrNodeFactoryService;
   private final BeanConverter beanConverter;
-  private final UserEnvironmentResolverService userEnvRes;
-  private final SessionManagerService sessMgr;
+  private final SessionManagerService sessionManagerService;
 
-  private AuthzResolverService authzResolverService;
+  private String defaultTemplate;
+
+  private Map<String, String> siteTemplateMap;
+
+  private long entropy = System.currentTimeMillis();
 
   @Inject
-  public SiteServiceImpl(EntityManager entityManager,
-      JCRNodeFactoryService jcrNodeFactoryService, BeanConverter beanConverter,
-      UserEnvironmentResolverService userEnvRes, SessionManagerService sessMgr,
-      AuthzResolverService authzResolverService) {
-    this.entityManager = entityManager;
+  public SiteServiceImpl(JCRNodeFactoryService jcrNodeFactoryService,
+      BeanConverter beanConverter, SessionManagerService sessionManagerService,
+      AuthzResolverService authzResolverService,
+      @Named(KernelConstants.JCR_SITE_TEMPLATES) Map<String, String> siteTemplateMap,
+      @Named(KernelConstants.JCR_SITE_DEFAULT_TEMPLATE) String defaultTemplate) {
     this.jcrNodeFactoryService = jcrNodeFactoryService;
     this.beanConverter = beanConverter;
-    this.userEnvRes = userEnvRes;
-    this.sessMgr = sessMgr;
-    this.authzResolverService = authzResolverService;
-  }
-
-  /**
-   * {@inheritDoc}
-   * 
-   * @see org.sakaiproject.kernel.api.site.SiteService#createSite(org.sakaiproject.kernel.model.SiteBean)
-   */
-  public void createSite(SiteBean site) throws SiteCreationException,
-      NonUniqueIdException {
-    if (!siteExists(site.getId())) {
-      saveSite(site);
-    } else {
-      throw new NonUniqueIdException("Site ID [" + site.getId() + "] exists");
-    }
+    this.sessionManagerService = sessionManagerService;
+    this.siteTemplateMap = siteTemplateMap;
+    this.defaultTemplate = defaultTemplate;
   }
 
   /**
@@ -97,41 +81,31 @@ public class SiteServiceImpl implements SiteService {
    * 
    * @see org.sakaiproject.kernel.api.site.SiteService#getSite(java.lang.String)
    */
-  public SiteBean getSite(String id) throws SiteException {
-    // convert to a bean, the
-    SiteBean bean = null;
+  public SiteBean getSite(String path) {
+    String sitePath = buildFilePath(path);
     InputStream in = null;
-    authzResolverService.setRequestGrant("INSECURE REMOVE THIS Getting site");
     try {
-      Query query = entityManager
-          .createNamedQuery(SiteIndexBean.Queries.FINDBY_ID);
-      query.setParameter(SiteIndexBean.QueryParams.FINDBY_ID_ID, id);
-
-      SiteIndexBean index = (SiteIndexBean) query.getSingleResult();
-      String fileNode = index.getRef();
-      in = jcrNodeFactoryService.getInputStream(fileNode);
+      in = jcrNodeFactoryService.getInputStream(sitePath);
       String siteBody = IOUtils.readFully(in, "UTF-8");
-      bean = beanConverter.convertToObject(siteBody, SiteBean.class);
+      SiteBean bean = beanConverter.convertToObject(siteBody, SiteBean.class);
+      bean.location(sitePath);
+      bean.service(this);
+      return bean;
     } catch (UnsupportedEncodingException e) {
-      throw new SiteException(e.getMessage(), e);
+      LOG.error("Failed to find site " + e.getMessage());
     } catch (IOException e) {
-      throw new SiteException(e.getMessage(), e);
+      LOG.error("Failed to find site " + e.getMessage());
     } catch (RepositoryException e) {
-      throw new SiteException(e.getMessage(), e);
-    } catch (NoResultException e) {
-      // this happens when the query doesn't find anything
-      bean = null;
+      LOG.error("Failed to find site " + e.getMessage());
     } catch (JCRNodeFactoryServiceException e) {
-      // this happens when the node isn't found
-      bean = null;
+      LOG.debug("Failed to find site " + e.getMessage());
     } finally {
       try {
         in.close();
       } catch (Exception ex) {
       }
-      authzResolverService.clearRequestGrant();
     }
-    return bean;
+    return null;
   }
 
   /**
@@ -139,30 +113,16 @@ public class SiteServiceImpl implements SiteService {
    * 
    * @see org.sakaiproject.kernel.api.site.SiteService#siteExists(java.lang.String)
    */
-  public boolean siteExists(String id) {
-    Query query = entityManager
-        .createNamedQuery(SiteIndexBean.Queries.COUNTBY_ID);
-    query.setParameter(SiteIndexBean.QueryParams.COUNTBY_ID_ID, id);
-    long count = (Long) query.getSingleResult();
-    return count != 0;
-  }
-
-  /**
-   * Build the full path with file name to the group definition for a given site
-   * ID.
-   * 
-   * @param id
-   * @return
-   */
-  private String buildFilePath(String id) {
-    User user = sessMgr.getCurrentSession().getUser();
-    if (user == null || user.getUuid() == null) {
-      throw new SecurityException("Permission Denied: Not logged in");
+  public boolean siteExists(String path) {
+    String sitePath = buildFilePath(path);
+    try {
+      Node n = jcrNodeFactoryService.getNode(sitePath);
+      return (n != null);
+    } catch (JCRNodeFactoryServiceException e) {
+      return false;
+    } catch (RepositoryException e) {
+      return false;
     }
-    String userPath = userEnvRes.getUserEnvironmentBasePath(user.getUuid());
-    String siteNode = userPath + PATH_MYSITES + PathUtils.getUserPrefix(id)
-        + FILE_GROUPDEF;
-    return siteNode;
   }
 
   /**
@@ -171,6 +131,7 @@ public class SiteServiceImpl implements SiteService {
    * @see org.sakaiproject.kernel.api.site.SiteService#deleteSite(java.lang.String)
    */
   public void deleteSite(String id) {
+
   }
 
   /**
@@ -180,74 +141,130 @@ public class SiteServiceImpl implements SiteService {
    * 
    * @see org.sakaiproject.kernel.api.site.SiteService#saveSite(org.sakaiproject.kernel.model.SiteBean)
    */
-  public void saveSite(SiteBean site) throws SiteException,
-      SiteCreationException {
+  public void save(SiteBean siteBean) throws SiteException {
 
+    ByteArrayInputStream bais = null;
     try {
-      authzResolverService.setRequestGrant("Saving Site into User Environment");
 
-      String json = beanConverter.convertToString(site);
+      String path = siteBean.location();
+      // save the template
+      String siteBeanDef = beanConverter.convertToString(siteBean);
+      LOG.info("Saving Site to " + path + " as " + siteBeanDef);
+      bais = new ByteArrayInputStream(siteBeanDef.getBytes("UTF-8"));
+      Node siteNode = jcrNodeFactoryService.setInputStream(path, bais,
+          RestProvider.CONTENT_TYPE);
 
-      // check the index for a pre-existing record with the same ID
-      Query query = entityManager
-          .createNamedQuery(SiteIndexBean.Queries.FINDBY_ID);
-      query.setParameter(SiteIndexBean.QueryParams.FINDBY_ID_ID, site.getId());
-      SiteIndexBean index = null;
-      try {
-        index = (SiteIndexBean) query.getSingleResult();
-      } catch (NoResultException e) {
-        // acceptable exception
-        log.info("Didn't find a site with ID=[" + site.getId()
-            + "].  Creating a new site.");
-      }
+      siteNode.save();
 
-      // the location of the JCR node
-      String fileNode = null;
+      // make the private and shares spaces for the user owned by this used.
+      jcrNodeFactoryService.setOwner(buildSiteFolder(path), siteBean.getOwners()[0]);
 
-      // if site exists, update it
-      if (index != null) {
-        fileNode = index.getRef();
-      }
-      // create a new node if not found
-      else {
-        fileNode = buildFilePath(site.getId());
-      }
-
-      InputStream in = null;
-      try {
-        in = new ByteArrayInputStream(json.getBytes("UTF-8"));
-        Node node = jcrNodeFactoryService.setInputStream(fileNode, in,
-            RestProvider.CONTENT_TYPE);
-
-        if (index == null) {
-          index = new SiteIndexBean();
-        }
-        index.setId(site.getId());
-        index.setName(site.getName());
-        index.setRef(fileNode);
-        entityManager.persist(index);
-        // find the first parent.
-        Node n = node;
-        while ( n.isNew() ) {
-          n = n.getParent(); 
-        }
-        n.save();
-        
-      } catch (RepositoryException e) {
-        throw new SiteCreationException(e);
-      } catch (JCRNodeFactoryServiceException e) {
-        throw new SiteCreationException(e);
-      } catch (UnsupportedEncodingException e) {
-        throw new SiteCreationException(e);
-      } finally {
-        try {
-          in.close();
-        } catch (Exception ex) {
-          // nothing we can do
-        }
-      }
+    } catch (UnsupportedEncodingException e) {
+      LOG.error(e);
+    } catch (JCRNodeFactoryServiceException e) {
+      throw new SiteException("Failed to save site ", e);
+    } catch (RepositoryException e) {
+      throw new SiteException("Failed to save site ", e);
     } finally {
-      authzResolverService.clearRequestGrant();
+      try {
+        bais.close();
+      } catch (Exception e) {
+        LOG.warn("Failed to close internal stream " + e.getMessage());
+      }
     }
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.kernel.api.site.SiteService#createSite(java.lang.String,
+   *      java.lang.String)
+   */
+  public SiteBean createSite(String path, String siteType) throws SiteException {
+    if (siteExists(path)) {
+      throw new SiteException("Site at " + path + " already exists, cant create");
+    }
+    String userId = sessionManagerService.getCurrentUserId();
+    String siteTemplatePath = getSiteTemplate(siteType);
+    String sitePath = buildFilePath(path);
+
+    InputStream templateInputStream = null;
+    try {
+
+      // load the template
+      templateInputStream = jcrNodeFactoryService.getInputStream(siteTemplatePath);
+      String template = IOUtils.readFully(templateInputStream, "UTF-8");
+      LOG.info("Loading Site Template from " + siteTemplatePath + " as " + template);
+      SiteBean siteBean = beanConverter.convertToObject(template, SiteBean.class);
+
+      // make the template this user
+      siteBean.setOwners(new String[] { userId });
+      siteBean.setId(generateSiteUuid(path));
+      siteBean.setType(siteType);
+      siteBean.location(sitePath);
+      siteBean.service(this);
+
+      return siteBean;
+
+    } catch (RepositoryException e) {
+      LOG.error(e.getMessage(), e);
+    } catch (JCRNodeFactoryServiceException e) {
+      LOG.error(e.getMessage(), e);
+    } catch (UnsupportedEncodingException e) {
+      LOG.error(e.getMessage(), e);
+    } catch (IOException e) {
+      LOG.error(e.getMessage(), e);
+    } finally {
+      try {
+        templateInputStream.close();
+      } catch (Exception ex) {
+        // not interested
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Build the full path with file name to the group definition for a given site ID.
+   * 
+   * @param id
+   * @return
+   */
+  private String buildFilePath(String path) {
+    return buildSiteFolder(path) + "/" + FILE_GROUPDEF;
+  }
+
+  /**
+   * @param path
+   * @return
+   */
+  private String buildSiteFolder(String path) {
+    return path + PATH_SITE;
+  }
+
+  /**
+   * @param path
+   * @return
+   */
+  private String generateSiteUuid(String path) {
+    try {
+      return StringUtils.sha1Hash(path + entropy);
+    } catch (UnsupportedEncodingException e) {
+      LOG.error(e);
+    } catch (NoSuchAlgorithmException e) {
+      LOG.error(e);
+    }
+    return null;
+  }
+
+  public String getSiteTemplate(String siteType) {
+    if (siteType == null) {
+      return defaultTemplate;
+    }
+    String template = siteTemplateMap.get(siteType);
+    if (template == null) {
+      return defaultTemplate;
+    }
+    return template;
   }
 }

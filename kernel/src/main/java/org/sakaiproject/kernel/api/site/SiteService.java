@@ -27,7 +27,7 @@ public interface SiteService {
   /**
    * Path where site information is stored in the user environment.
    */
-  String PATH_MYSITES = "MySites";
+  String PATH_SITE = ".site";
 
   /**
    * Name of the group definition file.
@@ -35,44 +35,42 @@ public interface SiteService {
   String FILE_GROUPDEF = "groupdef.json";
 
   /**
-   * Validates if a given id is unique.
+   * Validates if a given path contains a site
    *
-   * @param id
+   * @param path
    * @return true if the site exists
    */
-  boolean siteExists(String id);
+  boolean siteExists(String path);
 
   /**
-   * Retrieves a requested site by id. If the site doesn't exist, null will be
+   * Retrieves a requested site by path. If the site doesn't exist, null will be
    * returned.
    *
-   * @param id
+   * @param path
    * @return The requested site or null if not found.
    */
-  SiteBean getSite(String id);
+  SiteBean getSite(String path);
 
   /**
-   * Creates a site using the supplied bean.
-   *
-   * @param site
+   * Creates a Site Bean
+   * @param sitePath
+   * @param siteType
+   * @return the SiteBean ready for modification, and saving.
+   * @throws SiteException 
    */
-  void createSite(SiteBean site) throws SiteCreationException,
-      NonUniqueIdException;
+  SiteBean createSite(String sitePath, String siteType) throws SiteException;
 
   /**
-   * Saves a site. If the given site ID exists then the site is updated. If the
-   * site is not found, a new site is created.
-   *
-   * @param site
-   * @throws SiteException
-   * @throws SiteCreationException
-   */
-  void saveSite(SiteBean site) throws SiteException, SiteCreationException;
-
-  /**
-   * Deletes a site.
+   * Deletes a site, at a given path, leaving all the content as is.
    * 
-   * @param id
+   * @param path
    */
-  void deleteSite(String id);
+  void deleteSite(String path);
+
+  /**
+   * Get the location of a site template
+   * @param siteType the type of site
+   * @return the location of a site template.
+   */
+  String getSiteTemplate(String siteType);
 }

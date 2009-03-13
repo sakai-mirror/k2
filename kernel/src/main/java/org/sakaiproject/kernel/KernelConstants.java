@@ -28,6 +28,9 @@ public class KernelConstants {
   public static final String JCR_DEFAULT_TEMPLATE = "jcruserenv.templates.default";
   public static final String JCR_PROFILE_TEMPLATES = "jcrprofile.templates";
   public static final String JCR_PROFILE_DEFAUT_TEMPLATES = "jcrprofile.templates.default";
+  public static final String JCR_SITE_TEMPLATES = "jcrsite.templates";
+  public static final String JCR_SITE_DEFAULT_TEMPLATE = "jcrsite.templates.default";
+
   /**
    * The property name defining the shared private data
    */

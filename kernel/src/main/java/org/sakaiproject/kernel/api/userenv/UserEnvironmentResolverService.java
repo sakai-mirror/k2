@@ -105,4 +105,20 @@ public interface UserEnvironmentResolverService {
    */
   UserEnvironment create(User u, String externalId, String password, String userType);
 
+  /**
+   * Remove a membership form the user
+   * @param userId
+   * @param siteId
+   * @param membershipType
+   */
+  void removeMembership(String userId, String siteId, String membershipType);
+
+  /**
+   * Add membership to the user.
+   * @param userId
+   * @param siteId
+   * @param membershipType
+   */
+  void addMembership(String userId, String siteId, String membershipType);
+
 }

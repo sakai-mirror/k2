@@ -20,6 +20,10 @@ package org.sakaiproject.kernel.model;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
 
+import org.sakaiproject.kernel.api.site.SiteException;
+import org.sakaiproject.kernel.api.site.SiteService;
+import org.sakaiproject.kernel.site.SiteServiceImpl;
+
 /**
  * Bean for holding information about a Site.
  */
@@ -27,6 +31,8 @@ public class SiteBean extends GroupBean {
 
   private String id;
   private String type;
+  private transient String sitePath;
+  private transient SiteService siteService;
 
   /**
    * Get the ID of this site.
@@ -71,5 +77,31 @@ public class SiteBean extends GroupBean {
   @Override
   public String toString() {
     return getName()+":"+getId()+":"+getDescription()+":"+getType()+":"+Arrays.toString(getSubjectTokens());
+  }
+
+  /**
+   * @param sitePath
+   */
+  public String location(String sitePath) {
+    this.sitePath = sitePath;
+    return sitePath;    
+  }
+
+  /**
+   * @param siteServiceImpl
+   */
+  public void service(SiteService siteService) {
+    this.siteService = siteService;
+  }
+
+  /**
+   * @return
+   */
+  public String location() {
+    return sitePath;
+  }
+  
+  public void save() throws SiteException {
+    ((SiteServiceImpl) siteService).save(this);
   }
 }

@@ -104,4 +104,12 @@ public interface JCRNodeFactoryService {
    */
   void makeSmartNode(Node node, String language, String statement)
       throws RepositoryException;
+  /**
+   * @param path the path to the node
+   * @param uuid the uuid of the new owner.
+   * @throws RepositoryException
+   * @throws JCRNodeFactoryServiceException
+   */
+  void setOwner(String path, String uuid) throws RepositoryException,
+      JCRNodeFactoryServiceException;
 }

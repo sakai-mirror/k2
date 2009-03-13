@@ -23,8 +23,10 @@ import com.google.inject.name.Named;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.KernelConstants;
+import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.UpdateFailedException;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
+import org.sakaiproject.kernel.api.authz.SubjectPermissionService;
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
@@ -76,6 +78,9 @@ public class SimpleJcrUserEnvironmentResolverService implements
 
   private AuthzResolverService authzResolverService;
 
+  private SubjectPermissionService subjectPermissionService;
+
+  private RegistryService registryService;
 
   /**
  * 
@@ -85,15 +90,16 @@ public class SimpleJcrUserEnvironmentResolverService implements
       JCRNodeFactoryService jcrNodeFactoryService,
       CacheManagerService cacheManagerService, BeanConverter beanConverter,
       @Named(KernelConstants.NULLUSERENV) UserEnvironment nullUserEnv,
-      UserFactoryService userFactoryService,
-      AuthzResolverService authzResolverService) {
+      UserFactoryService userFactoryService, AuthzResolverService authzResolverService,
+      SubjectPermissionService subjectPermissionService, RegistryService registryService) {
     this.jcrNodeFactoryService = jcrNodeFactoryService;
     this.nullUserEnv = nullUserEnv;
     this.beanConverter = beanConverter;
     this.userFactoryService = userFactoryService;
     this.authzResolverService = authzResolverService;
-    cache = cacheManagerService.getCache("userenv",
-        CacheScope.CLUSTERINVALIDATED);
+    this.subjectPermissionService = subjectPermissionService;
+    this.registryService = registryService;
+    cache = cacheManagerService.getCache("userenv", CacheScope.CLUSTERINVALIDATED);
     cache.put("test", null);
     cache.remove("test");
   }
@@ -108,7 +114,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
       if (cache.containsKey(userId)) {
         UserEnvironment ue = cache.get(userId);
         if (ue != null && !ue.hasExpired()) {
-          if(debug) {
+          if (debug) {
             LOG.debug("Loaded from Cache");
           }
           return ue;
@@ -134,14 +140,15 @@ public class SimpleJcrUserEnvironmentResolverService implements
   public UserEnvironment resolve(Session currentSession) {
     return resolve(currentSession.getUser());
   }
-  
+
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService#resolve(org.sakaiproject.kernel.api.user.User)
    */
   public UserEnvironment resolve(User user) {
-    if ( user == null ) {
-      return resolve((String)null);
+    if (user == null) {
+      return resolve((String) null);
     } else {
       return resolve(user.getUuid());
     }
@@ -175,12 +182,10 @@ public class SimpleJcrUserEnvironmentResolverService implements
     } catch (UnsupportedEncodingException e) {
       LOG.error(e);
     } catch (IOException e) {
-      LOG.warn("Failed to read userenv " + userEnvPath + " cause :"
-          + e.getMessage());
+      LOG.warn("Failed to read userenv " + userEnvPath + " cause :" + e.getMessage());
       LOG.debug(e);
     } catch (RepositoryException e) {
-      LOG.warn("Failed to read userenv for " + userEnvPath + " cause :"
-          + e.getMessage());
+      LOG.warn("Failed to read userenv for " + userEnvPath + " cause :" + e.getMessage());
       LOG.debug(e);
     } catch (JCRNodeFactoryServiceException e) {
       LOG.warn("Failed to read userenv for " + userEnvPath + " cause :"
@@ -202,22 +207,18 @@ public class SimpleJcrUserEnvironmentResolverService implements
       String userEnvBody = IOUtils.readFully(jcrNodeFactoryService
           .getInputStream(userEnvPath), "UTF-8");
       // convert to a bean, the
-      Map<String, Object> ue = beanConverter.convertToObject(userEnvBody,
-          Map.class);
+      Map<String, Object> ue = beanConverter.convertToObject(userEnvBody, Map.class);
       return ue;
     } catch (UnsupportedEncodingException e) {
       LOG.error(e);
     } catch (IOException e) {
-      LOG.warn("Failed to read userenv " + userEnvPath + " cause :"
-          + e.getMessage());
+      LOG.warn("Failed to read userenv " + userEnvPath + " cause :" + e.getMessage());
       LOG.debug(e);
     } catch (RepositoryException e) {
-      LOG.warn("Failed to read userenv for " + userEnvPath + " cause :"
-          + e.getMessage());
+      LOG.warn("Failed to read userenv for " + userEnvPath + " cause :" + e.getMessage());
       LOG.debug(e);
     } catch (JCRNodeFactoryServiceException e) {
-      LOG.warn("Failed to read userenv for " + userEnvPath + " cause :"
-          + e.getMessage());
+      LOG.warn("Failed to read userenv for " + userEnvPath + " cause :" + e.getMessage());
       LOG.debug(e);
     } finally {
       authzResolverService.clearRequestGrant();
@@ -235,9 +236,9 @@ public class SimpleJcrUserEnvironmentResolverService implements
   }
 
   /**
-   * * Return user's prefered locale * First: return locale from Sakai user
-   * preferences, if available * Second: return locale from user session, if
-   * available * Last: return system default locale
+   * * Return user's prefered locale * First: return locale from Sakai user preferences,
+   * if available * Second: return locale from user session, if available * Last: return
+   * system default locale
    * 
    * @param locale * *
    * @return user's Locale object
@@ -275,14 +276,13 @@ public class SimpleJcrUserEnvironmentResolverService implements
    * 
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService#save(org.sakaiproject.kernel.api.userenv.UserEnvironment)
    */
-  public void save(UserEnvironment userEnvironment)
-      throws UpdateFailedException {
+  public void save(UserEnvironment userEnvironment) throws UpdateFailedException {
     authzResolverService.setRequestGrant("Saving User Environment");
     InputStream bais = null;
 
     try {
-      String userEnvironmentPath = userFactoryService
-          .getUserEnvPath(userEnvironment.getUser().getUuid());
+      String userEnvironmentPath = userFactoryService.getUserEnvPath(userEnvironment
+          .getUser().getUuid());
       Map<String, Object> userMap = loadUserMap(userEnvironmentPath);
 
       userMap.put("locale", userEnvironment.getLocale());
@@ -331,17 +331,15 @@ public class SimpleJcrUserEnvironmentResolverService implements
     InputStream templateInputStream = null;
     try {
 
-      String userEnvironmentTemplate = userFactoryService
-          .getUserEnvTemplate(userType);
+      String userEnvironmentTemplate = userFactoryService.getUserEnvTemplate(userType);
 
       // load the template
-      templateInputStream = jcrNodeFactoryService
-          .getInputStream(userEnvironmentTemplate);
+      templateInputStream = jcrNodeFactoryService.getInputStream(userEnvironmentTemplate);
       String template = IOUtils.readFully(templateInputStream, "UTF-8");
-      System.err.println("Loading UE from " + userEnvironmentTemplate + " as "
-          + template);
-      UserEnvironmentBean userEnvironmentBean = beanConverter.convertToObject(
-          template, UserEnvironmentBean.class);
+      System.err
+          .println("Loading UE from " + userEnvironmentTemplate + " as " + template);
+      UserEnvironmentBean userEnvironmentBean = beanConverter.convertToObject(template,
+          UserEnvironmentBean.class);
 
       // make the template this user
       userEnvironmentBean.setEid(externalId);
@@ -352,25 +350,25 @@ public class SimpleJcrUserEnvironmentResolverService implements
 
       // save the template
       String userEnv = beanConverter.convertToString(userEnvironmentBean);
-      System.err.println("Saving UE to " + userEnvironmentPath + " as "
-          + userEnv);
+      System.err.println("Saving UE to " + userEnvironmentPath + " as " + userEnv);
       bais = new ByteArrayInputStream(userEnv.getBytes("UTF-8"));
-      Node userEnvNode = jcrNodeFactoryService.setInputStream(
-          userEnvironmentPath, bais, RestProvider.CONTENT_TYPE);
+      Node userEnvNode = jcrNodeFactoryService.setInputStream(userEnvironmentPath, bais,
+          RestProvider.CONTENT_TYPE);
 
       // set the password
-      userEnvNode.setProperty(
-          JcrAuthenticationResolverProvider.JCRPASSWORDHASH, StringUtils
-              .sha1Hash(password));
+      userEnvNode.setProperty(JcrAuthenticationResolverProvider.JCRPASSWORDHASH,
+          StringUtils.sha1Hash(password));
 
       
       // make the private and shares spaces for the user owned by this used.   
-      setOwner(userFactoryService.getUserPrivatePath(u.getUuid()),u.getUuid());
-      setOwner(userFactoryService.getUserSharedPrivatePath(u.getUuid()),u.getUuid());
+      jcrNodeFactoryService.setOwner(userFactoryService.getUserPrivatePath(u.getUuid()),u.getUuid());
+      jcrNodeFactoryService.setOwner(userFactoryService.getUserSharedPrivatePath(u.getUuid()),u.getUuid());
 
-
-
- 
+      // make the private and shares spaces for the user owned by this used.
+      jcrNodeFactoryService.setOwner(userFactoryService.getUserPrivatePath(u.getUuid()),
+          u.getUuid());
+      jcrNodeFactoryService.setOwner(userFactoryService.getUserSharedPrivatePath(u
+          .getUuid()), u.getUuid());
 
       userEnvironmentBean.seal();
       return userEnvironmentBean;
@@ -402,20 +400,38 @@ public class SimpleJcrUserEnvironmentResolverService implements
   }
 
   /**
-   * @param userPrivatePath
-   * @param uuid
-   * @throws RepositoryException 
-   * @throws JCRNodeFactoryServiceException 
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService#addMembership(java.lang.String, java.lang.String, java.lang.String)
    */
-  private void setOwner(String path, String uuid) throws RepositoryException, JCRNodeFactoryServiceException {
-    Node node = null;
-    try {
-      node = jcrNodeFactoryService.getNode(path);
-    } catch (JCRNodeFactoryServiceException e) {
-    }
-    if ( node == null ) {
-      node = jcrNodeFactoryService.createFolder(path);
-    }
-    node.setProperty(JCRConstants.ACL_OWNER, uuid);
+  public void addMembership(String userId, String siteId, String membershipType) {
+    UserEnvironmentBean userEnv = (UserEnvironmentBean) resolve(userId);
+    UserEnvironmentBean newUserEnvironment = new UserEnvironmentBean(
+        subjectPermissionService, 0, registryService);
+    newUserEnvironment.copyFrom(userEnv);
+
+    String newSubject = siteId + ":" + membershipType;
+    String[] subjects = newUserEnvironment.getSubjects();
+    subjects = StringUtils.addString(subjects, newSubject);
+    newUserEnvironment.setSubjects(subjects);
+
+    save(newUserEnvironment);
   }
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService#removeMembership(java.lang.String, java.lang.String, java.lang.String)
+   */
+  public void removeMembership(String userId, String siteId, String membershipType) {
+    UserEnvironmentBean userEnv = (UserEnvironmentBean) resolve(userId);
+    UserEnvironmentBean newUserEnvironment = new UserEnvironmentBean(
+        subjectPermissionService, 0, registryService);
+    newUserEnvironment.copyFrom(userEnv);
+
+    String newSubject = siteId + ":" + membershipType;
+    String[] subjects = newUserEnvironment.getSubjects();
+    subjects = StringUtils.removeString(subjects, newSubject);
+    newUserEnvironment.setSubjects(subjects);
+
+    save(newUserEnvironment);
+  }
+
 }

@@ -88,6 +88,8 @@ public class GroupBean {
     }
   }
   
+  
+
   /**
    * @return the owners
    */

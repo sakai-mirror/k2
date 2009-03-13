@@ -18,23 +18,22 @@
 
 package org.sakaiproject.kernel.api.site;
 
-import org.sakaiproject.kernel.api.UpdateFailedException;
 
 /**
  *
  */
-public class SiteException extends UpdateFailedException {
+public class SiteException extends Exception {
 
+ 
   /**
    *
    */
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 943822870539066619L;
 
   /**
    *
    */
   public SiteException() {
-    // TODO Auto-generated constructor stub
   }
 
   /**
@@ -42,7 +41,6 @@ public class SiteException extends UpdateFailedException {
    */
   public SiteException(String message) {
     super(message);
-    // TODO Auto-generated constructor stub
   }
 
   /**
@@ -50,7 +48,6 @@ public class SiteException extends UpdateFailedException {
    */
   public SiteException(Throwable cause) {
     super(cause);
-    // TODO Auto-generated constructor stub
   }
 
   /**
@@ -59,7 +56,6 @@ public class SiteException extends UpdateFailedException {
    */
   public SiteException(String message, Throwable cause) {
     super(message, cause);
-    // TODO Auto-generated constructor stub
   }
 
 }

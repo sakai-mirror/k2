@@ -41,7 +41,6 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
 import javax.jcr.ValueFactory;
-import javax.jcr.nodetype.NodeType;
 
 /**
  * @author ieb This is a support service to make it easier to treat a JCR service as a
@@ -356,4 +355,22 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
       throws RepositoryException {
     node.setProperty(JCRConstants.JCR_SMARTNODE, language + ":" + statement);
   }
+  
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService#setOwner(java.lang.String, java.lang.String)
+   */
+  public void setOwner(String path, String uuid) throws RepositoryException, JCRNodeFactoryServiceException {
+    Node node = null;
+    try {
+      node = getNode(path);
+    } catch (JCRNodeFactoryServiceException e) {
+    }
+    if ( node == null ) {
+      node = createFolder(path);
+    }
+    node.setProperty(JCRConstants.ACL_OWNER, uuid);
+    node.save();
+  }
+
 }
