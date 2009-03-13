@@ -19,6 +19,8 @@ package org.sakaiproject.kernel.jcr.jackrabbit.sakai;
 
 import com.google.inject.Injector;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.core.NamespaceRegistryImpl;
 import org.apache.jackrabbit.core.RepositoryImpl;
 import org.apache.jackrabbit.core.SessionImpl;
@@ -26,6 +28,7 @@ import org.apache.jackrabbit.core.config.RepositoryConfig;
 import org.apache.jackrabbit.core.config.WorkspaceConfig;
 import org.apache.jackrabbit.core.fs.FileSystem;
 import org.apache.jackrabbit.core.security.AuthContext;
+import org.apache.jackrabbit.core.state.CacheManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,10 +45,11 @@ import javax.transaction.TransactionManager;
  */
 public class SakaiRepositoryImpl extends RepositoryImpl {
 
+  private static final Log LOG = LogFactory.getLog(SakaiRepositoryImpl.class);
   private Injector injector;
   private TransactionManager transactionManager;
-  private ThreadLocal<Map<String, Session>> systemThreadSession = new ThreadLocal<Map<String,Session>>() {
-    protected java.util.Map<String,Session> initialValue() {
+  private ThreadLocal<Map<String, Session>> systemThreadSession = new ThreadLocal<Map<String, Session>>() {
+    protected java.util.Map<String, Session> initialValue() {
       return new HashMap<String, Session>();
     };
   };
@@ -60,6 +64,23 @@ public class SakaiRepositoryImpl extends RepositoryImpl {
     super(repConfig);
     this.injector = injector;
     this.transactionManager = transactionManager;
+    long maxMemory = Runtime.getRuntime().maxMemory() / (1024 * 1024);
+    setCacheSize(maxMemory);
+  }
+
+  public void setCacheSize(long memoryMB) {
+    long maxMem = Math.max(16, ((memoryMB * 16) / 128));
+    long maxMemCache = Math.max(4, ((memoryMB * 4) / 128));
+    long minMemCache = Math.max(128, ((memoryMB * 128) / 128));
+    LOG.info("Setting Cache sizes for " + memoryMB + " MB of heap (Max:"
+        + maxMem + ":MB, MaxPerCache:" + maxMemCache
+        + ":MB, MaxPerCache:" + minMemCache + " KB");
+    CacheManager manager = getCacheManager();
+    manager.setMaxMemory(maxMem * 1024 * 1024); // default is 16 * 1024 *
+                                                               // 1024
+    manager.setMaxMemoryPerCache(maxMemCache * 1024 * 1024); // default is 4 *
+                                                                      // 1024 * 1024
+    manager.setMinMemoryPerCache(minMemCache * 1024); // default is 128 * 1024]
   }
 
   /**
@@ -72,10 +93,8 @@ public class SakaiRepositoryImpl extends RepositoryImpl {
   protected SessionImpl createSessionInstance(AuthContext loginContext,
       WorkspaceConfig wspConfig) throws AccessDeniedException, RepositoryException {
     return new SakaiXASessionImpl(this, injector, loginContext, wspConfig,
-          transactionManager);
+        transactionManager);
   }
-  
-  
 
   /**
    * @param workspaceName
