@@ -38,8 +38,11 @@ public class RegistryServiceUT {
   public void testRegistryServiceAddForward() {
     RegistryServiceImpl registryServiceImpl = new RegistryServiceImpl();
     Registry<String,TProvider<String>> r = registryServiceImpl.getRegistry("testRegistry");
+    List<TProvider<String>> providerStore = Lists.newArrayList();
     for ( int i = 0; i < 100; i++ ) {
-      r.add(new TProvider<String>(i,String.valueOf(i)));
+      TProvider<String> p = new TProvider<String>(i,String.valueOf(i));
+      providerStore.add(p); // store so it doesnt get gc'd
+      r.add(p);
     }
     List<TProvider<String>> p = r.getList();
     for ( int i = 0; i < 100; i++ ) {
