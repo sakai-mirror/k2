@@ -28,14 +28,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
+ *
  */
 public class JsonMorpherListProvider implements Provider<List<Morpher>> {
 
   private List<Morpher> list = new ArrayList<Morpher>();
-  
+
   /**
-   * 
+   *
    */
   @Inject
   public JsonMorpherListProvider( JsonObjectToMapMorpher jsonObjectToMapMorpher) {

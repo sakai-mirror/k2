@@ -22,7 +22,7 @@ import org.sakaiproject.kernel.api.Provider;
 import java.security.Principal;
 
 /**
- * 
+ *
  */
 public interface AuthenticationResolverProvider extends Provider<String> {
 

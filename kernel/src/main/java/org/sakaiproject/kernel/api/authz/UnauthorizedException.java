@@ -24,12 +24,12 @@ package org.sakaiproject.kernel.api.authz;
 public class UnauthorizedException extends PermissionDeniedException {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 654489576668771L;
 
   /**
-   * 
+   *
    */
   public UnauthorizedException() {
   }

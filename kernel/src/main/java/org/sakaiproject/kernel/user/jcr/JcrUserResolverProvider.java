@@ -39,7 +39,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 /**
- * 
+ *
  */
 @Singleton
 public class JcrUserResolverProvider implements UserResolverProvider {
@@ -50,7 +50,7 @@ public class JcrUserResolverProvider implements UserResolverProvider {
   private UserEnvironmentResolverService userEnvironmentResolverService;
 
   /**
-   * 
+   *
    */
   @Inject
   public JcrUserResolverProvider(EntityManager entityManager,
@@ -70,7 +70,7 @@ public class JcrUserResolverProvider implements UserResolverProvider {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.user.UserResolverProvider#resolve(java.lang.String)
    */
   public User resolve(String eid) {
@@ -90,7 +90,7 @@ public class JcrUserResolverProvider implements UserResolverProvider {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.user.UserResolverProvider#resolve(org.sakaiproject.kernel.api.user.User)
    */
   public UserInfo resolve(User user) {
@@ -103,7 +103,7 @@ public class JcrUserResolverProvider implements UserResolverProvider {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Provider#getKey()
    */
   public String getKey() {
@@ -112,7 +112,7 @@ public class JcrUserResolverProvider implements UserResolverProvider {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Provider#getPriority()
    */
   public int getPriority() {

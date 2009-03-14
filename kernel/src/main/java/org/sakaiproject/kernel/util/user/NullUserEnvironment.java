@@ -26,7 +26,7 @@ import org.sakaiproject.kernel.api.user.UserInfo;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 
 /**
- * 
+ *
  */
 public class NullUserEnvironment implements UserEnvironment {
 
@@ -35,7 +35,7 @@ public class NullUserEnvironment implements UserEnvironment {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#hasExpired()
    */
   public boolean hasExpired() {
@@ -44,7 +44,7 @@ public class NullUserEnvironment implements UserEnvironment {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#matches(org.sakaiproject.kernel.api.authz.SubjectStatement)
    */
   public boolean matches(ReferencedObject referencedObject,
@@ -59,7 +59,7 @@ public class NullUserEnvironment implements UserEnvironment {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#isSuperUser()
    */
   public boolean isSuperUser() {
@@ -68,7 +68,7 @@ public class NullUserEnvironment implements UserEnvironment {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Sealable#seal()
    */
   public void seal() {
@@ -76,7 +76,7 @@ public class NullUserEnvironment implements UserEnvironment {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#getUser()
    */
   public User getUser() {
@@ -85,7 +85,7 @@ public class NullUserEnvironment implements UserEnvironment {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#getSubjects()
    */
   public String[] getSubjects() {
@@ -94,7 +94,7 @@ public class NullUserEnvironment implements UserEnvironment {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#getUserSubjects()
    */
   public UserSubjects getUserSubjects() {
@@ -116,7 +116,7 @@ public class NullUserEnvironment implements UserEnvironment {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#getLocale()
    */
   public String getLocale() {
@@ -125,7 +125,7 @@ public class NullUserEnvironment implements UserEnvironment {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#getUserInfo()
    */
   public UserInfo getUserInfo() {
@@ -134,7 +134,7 @@ public class NullUserEnvironment implements UserEnvironment {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see java.lang.Object#toString()
    */
   @Override
@@ -144,7 +144,7 @@ public class NullUserEnvironment implements UserEnvironment {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#setProtected(boolean)
    */
   public void setProtected(boolean b) {

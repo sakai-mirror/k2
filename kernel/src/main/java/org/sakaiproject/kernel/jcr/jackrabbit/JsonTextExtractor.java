@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 
+ *
  */
 public class JsonTextExtractor extends AbstractTextExtractor {
 
@@ -88,7 +88,7 @@ public class JsonTextExtractor extends AbstractTextExtractor {
 
   /**
    * Convert the json string into a pojo based on the supplied root class.
-   * 
+   *
    * @param string
    *          the json string
    * @param rootBeanClass

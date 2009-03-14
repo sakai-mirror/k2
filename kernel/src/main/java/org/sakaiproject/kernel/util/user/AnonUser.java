@@ -25,7 +25,7 @@ import org.sakaiproject.kernel.api.user.User;
 public class AnonUser implements User {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 5846119729685965996L;
 
@@ -44,7 +44,7 @@ public class AnonUser implements User {
   public String getUuid() {
     return "anon";
   }
-  
+
   /**
    * {@inheritDoc}
    * @see java.lang.Object#toString()

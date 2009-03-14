@@ -54,7 +54,7 @@ public class PersistenceModule extends AbstractModule {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see com.google.inject.AbstractModule#configure()
    */
   @Override

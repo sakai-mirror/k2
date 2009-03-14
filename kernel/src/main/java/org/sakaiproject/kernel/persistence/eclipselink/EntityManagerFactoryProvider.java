@@ -118,14 +118,14 @@ public class EntityManagerFactoryProvider implements Provider<EntityManagerFacto
     LOG.info("Starting connection manager with properties " + properties);
     final Thread currentThread = Thread.currentThread();
     final ClassLoader saveClassLoader = currentThread.getContextClassLoader();
-   
+
     PersistenceUnitClassLoader persistenceCL = new PersistenceUnitClassLoader(this.getClass().getClassLoader());
     currentThread.setContextClassLoader(persistenceCL);
     entityManagerFactory = Persistence.createEntityManagerFactory(
         unitName, properties);
     currentThread.setContextClassLoader(saveClassLoader);
-    
-   
+
+
   }
 
   /**

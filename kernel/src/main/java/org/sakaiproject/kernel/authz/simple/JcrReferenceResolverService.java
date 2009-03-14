@@ -34,12 +34,12 @@ import javax.jcr.RepositoryException;
  */
 public class JcrReferenceResolverService implements ReferenceResolverService{
 
-  
-  
+
+
   private JCRNodeFactoryService jcrNodeFactoryService;
   private AuthzResolverService authzResolverService;
   /**
-   * 
+   *
    */
   @Inject
   public JcrReferenceResolverService(JCRNodeFactoryService jcrNodeFactoryService, AuthzResolverService authzResolverService) {

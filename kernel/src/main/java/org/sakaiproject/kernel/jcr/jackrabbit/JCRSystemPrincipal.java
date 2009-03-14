@@ -24,12 +24,12 @@ import java.security.Principal;
 /**
  * A system principal is a low level principal that gives the session the
  * ability to do anything unchecked.
- * 
+ *
  */
 public class JCRSystemPrincipal implements Principal, Serializable {
 
   /**
-	 * 
+	 *
 	 */
   private static final long serialVersionUID = 6346392695482119713L;
 

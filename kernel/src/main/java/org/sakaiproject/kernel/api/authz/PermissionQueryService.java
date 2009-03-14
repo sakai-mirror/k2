@@ -25,7 +25,7 @@ public interface PermissionQueryService {
 
   /**
    * Get a permission by name.
-   * 
+   *
    * @param name
    *          the name of the query.
    * @return the query.

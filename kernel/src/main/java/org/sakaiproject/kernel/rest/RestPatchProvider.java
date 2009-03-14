@@ -52,7 +52,7 @@ import javax.servlet.http.HttpServletResponse;
 public class RestPatchProvider implements RestProvider {
 
   /**
-   * 
+   *
    */
   public static class MapParams {
     public String[] names;
@@ -168,7 +168,7 @@ public class RestPatchProvider implements RestProvider {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.RestProvider#dispatch(java.lang.String[],
    *      javax.servlet.http.HttpServletRequest,
    *      javax.servlet.http.HttpServletResponse)
@@ -261,7 +261,7 @@ public class RestPatchProvider implements RestProvider {
       throws RepositoryException, JCRNodeFactoryServiceException,
       UnsupportedEncodingException, IOException {
     InputStream in = null;
-    
+
     try {
       Node n = jcrNodeFactoryService.getNode(path);
       Map<String, Object> map = null;
@@ -287,7 +287,7 @@ public class RestPatchProvider implements RestProvider {
       in = new ByteArrayInputStream(result.getBytes(StringUtils.UTF8));
       n = jcrNodeFactoryService.setInputStream(path, in,
           RestProvider.CONTENT_TYPE);
-      
+
       // deal with indexed properties.
       for (int i = 0; i < params.names.length; i++) {
         boolean index = false;
@@ -305,7 +305,7 @@ public class RestPatchProvider implements RestProvider {
           // add it
           n.setProperty("sakai:"+params.names[i], params.values[i]);
         }
-        
+
       }
       n.getSession().save(); // verify changes
       Map<String, Object> outputMap = new HashMap<String, Object>();
@@ -321,7 +321,7 @@ public class RestPatchProvider implements RestProvider {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.RestProvider#getDescription()
    */
   public RestDescription getDescription() {
@@ -330,7 +330,7 @@ public class RestPatchProvider implements RestProvider {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Provider#getKey()
    */
   public String getKey() {
@@ -339,7 +339,7 @@ public class RestPatchProvider implements RestProvider {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Provider#getPriority()
    */
   public int getPriority() {

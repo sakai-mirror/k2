@@ -59,7 +59,7 @@ public interface PermissionQuery {
    * return the same QueryToken for the same permission on the same resource, as this is
    * used to identify the results of this permission query against the supplied resource
    * in a cache.
-   * 
+   *
    * @param resourceReference
    * @return the token representing the query on the resource.
    */

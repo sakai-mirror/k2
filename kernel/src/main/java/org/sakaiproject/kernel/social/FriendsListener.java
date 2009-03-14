@@ -60,7 +60,7 @@ public class FriendsListener implements JcrContentListener {
 
   /**
    * Constructor with all required dependencies.
-   * 
+   *
    * @param jcrNodeFactoryService
    * @param userEnvironmentBase
    * @param beanConverter
@@ -84,7 +84,7 @@ public class FriendsListener implements JcrContentListener {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.jcr.api.JcrContentListener#onEvent(int,
    *      java.lang.String, java.lang.String, java.lang.String)
    */
@@ -132,7 +132,7 @@ public class FriendsListener implements JcrContentListener {
                     UserProfile userProfile = profileResolverService
                     .resolve(friendUuid);
                     friendIndexBean.copy(friendBean,userProfile);
-                    
+
                     toUpdate.add(friendIndexBean);
                   }
                   break;

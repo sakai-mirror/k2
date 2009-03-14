@@ -24,13 +24,13 @@ import java.util.HashMap;
 import java.util.Set;
 
 /**
- * 
+ *
  */
 public class MapCacheImpl<V> extends HashMap<String, V>implements Cache<V>  {
 
-  
+
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = -5400056532743570231L;
 
@@ -61,7 +61,7 @@ public class MapCacheImpl<V> extends HashMap<String, V>implements Cache<V>  {
     }
   }
 
-  
+
   /**
    * {@inheritDoc}
    * @see java.util.HashMap#clear()
@@ -88,14 +88,14 @@ public class MapCacheImpl<V> extends HashMap<String, V>implements Cache<V>  {
     }
     Set<String> keys = super.keySet();
     for ( String k : keys) {
-      if ( ((String) k).startsWith(key) ) {
+      if ( (k).startsWith(key) ) {
         super.remove(k);
       }
     }
   }
-  
 
- 
+
+
 
 
 }

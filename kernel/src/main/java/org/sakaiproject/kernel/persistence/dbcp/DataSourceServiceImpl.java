@@ -74,7 +74,7 @@ public class DataSourceServiceImpl implements DataSourceService,
 
   /**
    * Construct a DBCP data source service.
-   * 
+   *
    * @param driverClassName
    * @param url
    * @param username
@@ -123,7 +123,7 @@ public class DataSourceServiceImpl implements DataSourceService,
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.persistence.DataSourceService#getDataSource()
    */
   public DataSource getDataSource() {
@@ -132,7 +132,7 @@ public class DataSourceServiceImpl implements DataSourceService,
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.persistence.DataSourceService#getType()
    */
   public String getType() {
@@ -141,7 +141,7 @@ public class DataSourceServiceImpl implements DataSourceService,
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see com.google.inject.Provider#get()
    */
   public DataSource get() {

@@ -30,10 +30,10 @@ public class OracleSharedPersistenceManager extends OraclePersistenceManager {
 	/**
 	 * Creates a blob store that is based on a local fs. This is called by init
 	 * if {@link #useLocalFsBlobStore()} returns <code>true</code>.
-	 * 
-	 * If {@link #useSharedFsBlobStore} is <code>true</code>, then the store will be in a 
-	 * shared location.  
-	 * 
+	 *
+	 * If {@link #useSharedFsBlobStore} is <code>true</code>, then the store will be in a
+	 * shared location.
+	 *
 	 * @param context
 	 *            the persistence manager context
 	 * @return a blob store
@@ -51,7 +51,7 @@ public class OracleSharedPersistenceManager extends OraclePersistenceManager {
 		File baseLocation = context.getHomeDir();
 		if ( useSharedFsBlobStore ) {
 			baseLocation = new File(sharedLocation);
-		} 
+		}
 		LocalFileSystem blobFS = new LocalFileSystem();
 		blobFS.setRoot(new File(baseLocation, "blobs"));
 		blobFS.init();

@@ -26,7 +26,7 @@ import org.sakaiproject.kernel.jcr.api.internal.SakaiUserPrincipal;
  */
 public class SakaiUserPrincipalImpl implements SakaiUserPrincipal {
   /**
-	 * 
+	 *
 	 */
   private static final long serialVersionUID = -8344465158464876283L;
 

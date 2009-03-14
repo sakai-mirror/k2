@@ -43,7 +43,7 @@ public class RestProviderListProvider implements Provider<List<RestProvider>> {
   @Inject
   public RestProviderListProvider(
       RestAuthenticationProvider restAuthenticationProvider,
-       RestSiteProvider restSiteProvider, 
+       RestSiteProvider restSiteProvider,
        RestLogoutProvider restLogoutProvider,
       RestUserProvider restUserProvider,
       RestMySitesProvider restMySitesProvider,

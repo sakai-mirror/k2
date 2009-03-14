@@ -25,7 +25,7 @@ public interface Cache<V> {
 
   /**
    * Cache an object
-   * 
+   *
    * @param key
    *          The key with which to find the object.
    * @param payload
@@ -37,7 +37,7 @@ public interface Cache<V> {
 
   /**
    * Test for a non expired entry in the cache.
-   * 
+   *
    * @param key
    *          The cache key.
    * @return true if the key maps to a non-expired cache entry, false if not.
@@ -46,7 +46,7 @@ public interface Cache<V> {
 
   /**
    * Get the non expired entry, or null if not there (or expired)
-   * 
+   *
    * @param key
    *          The cache key.
    * @return The payload, or null if the payload is null, the key is not found,
@@ -62,7 +62,7 @@ public interface Cache<V> {
 
   /**
    * Remove this entry from the cache.
-   * 
+   *
    * @param key
    *          The cache key.
    */
@@ -71,7 +71,7 @@ public interface Cache<V> {
   /**
    * Remove the key and any child keys from the cache, this is an expensive
    * operation.
-   * 
+   *
    * @param key
    */
   void removeChildren(String key);

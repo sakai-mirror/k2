@@ -20,7 +20,7 @@ package org.sakaiproject.kernel.serialization.json;
 import net.sf.json.processors.JsonBeanProcessor;
 
 /**
- * 
+ *
  */
 public interface BeanProcessor {
 

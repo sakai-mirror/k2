@@ -33,7 +33,7 @@ public interface UserEnvironmentResolverService {
 
   /**
    * Get a {@link UserEnvironment} objects based on the supplied session.
-   * 
+   *
    * @param currentSession
    *          the supplied session.
    * @return the UserEnvironment object.
@@ -42,7 +42,7 @@ public interface UserEnvironmentResolverService {
 
   /**
    * Resolve a User Environment for an arbritary user, probably not this user.
-   * 
+   *
    * @param user
    *          the User that identifies the User environment
    * @return the User Environment, or null if none is found.
@@ -51,18 +51,18 @@ public interface UserEnvironmentResolverService {
 
   /**
    * Resolve a User Environment for an arbritary user, probably not this user. This method avoids requiring a session.
-   * 
+   *
    * @param user
    *          the User that identifies the User environment
    * @return the User Environment, or null if none is found.
    */
   UserEnvironment resolve(String userId);
 
-  
+
 
   /**
    * Remove the userEnvironment bound to the sessionId from any caches.
-   * 
+   *
    * @param sessionId
    */
   void expire(String sessionId);
@@ -70,7 +70,7 @@ public interface UserEnvironmentResolverService {
   /**
    * Get the implementations concept of path for the userEnvironment storage
    * space.
-   * 
+   *
    * @param userId
    *          the UUID of ther user
    * @return the absolute path of the user environment storage space.
@@ -80,7 +80,7 @@ public interface UserEnvironmentResolverService {
   /**
    * Get the locale for the request, session settings take precedence, followed
    * by persisted preference followed by the browser, then the system.
-   * 
+   *
    * @param browserLocale
    *          the locale of the request
    * @param session
@@ -89,11 +89,11 @@ public interface UserEnvironmentResolverService {
    */
   Locale getUserLocale(Locale browserLocale, Session session);
 
-  
+
   /**
    * Saves a user environment after modifying it.
    * @param userEnvironment
-   * @throws UpdateFailedException if the update failed. 
+   * @throws UpdateFailedException if the update failed.
    */
   void save (UserEnvironment userEnvironment) throws UpdateFailedException;
 

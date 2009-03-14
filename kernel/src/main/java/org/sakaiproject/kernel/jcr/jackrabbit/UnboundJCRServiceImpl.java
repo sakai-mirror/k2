@@ -36,9 +36,9 @@ import javax.jcr.observation.Event;
 import javax.jcr.observation.ObservationManager;
 import javax.jcr.query.QueryManager;
 
-/* This is mostly the same as the JCRServiceImpl, except you are never bound to a 
+/* This is mostly the same as the JCRServiceImpl, except you are never bound to a
  * particular thread.  You will need to keep track of your session, and use the logout
- * methods available on JSR-170. 
+ * methods available on JSR-170.
  */
 public class UnboundJCRServiceImpl implements JCRService {
 
@@ -55,7 +55,7 @@ public class UnboundJCRServiceImpl implements JCRService {
 
   @Inject
   public UnboundJCRServiceImpl(RepositoryBuilder repositoryBuilder,
-      @Named(JCRService.NAME_CREDENTIALS) Credentials repositoryCredentials, 
+      @Named(JCRService.NAME_CREDENTIALS) Credentials repositoryCredentials,
       @Named(JCRService.NAME_REQUEST_SCOPE) boolean requestScope) {
 
     boolean error = false;
@@ -99,14 +99,14 @@ public class UnboundJCRServiceImpl implements JCRService {
     Repository repository = repositoryBuilder.getInstance();
     return repository.login();
   }
-  
+
   public void save() throws RepositoryException {
     if ( hasActiveSession() ) {
       getSession().save();
     }
   }
 
-  
+
   public Session loginSystem() throws LoginException, RepositoryException {
     Repository repository = repositoryBuilder.getInstance();
     return repository.login(repositoryCredentials);
@@ -141,7 +141,7 @@ public class UnboundJCRServiceImpl implements JCRService {
   public String getDefaultWorkspace() {
     return DEFAULT_WORKSPACE;
   }
-  
+
   /**
    * {@inheritDoc}
    * @see org.sakaiproject.kernel.api.jcr.JCRService#getObservationManager()

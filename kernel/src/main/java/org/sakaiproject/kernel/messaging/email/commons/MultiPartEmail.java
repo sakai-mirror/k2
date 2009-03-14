@@ -31,13 +31,13 @@ public class MultiPartEmail extends org.apache.commons.mail.MultiPartEmail
     implements Serializable {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = -7836497250571174552L;
   private transient EmailMessagingService messagingService;
 
   /**
-   * 
+   *
    */
   @Inject
   public MultiPartEmail(EmailMessagingService messagingService) {
@@ -46,10 +46,10 @@ public class MultiPartEmail extends org.apache.commons.mail.MultiPartEmail
 
   /**
    * Does the work of actually sending the email.
-   * 
+   *
    * @exception MessagingException
    *              if there was an error.
-   * 
+   *
    * @return - the message id
    */
   @Override

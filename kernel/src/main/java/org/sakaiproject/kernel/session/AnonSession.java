@@ -29,7 +29,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSessionContext;
 
 /**
- * 
+ *
  */
 @SuppressWarnings("deprecation")
 public class AnonSession implements Session {
@@ -114,7 +114,6 @@ public class AnonSession implements Session {
    * {@inheritDoc}
    * @see javax.servlet.http.HttpSession#getSessionContext()
    */
-  @SuppressWarnings("deprecation")
   public HttpSessionContext getSessionContext() {
     return null;
   }

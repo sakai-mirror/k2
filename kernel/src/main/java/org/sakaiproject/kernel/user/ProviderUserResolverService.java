@@ -39,12 +39,12 @@ public class ProviderUserResolverService implements
     UserResolverService {
 
   private static final Log LOG = LogFactory.getLog(ProviderUserResolverService.class);
- 
+
   private UserResolverService nullService;
   private Registry<String,UserResolverProvider> registry;
 
   /**
-   * 
+   *
    */
   @Inject
   public ProviderUserResolverService(

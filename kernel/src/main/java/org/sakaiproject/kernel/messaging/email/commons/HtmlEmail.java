@@ -31,13 +31,13 @@ public class HtmlEmail extends org.apache.commons.mail.HtmlEmail implements
     Serializable {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 2655080957685664296L;
   private transient EmailMessagingService messagingService;
 
   /**
-   * 
+   *
    */
   @Inject
   public HtmlEmail(EmailMessagingService messagingService) {
@@ -46,10 +46,10 @@ public class HtmlEmail extends org.apache.commons.mail.HtmlEmail implements
 
   /**
    * Does the work of actually sending the email.
-   * 
+   *
    * @exception MessagingException
    *              if there was an error.
-   * 
+   *
    * @return - the message id
    */
   @Override

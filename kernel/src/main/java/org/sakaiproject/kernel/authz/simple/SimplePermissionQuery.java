@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
+ *
  */
 public class SimplePermissionQuery implements PermissionQuery {
 
@@ -32,7 +32,7 @@ public class SimplePermissionQuery implements PermissionQuery {
   private List<QueryStatement> queryStatements = new ArrayList<QueryStatement>();
 
   /**
-   * 
+   *
    */
   public SimplePermissionQuery(String name) {
     this.name = name;
@@ -56,7 +56,7 @@ public class SimplePermissionQuery implements PermissionQuery {
   public void addQueryStatement(QueryStatement queryStatement) {
     queryStatements.add(queryStatement);
   }
-  
+
   /**
    * {@inheritDoc}
    * @see java.lang.Object#toString()

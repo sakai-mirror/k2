@@ -20,14 +20,14 @@ package org.sakaiproject.kernel.authz.simple;
 import org.sakaiproject.kernel.api.authz.QueryStatement;
 
 /**
- * 
+ *
  */
 public class SimpleQueryStatement implements QueryStatement {
 
   private String statementKey;
 
   /**
-   * 
+   *
    */
   public SimpleQueryStatement(String statementKey) {
     this.statementKey = statementKey;
@@ -35,7 +35,7 @@ public class SimpleQueryStatement implements QueryStatement {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.authz.QueryStatement#getStatementKey()
    */
   public String getStatementKey() {

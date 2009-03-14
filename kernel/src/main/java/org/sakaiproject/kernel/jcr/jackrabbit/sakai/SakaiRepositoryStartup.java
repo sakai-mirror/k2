@@ -32,7 +32,7 @@ import javax.jcr.Session;
 
 /**
  * Performs basic repository startup.
- * 
+ *
  */
 public class SakaiRepositoryStartup implements StartupAction {
   private static final Log log = LogFactory
@@ -49,8 +49,9 @@ public class SakaiRepositoryStartup implements StartupAction {
       List<String> existingWorkspaces = Arrays.asList(workspace
           .getAccessibleWorkspaceNames());
       if (!existingWorkspaces.contains(JCRServiceImpl.DEFAULT_WORKSPACE)) {
-        if (log.isInfoEnabled())
+        if (log.isInfoEnabled()) {
           log.info("Creating Workspace Sakai ");
+        }
         workspace.createWorkspace(JCRServiceImpl.DEFAULT_WORKSPACE);
         log.info("Created default Sakai Jackrabbit Workspace: "
             + JCRServiceImpl.DEFAULT_WORKSPACE);

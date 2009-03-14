@@ -19,17 +19,17 @@
 package org.sakaiproject.kernel.webapp;
 
 /**
- * 
+ *
  */
 public interface Initialisable {
 
   /**
-   * 
+   *
    */
   void init();
 
   /**
-   * 
+   *
    */
   void destroy();
 

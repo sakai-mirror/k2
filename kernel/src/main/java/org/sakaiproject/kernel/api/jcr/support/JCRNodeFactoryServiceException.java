@@ -23,12 +23,12 @@ package org.sakaiproject.kernel.api.jcr.support;
 public class JCRNodeFactoryServiceException extends Exception {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
 
   /**
-	 * 
+	 *
 	 */
   public JCRNodeFactoryServiceException() {
   }

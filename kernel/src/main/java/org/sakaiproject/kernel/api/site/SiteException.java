@@ -24,7 +24,7 @@ package org.sakaiproject.kernel.api.site;
  */
 public class SiteException extends Exception {
 
- 
+
   /**
    *
    */

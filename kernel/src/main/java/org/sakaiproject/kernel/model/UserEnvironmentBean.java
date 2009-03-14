@@ -6,7 +6,7 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- 
+
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 
+ *
  */
 public class UserEnvironmentBean implements UserEnvironment {
 
@@ -72,7 +72,7 @@ public class UserEnvironmentBean implements UserEnvironment {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#hasExpired()
    */
   public boolean hasExpired() {
@@ -81,7 +81,7 @@ public class UserEnvironmentBean implements UserEnvironment {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#matches(org.sakaiproject.kernel.api.authz.SubjectStatement)
    */
   public boolean matches(ReferencedObject referencedObject,
@@ -140,7 +140,7 @@ public class UserEnvironmentBean implements UserEnvironment {
       // for owner to work, ver node must have an owner, it cannot be inherited.
       // hence we must put this inside jcrNodeFactory, so that when a node is created the owner property is set.
       // there is an issue for webdav that means the owner does not come through.
-      // 
+      //
       if (debug) {
         LOG.debug("Testing " + subject + " for " + uuid + " at "
             + referencedObject + " owner " + referencedObject.getOwner());
@@ -164,7 +164,7 @@ public class UserEnvironmentBean implements UserEnvironment {
   }
 
   /**
-   * 
+   *
    */
   private void loadSubjects() {
     if (subjectsBean == null) {
@@ -177,7 +177,7 @@ public class UserEnvironmentBean implements UserEnvironment {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#isSuperUser()
    */
   public boolean isSuperUser() {
@@ -186,7 +186,7 @@ public class UserEnvironmentBean implements UserEnvironment {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#getSubjects()
    */
   public String[] getSubjects() {
@@ -195,7 +195,7 @@ public class UserEnvironmentBean implements UserEnvironment {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#getUserid()
    */
   public User getUser() {
@@ -297,7 +297,7 @@ public class UserEnvironmentBean implements UserEnvironment {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#getUserSubjects()
    */
   public UserSubjects getUserSubjects() {
@@ -307,7 +307,7 @@ public class UserEnvironmentBean implements UserEnvironment {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#getLocale()
    */
   public String getLocale() {
@@ -328,7 +328,7 @@ public class UserEnvironmentBean implements UserEnvironment {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#getUserInfo()
    */
   public UserInfo getUserInfo() {
@@ -382,7 +382,7 @@ public class UserEnvironmentBean implements UserEnvironment {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironment#setProtected(boolean)
    */
   public void setProtected(boolean protect) {

@@ -47,7 +47,7 @@ public class JCRRegistrationServiceImpl implements JCRRegistrationService {
   private RepositoryBuilder repositoryBuilder;
 
   /**
-   * 
+   *
    */
   @Inject
   public JCRRegistrationServiceImpl(RepositoryBuilder repositoryBuilder) {

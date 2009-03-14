@@ -51,11 +51,11 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * Implements the MySites service.
- * 
+ *
  * This is coded according to OpenSocial API v.8.1
  * http://www.opensocial.org/Technical
  * -Resources/opensocial-spec-v081/restful-protocol#TOC-2.1-Responses
- * 
+ *
  */
 public class RestMySitesProvider implements RestProvider {
 
@@ -218,7 +218,7 @@ public class RestMySitesProvider implements RestProvider {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.RestProvider#dispatch(java.lang.String[],
    *      javax.servlet.http.HttpServletRequest,
    *      javax.servlet.http.HttpServletResponse)
@@ -359,7 +359,7 @@ public class RestMySitesProvider implements RestProvider {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.RestProvider#getDescription()
    */
   public RestDescription getDescription() {
@@ -368,7 +368,7 @@ public class RestMySitesProvider implements RestProvider {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Provider#getKey()
    */
   public String getKey() {
@@ -377,7 +377,7 @@ public class RestMySitesProvider implements RestProvider {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Provider#getPriority()
    */
   public int getPriority() {

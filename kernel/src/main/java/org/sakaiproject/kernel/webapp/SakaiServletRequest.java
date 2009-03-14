@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
- * 
+ *
  */
 public class SakaiServletRequest extends HttpServletRequestWrapper {
 
@@ -59,7 +59,7 @@ public class SakaiServletRequest extends HttpServletRequestWrapper {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.servlet.http.HttpServletRequestWrapper#getSession()
    */
   @Override
@@ -79,7 +79,7 @@ public class SakaiServletRequest extends HttpServletRequestWrapper {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.servlet.http.HttpServletRequestWrapper#getSession(boolean)
    */
   @Override
@@ -116,7 +116,7 @@ public class SakaiServletRequest extends HttpServletRequestWrapper {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.servlet.http.HttpServletRequestWrapper#getRemoteUser()
    */
   @Override

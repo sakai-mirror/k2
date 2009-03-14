@@ -46,7 +46,7 @@ public class JsonObjectToMapMorpher implements Morpher, ObjectMorpher {
     return (JSONObject.class.equals(clazz));
   }
 
-  /** 
+  /**
    * @param the bean to be morphed
    * @return the morphed bean (a map)
    */

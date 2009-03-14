@@ -32,8 +32,8 @@ public interface Session extends HttpSession {
    * @return the current user, or null if there is none.
    */
   User getUser();
-  
-  
+
+
   /**
    * Remove the user from the session.
    */

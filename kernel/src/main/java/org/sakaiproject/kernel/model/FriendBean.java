@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 
+ *
  */
 public class FriendBean {
   private String friendUuid;
@@ -33,9 +33,9 @@ public class FriendBean {
   private FriendStatus status ;
   private transient Map<String, Object> profile;
   private Map<String,String> properties;
-  
+
   /**
-   * 
+   *
    */
   public FriendBean() {
     this.lastUpdate = System.currentTimeMillis();
@@ -44,8 +44,8 @@ public class FriendBean {
     this.profile = Maps.newHashMap();
   }
   /**
-   * @param friendStatus 
-   * 
+   * @param friendStatus
+   *
    */
   public FriendBean(String personUuid, String friendUuid, FriendStatus friendStatus) {
     this.personUuid = personUuid;
@@ -98,29 +98,29 @@ public class FriendBean {
   public String getStatus() {
     return status.toString();
   }
-  
+
   /**
    * @param status the status to set
    */
   public void setStatus(String status) {
     this.status = FriendStatus.valueOf(status);
   }
-  
+
   /**
    * @param properties the properties to set
    */
   public void setProperties(Map<String, String> properties) {
     this.properties = Maps.newHashMap(properties);
   }
-  
+
   /**
    * @return the properties
    */
   public Map<String, String> getProperties() {
     return Maps.newHashMap(properties);
   }
-  
-  
+
+
   /**
    * @return
    */
@@ -134,14 +134,14 @@ public class FriendBean {
     lastUpdate = System.currentTimeMillis();
     status = newStatus;
   }
-  
+
   /**
    * @return the profile
    */
   public Map<String, Object> getProfile() {
     return Maps.newHashMap(profile);
   }
- 
+
   /**
    * @param hashMap the profile to set
    */

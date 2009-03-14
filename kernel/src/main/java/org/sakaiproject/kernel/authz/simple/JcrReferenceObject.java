@@ -93,7 +93,7 @@ public class JcrReferenceObject implements ReferencedObject {
         break;
       }
       ownerNode = ownerNode.getParent();
-      if ( ownerNode != null  || rootNode.equals(ownerNode) ) {
+      if ( ownerNode == null  || rootNode.equals(ownerNode) ) {
         break;
       }
     }

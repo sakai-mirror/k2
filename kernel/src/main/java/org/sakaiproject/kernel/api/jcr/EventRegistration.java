@@ -28,7 +28,7 @@ public interface EventRegistration {
 
   /**
    * @param observationManager
-   * @throws RepositoryException 
+   * @throws RepositoryException
    */
   void register(ObservationManager observationManager) throws RepositoryException;
 

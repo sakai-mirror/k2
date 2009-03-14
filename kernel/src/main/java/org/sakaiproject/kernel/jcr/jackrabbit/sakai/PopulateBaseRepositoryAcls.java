@@ -41,7 +41,7 @@ import java.util.Map.Entry;
 import javax.jcr.Session;
 
 /**
- * 
+ *
  */
 public class PopulateBaseRepositoryAcls implements StartupAction {
 
@@ -50,7 +50,7 @@ public class PopulateBaseRepositoryAcls implements StartupAction {
   private ReferenceResolverService referenceResolverService;
 
   /**
-   * 
+   *
    */
   @Inject
   public PopulateBaseRepositoryAcls(
@@ -60,7 +60,7 @@ public class PopulateBaseRepositoryAcls implements StartupAction {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.jcr.api.internal.StartupAction#startup(javax.jcr.Session)
    */
   public void startup(Session s) throws RepositoryStartupException {

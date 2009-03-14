@@ -42,7 +42,7 @@ import java.security.Principal;
  * <p>
  * There's nothing DAV-specific about this class, and it's also independent of
  * any Sakai classes other than the "Authentication" user ID and EID holder.
- * 
+ *
  */
 public class AuthenticationCache {
   private static final Log LOG = LogFactory.getLog(AuthenticationCache.class);
@@ -50,7 +50,7 @@ public class AuthenticationCache {
   private Cache<AuthenticationRecord> authCache;
 
   /**
-   * 
+   *
    */
 
   @Inject
@@ -71,25 +71,28 @@ public class AuthenticationCache {
           if (MessageDigest.isEqual(record.encodedPassword,
               getEncrypted(idPwPrincipal.getPassword()))) {
             if (record.authentication == null) {
-              if (LOG.isDebugEnabled())
+              if (LOG.isDebugEnabled()) {
                 LOG
                     .debug("getAuthentication: replaying authentication failure for authenticationId="
                         + idPrincipal.getIdentifier());
+              }
               throw new SecurityException("repeated invalid login");
             } else {
-              if (LOG.isDebugEnabled())
+              if (LOG.isDebugEnabled()) {
                 LOG
                     .debug("getAuthentication: returning record for authenticationId="
                         + idPrincipal.getIdentifier());
+              }
               auth = record.authentication;
             }
           } else {
             // Since the passwords didn't match, we're no longer getting
             // repeats,
             // and so the record should be removed.
-            if (LOG.isDebugEnabled())
+            if (LOG.isDebugEnabled()) {
               LOG.debug("getAuthentication: record for authenticationId="
                   + idPrincipal.getIdentifier() + " failed password check");
+            }
             authCache.remove(idPrincipal.getIdentifier());
           }
         }
@@ -113,7 +116,7 @@ public class AuthenticationCache {
 
   public void expireCache(Principal principal) {
     if (principal instanceof IdPrincipal) {
-      authCache.remove(((IdPrincipal) principal).getIdentifier()); 
+      authCache.remove(((IdPrincipal) principal).getIdentifier());
     }
   }
 

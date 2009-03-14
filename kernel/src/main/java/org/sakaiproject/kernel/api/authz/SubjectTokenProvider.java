@@ -29,7 +29,7 @@ public interface SubjectTokenProvider<V> extends Provider<V> {
 
   /**
    * Check for a match on a provided subject statement.
-   * 
+   *
    * @param userEnvironment
    *          the users environment
    * @param subject

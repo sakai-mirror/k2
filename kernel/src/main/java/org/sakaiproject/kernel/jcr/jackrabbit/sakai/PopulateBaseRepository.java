@@ -67,7 +67,7 @@ public class PopulateBaseRepository implements StartupAction {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * Processes a set of items to add to the repository, taken from
    * propulate_repository.properties. These are structured as follows, the key
    * specifies the location and the value specifies the content. The key may
@@ -75,7 +75,7 @@ public class PopulateBaseRepository implements StartupAction {
    * function to be applied to the key before the @ to generate the path.
    * Currently there is only a user environment function that will convert the
    * key into a path inside the user environment space.
-   * 
+   *
    * The content is split onto content specifications separated by ';'. Each
    * content spec may be delimited by =, the first element defining the type of
    * content. There are 3 types, 'body' where the second element of the content
@@ -83,16 +83,16 @@ public class PopulateBaseRepository implements StartupAction {
    * element is property, the second element is the name of the property and the
    * third the value of the property. If the first element is property-sha1,
    * then the value of the property is encoded with a SHA1 message digest.
-   * 
+   *
    * @throws RepositoryStartupException
-   * 
+   *
    * @see org.sakaiproject.kernel.jcr.api.internal.StartupAction#startup(javax.jcr.Session)
    */
   public void startup(Session s) throws RepositoryStartupException {
     try {
       InputStream in = ResourceLoader.openResource(RESOURCES_TO_LOAD, this
           .getClass().getClassLoader());
-      
+
       Properties p = new Properties();
       try {
         p.load(in);
@@ -115,7 +115,7 @@ public class PopulateBaseRepository implements StartupAction {
         } else {
           path = pathSpec[0];
         }
-        
+
 
         Node n = jcrNodeFactoryService.getNode(path);
         if (n == null) {
@@ -179,12 +179,12 @@ public class PopulateBaseRepository implements StartupAction {
             n.setProperty(JCRConstants.ACL_OWNER, parentOwner);
           }
           LOG.info("Added Startup File at "+n.getPath());
-          
+
         } else {
           LOG.info("Starting Node already exists " + path);
         }
       }
-      
+
     } catch (IOException e) {
       throw new RepositoryStartupException("Failed to populate Repository ", e);
     } catch (RepositoryException e) {

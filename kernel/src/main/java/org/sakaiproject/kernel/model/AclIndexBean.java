@@ -28,7 +28,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 /**
- * Index bean for create
+ * Index bean for create.
  */
 @Entity
 @Table(name = "aclIndex")
@@ -38,7 +38,7 @@ import javax.persistence.Table;
     @NamedQuery(name = AclIndexBean.Queries.FINDBY_SUBJECTTYPE, query = "select a from AclIndexBean a where a.subjectType = :"
         + AclIndexBean.QueryParams.FINDBY_SUBJECTTYPE_TYPE),
     @NamedQuery(name = AclIndexBean.Queries.FINDBY_PATH, query = "select a from AclIndexBean a where a.ref = :"
-        + AclIndexBean.QueryParams.FINDBY_PATH_PATH) })
+        + AclIndexBean.QueryParams.FINDBY_PATH_PATH)})
 public class AclIndexBean {
   public static interface Queries {
     String FINDBY_KEY = "Acl.FindByKey";

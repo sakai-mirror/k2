@@ -43,7 +43,7 @@ import java.io.InputStream;
 import java.util.Set;
 
 /**
- * 
+ *
  */
 public class WordnetSynonymProvider implements SynonymProvider {
 
@@ -53,7 +53,7 @@ public class WordnetSynonymProvider implements SynonymProvider {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.apache.jackrabbit.core.query.lucene.SynonymProvider#getSynonyms(java.lang.String)
    */
   public String[] getSynonyms(String term) {
@@ -77,7 +77,7 @@ public class WordnetSynonymProvider implements SynonymProvider {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.apache.jackrabbit.core.query.lucene.SynonymProvider#initialize(org.apache.jackrabbit.core.fs.FileSystemResource)
    */
   public void initialize(FileSystemResource fsr) throws IOException {
@@ -87,11 +87,11 @@ public class WordnetSynonymProvider implements SynonymProvider {
         throw new IOException("WordnetSynonymProvider requires a path configuration");
       }
       LocalFileSystem fs = (LocalFileSystem) fsr.getFileSystem();
-      
+
       File f = new File(fs.getPath(),fsr.getPath());
-      
+
       File index = new File(f, "index");
-      
+
       if (!index.exists()) {
         unpackWordnetIndex(index);
         if (!index.exists()) {
@@ -111,14 +111,14 @@ public class WordnetSynonymProvider implements SynonymProvider {
 
   /**
    * @param destination
-   * @throws IOException 
-   * @throws FileSystemException 
+   * @throws IOException
+   * @throws FileSystemException
    */
   private void unpackWordnetIndex(File destination) throws IOException, FileSystemException {
     InputStream in = ResourceLoader.openResource(WORDNET_INDEX_ZIP, this.getClass()
         .getClassLoader());
     FileUtil.unpack(in, destination);
-    
+
   }
 
 }

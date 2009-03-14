@@ -36,7 +36,7 @@ public class IntegrationProviderListProvider implements
   private List<Provider<String>> list = new ArrayList<Provider<String>>();
 
   /**
-   * 
+   *
    */
   @Inject
   public IntegrationProviderListProvider(
@@ -48,7 +48,7 @@ public class IntegrationProviderListProvider implements
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see com.google.inject.Provider#get()
    */
   public List<Provider<String>> get() {

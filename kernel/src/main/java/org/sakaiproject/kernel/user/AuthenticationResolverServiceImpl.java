@@ -48,7 +48,7 @@ public class AuthenticationResolverServiceImpl implements
   private AuthenticationManagerService authenticationManager;
 
   /**
-   * 
+   *
    */
   @Inject
   public AuthenticationResolverServiceImpl(
@@ -64,7 +64,7 @@ public class AuthenticationResolverServiceImpl implements
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.user.AuthenticationResolverService#authenticate(java.security.Principal)
    */
   public Authentication authenticate(Principal principal)
@@ -111,7 +111,7 @@ public class AuthenticationResolverServiceImpl implements
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.user.AuthenticationManagerService#setAuthentication(java.security.Principal,
    *      java.security.Principal)
    */

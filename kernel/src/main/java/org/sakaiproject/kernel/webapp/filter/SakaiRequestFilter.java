@@ -52,7 +52,7 @@ import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
 /**
- * 
+ *
  */
 public class SakaiRequestFilter implements Filter {
   private static final Log LOG = LogFactory.getLog(SakaiRequestFilter.class);
@@ -77,7 +77,7 @@ public class SakaiRequestFilter implements Filter {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
    */
   public void init(FilterConfig config) throws ServletException {
@@ -95,7 +95,7 @@ public class SakaiRequestFilter implements Filter {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.servlet.Filter#destroy()
    */
   public void destroy() {
@@ -104,7 +104,7 @@ public class SakaiRequestFilter implements Filter {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
    *      javax.servlet.ServletResponse, javax.servlet.FilterChain)
    */
@@ -186,7 +186,7 @@ public class SakaiRequestFilter implements Filter {
   /**
    * @throws SystemException
    * @throws NotSupportedException
-   * 
+   *
    */
   protected void begin() throws NotSupportedException, SystemException {
     transactionManager.begin();
@@ -195,7 +195,7 @@ public class SakaiRequestFilter implements Filter {
   /**
    * @throws SystemException
    * @throws SecurityException
-   * 
+   *
    */
   protected void commit() throws SecurityException, SystemException {
     try {
@@ -214,7 +214,7 @@ public class SakaiRequestFilter implements Filter {
   }
 
   /**
-   * 
+   *
    */
   protected void rollback() {
     try {

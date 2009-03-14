@@ -312,7 +312,7 @@ public interface JCRConstants {
   public static final String MIX_ACL = "acl:properties-mix";
 
   public static final String ACL_ACL = "acl:acl";
-  
+
   public static final String ACL_OWNER = "acl:owner";
 
   public static final String JCR_SMARTNODE = "sakaijcr:smartNode";

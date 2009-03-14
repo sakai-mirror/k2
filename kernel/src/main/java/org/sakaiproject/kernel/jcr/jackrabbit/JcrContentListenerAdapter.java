@@ -38,7 +38,7 @@ import javax.jcr.observation.EventListener;
 import javax.jcr.observation.ObservationManager;
 
 /**
- * 
+ *
  */
 public class JcrContentListenerAdapter implements EventListener, EventRegistration {
 
@@ -53,7 +53,7 @@ public class JcrContentListenerAdapter implements EventListener, EventRegistrati
   /**
    * @param listeners
    * @throws RepositoryException
-   * 
+   *
    */
   @Inject
   public JcrContentListenerAdapter(List<JcrContentListener> listeners,
@@ -65,9 +65,9 @@ public class JcrContentListenerAdapter implements EventListener, EventRegistrati
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @throws RepositoryException
-   * 
+   *
    * @see org.sakaiproject.kernel.api.jcr.EventRegistration#register(javax.jcr.observation.ObservationManager)
    */
   public void register(ObservationManager observationManager) throws RepositoryException {
@@ -79,7 +79,7 @@ public class JcrContentListenerAdapter implements EventListener, EventRegistrati
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.jcr.observation.EventListener#onEvent(javax.jcr.observation.EventIterator)
    */
   public void onEvent(EventIterator events) {

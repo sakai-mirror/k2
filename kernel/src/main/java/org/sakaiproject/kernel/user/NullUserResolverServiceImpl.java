@@ -39,7 +39,7 @@ public class NullUserResolverServiceImpl implements UserResolverService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.user.UserResolverService#resolve(java.lang.String)
    */
   public User resolve(final String identifier) {
@@ -47,7 +47,7 @@ public class NullUserResolverServiceImpl implements UserResolverService {
     return new User() {
 
       /**
-       * 
+       *
        */
       private static final long serialVersionUID = 3786435035308647068L;
 
@@ -76,7 +76,7 @@ public class NullUserResolverServiceImpl implements UserResolverService {
     return new User() {
 
       /**
-       * 
+       *
        */
       private static final long serialVersionUID = 3786435035308647068L;
 

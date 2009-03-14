@@ -25,7 +25,7 @@ public interface ReferenceResolverService {
 
   /**
    * Resolve the ReferenceObject.
-   * 
+   *
    * @param resourceReference
    *          the reference URI. If this is native, it will contain no domain.
    * @return the ReferenceObject after resolution, null if no reference object

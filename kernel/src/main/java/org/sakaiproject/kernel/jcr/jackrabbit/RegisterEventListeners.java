@@ -47,7 +47,7 @@ public class RegisterEventListeners implements StartupAction, RequiresStop {
   private Session session;
 
   /**
-   * 
+   *
    */
   @Inject
   public RegisterEventListeners(List<EventRegistration> eventRegistrations,
@@ -58,7 +58,7 @@ public class RegisterEventListeners implements StartupAction, RequiresStop {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.jcr.api.internal.StartupAction#startup(javax.jcr.Session)
    */
   public void startup(Session s) throws RepositoryStartupException {
@@ -79,7 +79,7 @@ public class RegisterEventListeners implements StartupAction, RequiresStop {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.RequiresStop#stop()
    */
   public void stop() {

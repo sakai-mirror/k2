@@ -51,12 +51,12 @@ public class StartupActionProvider implements Provider<List<StartupAction>> {
     startupActions.add(registerEventListeners);
     startupActions.add(populateBaseRepository);
     startupActions.add(populateBaseRepositoryAcls);
-    
+
   }
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see com.google.inject.Provider#get()
    */
   public List<StartupAction> get() {

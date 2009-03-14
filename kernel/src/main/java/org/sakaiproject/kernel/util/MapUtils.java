@@ -25,12 +25,12 @@ import java.util.Map;
 /**
  * A utility class containing static methods for manipulating maps. Uses Google
  * collections internally.cd
- * cd 
+ * cd
  */
 public class MapUtils {
   /**
    * Converts a name value string delimited with = and ; into an immutable map.
-   * 
+   *
    * @param values
    *          the contents of the map
    * @return an immutable map.

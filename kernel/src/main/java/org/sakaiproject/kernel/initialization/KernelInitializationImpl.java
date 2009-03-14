@@ -36,7 +36,7 @@ public class KernelInitializationImpl implements KernelInitialization {
   private List<InitializationAction> actions;
 
   /**
-   * 
+   *
    */
   @Inject
   public KernelInitializationImpl(List<InitializationAction> actions) {
@@ -45,7 +45,7 @@ public class KernelInitializationImpl implements KernelInitialization {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @throws KernelInitializtionException
    * @see org.sakaiproject.kernel.internal.api.KernelInitialization#init()
    */

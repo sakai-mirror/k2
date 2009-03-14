@@ -33,7 +33,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 /**
- * 
+ *
  */
 public class SubjectPermissionServiceImpl implements SubjectPermissionService {
 
@@ -41,7 +41,7 @@ public class SubjectPermissionServiceImpl implements SubjectPermissionService {
   private EntityManager entityManager;
 
   /**
-   * 
+   *
    */
   @Inject
   public SubjectPermissionServiceImpl(CacheManagerService cacheManagerService,
@@ -53,7 +53,7 @@ public class SubjectPermissionServiceImpl implements SubjectPermissionService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.authz.SubjectPermissionService#
    * fetchSubjectPermissions(java.util.Map, java.lang.String)
    */
@@ -79,7 +79,7 @@ public class SubjectPermissionServiceImpl implements SubjectPermissionService {
     }
     return subjectPermissions;
   }
-  
+
   /**
    * @param subjectToken
    */

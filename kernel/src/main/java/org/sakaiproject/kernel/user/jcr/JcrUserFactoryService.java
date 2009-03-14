@@ -53,7 +53,7 @@ public class JcrUserFactoryService implements UserFactoryService {
   private String privatePathBase;
 
   /**
-   * 
+   *
    */
   @Inject
   public JcrUserFactoryService(EntityManager entityManager,
@@ -71,8 +71,8 @@ public class JcrUserFactoryService implements UserFactoryService {
     this.defaultProfileTemplate = defaultProfileTemplate;
     this.userEnvironmentBase = userEnvironmentBase;
     this.privatePathBase = privatePathBase;
-    
-   
+
+
     userTemplateMap = MapUtils.convertToImmutableMap(userTemplates);
     profileTemplateMap = MapUtils.convertToImmutableMap(profileTemplates);
     this.sharedPrivatePathBase =sharedPrivatePathBase;
@@ -80,7 +80,7 @@ public class JcrUserFactoryService implements UserFactoryService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.user.UserFactoryService#createNewUser(java.lang.String)
    */
   public User createNewUser(String externalId) {
@@ -98,7 +98,7 @@ public class JcrUserFactoryService implements UserFactoryService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.user.UserFactoryService#getUserEnvPath(java.lang.String)
    */
   public String getUserEnvPath(String uuid) {
@@ -116,7 +116,7 @@ public class JcrUserFactoryService implements UserFactoryService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.user.UserFactoryService#getUserEnvTemplate(java.lang.String)
    */
   public String getUserEnvTemplate(String userType) {
@@ -143,7 +143,7 @@ public class JcrUserFactoryService implements UserFactoryService {
    * @see org.sakaiproject.kernel.api.user.UserFactoryService#getUserProfilePath(java.lang.String)
    */
   public String getUserProfilePath(String uuid) {
-    
+
     return getUserSharedPrivatePath(uuid) + KernelConstants.PROFILE_JSON;
   }
 
@@ -178,5 +178,5 @@ public class JcrUserFactoryService implements UserFactoryService {
     return sharedPrivatePathBase + PathUtils.getUserPrefix(uuid);
   }
 
-  
+
 }

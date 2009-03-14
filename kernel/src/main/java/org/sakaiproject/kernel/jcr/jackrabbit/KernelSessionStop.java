@@ -33,7 +33,7 @@ import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
 /**
- * 
+ *
  */
 public class KernelSessionStop implements InitializationAction {
 
@@ -41,7 +41,7 @@ public class KernelSessionStop implements InitializationAction {
   private TransactionManager transactionManager;
 
   /**
-   * 
+   *
    */
   @Inject
   public KernelSessionStop(JCRService jcrService, TransactionManager transactionManager) {
@@ -51,7 +51,7 @@ public class KernelSessionStop implements InitializationAction {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.internal.api.InitializationAction#init()
    */
   public void init() throws KernelInitializtionException {

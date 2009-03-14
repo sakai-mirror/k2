@@ -28,7 +28,7 @@ import javax.servlet.http.HttpSession;
 public interface SessionManagerService {
 
   /**
-   * 
+   *
    * @return the current session bound to the thread.
    */
   Session getCurrentSession();
@@ -50,7 +50,7 @@ public interface SessionManagerService {
   /**
    * Get the current user, but dont create a session, if there isnt one there
    * already.
-   * 
+   *
    * @return
    */
   String getCurrentUserId();

@@ -52,6 +52,6 @@ public class JcrSynchronousContentListenerAdapter extends
     unbind = false;
   }
 
-  
+
 
 }

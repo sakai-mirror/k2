@@ -61,7 +61,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * 
+ *
  */
 public class RestUserProvider implements RestProvider {
 
@@ -88,7 +88,7 @@ public class RestUserProvider implements RestProvider {
 
   /**
    * @param sessionManager
-   * 
+   *
    */
   @Inject
   public RestUserProvider(RegistryService registryService, BeanConverter beanConverter,
@@ -120,7 +120,7 @@ public class RestUserProvider implements RestProvider {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.RestProvider#dispatch(java.lang.String[],
    *      javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
    */
@@ -344,7 +344,7 @@ public class RestUserProvider implements RestProvider {
         if ( ue.isSuperUser() ) {
           authzResolverService.setRequestGrant("Creating User For Super User");
         } else {
-          throw new RestServiceFaultException(HttpServletResponse.SC_FORBIDDEN,"User Creation is only allowed by Super Users");          
+          throw new RestServiceFaultException(HttpServletResponse.SC_FORBIDDEN,"User Creation is only allowed by Super Users");
         }
       }
     }
@@ -373,8 +373,8 @@ public class RestUserProvider implements RestProvider {
       profileMap.put("email", email);
 
       userProfile.setProperties(profileMap);
-      userProfile.save(); 
-      
+      userProfile.save();
+
       jcrService.save();
 
       Map<String, Object> r = new HashMap<String, Object>();
@@ -431,7 +431,7 @@ public class RestUserProvider implements RestProvider {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.RestProvider#getDescription()
    */
   public RestDescription getDescription() {
@@ -440,7 +440,7 @@ public class RestUserProvider implements RestProvider {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Provider#getKey()
    */
   public String getKey() {
@@ -449,7 +449,7 @@ public class RestUserProvider implements RestProvider {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Provider#getPriority()
    */
   public int getPriority() {

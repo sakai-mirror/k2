@@ -21,13 +21,13 @@ import org.apache.jackrabbit.core.journal.DatabaseJournal;
 import org.apache.jackrabbit.core.journal.RecordProducer;
 
 /**
- * 
+ *
  */
 public class SakaiJournal extends DatabaseJournal {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.apache.jackrabbit.core.journal.AbstractJournal#createProducer(java.lang.String)
    */
   @Override
@@ -35,5 +35,5 @@ public class SakaiJournal extends DatabaseJournal {
     return new SakaiRecordProducer(this, identifier);
   }
 
-  
+
 }

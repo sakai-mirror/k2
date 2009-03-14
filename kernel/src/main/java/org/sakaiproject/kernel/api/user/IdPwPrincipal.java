@@ -29,7 +29,7 @@ public interface IdPwPrincipal extends IdPrincipal
 
 	/**
 	 * Access the password.
-	 * 
+	 *
 	 * @return The password.
 	 */
 	String getPassword();

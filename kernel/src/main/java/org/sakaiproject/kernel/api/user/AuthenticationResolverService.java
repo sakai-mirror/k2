@@ -34,7 +34,7 @@ public interface AuthenticationResolverService {
   /**
    * Attempt to authenticate a user by the given evidence. Success produces the
    * authenticated user id. Failure throws an exception.
-   * 
+   *
    * @param principal
    *          The collected evidence to authenticate.
    * @return The authentication information if authenticated.

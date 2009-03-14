@@ -36,7 +36,7 @@ public interface SiteService {
 
   /**
    * Validates if a given path contains a site
-   * 
+   *
    * @param path
    * @return true if the site exists
    */
@@ -44,7 +44,7 @@ public interface SiteService {
 
   /**
    * Retrieves a requested site by path. If the site doesn't exist, null will be returned.
-   * 
+   *
    * @param path
    * @return The requested site or null if not found.
    */
@@ -52,7 +52,7 @@ public interface SiteService {
 
   /**
    * Creates a Site Bean
-   * 
+   *
    * @param sitePath
    * @param siteType
    * @return the SiteBean ready for modification, and saving.
@@ -62,14 +62,14 @@ public interface SiteService {
 
   /**
    * Deletes a site, at a given path, leaving all the content as is.
-   * 
+   *
    * @param path
    */
   void deleteSite(String path);
 
   /**
    * Get the location of a site template
-   * 
+   *
    * @param siteType
    *          the type of site
    * @return the location of a site template.
@@ -79,7 +79,7 @@ public interface SiteService {
   /**
    * Save a site Bean, this needs to be here to keep the interface complete, but please
    * use siteBean.save() in preference to this method.
-   * 
+   *
    * @param site
    * @throws SiteException if the save fails.
    */

@@ -79,7 +79,7 @@ public interface ReferencedObject {
    * @return
    */
   String getOwner();
-  
+
   /**
    * @return true if the object is a permananet object.
    */

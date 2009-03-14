@@ -22,7 +22,7 @@ package org.sakaiproject.kernel.api.memory;
  */
 public enum CacheScope {
   /**
-   * Bind the Cache to the request scope. 
+   * Bind the Cache to the request scope.
    */
   REQUEST(),
   /**
@@ -30,17 +30,17 @@ public enum CacheScope {
    * WARNING: use with extreme caution, as any classes referenced in this type
    * of cache will keep classloaders open and result in memory leaks
    */
-  THREAD(), 
+  THREAD(),
   /**
    * Bind the cache to the instance, one per instance.
    */
-  INSTANCE(), 
+  INSTANCE(),
   /**
    * Make the cache bound to the instance, but accept cluster wide invalidations.
    */
-  CLUSTERINVALIDATED(), 
+  CLUSTERINVALIDATED(),
   /**
-   * Replicate the cache over the whole cluster. 
+   * Replicate the cache over the whole cluster.
    */
   CLUSTERREPLICATED();
 

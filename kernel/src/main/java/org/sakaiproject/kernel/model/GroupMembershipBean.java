@@ -32,7 +32,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 /**
- * 
+ *
  */
 @Entity
 @Table(name = "group_membership")

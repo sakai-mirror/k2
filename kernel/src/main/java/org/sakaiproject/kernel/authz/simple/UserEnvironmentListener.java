@@ -59,7 +59,7 @@ public class UserEnvironmentListener implements JcrContentListener {
 
   /**
    * Constructor with all required dependencies.
-   * 
+   *
    * @param jcrNodeFactoryService
    * @param userEnvironmentBase
    * @param beanConverter
@@ -84,7 +84,7 @@ public class UserEnvironmentListener implements JcrContentListener {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.jcr.api.JcrContentListener#onEvent(int,
    *      java.lang.String, java.lang.String, java.lang.String)
    */

@@ -30,8 +30,8 @@ public interface UserResolverService {
    * @return a User object
    */
   User resolve(String eid);
-  
-  
+
+
   /**
    * Resolve a UUID into a user object.
    * @param uuid the Unique User ID
@@ -41,7 +41,7 @@ public interface UserResolverService {
 
   /**
    * resolve the user info from the user object.
-   * 
+   *
    * @param user
    * @return
    */

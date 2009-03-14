@@ -31,7 +31,7 @@ public interface UserInfo {
 
   /**
    * Get a property from user info.
-   * 
+   *
    * @param name
    *          the name of the property
    * @return
@@ -40,7 +40,7 @@ public interface UserInfo {
 
   /**
    * Set a user info property.
-   * 
+   *
    * @param name
    *          the name of the property
    * @param value

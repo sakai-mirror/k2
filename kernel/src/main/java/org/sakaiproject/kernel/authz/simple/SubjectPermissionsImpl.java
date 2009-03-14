@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 
+ *
  */
 public class SubjectPermissionsImpl implements SubjectPermissions {
 
@@ -65,6 +65,6 @@ public class SubjectPermissionsImpl implements SubjectPermissions {
   public String getSubjectToken() {
     return subjectToken;
   }
-  
+
 
 }

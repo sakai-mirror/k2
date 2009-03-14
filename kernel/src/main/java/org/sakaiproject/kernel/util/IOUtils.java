@@ -25,13 +25,13 @@ import java.io.UnsupportedEncodingException;
 
 
 /**
- * 
+ *
  */
 public class IOUtils {
 
   /**
    * Read an input stream fully, and then close the input stream reliably.
-   * 
+   *
    * @param inputStream
    *          the input stream from which to read
    * @param encoding
@@ -66,7 +66,7 @@ public class IOUtils {
   /**
    * @param in
    * @param outputStream
-   * @throws IOException 
+   * @throws IOException
    */
   public static void stream(InputStream from, OutputStream to) throws IOException {
     byte[] b = new byte[4096];

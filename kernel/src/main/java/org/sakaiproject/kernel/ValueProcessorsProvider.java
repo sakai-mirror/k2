@@ -26,16 +26,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
+ *
  */
 public class ValueProcessorsProvider implements Provider<List<ValueProcessor>> {
 
-  
+
   private List<ValueProcessor> list = new ArrayList<ValueProcessor>();
-  
+
   /**
-   * @param groupBeanRoleValueProcessor 
-   * 
+   * @param groupBeanRoleValueProcessor
+   *
    */
   @Inject
   public ValueProcessorsProvider() {

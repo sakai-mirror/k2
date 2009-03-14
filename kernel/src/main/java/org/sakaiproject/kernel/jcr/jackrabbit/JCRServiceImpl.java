@@ -71,7 +71,7 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
 
   /**
    * @throws RepositoryException
-   * 
+   *
    */
   @Inject
   public JCRServiceImpl(RepositoryBuilder repositoryBuilder,
@@ -87,7 +87,7 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.sakaiproject.kernel.api.RequiresStop#stop()
    */
   public void stop() {
@@ -98,7 +98,7 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
   public Session getSession() throws LoginException, RepositoryException {
     return login();
   }
-  
+
   public void save() throws RepositoryException {
     if ( hasActiveSession() ) {
       getSession().save();
@@ -112,8 +112,9 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
       long t1 = System.currentTimeMillis();
       sh = new SessionHolder(repositoryBuilder, null, DEFAULT_WORKSPACE);
       setSesssionHolder(sh);
-      if (debug)
+      if (debug) {
         LOG.debug("Session Start took " + (System.currentTimeMillis() - t1) + "ms");
+      }
     }
     session = sh.getSession();
     return session;
@@ -128,8 +129,9 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
       sh = new SessionHolder(repositoryBuilder, new SakaiJCRCredentials(),
           DEFAULT_WORKSPACE);
       setSesssionHolder(sh);
-      if (debug)
+      if (debug) {
         LOG.debug("Session Start took " + (System.currentTimeMillis() - t1) + "ms");
+      }
     }
     session = sh.getSession();
     return session;
@@ -149,7 +151,7 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.sakaiproject.kernel.api.jcr.JCRService#logout()
    */
   public void logout() throws LoginException, RepositoryException {
@@ -172,7 +174,7 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
   }
 
   /**
-   * 
+   *
    */
   private void clearSessionHolder() {
     getRequestCache().remove(JCR_SESSION_HOLDER);
@@ -180,7 +182,7 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.sakaiproject.kernel.api.jcr.JCRService#getRepository()
    */
   public Repository getRepository() {
@@ -189,7 +191,7 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.sakaiproject.kernel.api.jcr.JCRService#setCurrentSession(javax.jcr. Session)
    */
   public Session setSession(Session session) {
@@ -199,8 +201,9 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
       currentSession = sh.getSession();
       sh.keepLoggedIn();
     }
-    if (debug)
+    if (debug) {
       LOG.debug("Replacing " + currentSession + " with " + session);
+    }
     if (session == null) {
       clearSessionHolder();
     } else {
@@ -227,7 +230,7 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.jcr.JCRService#getDefaultWorkspace()
    */
   public String getDefaultWorkspace() {
@@ -236,7 +239,7 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.jcr.JCRService#getObservationManager()
    */
   public ObservationManager getObservationManager() {

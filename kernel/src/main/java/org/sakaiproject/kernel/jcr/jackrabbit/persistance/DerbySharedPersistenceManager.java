@@ -29,14 +29,14 @@ public class DerbySharedPersistenceManager extends DerbyPersistenceManager {
 	private static final Log log = LogFactory.getLog(DerbySharedPersistenceManager.class);
 	private String sharedLocation;
 	private boolean useSharedFsBlobStore;
-	
+
 	@Override
 	protected CloseableBLOBStore createDBBlobStore(PMContext context)
 			throws Exception {
 		log.info("Creating DBBlobStore");
 		return super.createDBBlobStore(context);
 	}
-	
+
 	@Override
 	protected CloseableBLOBStore createBlobStore() throws Exception {
 		log.info("Creating BlobStore");
@@ -46,10 +46,10 @@ public class DerbySharedPersistenceManager extends DerbyPersistenceManager {
 	/**
 	 * Creates a blob store that is based on a local fs. This is called by init
 	 * if {@link #useLocalFsBlobStore()} returns <code>true</code>.
-	 * 
-	 * If {@link #useSharedFsBlobStore} is <code>true</code>, then the store will be in a 
-	 * shared location.  
-	 * 
+	 *
+	 * If {@link #useSharedFsBlobStore} is <code>true</code>, then the store will be in a
+	 * shared location.
+	 *
 	 * @param context
 	 *            the persistence manager context
 	 * @return a blob store
@@ -67,7 +67,7 @@ public class DerbySharedPersistenceManager extends DerbyPersistenceManager {
 		File baseLocation = context.getHomeDir();
 		if ( useSharedFsBlobStore ) {
 			baseLocation = new File(sharedLocation);
-		} 
+		}
 		log.info("Using File Based Blobs at "+baseLocation);
 		LocalFileSystem blobFS = new LocalFileSystem();
 		blobFS.setRoot(new File(baseLocation, "blobs"));

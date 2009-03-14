@@ -79,7 +79,7 @@ public class AclListener implements EventListener, EventRegistration {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.jcr.EventRegistration#register(javax.jcr.observation.ObservationManager)
    */
   public void register(ObservationManager observationManager)
@@ -92,7 +92,7 @@ public class AclListener implements EventListener, EventRegistration {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.jcr.api.JcrContentListener#onEvent(int,
    *      java.lang.String, java.lang.String, java.lang.String)
    */

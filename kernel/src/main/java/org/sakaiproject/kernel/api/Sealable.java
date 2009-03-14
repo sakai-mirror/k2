@@ -21,9 +21,9 @@ package org.sakaiproject.kernel.api;
  * An object that can be sealed
  */
 public interface Sealable {
-  
+
   /**
-   * After the object is sealed, no modification is allowed. 
+   * After the object is sealed, no modification is allowed.
    */
   void seal();
 

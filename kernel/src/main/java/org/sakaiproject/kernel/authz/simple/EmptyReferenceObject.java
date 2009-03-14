@@ -59,7 +59,7 @@ public class EmptyReferenceObject implements ReferencedObject {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.authz.ReferencedObject#getAccessControlList()
    */
   public List<AccessControlStatement> getAccessControlList() {
@@ -68,7 +68,7 @@ public class EmptyReferenceObject implements ReferencedObject {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.authz.ReferencedObject#getInheritableAccessControlList()
    */
   public List<AccessControlStatement> getInheritableAccessControlList() {
@@ -77,7 +77,7 @@ public class EmptyReferenceObject implements ReferencedObject {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.authz.ReferencedObject#getKey()
    */
   public String getKey() {
@@ -86,7 +86,7 @@ public class EmptyReferenceObject implements ReferencedObject {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.authz.ReferencedObject#getParent()
    */
   public ReferencedObject getParent() {
@@ -95,7 +95,7 @@ public class EmptyReferenceObject implements ReferencedObject {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.authz.ReferencedObject#isRoot()
    */
   public boolean isRoot() {
@@ -104,7 +104,7 @@ public class EmptyReferenceObject implements ReferencedObject {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.authz.ReferencedObject#addAccessControlStatement(org.sakaiproject.kernel.api.authz.AccessControlStatement)
    */
   public void addAccessControlStatement(AccessControlStatement newAcs)
@@ -116,7 +116,7 @@ public class EmptyReferenceObject implements ReferencedObject {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.authz.ReferencedObject#removeAccessControlStatement(org.sakaiproject.kernel.api.authz.AccessControlStatement)
    */
   public void removeAccessControlStatement(AccessControlStatement removeAcs)
@@ -135,7 +135,7 @@ public class EmptyReferenceObject implements ReferencedObject {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.authz.ReferencedObject#setAccessControlList(java.util.List)
    */
   public void setAccessControlList(List<AccessControlStatement> value) {
@@ -159,6 +159,6 @@ public class EmptyReferenceObject implements ReferencedObject {
   public boolean isPermanent() {
     return false;
   }
-  
+
 
 }

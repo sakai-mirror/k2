@@ -57,7 +57,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 /**
- * 
+ *
  */
 public class SimpleJcrUserEnvironmentResolverService implements
     UserEnvironmentResolverService {
@@ -81,7 +81,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
   private RegistryService registryService;
 
   /**
- * 
+ *
  */
   @Inject
   public SimpleJcrUserEnvironmentResolverService(
@@ -104,7 +104,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService#resolve(org.sakaiproject.kernel.api.user.User)
    */
   public UserEnvironment resolve(String userId) {
@@ -132,7 +132,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService#resolve(org.sakaiproject.kernel.api.session.Session)
    */
   public UserEnvironment resolve(Session currentSession) {
@@ -141,7 +141,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService#resolve(org.sakaiproject.kernel.api.user.User)
    */
   public UserEnvironment resolve(User user) {
@@ -225,7 +225,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService#getUserEnvironmentBasePath(java.lang.String)
    */
   public String getUserEnvironmentBasePath(String userId) {
@@ -236,7 +236,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
    * * Return user's prefered locale * First: return locale from Sakai user preferences,
    * if available * Second: return locale from user session, if available * Last: return
    * system default locale
-   * 
+   *
    * @param locale * *
    * @return user's Locale object
    */
@@ -267,10 +267,10 @@ public class SimpleJcrUserEnvironmentResolverService implements
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @throws RepositoryException
    * @throws JCRNodeFactoryServiceException
-   * 
+   *
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService#save(org.sakaiproject.kernel.api.userenv.UserEnvironment)
    */
   public void save(UserEnvironment userEnvironment) throws UpdateFailedException {
@@ -294,13 +294,13 @@ public class SimpleJcrUserEnvironmentResolverService implements
           userEnvironmentPath, bais, RestProvider.CONTENT_TYPE);
 
       expire(userEnvironment.getUser().getUuid());
-      
+
       Node n = userEnvNode;
       while ( n.isNew() ) {
         n = n.getParent();
       }
       n.save();
-      
+
     } catch (Exception ex) {
       throw new UpdateFailedException(ex.getMessage(), ex);
     } finally {
@@ -315,7 +315,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService#create(org.sakaiproject.kernel.api.user.User,
    *      java.lang.String)
    */
@@ -355,8 +355,8 @@ public class SimpleJcrUserEnvironmentResolverService implements
       userEnvNode.setProperty(JcrAuthenticationResolverProvider.JCRPASSWORDHASH,
           StringUtils.sha1Hash(password));
 
-      
-      // make the private and shares spaces for the user owned by this used.   
+
+      // make the private and shares spaces for the user owned by this used.
       jcrNodeFactoryService.setOwner(userFactoryService.getUserPrivatePath(u.getUuid()),u.getUuid());
       jcrNodeFactoryService.setOwner(userFactoryService.getUserSharedPrivatePath(u.getUuid()),u.getUuid());
 

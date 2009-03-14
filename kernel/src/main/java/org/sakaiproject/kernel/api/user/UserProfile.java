@@ -27,7 +27,7 @@ import java.util.Map;
 import javax.jcr.RepositoryException;
 
 /**
- * 
+ *
  */
 public interface UserProfile {
 
@@ -38,10 +38,10 @@ public interface UserProfile {
   void setProperties(Map<String, Object> properties);
 
   /**
-   * @throws RepositoryException 
-   * @throws JCRNodeFactoryServiceException 
-   * @throws UnsupportedEncodingException 
-   * 
+   * @throws RepositoryException
+   * @throws JCRNodeFactoryServiceException
+   * @throws UnsupportedEncodingException
+   *
    */
   void save() throws JCRNodeFactoryServiceException, RepositoryException, UnsupportedEncodingException;
 }

@@ -24,8 +24,8 @@ import org.sakaiproject.kernel.api.user.IdPwPrincipal;
  */
 public class JCRIdPwEvidence implements IdPwPrincipal {
 
-  
-  
+
+
   private String password;
   private String id;
 

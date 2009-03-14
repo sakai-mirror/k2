@@ -63,7 +63,7 @@ public class BeanJsonLibConverter implements BeanConverter {
 
   /**
    * Create an BeanConverter with an injector.
-   * 
+   *
    * @param injector
    *          the Guice injector to use for conversion
    * @param jsonConfig
@@ -82,7 +82,7 @@ public class BeanJsonLibConverter implements BeanConverter {
 
   /**
    * Convert the json string into a pojo based on the supplied root class.
-   * 
+   *
    * @param string
    *          the json string
    * @param rootBeanClass
@@ -176,7 +176,7 @@ public class BeanJsonLibConverter implements BeanConverter {
 
   /**
    * Convert the pojo to a json string representation.
-   * 
+   *
    * @param pojo
    *          the pojo to convert
    * @return the json string representation of the pojo.
@@ -202,7 +202,7 @@ public class BeanJsonLibConverter implements BeanConverter {
 
   /**
    * Add a mapping to the json -> pojo conversion map.
-   * 
+   *
    * @param key
    *          the name of the json key to bind to
    * @param class1

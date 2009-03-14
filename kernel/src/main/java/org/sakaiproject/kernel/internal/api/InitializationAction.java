@@ -26,7 +26,7 @@ public interface InitializationAction {
 
   /**
    * Perform the initialization action.
-   * 
+   *
    * @throws KernelInitializtionException
    *           if there is a problem with initialization.
    */

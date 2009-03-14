@@ -71,7 +71,7 @@ public class SakaiAccessManager implements AccessManager {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.apache.jackrabbit.core.security.AccessManager#init(org.apache.jackrabbit
    * .core.security.AMContext)
@@ -86,7 +86,7 @@ public class SakaiAccessManager implements AccessManager {
     hierMgr = context.getHierarchyManager();
     resolver = context.getNamespaceResolver();
     pathResolver = new DefaultNamePathResolver(resolver, true);
-   
+
 
     anonymous = !subject.getPrincipals(JCRAnonymousPrincipal.class).isEmpty();
     if (!anonymous) {
@@ -106,9 +106,9 @@ public class SakaiAccessManager implements AccessManager {
         }
       }
     }
-    
+
     // we should get hold of the current jcr session by some means,
-    // and we might want the Guice injector 
+    // and we might want the Guice injector
 
     // TODO check permission to access given workspace based on principals
     initialized = true;
@@ -116,7 +116,7 @@ public class SakaiAccessManager implements AccessManager {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.apache.jackrabbit.core.security.AccessManager#close()
    */
   public synchronized void close() throws Exception {
@@ -130,7 +130,7 @@ public class SakaiAccessManager implements AccessManager {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.apache.jackrabbit.core.security.AccessManager#checkPermission(org.apache
    * .jackrabbit.core.ItemId, int)
@@ -150,19 +150,19 @@ public class SakaiAccessManager implements AccessManager {
     StringBuilder sb = new StringBuilder();
     if ( (permission & AccessManager.READ) == AccessManager.READ ) {
       sb.append("read ");
-    } 
+    }
     if ( (permission & AccessManager.REMOVE) == AccessManager.REMOVE ) {
       sb.append("remove ");
-    } 
+    }
     if ( (permission & AccessManager.WRITE) == AccessManager.WRITE ) {
       sb.append("write ");
-    } 
+    }
     return sb.toString();
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.apache.jackrabbit.core.security.AccessManager#isGranted(org.apache.
    * jackrabbit.core.ItemId, int)
@@ -184,14 +184,14 @@ public class SakaiAccessManager implements AccessManager {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.apache.jackrabbit.core.security.AccessManager#canAccess(java.lang.String
    * )
    */
   public boolean canAccess(String workspace) throws NoSuchWorkspaceException,
-      RepositoryException { 
-    // TODO look up the workspace in 
+      RepositoryException {
+    // TODO look up the workspace in
     return true;
   }
 

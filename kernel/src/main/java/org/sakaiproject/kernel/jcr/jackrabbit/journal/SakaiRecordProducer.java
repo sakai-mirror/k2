@@ -23,7 +23,7 @@ import org.apache.jackrabbit.core.journal.DefaultRecordProducer;
 import org.apache.jackrabbit.core.journal.JournalException;
 
 /**
- * 
+ *
  */
 public class SakaiRecordProducer extends DefaultRecordProducer {
 
@@ -31,7 +31,7 @@ public class SakaiRecordProducer extends DefaultRecordProducer {
   private String id;
 
   /**
-   * 
+   *
    */
   public SakaiRecordProducer(AbstractJournal journal, String id) {
     super(journal, id);

@@ -25,7 +25,7 @@ import java.util.ArrayList;
 /**
  * This is a minimal permission query that just stores the name of the
  * permission query being used.
- * 
+ *
  */
 public class MinimalPermissionQueryImpl implements PermissionQuery {
 
@@ -36,7 +36,7 @@ public class MinimalPermissionQueryImpl implements PermissionQuery {
 
   /**
    * Create the permission query with a name.
-   * 
+   *
    * @param name
    */
   public MinimalPermissionQueryImpl(String name) {
@@ -58,7 +58,7 @@ public class MinimalPermissionQueryImpl implements PermissionQuery {
   public String getQueryToken(String resourceReference) {
     return resourceReference+"::"+name;
   }
-  
+
   /**
    * {@inheritDoc}
    * @see java.lang.Object#toString()

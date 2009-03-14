@@ -93,7 +93,7 @@ public interface JCRService {
   /**
    * Set the current thread session and returns the previous one, setting to
    * null will clear the current session.
-   * 
+   *
    * @param session the session replace the current session with.
    * @return
    */
@@ -103,7 +103,7 @@ public interface JCRService {
    * Return true if the node supplied should have the suggested mixin added.
    * This enables repository implementations to ignore certain mixing
    * properties.
-   * 
+   *
    * @param n
    * @param mixin
    * @return
@@ -113,14 +113,14 @@ public interface JCRService {
 
   /**
    * Return true of the session is active.
-   * 
+   *
    * @return
    */
   boolean hasActiveSession();
 
   /**
    * The name of the default JCR workspace.
-   * 
+   *
    * @return
    */
   String getDefaultWorkspace();
@@ -128,15 +128,15 @@ public interface JCRService {
   /**
    * Get the ObservationManager from the JCR, this can be used to register
    * events.
-   * 
+   *
    * @return
    */
   ObservationManager getObservationManager();
 
   /**
    * Login a system user
-   * @throws RepositoryException 
-   * @throws LoginException 
+   * @throws RepositoryException
+   * @throws LoginException
    */
   Session loginSystem() throws LoginException, RepositoryException;
 

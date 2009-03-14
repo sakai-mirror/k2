@@ -23,12 +23,12 @@ package org.sakaiproject.kernel.api;
 public class UpdateFailedException extends RuntimeException {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 2347811755024042066L;
 
   /**
-   * 
+   *
    */
   public UpdateFailedException() {
   }

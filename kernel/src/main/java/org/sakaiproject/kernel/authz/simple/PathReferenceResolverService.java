@@ -39,7 +39,7 @@ public class PathReferenceResolverService implements ReferenceResolverService {
   private ReferenceResolverService defaultResolver;
 
   /**
-   * 
+   *
    */
   @Inject
   public PathReferenceResolverService(
@@ -51,7 +51,7 @@ public class PathReferenceResolverService implements ReferenceResolverService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.authz.ReferenceResolverService#resolve(java.lang.String)
    */
   public ReferencedObject resolve(String resourceReference) {

@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * 
+ *
  */
 public class RestDescription {
 
@@ -83,7 +83,7 @@ public class RestDescription {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.RestDescription#addParameter(java.lang.String,
    *      java.lang.String, java.lang.String)
    */
@@ -123,7 +123,7 @@ public class RestDescription {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.RestDescription#addHeader(java.lang.String,
    *      java.lang.String)
    */
@@ -134,7 +134,7 @@ public class RestDescription {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.RestDescription#addResponse(String,
    *      java.lang.String)
    */
@@ -145,7 +145,7 @@ public class RestDescription {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.RestDescription#addSection(int,
    *      java.lang.String, java.lang.String)
    */
@@ -177,7 +177,7 @@ public class RestDescription {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.RestDescription#addURLTemplate(java.lang.String,
    *      java.lang.String)
    */
@@ -196,7 +196,7 @@ public class RestDescription {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.RestDescription#toHtml()
    */
   public String toHtml() {
@@ -208,7 +208,7 @@ public class RestDescription {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.RestDescription#toJson()
    */
   public String toJson() {
@@ -220,7 +220,7 @@ public class RestDescription {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.RestDescription#toXml()
    */
   public String toXml() {
@@ -432,7 +432,7 @@ public class RestDescription {
   public void setShortDescription(String shortDescription) {
     this.shortDescription = shortDescription;
   }
-  
+
   /**
    * @param backUrl the backUrl to set
    */

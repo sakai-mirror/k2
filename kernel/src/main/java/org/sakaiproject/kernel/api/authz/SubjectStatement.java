@@ -26,7 +26,7 @@ package org.sakaiproject.kernel.api.authz;
 public interface SubjectStatement {
 
   /**
-   * 
+   *
    */
   public enum SubjectType {
     /**
@@ -39,9 +39,9 @@ public interface SubjectStatement {
      * the subject token will be used for matching.
      */
     SU(),
-    
+
     /**
-     * Owner of the node 
+     * Owner of the node
      */
     OW(),
     /**
@@ -56,11 +56,11 @@ public interface SubjectStatement {
     /**
      * Indicates the statement represents all authenticated users.
      */
-    AU(), 
+    AU(),
     /**
      * Indicates and undefined subject statement that should be ignored.
      */
-    UN(), 
+    UN(),
     /**
      * Provided come from external providers.
      */
@@ -68,7 +68,7 @@ public interface SubjectStatement {
   }
 
   public static final String PROVIDER_REGISTRY = "subjectstatement.provider";
-  
+
 
   /**
    * @return the type of subject.

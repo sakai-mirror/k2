@@ -30,7 +30,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 /**
- * 
+ *
  */
 @Entity
 @Table(name = "subject_permission")
@@ -62,7 +62,7 @@ public class SubjectPermissionBean {
   private String role;
 
   /**
-   * 
+   *
    */
   @Inject
   public SubjectPermissionBean() {
@@ -99,7 +99,7 @@ public class SubjectPermissionBean {
   public String getSubjectToken() {
     return subjectToken;
   }
-  
+
   /**
    * @return the group
    */

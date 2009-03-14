@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 
+ *
  */
 @Singleton
 public class RegistryServiceImpl implements RegistryService {

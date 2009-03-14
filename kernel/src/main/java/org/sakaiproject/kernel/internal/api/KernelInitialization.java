@@ -25,7 +25,7 @@ public interface KernelInitialization {
 
   /**
    * Initialize the kernel.
-   * 
+   *
    * @throws KernelInitializtionException
    *           if there was a problem initializing the kernel.
    */

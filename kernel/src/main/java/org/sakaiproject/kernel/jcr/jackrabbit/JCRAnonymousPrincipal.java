@@ -23,7 +23,7 @@ import java.security.Principal;
 public class JCRAnonymousPrincipal implements Principal, Serializable {
 
   /**
-	 * 
+	 *
 	 */
   private static final long serialVersionUID = -2356103533935203766L;
 

@@ -25,7 +25,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.ValueFormatException;
 
 /**
- * 
+ *
  */
 public class JcrAccessControlStatementImpl implements AccessControlStatement {
 
@@ -74,7 +74,7 @@ public class JcrAccessControlStatementImpl implements AccessControlStatement {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.authz.AccessControlStatement#getStatementKey()
    */
   public String getStatementKey() {
@@ -83,7 +83,7 @@ public class JcrAccessControlStatementImpl implements AccessControlStatement {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.authz.AccessControlStatement#getSubject()
    */
   public SubjectStatement getSubject() {
@@ -92,7 +92,7 @@ public class JcrAccessControlStatementImpl implements AccessControlStatement {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.authz.AccessControlStatement#isGranted()
    */
   public boolean isGranted() {
@@ -101,7 +101,7 @@ public class JcrAccessControlStatementImpl implements AccessControlStatement {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.authz.AccessControlStatement#isPropagating()
    */
   public boolean isPropagating() {
@@ -110,7 +110,7 @@ public class JcrAccessControlStatementImpl implements AccessControlStatement {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see java.lang.Object#hashCode()
    */
   @Override
@@ -121,7 +121,7 @@ public class JcrAccessControlStatementImpl implements AccessControlStatement {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see java.lang.Object#equals(java.lang.Object)
    */
   @Override

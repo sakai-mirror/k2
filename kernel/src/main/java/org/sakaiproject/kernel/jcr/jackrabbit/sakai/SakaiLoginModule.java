@@ -59,7 +59,7 @@ public class SakaiLoginModule implements LoginModule {
 
   /**
    * Constructor
-   * 
+   *
    * @throws KernelConfigurationException
    */
   public SakaiLoginModule() throws KernelConfigurationException {
@@ -124,11 +124,7 @@ public class SakaiLoginModule implements LoginModule {
         if (userId == null || userId.equals("anon")  ) {
           principals.add(new JCRAnonymousPrincipal(SAKAI_ANON_USER));
         } else {
-          if ( userId == null ) {
-            principals.add(new JCRAnonymousPrincipal(SAKAI_ANON_USER));       
-          } else {
-            principals.add(new SakaiUserPrincipalImpl(userId));
-          }
+          principals.add(new SakaiUserPrincipalImpl(userId));
         }
         authenticated = true;
       }

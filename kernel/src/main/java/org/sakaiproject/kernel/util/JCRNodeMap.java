@@ -42,7 +42,7 @@ import javax.jcr.nodetype.NodeType;
  */
 public class JCRNodeMap extends HashMap<String, Object> {
   /**
-	 * 
+	 *
 	 */
   private static final long serialVersionUID = -7045000748456348620L;
   private static final Set<String> IGNORE = ImmutableSet.of(
@@ -97,7 +97,7 @@ public class JCRNodeMap extends HashMap<String, Object> {
           .getString());
     }
     put("length", String.valueOf(content.getLength()));
-    
+
   }
 
   /**
@@ -147,7 +147,7 @@ public class JCRNodeMap extends HashMap<String, Object> {
           }
         }
       }
-      
+
     }
     return m;
   }

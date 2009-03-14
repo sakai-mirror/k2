@@ -33,8 +33,8 @@ import org.apache.jackrabbit.spi.Path.Element;
 public class SakaiAppendRecord extends AppendRecord {
 
   private boolean hasdata;
-  
-  
+
+
 
   /**
    * @param journal
@@ -43,7 +43,7 @@ public class SakaiAppendRecord extends AppendRecord {
   public SakaiAppendRecord(AbstractJournal journal, String producerId) {
     super(journal, producerId);
     hasdata = false;
-   
+
   }
 
   /**
@@ -62,7 +62,7 @@ public class SakaiAppendRecord extends AppendRecord {
     hasdata = true;
     super.write(b);
   }
-  
+
   /**
    * {@inheritDoc}
    * @see org.apache.jackrabbit.core.journal.AppendRecord#writeBoolean(boolean)
@@ -82,7 +82,7 @@ public class SakaiAppendRecord extends AppendRecord {
     hasdata = true;
     super.writeByte(n);
   }
-  
+
   /**
    * {@inheritDoc}
    * @see org.apache.jackrabbit.core.journal.AppendRecord#writeChar(char)
@@ -103,7 +103,7 @@ public class SakaiAppendRecord extends AppendRecord {
     hasdata = true;
     super.writeInt(n);
   }
-  
+
   /**
    * {@inheritDoc}
    * @see org.apache.jackrabbit.core.journal.AbstractRecord#writeNodeId(org.apache.jackrabbit.core.NodeId)
@@ -113,7 +113,7 @@ public class SakaiAppendRecord extends AppendRecord {
     hasdata = true;
     super.writeNodeId(nodeId);
   }
-  
+
   /**
    * {@inheritDoc}
    * @see org.apache.jackrabbit.core.journal.AbstractRecord#writeNodeTypeDef(org.apache.jackrabbit.core.nodetype.NodeTypeDef)
@@ -123,7 +123,7 @@ public class SakaiAppendRecord extends AppendRecord {
     hasdata = true;
     super.writeNodeTypeDef(ntd);
   }
-  
+
   /**
    * {@inheritDoc}
    * @see org.apache.jackrabbit.core.journal.AbstractRecord#writePath(org.apache.jackrabbit.spi.Path)
@@ -133,7 +133,7 @@ public class SakaiAppendRecord extends AppendRecord {
     hasdata = true;
     super.writePath(path);
   }
-  
+
   /**
    * {@inheritDoc}
    * @see org.apache.jackrabbit.core.journal.AbstractRecord#writePathElement(org.apache.jackrabbit.spi.Path.Element)
@@ -143,7 +143,7 @@ public class SakaiAppendRecord extends AppendRecord {
     hasdata = true;
     super.writePathElement(element);
   }
-  
+
   /**
    * {@inheritDoc}
    * @see org.apache.jackrabbit.core.journal.AbstractRecord#writePropertyId(org.apache.jackrabbit.core.PropertyId)
@@ -153,7 +153,7 @@ public class SakaiAppendRecord extends AppendRecord {
     hasdata = true;
     super.writePropertyId(propertyId);
   }
-  
+
   /**
    * {@inheritDoc}
    * @see org.apache.jackrabbit.core.journal.AbstractRecord#writeQName(org.apache.jackrabbit.spi.Name)
@@ -163,7 +163,7 @@ public class SakaiAppendRecord extends AppendRecord {
     hasdata = true;
     super.writeQName(name);
   }
-  
+
   /**
    * {@inheritDoc}
    * @see org.apache.jackrabbit.core.journal.AppendRecord#writeString(java.lang.String)
@@ -185,5 +185,5 @@ public class SakaiAppendRecord extends AppendRecord {
     }
     super.update();
   }
-  
+
 }

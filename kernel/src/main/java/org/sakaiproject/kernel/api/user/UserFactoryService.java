@@ -27,7 +27,7 @@ public interface UserFactoryService {
 
   /**
    * Generate a new user, based on the external ID.
-   * 
+   *
    * @param externalId
    * @return A new user with the required external ID.
    */
@@ -35,7 +35,7 @@ public interface UserFactoryService {
 
   /**
    * Generate the user Env patch based on the uuid
-   * 
+   *
    * @param uuid
    *          the Unique User ID
    * @return a path to the user environment file
@@ -44,7 +44,7 @@ public interface UserFactoryService {
 
   /**
    * generate a template user env template, based on the userType
-   * 
+   *
    * @param userType
    *          the type of user
    * @return a path into jcr where the user env can be found
@@ -54,7 +54,7 @@ public interface UserFactoryService {
   /**
    * Get the base bath of the user environment space for the user based on the
    * UUID.
-   * 
+   *
    * @param uuid
    *          the uuid of the user
    * @return the base path of the user environment storage space.
@@ -63,7 +63,7 @@ public interface UserFactoryService {
 
   /**
    * get the path for the User profile (absolute path)
-   * 
+   *
    * @param uuid
    * @return
    */
@@ -72,7 +72,7 @@ public interface UserFactoryService {
   /**
    * the user path prefix that is used to locate the user in the jcr, this is
    * only a fragment, there needs to be a prefix.
-   * 
+   *
    * @param uuid
    * @return
    */
@@ -80,20 +80,20 @@ public interface UserFactoryService {
 
   /**
    * The path to the user profile template (absolute path)
-   * 
+   *
    * @param userType
    * @return
    */
   String getUserProfileTempate(String userType);
-  
-  
+
+
   /**
    * Get the users private path that will not be shared with other users.
    * @param uuid the user UUID
    * @return the absolute path into storage.
    */
   String getUserPrivatePath(String uuid);
-  
+
   /**
    * Get the users shared private path that may be shared with other users.
    * @param uuid the user UUID

@@ -37,11 +37,11 @@ import org.sakaiproject.kernel.api.user.UserInfo;
  */
 public interface UserEnvironment extends Sealable {
 
- 
+
 
   /**
    * Does the UserEnvironment have a match for the subject statement.
-   * 
+   *
    * @param subject
    *          the subject statement
    * @param referencedObject

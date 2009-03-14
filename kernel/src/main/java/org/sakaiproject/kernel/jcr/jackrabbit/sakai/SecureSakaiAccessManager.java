@@ -171,7 +171,7 @@ public class SecureSakaiAccessManager implements AccessManager {
   private ThreadLocal<Boolean> checking = new ThreadLocal<Boolean>() {
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see java.lang.ThreadLocal#initialValue()
      */
     @Override
@@ -219,7 +219,7 @@ public class SecureSakaiAccessManager implements AccessManager {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.apache.jackrabbit.core.security.AccessManager#init(org.apache.jackrabbit
    * .core.security.AMContext)
    */
@@ -263,7 +263,7 @@ public class SecureSakaiAccessManager implements AccessManager {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.apache.jackrabbit.core.security.AccessManager#close()
    */
   public synchronized void close() throws Exception {
@@ -277,7 +277,7 @@ public class SecureSakaiAccessManager implements AccessManager {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.apache.jackrabbit.core.security.AccessManager#checkPermission(org.apache
    * .jackrabbit.core.ItemId, int)
    */
@@ -298,7 +298,7 @@ public class SecureSakaiAccessManager implements AccessManager {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.apache.jackrabbit.core.security.AccessManager#isGranted(org.apache.
    * jackrabbit.core.ItemId, int)
    */
@@ -529,7 +529,7 @@ public class SecureSakaiAccessManager implements AccessManager {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.apache.jackrabbit.core.security.AccessManager#canAccess(java.lang.String )
    */
   public boolean canAccess(String workspace) throws NoSuchWorkspaceException,

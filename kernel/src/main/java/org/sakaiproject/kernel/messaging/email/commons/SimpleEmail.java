@@ -31,13 +31,13 @@ public class SimpleEmail extends org.apache.commons.mail.SimpleEmail implements
 		Serializable {
 
 	/**
-   * 
+   *
    */
   private static final long serialVersionUID = -1268416437690324620L;
   private transient EmailMessagingService messagingService;
-  
+
   /**
-   * 
+   *
    */
   @Inject
   public SimpleEmail(EmailMessagingService messagingService) {
@@ -46,10 +46,10 @@ public class SimpleEmail extends org.apache.commons.mail.SimpleEmail implements
 
 	/**
 	 * Does the work of actually sending the email.
-	 * 
+	 *
 	 * @exception MessagingException
 	 *                if there was an error.
-	 * 
+	 *
 	 * @return - the message id
 	 */
 	@Override

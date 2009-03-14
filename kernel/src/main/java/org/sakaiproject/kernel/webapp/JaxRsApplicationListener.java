@@ -84,6 +84,7 @@ public class JaxRsApplicationListener implements ServletContextListener {
           return 0;
         }
 
+        @Override
         public String toString() {
           return "Provider for: " + object.toString();
         }
@@ -118,6 +119,7 @@ public class JaxRsApplicationListener implements ServletContextListener {
           return 0;
         }
 
+        @Override
         public String toString() {
           return "Provider for: " + clazz.toString();
         }

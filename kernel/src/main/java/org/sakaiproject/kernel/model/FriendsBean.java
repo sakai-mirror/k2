@@ -38,11 +38,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 /**
- * 
+ *
  */
 public class FriendsBean {
 
@@ -132,12 +131,12 @@ public class FriendsBean {
   }
 
   /**
-   * 
+   *
    */
   public Map<String, FriendBean> friendsMap() {
     return Maps.newLinkedHashMap(friends);
   }
-  
+
   public void save() throws JCRNodeFactoryServiceException, RepositoryException, UnsupportedEncodingException {
     String userPath = userFactoryService.getUserPathPrefix(uuid);
     userPath = privatePathBase + userPath + KernelConstants.FRIENDS_FILE;
@@ -145,11 +144,8 @@ public class FriendsBean {
     String json = beanConverter.convertToString(this);
     InputStream in = new ByteArrayInputStream(json.getBytes(StringUtils.UTF8));
     try {
-      System.err.println("Saving Friends Bean "+userPath);
-      @SuppressWarnings("unused")
-      Node n = jcrNodeFactoryService.setInputStream(userPath, in,
+      jcrNodeFactoryService.setInputStream(userPath, in,
           RestProvider.CONTENT_TYPE);
-      System.err.println("Done Saving Friends Bean "+userPath);
     } finally {
       try {
         in.close();
@@ -157,7 +153,7 @@ public class FriendsBean {
       }
     }
   }
-  
+
   public Map<String, Integer> getSizes() {
     Map<String, Integer> map = Maps.newHashMap();
     for ( FriendStatus n : FriendStatus.values() ) {

@@ -49,6 +49,7 @@ public class SakaiXASessionImpl extends XASessionImpl {
   private static final Log LOG = LogFactory.getLog(SakaiXASessionImpl.class);
   private Injector injector;
   private static ThreadLocal<Injector> injectorHolder = new ThreadLocal<Injector>() {
+    @Override
     protected Injector initialValue() {
       return null;
     }
@@ -84,7 +85,7 @@ public class SakaiXASessionImpl extends XASessionImpl {
     setInjector(injector);
     bind(transactionManager);
   }
-  
+
   /**
    * {@inheritDoc}
    * @see org.apache.jackrabbit.core.XASessionImpl#logout()
@@ -109,7 +110,7 @@ public class SakaiXASessionImpl extends XASessionImpl {
   }
   /**
    * @param transactionManager
-   * @throws RepositoryException 
+   * @throws RepositoryException
    */
   private void bind(TransactionManager transactionManager) throws RepositoryException {
     try {
@@ -130,7 +131,7 @@ public class SakaiXASessionImpl extends XASessionImpl {
 
   /**
    * Finish construction and set the injector
-   * 
+   *
    * @param injector2
    */
   private void setInjector(Injector injector) {
@@ -140,7 +141,7 @@ public class SakaiXASessionImpl extends XASessionImpl {
 
   /**
    * Prepare the injector for construction
-   * 
+   *
    * @param rep
    * @param injector2
    * @return
@@ -153,7 +154,7 @@ public class SakaiXASessionImpl extends XASessionImpl {
   /**
    * Get the injector, either from the thread local or from the field. During construction
    * the thread local will be set and used.
-   * 
+   *
    * @return
    */
   private Injector getInjector() {
@@ -165,7 +166,7 @@ public class SakaiXASessionImpl extends XASessionImpl {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.apache.jackrabbit.core.SessionImpl#createAccessManager(javax.security.auth.Subject,
    *      org.apache.jackrabbit.core.HierarchyManager)
    */
@@ -193,6 +194,6 @@ public class SakaiXASessionImpl extends XASessionImpl {
       throw new RepositoryException(msg, e);
     }
   }
-  
+
 
 }

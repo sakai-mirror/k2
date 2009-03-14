@@ -62,7 +62,7 @@ public class SessionImpl implements Session {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.session.Session#getUserId()
    */
   public User getUser() {
@@ -82,7 +82,7 @@ public class SessionImpl implements Session {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.servlet.http.HttpSession#getAttribute(java.lang.String)
    */
   public Object getAttribute(String name) {
@@ -91,7 +91,7 @@ public class SessionImpl implements Session {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.servlet.http.HttpSession#getAttributeNames()
    */
   @SuppressWarnings("unchecked")
@@ -101,7 +101,7 @@ public class SessionImpl implements Session {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.servlet.http.HttpSession#getCreationTime()
    */
   public long getCreationTime() {
@@ -110,7 +110,7 @@ public class SessionImpl implements Session {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.servlet.http.HttpSession#getId()
    */
   public String getId() {
@@ -119,7 +119,7 @@ public class SessionImpl implements Session {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.servlet.http.HttpSession#getLastAccessedTime()
    */
   public long getLastAccessedTime() {
@@ -128,7 +128,7 @@ public class SessionImpl implements Session {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.servlet.http.HttpSession#getMaxInactiveInterval()
    */
   public int getMaxInactiveInterval() {
@@ -137,7 +137,7 @@ public class SessionImpl implements Session {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.servlet.http.HttpSession#getServletContext()
    */
   public ServletContext getServletContext() {
@@ -146,37 +146,37 @@ public class SessionImpl implements Session {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.servlet.http.HttpSession#getSessionContext()
    */
-  @SuppressWarnings("deprecation")
+  @Deprecated
   public HttpSessionContext getSessionContext() {
     return baseSession.getSessionContext();
   }
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.servlet.http.HttpSession#getValue(java.lang.String)
    */
-  @SuppressWarnings("deprecation")
+  @Deprecated
   public Object getValue(String name) {
     return baseSession.getValue(name);
   }
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.servlet.http.HttpSession#getValueNames()
    */
-  @SuppressWarnings("deprecation")
+  @Deprecated
   public String[] getValueNames() {
     return baseSession.getValueNames();
   }
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.servlet.http.HttpSession#invalidate()
    */
   public void invalidate() {
@@ -186,7 +186,7 @@ public class SessionImpl implements Session {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.servlet.http.HttpSession#isNew()
    */
   public boolean isNew() {
@@ -195,18 +195,18 @@ public class SessionImpl implements Session {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.servlet.http.HttpSession#putValue(java.lang.String,
    *      java.lang.Object)
    */
-  @SuppressWarnings("deprecation")
+  @Deprecated
   public void putValue(String name, Object value) {
     baseSession.putValue(name, value);
   }
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.servlet.http.HttpSession#removeAttribute(java.lang.String)
    */
   public void removeAttribute(String name) {
@@ -215,17 +215,17 @@ public class SessionImpl implements Session {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.servlet.http.HttpSession#removeValue(java.lang.String)
    */
-  @SuppressWarnings("deprecation")
+  @Deprecated
   public void removeValue(String name) {
     baseSession.removeValue(name);
   }
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.servlet.http.HttpSession#setAttribute(java.lang.String,
    *      java.lang.Object)
    */
@@ -236,14 +236,14 @@ public class SessionImpl implements Session {
     }
     baseSession.setAttribute(name, value);
   }
-  
+
   public void setBaseAttribute(String name, Object value ) {
     baseSession.setAttribute(name, value);
   }
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.servlet.http.HttpSession#setMaxInactiveInterval(int)
    */
   public void setMaxInactiveInterval(int interval) {
@@ -252,7 +252,7 @@ public class SessionImpl implements Session {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.session.Session#removeUser()
    */
   public void removeUser() {

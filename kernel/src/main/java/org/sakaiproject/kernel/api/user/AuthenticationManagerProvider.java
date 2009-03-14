@@ -27,7 +27,7 @@ import java.security.Principal;
 public interface AuthenticationManagerProvider extends Provider<String>{
   /**
    * Set the authentication tokens for the user.
-   * 
+   *
    * @param oldPrincipal
    *          a Principal containing the old principals for the user.
    * @param newPrincipal

@@ -63,6 +63,7 @@ public class RestServlet extends HttpServlet {
    * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,
    *      javax.servlet.http.HttpServletResponse)
    */
+  @Override
   protected void service(HttpServletRequest request,
       HttpServletResponse response) throws ServletException, IOException {
 

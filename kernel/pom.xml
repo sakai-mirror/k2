@@ -237,20 +237,13 @@
       <artifactId>lucene-wordnet</artifactId>
       <version>2.2.0</version>
     </dependency>
-    <!-- 
-    <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
-      <version>5.0.5</version>
-    </dependency>
-     -->
-     <!-- 
-     Required to debug jdbc statements.
-    <dependency>
-      <groupId>com.google.code</groupId>
-      <artifactId>log4jdbc3</artifactId>
-      <version>1.1</version>
-    </dependency>
-      -->
+    <!--
+      <dependency> <groupId>mysql</groupId> <artifactId>mysql-connector-java</artifactId>
+      <version>5.0.5</version> </dependency>
+    -->
+    <!--
+      Required to debug jdbc statements. <dependency> <groupId>com.google.code</groupId>
+      <artifactId>log4jdbc3</artifactId> <version>1.1</version> </dependency>
+    -->
   </dependencies>
 </project>

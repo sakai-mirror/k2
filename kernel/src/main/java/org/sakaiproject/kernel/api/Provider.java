@@ -25,10 +25,10 @@ public interface Provider<V>  {
    * @return the priority of the provider.
    */
   int getPriority();
-  
+
   /**
    * @return a key for a keyed provider
    */
   V getKey();
-  
+
 }

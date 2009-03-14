@@ -25,14 +25,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 
+ *
  */
 public class JsonClassMapProvider implements Provider<Map<String, Object>> {
 
   private Map<String, Object> map = new HashMap<String, Object>();
-  
+
   /**
-   * 
+   *
    */
   public JsonClassMapProvider() {
     map.put("friends", FriendBean.class);

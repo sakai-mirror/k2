@@ -39,7 +39,7 @@ import java.util.Map;
 import javax.management.MBeanServer;
 
 /**
- * 
+ *
  */
 @Singleton
 public class CacheManagerServiceImpl implements CacheManagerService,
@@ -67,7 +67,7 @@ public class CacheManagerServiceImpl implements CacheManagerService,
     Runtime.getRuntime().addShutdownHook(new Thread() {
       /*
        * (non-Javadoc)
-       * 
+       *
        * @see java.lang.Thread#run()
        */
       @Override
@@ -99,7 +99,7 @@ public class CacheManagerServiceImpl implements CacheManagerService,
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.memory.CacheManagerService#getCache(java.lang.String)
    */
   public <V> Cache<V> getCache(String name, CacheScope scope) {
@@ -121,7 +121,7 @@ public class CacheManagerServiceImpl implements CacheManagerService,
 
   /**
    * Generate a cache bound to the thread.
-   * 
+   *
    * @param name
    * @return
    */
@@ -138,7 +138,7 @@ public class CacheManagerServiceImpl implements CacheManagerService,
 
   /**
    * Generate a cache bound to the request
-   * 
+   *
    * @param name
    * @return
    */
@@ -173,7 +173,7 @@ public class CacheManagerServiceImpl implements CacheManagerService,
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.memory.CacheManagerService#unbind(org.sakaiproject.kernel.api.memory.CacheScope)
    */
   public void unbind(CacheScope scope) {
@@ -188,7 +188,7 @@ public class CacheManagerServiceImpl implements CacheManagerService,
   }
 
   /**
-   * 
+   *
    */
   private void unbindThread() {
     Map<String, Cache<?>> threadCache = threadCacheMapHolder.get();
@@ -199,7 +199,7 @@ public class CacheManagerServiceImpl implements CacheManagerService,
   }
 
   /**
-   * 
+   *
    */
   private void unbindRequest() {
     Map<String, Cache<?>> requestCache = requestCacheMapHolder.get();

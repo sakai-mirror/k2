@@ -38,7 +38,7 @@ import java.util.Map;
 import javax.jcr.RepositoryException;
 
 /**
- * 
+ *
  */
 public class ProfileResolverServiceImpl implements ProfileResolverService {
 
@@ -47,9 +47,9 @@ public class ProfileResolverServiceImpl implements ProfileResolverService {
   private JCRNodeFactoryService jcrNodeFactoryService;
   private UserFactoryService userFactoryService;
   private BeanConverter beanConverter;
-  
+
   /**
-   * 
+   *
    */
   @Inject
   public ProfileResolverServiceImpl(
@@ -63,7 +63,7 @@ public class ProfileResolverServiceImpl implements ProfileResolverService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.user.ProfileResolverService#create(org.sakaiproject.kernel.api.user.User,
    *      java.lang.String)
    */
@@ -100,7 +100,7 @@ public class ProfileResolverServiceImpl implements ProfileResolverService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.user.ProfileResolverService#resolve(org.sakaiproject.kernel.api.user.User)
    */
   public UserProfile resolve(String uuid) {

@@ -21,7 +21,7 @@ package org.sakaiproject.kernel.api.memory;
  * Objects that are added to a ThreadLocalManager, that implement this method
  * will have the unbind method called when the object is ejected from the thread
  * local.
- * 
+ *
  */
 public interface ThreadBound {
 

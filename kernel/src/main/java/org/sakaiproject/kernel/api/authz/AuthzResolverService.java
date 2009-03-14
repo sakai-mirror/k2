@@ -25,7 +25,7 @@ public interface AuthzResolverService {
   /**
    * Check the permission query against the resource for the current request
    * context/environment
-   * 
+   *
    * @param resourceReference
    *          a reference to the resource being checked
    * @param permissionQuery
@@ -51,7 +51,7 @@ public interface AuthzResolverService {
 
   /**
    * Invalidate ACLs associated with the Reference Object.
-   * 
+   *
    * @param referencedObject
    */
   void invalidateAcl(ReferencedObject referencedObject);

@@ -33,7 +33,7 @@ public interface UserResolverProvider extends Provider<String> {
 
   /**
    * resolve the user info from the user object.
-   * 
+   *
    * @param user
    * @return
    */

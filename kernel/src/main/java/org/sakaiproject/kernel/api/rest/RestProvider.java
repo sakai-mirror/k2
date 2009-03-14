@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * 
+ *
  */
 public interface RestProvider extends Provider<String> {
 
@@ -34,7 +34,7 @@ public interface RestProvider extends Provider<String> {
 
   /**
    * Produces the output for the rest request, as json.
-   * 
+   *
    * <p>
    * If Implementing this method the patter that is normally used is to wrap the
    * dispatch implementation in a try catch that forwards SecurityExceptions and
@@ -50,9 +50,9 @@ public interface RestProvider extends Provider<String> {
    *     } catch (Exception ex) {
    *       throw new RestServiceFaultException(ex.getMessage(),ex);
    *     }
-   * 
+   *
    * </pre>
-   * 
+   *
    * @param elements
    *          the path elements of the request
    * @param request

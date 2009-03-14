@@ -41,7 +41,7 @@ public class BeanJsonLibConfig extends JsonConfig {
 
   /**
    * Construct the config with a Guice injector.
-   * 
+   *
    * @param injector
    *          the Guice injector
    * @param morphers

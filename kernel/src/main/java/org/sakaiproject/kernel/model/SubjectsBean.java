@@ -26,17 +26,17 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 
+ *
  */
 public class SubjectsBean extends HashMap<String,String> implements UserSubjects {
 
   private transient Map<String, SubjectPermissions> subjectPermissionMap = new ConcurrentHashMap<String, SubjectPermissions>();
   private SubjectPermissionService subjectPermissionService;
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 2937100683358538764L;
-  
+
 
   /**
    * @param subjectPermissionService
@@ -79,7 +79,7 @@ public class SubjectsBean extends HashMap<String,String> implements UserSubjects
   }
 
   /**
-   * 
+   *
    */
   private synchronized SubjectPermissions loadSubjectPermissions(String subjectToken) {
      return subjectPermissionService.fetchSubjectPermissions(subjectPermissionMap,subjectToken);
@@ -91,6 +91,6 @@ public class SubjectsBean extends HashMap<String,String> implements UserSubjects
   public synchronized void setSubjectPermissionService(SubjectPermissionService subjectPermissionService) {
     this.subjectPermissionService = subjectPermissionService;
   }
-  
-  
+
+
 }

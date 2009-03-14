@@ -23,12 +23,12 @@ import org.sakaiproject.kernel.api.user.UserInfo;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 
+ *
  */
 public class NullUserInfo extends ConcurrentHashMap<String, String> implements UserInfo {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = -1356666236972530577L;
   private User user;
@@ -41,7 +41,7 @@ public class NullUserInfo extends ConcurrentHashMap<String, String> implements U
   }
 
   /**
-   * 
+   *
    */
   public NullUserInfo() {
   }

@@ -63,7 +63,7 @@ public class JcrAuthenticationResolverProvider implements
 
   /**
    * @param userResolverService
-   * 
+   *
    */
   @Inject
   public JcrAuthenticationResolverProvider(
@@ -91,7 +91,7 @@ public class JcrAuthenticationResolverProvider implements
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.user.AuthenticationResolverProvider#authenticate(java.security.Principal)
    */
   public Authentication authenticate(Principal principal)
@@ -131,7 +131,7 @@ public class JcrAuthenticationResolverProvider implements
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.user.AuthenticationManagerProvider#setAuthentication(java.security.Principal,
    *      java.security.Principal)
    */
@@ -207,7 +207,7 @@ public class JcrAuthenticationResolverProvider implements
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Provider#getKey()
    */
   public String getKey() {
@@ -216,7 +216,7 @@ public class JcrAuthenticationResolverProvider implements
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Provider#getPriority()
    */
   public int getPriority() {

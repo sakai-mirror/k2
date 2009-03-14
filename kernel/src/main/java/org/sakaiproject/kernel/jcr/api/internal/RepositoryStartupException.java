@@ -25,12 +25,12 @@ import org.sakaiproject.kernel.internal.api.KernelInitializtionException;
 public class RepositoryStartupException extends KernelInitializtionException {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 7484487856269636613L;
 
   /**
-   * 
+   *
    */
   public RepositoryStartupException() {
   }

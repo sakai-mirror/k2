@@ -45,7 +45,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * 
+ *
  */
 public class SimpleAuthzResolverService implements AuthzResolverService {
 
@@ -61,7 +61,7 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
   private long secureKey = System.currentTimeMillis();
 
   /**
-   * 
+   *
    */
   @Inject
   public SimpleAuthzResolverService(SessionManagerService sessionManager,
@@ -78,7 +78,7 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.authz.AuthzResolverService#check(java.lang.String,
    *      org.sakaiproject.kernel.api.authz.PermissionQuery)
    */
@@ -210,7 +210,7 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
   }
 
   /**
-   * 
+   *
    */
   private ReferencedObject populateAcl(ReferencedObject referencedObject,
       Map<String, List<AccessControlStatement>> acl) {
@@ -283,7 +283,7 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
 
   /**
    * Add an acl fragment to the acl, assumes that the list at the key exists.
-   * 
+   *
    * @param acl
    *          the acl
    * @param key
@@ -304,7 +304,7 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
 
   /**
    * Add a single acl to the acl
-   * 
+   *
    * @param acl
    * @param statementKey
    * @param ac
@@ -324,7 +324,7 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
    * Populates the ACL with keys, but if it finds a parent ACL that has no
    * additions then it returns that. If there are additions it adds the keys
    * from the parent and returns.
-   * 
+   *
    * @param referencedObject
    *          the starting object
    * @param acl
@@ -430,7 +430,7 @@ public class SimpleAuthzResolverService implements AuthzResolverService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.authz.AuthzResolverService#hasRequestGrant()
    */
   @java.lang.SuppressWarnings("unchecked")

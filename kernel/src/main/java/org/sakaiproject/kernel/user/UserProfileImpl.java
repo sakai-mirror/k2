@@ -39,7 +39,7 @@ import javax.jcr.RepositoryException;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * 
+ *
  */
 public class UserProfileImpl implements UserProfile {
 
@@ -68,7 +68,7 @@ public class UserProfileImpl implements UserProfile {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.user.UserProfile#getProperties()
    */
   public HashMap<String, Object> getProperties() {
@@ -77,7 +77,7 @@ public class UserProfileImpl implements UserProfile {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.user.UserProfile#getUuid()
    */
   public String getUuid() {

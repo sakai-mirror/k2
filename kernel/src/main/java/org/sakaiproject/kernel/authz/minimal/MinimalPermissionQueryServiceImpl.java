@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class MinimalPermissionQueryServiceImpl  implements PermissionQueryService {
 
-  
+
   private Map<String, PermissionQuery> queryMap = new ConcurrentHashMap<String, PermissionQuery>();
 
   /**
@@ -37,7 +37,7 @@ public class MinimalPermissionQueryServiceImpl  implements PermissionQueryServic
    * @see org.sakaiproject.kernel.api.authz.PermissionQueryService#getPermission(java.lang.String)
    */
   public PermissionQuery getPermission(String name) {
-    
+
     if ( queryMap.containsKey(name) ) {
       return queryMap.get(name);
     }

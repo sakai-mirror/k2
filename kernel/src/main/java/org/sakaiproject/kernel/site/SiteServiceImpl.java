@@ -82,7 +82,7 @@ public class SiteServiceImpl implements SiteService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.site.SiteService#getSite(java.lang.String)
    */
   public SiteBean getSite(String path) {
@@ -114,7 +114,7 @@ public class SiteServiceImpl implements SiteService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.site.SiteService#siteExists(java.lang.String)
    */
   public boolean siteExists(String path) {
@@ -131,7 +131,7 @@ public class SiteServiceImpl implements SiteService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.site.SiteService#deleteSite(java.lang.String)
    */
   public void deleteSite(String id) {
@@ -140,9 +140,9 @@ public class SiteServiceImpl implements SiteService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @throws UnsupportedEncodingException
-   * 
+   *
    * @see org.sakaiproject.kernel.api.site.SiteService#saveSite(org.sakaiproject.kernel.model.SiteBean)
    */
   public void save(SiteBean siteBean) throws SiteException {
@@ -155,7 +155,7 @@ public class SiteServiceImpl implements SiteService {
       String siteBeanDef = beanConverter.convertToString(siteBean);
       LOG.info("Saving Site to " + path + " as " + siteBeanDef);
       bais = new ByteArrayInputStream(siteBeanDef.getBytes("UTF-8"));
-      Node siteNode = jcrNodeFactoryService.setInputStream(path, bais,
+      jcrNodeFactoryService.setInputStream(path, bais,
           RestProvider.CONTENT_TYPE);
 
       // make the private and shares spaces for the user owned by this used.
@@ -178,7 +178,7 @@ public class SiteServiceImpl implements SiteService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.site.SiteService#createSite(java.lang.String,
    *      java.lang.String)
    */
@@ -234,7 +234,7 @@ public class SiteServiceImpl implements SiteService {
 
   /**
    * Build the full path with file name to the group definition for a given site ID.
-   * 
+   *
    * @param id
    * @return
    */

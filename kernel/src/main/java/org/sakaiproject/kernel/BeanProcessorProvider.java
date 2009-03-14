@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
+ *
  */
 public class BeanProcessorProvider implements Provider<List<BeanProcessor>>{
 

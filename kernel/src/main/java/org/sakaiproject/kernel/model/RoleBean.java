@@ -20,15 +20,15 @@ package org.sakaiproject.kernel.model;
 import org.sakaiproject.kernel.util.ArrayUtils;
 
 /**
- * 
+ *
  */
 public class RoleBean {
-  
+
   private String name = "undefined";
   private String[] permissions = new String[0];
-  
+
   /**
-   * 
+   *
    */
   public RoleBean() {
   }
@@ -48,21 +48,21 @@ public class RoleBean {
   public String getName() {
     return name;
   }
-  
+
   /**
    * @param name the name to set
    */
   public void setName(String name) {
     this.name = name;
   }
-  
+
   /**
    * @return the permissions
    */
   public String[] getPermissions() {
     return ArrayUtils.copy(permissions, new String[permissions.length]);
   }
-  
+
   /**
    * @param permissions the permissions to set
    */

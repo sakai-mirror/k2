@@ -43,7 +43,7 @@ public class NullAuthenticationResolverServiceImpl implements
   private UserResolverService userResolverService;
 
   /**
-   * 
+   *
    */
   @Inject
   public NullAuthenticationResolverServiceImpl(
@@ -53,7 +53,7 @@ public class NullAuthenticationResolverServiceImpl implements
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.user.AuthenticationResolverService#authenticate(java.security.Principal)
    */
   public Authentication authenticate(Principal principal)

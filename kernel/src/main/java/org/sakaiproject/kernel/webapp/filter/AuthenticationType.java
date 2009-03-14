@@ -18,7 +18,7 @@
 package org.sakaiproject.kernel.webapp.filter;
 
 /**
- * 
+ *
  */
 public enum AuthenticationType {
   FORM(), BASIC(), TRUSTED();

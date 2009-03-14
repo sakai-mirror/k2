@@ -25,7 +25,7 @@ public interface UserSubjects {
 
   /**
    * Get the SubjectPermissions specified by the subject token.
-   * 
+   *
    * @param subjectToken
    * @return the SubjectPermissions, or null if the subject Token is not present
    *         in the Use's subjects.
@@ -34,7 +34,7 @@ public interface UserSubjects {
 
   /**
    * Add a SubjectPermissions object to the UserSubject
-   * 
+   *
    * @param subjectPermissions
    */
   void addSubjectPermissions(SubjectPermissions subjectPermissions);
@@ -42,7 +42,7 @@ public interface UserSubjects {
   /**
    * Does this UserSubject have the SubjectPermissions specified by the
    * subjectToken
-   * 
+   *
    * @param subjectToken
    * @return true if the SubjectPermissions specified by the subjectToken are
    *         present.

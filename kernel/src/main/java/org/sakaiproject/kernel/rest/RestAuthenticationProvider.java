@@ -39,7 +39,7 @@ import javax.servlet.http.HttpSession;
 public class RestAuthenticationProvider implements RestProvider {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = -2118658526409944277L;
   private static final String KEY = "login";
@@ -121,7 +121,7 @@ public class RestAuthenticationProvider implements RestProvider {
   }
 
   /**
-   * 
+   *
    */
   @Inject
   public RestAuthenticationProvider(RegistryService registryService) {
@@ -132,7 +132,7 @@ public class RestAuthenticationProvider implements RestProvider {
 
   /**
    * @throws IOException
-   * 
+   *
    */
   private void doCheckLogin(HttpServletRequest request,
       HttpServletResponse response) throws IOException {
@@ -176,7 +176,7 @@ public class RestAuthenticationProvider implements RestProvider {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.RestProvider#dispatch(java.lang.String[],
    *      javax.servlet.http.HttpServletRequest,
    *      javax.servlet.http.HttpServletResponse)
@@ -201,7 +201,7 @@ public class RestAuthenticationProvider implements RestProvider {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Provider#getKey()
    */
   public String getKey() {
@@ -210,7 +210,7 @@ public class RestAuthenticationProvider implements RestProvider {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Provider#getPriority()
    */
   public int getPriority() {
@@ -219,7 +219,7 @@ public class RestAuthenticationProvider implements RestProvider {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.RestProvider#getDescription()
    */
   public RestDescription getDescription() {

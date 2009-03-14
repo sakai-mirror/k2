@@ -49,7 +49,7 @@ public class PresenceServiceImpl implements PresenceService {
   private Cache<Map<String, String>> locationCache;
 
   /**
-   * 
+   *
    */
   @Inject
   public PresenceServiceImpl(CacheManagerService cacheManagerService) {
@@ -62,7 +62,7 @@ public class PresenceServiceImpl implements PresenceService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.presence.PresenceService#setStatus(java.lang.String,
    *      java.lang.String)
    */
@@ -72,7 +72,7 @@ public class PresenceServiceImpl implements PresenceService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.presence.PresenceService#getStatus(java.lang.String)
    */
   public String getStatus(String uuid) {
@@ -106,7 +106,7 @@ public class PresenceServiceImpl implements PresenceService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.presence.PresenceService#online(java.lang.String,
    *      java.util.List)
    */
@@ -114,7 +114,7 @@ public class PresenceServiceImpl implements PresenceService {
 
     Map<String, String> online = Maps.newHashMap();
     for (String uuid : connections) {
-      
+
       online.put(uuid, getStatus(uuid));
     }
     return online;
@@ -122,7 +122,7 @@ public class PresenceServiceImpl implements PresenceService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.presence.PresenceService#online(java.lang.String)
    */
   public Map<String, String> online(String location) {
@@ -142,7 +142,7 @@ public class PresenceServiceImpl implements PresenceService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.presence.PresenceService#ping(java.lang.String,
    *      java.lang.String)
    */
@@ -187,7 +187,7 @@ public class PresenceServiceImpl implements PresenceService {
 
   /**
    * Update the users location cache.
-   * 
+   *
    * @param uuid
    *          the user id
    * @param now

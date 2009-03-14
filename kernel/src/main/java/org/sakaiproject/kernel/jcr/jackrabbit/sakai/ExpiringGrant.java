@@ -24,32 +24,32 @@ import java.io.Serializable;
  */
 public class ExpiringGrant<T> implements Serializable {
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 5749381087886040007L;
   private T payload;
   private long end;
 
   /**
-   * 
+   *
    */
   public ExpiringGrant(T payload, long ttl) {
     this.payload = payload;
     this.end = System.currentTimeMillis()+ttl;
   }
-  
+
   /**
    * @return true if it has expired.
    */
   public boolean hasExpired() {
     return System.currentTimeMillis() > end;
   }
-  
+
   /**
    * @return the payload
    */
   public T getPayload() {
     return payload;
   }
-  
+
 }

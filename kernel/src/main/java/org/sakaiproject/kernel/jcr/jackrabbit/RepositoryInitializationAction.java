@@ -55,7 +55,7 @@ public class RepositoryInitializationAction implements InitializationAction {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @throws RepositoryStartupException
    * @see org.sakaiproject.kernel.internal.api.InitializationAction#init()
    */

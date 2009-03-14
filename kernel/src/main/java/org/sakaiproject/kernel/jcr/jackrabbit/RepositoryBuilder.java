@@ -95,14 +95,14 @@ public class RepositoryBuilder implements InitializationAction {
   /*
    * public static final String DEFAULT_DBDIALECT_PROP =
    * "vendor@org.sakaiproject.db.api.SqlService";
-   * 
+   *
    * public static final String DEFAULT_DBUSER_PROP = "username@javax.sql.BaseDataSource";
-   * 
+   *
    * public static final String DEFAULT_DBPASS_PROP = "password@javax.sql.BaseDataSource";
-   * 
+   *
    * public static final String DEFAULT_DBDRIVER_PROP =
    * "driverClassName@javax.sql.BaseDataSource";
-   * 
+   *
    * public static final String DEFAULT_DBURL_PROP = "url@javax.sql.BaseDataSource";
    */
   public static final String DEFAULT_DSPERSISTMNGR_PROP = "dataSourcePersistanceManager@org.sakaiproject.kernel.api.jcr.JCRService.repositoryBuilder";
@@ -243,8 +243,9 @@ public class RepositoryBuilder implements InitializationAction {
     contentStr = contentStr.replaceAll(JOURNAL_LOCATION, journalLocation);
     contentStr = contentStr.replaceAll(PERSISTANCE_MANAGER, persistanceManagerClass);
 
-    if (log.isDebugEnabled())
+    if (log.isDebugEnabled()) {
       log.debug("Repositroy Config is \n" + contentStr);
+    }
 
     this.injector = injector;
     this.sharedFSBlobLocation = sharedFSBlobLocation;
@@ -258,7 +259,7 @@ public class RepositoryBuilder implements InitializationAction {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.internal.api.InitializationAction#init()
    */
   public void init() throws KernelInitializtionException {
@@ -282,7 +283,7 @@ public class RepositoryBuilder implements InitializationAction {
       Runtime.getRuntime().addShutdownHook(new Thread() {
         /**
          * {@inheritDoc}
-         * 
+         *
          * @see java.lang.Thread#run()
          */
         @Override

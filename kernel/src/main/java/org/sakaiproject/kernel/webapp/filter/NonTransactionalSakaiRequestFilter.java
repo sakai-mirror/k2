@@ -29,7 +29,7 @@ public class NonTransactionalSakaiRequestFilter extends SakaiRequestFilter {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.webapp.filter.SakaiRequestFilter#begin()
    */
   @Override
@@ -38,7 +38,7 @@ public class NonTransactionalSakaiRequestFilter extends SakaiRequestFilter {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.webapp.filter.SakaiRequestFilter#commit()
    */
   @Override
@@ -47,7 +47,7 @@ public class NonTransactionalSakaiRequestFilter extends SakaiRequestFilter {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.webapp.filter.SakaiRequestFilter#rollback()
    */
   @Override

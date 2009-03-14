@@ -24,7 +24,7 @@ import java.io.InputStream;
  * This allows other projects outside the Sakai JCR Package to add nodetypes in
  * the backing implementations xml format, as well as register additional
  * namespaces.
- * 
+ *
  */
 public interface JCRRegistrationService
 {
@@ -37,7 +37,7 @@ public interface JCRRegistrationService
 
 	/**
 	 * Register a namespace.
-	 * You should register all namespaces in your input stream prior to 
+	 * You should register all namespaces in your input stream prior to
 	 * registering the node types
 	 * @param prefix
 	 * @param url

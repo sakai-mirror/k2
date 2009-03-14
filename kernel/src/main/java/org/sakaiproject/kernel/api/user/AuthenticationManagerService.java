@@ -26,7 +26,7 @@ public interface AuthenticationManagerService {
 
   /**
    * Set the authentication tokens for the user.
-   * 
+   *
    * @param oldPrincipal
    *          a Principal containing the old principals for the user.
    * @param newPrincipal

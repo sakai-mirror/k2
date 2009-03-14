@@ -23,12 +23,12 @@ package org.sakaiproject.kernel.internal.api;
 public class KernelInitializtionException extends Exception {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 4832350249736237665L;
 
   /**
-   * 
+   *
    */
   public KernelInitializtionException() {
   }

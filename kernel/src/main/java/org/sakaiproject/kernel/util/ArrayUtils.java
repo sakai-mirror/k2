@@ -20,7 +20,7 @@ package org.sakaiproject.kernel.util;
 
 
 /**
- * 
+ *
  */
 public class ArrayUtils {
 

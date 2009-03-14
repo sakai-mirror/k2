@@ -25,7 +25,7 @@ import org.sakaiproject.kernel.api.memory.Cache;
 import java.util.List;
 
 /**
- * 
+ *
  */
 public class CacheImpl<V> implements Cache<V> {
 
@@ -57,7 +57,7 @@ public class CacheImpl<V> implements Cache<V> {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.memory.Cache#clear()
    */
   public void clear() {
@@ -66,7 +66,7 @@ public class CacheImpl<V> implements Cache<V> {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.memory.Cache#containsKey(java.lang.String)
    */
   public boolean containsKey(String key) {
@@ -75,7 +75,7 @@ public class CacheImpl<V> implements Cache<V> {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.memory.Cache#get(java.lang.String)
    */
   @SuppressWarnings("unchecked")
@@ -89,7 +89,7 @@ public class CacheImpl<V> implements Cache<V> {
 
   /**
    * {@inherit-doc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.memory.Cache#put(java.lang.String,
    *      java.lang.Object)
    */
@@ -105,7 +105,7 @@ public class CacheImpl<V> implements Cache<V> {
 
   /**
    * {@inherit-doc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.memory.Cache#remove(java.lang.String)
    */
   public void remove(String key) {

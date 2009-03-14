@@ -56,7 +56,7 @@ public class InitializationActionProvider implements
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see com.google.inject.Provider#get()
    */
   public List<InitializationAction> get() {

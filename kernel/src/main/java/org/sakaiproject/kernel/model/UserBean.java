@@ -32,7 +32,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 /**
- * 
+ *
  */
 @Entity
 @Table(name = "user_eid")
@@ -63,7 +63,7 @@ public class UserBean implements User {
   }
 
   /**
-   * 
+   *
    */
   public UserBean(String uuid, String eid) {
     this.uid = uuid;
@@ -71,13 +71,13 @@ public class UserBean implements User {
   }
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = -885757026614951115L;
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.user.User#getEid()
    */
   public String getEid() {
@@ -86,7 +86,7 @@ public class UserBean implements User {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.user.User#getUuid()
    */
   public String getUuid() {

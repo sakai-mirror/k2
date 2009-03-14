@@ -61,7 +61,7 @@ public class SubjectPermissionListener implements JcrContentListener {
 
   /**
    * @param entityManager
-   * 
+   *
    */
   @Inject
   public SubjectPermissionListener(
@@ -79,7 +79,7 @@ public class SubjectPermissionListener implements JcrContentListener {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.jcr.api.JcrContentListener#onEvent(int,
    *      java.lang.String, java.lang.String, java.lang.String)
    */
@@ -101,7 +101,7 @@ public class SubjectPermissionListener implements JcrContentListener {
 
           // update the index used for searching sites
           updateSiteIndex(groupBody, filePath);
-          
+
           transaction.commit();
         }
       } catch (UnsupportedEncodingException e) {
@@ -194,7 +194,7 @@ public class SubjectPermissionListener implements JcrContentListener {
       entityManager.remove(spb);
     }
     for (SubjectPermissionBean spb : toAdd) {
-      
+
       entityManager.persist(spb);
     }
   }

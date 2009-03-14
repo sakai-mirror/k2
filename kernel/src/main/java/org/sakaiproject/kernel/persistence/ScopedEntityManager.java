@@ -39,7 +39,7 @@ import javax.persistence.LockModeType;
 import javax.persistence.Query;
 
 /**
- * 
+ *
  */
 public class ScopedEntityManager implements EntityManager, RequiresStop {
 
@@ -65,7 +65,7 @@ public class ScopedEntityManager implements EntityManager, RequiresStop {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.RequiresStop#stop()
    */
   public void stop() {
@@ -91,7 +91,7 @@ public class ScopedEntityManager implements EntityManager, RequiresStop {
       cache.put(ENTITY_MANAGER, entityManagerHolder);
       entityManagerReferenceMap.put(String.valueOf(entityManagerHolder),
           entityManagerHolder);
-    } 
+    }
     if ( nextReport  < System.currentTimeMillis() ) {
       nextReport = System.currentTimeMillis()+10000L;
       StringBuilder sb = new StringBuilder();
@@ -107,7 +107,7 @@ public class ScopedEntityManager implements EntityManager, RequiresStop {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.persistence.EntityManager#clear()
    */
   public void clear() {
@@ -117,7 +117,7 @@ public class ScopedEntityManager implements EntityManager, RequiresStop {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.persistence.EntityManager#close()
    */
   public void close() {
@@ -126,7 +126,7 @@ public class ScopedEntityManager implements EntityManager, RequiresStop {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.persistence.EntityManager#contains(java.lang.Object)
    */
   public boolean contains(Object entity) {
@@ -135,7 +135,7 @@ public class ScopedEntityManager implements EntityManager, RequiresStop {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.persistence.EntityManager#createNamedQuery(java.lang.String)
    */
   public Query createNamedQuery(String name) {
@@ -144,7 +144,7 @@ public class ScopedEntityManager implements EntityManager, RequiresStop {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.persistence.EntityManager#createNativeQuery(java.lang.String)
    */
   public Query createNativeQuery(String sqlString) {
@@ -153,7 +153,7 @@ public class ScopedEntityManager implements EntityManager, RequiresStop {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.persistence.EntityManager#createNativeQuery(java.lang.String,
    *      java.lang.Class)
    */
@@ -164,7 +164,7 @@ public class ScopedEntityManager implements EntityManager, RequiresStop {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.persistence.EntityManager#createNativeQuery(java.lang.String,
    *      java.lang.String)
    */
@@ -174,7 +174,7 @@ public class ScopedEntityManager implements EntityManager, RequiresStop {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.persistence.EntityManager#createQuery(java.lang.String)
    */
   public Query createQuery(String qlString) {
@@ -183,7 +183,7 @@ public class ScopedEntityManager implements EntityManager, RequiresStop {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.persistence.EntityManager#find(java.lang.Class,
    *      java.lang.Object)
    */
@@ -193,7 +193,7 @@ public class ScopedEntityManager implements EntityManager, RequiresStop {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.persistence.EntityManager#flush()
    */
   public void flush() {
@@ -202,7 +202,7 @@ public class ScopedEntityManager implements EntityManager, RequiresStop {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.persistence.EntityManager#getDelegate()
    */
   public Object getDelegate() {
@@ -211,7 +211,7 @@ public class ScopedEntityManager implements EntityManager, RequiresStop {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.persistence.EntityManager#getFlushMode()
    */
   public FlushModeType getFlushMode() {
@@ -220,7 +220,7 @@ public class ScopedEntityManager implements EntityManager, RequiresStop {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.persistence.EntityManager#getReference(java.lang.Class,
    *      java.lang.Object)
    */
@@ -230,7 +230,7 @@ public class ScopedEntityManager implements EntityManager, RequiresStop {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.persistence.EntityManager#getTransaction()
    */
   public EntityTransaction getTransaction() {
@@ -239,7 +239,7 @@ public class ScopedEntityManager implements EntityManager, RequiresStop {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.persistence.EntityManager#isOpen()
    */
   public boolean isOpen() {
@@ -248,7 +248,7 @@ public class ScopedEntityManager implements EntityManager, RequiresStop {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.persistence.EntityManager#joinTransaction()
    */
   public void joinTransaction() {
@@ -257,7 +257,7 @@ public class ScopedEntityManager implements EntityManager, RequiresStop {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.persistence.EntityManager#lock(java.lang.Object,
    *      javax.persistence.LockModeType)
    */
@@ -267,7 +267,7 @@ public class ScopedEntityManager implements EntityManager, RequiresStop {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.persistence.EntityManager#merge(java.lang.Object)
    */
   public <T> T merge(T entity) {
@@ -276,7 +276,7 @@ public class ScopedEntityManager implements EntityManager, RequiresStop {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.persistence.EntityManager#persist(java.lang.Object)
    */
   public void persist(Object entity) {
@@ -285,7 +285,7 @@ public class ScopedEntityManager implements EntityManager, RequiresStop {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.persistence.EntityManager#refresh(java.lang.Object)
    */
   public void refresh(Object entity) {
@@ -294,7 +294,7 @@ public class ScopedEntityManager implements EntityManager, RequiresStop {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.persistence.EntityManager#remove(java.lang.Object)
    */
   public void remove(Object entity) {
@@ -303,7 +303,7 @@ public class ScopedEntityManager implements EntityManager, RequiresStop {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.persistence.EntityManager#setFlushMode(javax.persistence.FlushModeType)
    */
   public void setFlushMode(FlushModeType flushMode) {

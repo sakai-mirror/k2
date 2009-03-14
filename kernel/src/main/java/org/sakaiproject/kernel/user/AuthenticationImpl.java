@@ -33,7 +33,7 @@ public class AuthenticationImpl implements Authentication {
 
   /**
    * Construct, with uid
-   * 
+   *
    * @param uid
    *          The UUID internal end user identifier string.
    * @param eid

@@ -22,7 +22,6 @@ import edu.emory.mathcs.backport.java.util.Arrays;
 
 import org.sakaiproject.kernel.api.site.SiteException;
 import org.sakaiproject.kernel.api.site.SiteService;
-import org.sakaiproject.kernel.site.SiteServiceImpl;
 
 /**
  * Bean for holding information about a Site.
@@ -69,7 +68,7 @@ public class SiteBean extends GroupBean {
   public void setType(String type) {
     this.type = type;
   }
-  
+
   /**
    * {@inheritDoc}
    * @see java.lang.Object#toString()
@@ -84,7 +83,7 @@ public class SiteBean extends GroupBean {
    */
   public String location(String sitePath) {
     this.sitePath = sitePath;
-    return sitePath;    
+    return sitePath;
   }
 
   /**
@@ -100,7 +99,7 @@ public class SiteBean extends GroupBean {
   public String location() {
     return sitePath;
   }
-  
+
   public void save() throws SiteException {
    siteService.save(this);
   }

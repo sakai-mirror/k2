@@ -40,7 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
- * 
+ *
  */
 @Singleton
 public class SessionManagerServiceImpl implements SessionManagerService {
@@ -55,7 +55,7 @@ public class SessionManagerServiceImpl implements SessionManagerService {
       .getLog(SessionManagerServiceImpl.class);
   private static final boolean debug = LOG.isDebugEnabled();
   private CacheManagerService cacheManagerService;
-  private Map<String, HttpSession> sessionMap;
+  private Map<String, HttpSession> sessionMap; // this is a ReferenceMap with Strong Keys, Weak Values.
   private String cookieName;
   private Session anonSession = new AnonSession();
 
@@ -70,7 +70,7 @@ public class SessionManagerServiceImpl implements SessionManagerService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.session.SessionManagerService#getCurrentSession()
    */
   public Session getCurrentSession() {
@@ -94,7 +94,7 @@ public class SessionManagerServiceImpl implements SessionManagerService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.session.SessionManagerService#bindRequest(javax.servlet.ServletRequest)
    */
   public void bindRequest(ServletRequest request) {
@@ -110,7 +110,7 @@ public class SessionManagerServiceImpl implements SessionManagerService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.session.SessionManagerService#getSession(javax.servlet.http.HttpServletRequest,
    *      boolean)
    */
@@ -179,6 +179,9 @@ public class SessionManagerServiceImpl implements SessionManagerService {
           response.addCookie(c);
           System.err.println("SessionManager (put): Got Sesssion "
               + session.getId() + " as " + session + " from " + sessionMap);
+          // When this is put in here, provided session is not GC'd it will remain 
+          // in the sessionMap for other webapps to use.
+          // The session is GC'd it will be removed from here.
           sessionMap.put(session.getId(), session);
           requestScope.put(CURRENT_SESSION, session);
         } else if (debug) {
@@ -208,7 +211,7 @@ public class SessionManagerServiceImpl implements SessionManagerService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.session.SessionManagerService#getCurrentUser()
    */
   public String getCurrentUserId() {

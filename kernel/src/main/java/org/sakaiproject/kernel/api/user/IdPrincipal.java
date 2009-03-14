@@ -25,7 +25,7 @@ import java.security.Principal;
 public interface IdPrincipal extends Principal {
   /**
    * Access the user identifier.
-   * 
+   *
    * @return The user identifier.
    */
   String getIdentifier();

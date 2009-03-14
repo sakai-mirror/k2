@@ -271,9 +271,9 @@ public class RestPatchProviderKernelUnitT extends BaseRestUnitT {
     ByteArrayInputStream in = new ByteArrayInputStream(
         "{\"a\":\"a1\",\"b\":\"b1\",\"c\":\"c3\",\"d\":\"d1\"}"
             .getBytes(StringUtils.UTF8));
-    @SuppressWarnings("unused")
     Node n = jcrNodeFactoryService.setInputStream("/a/test/file2", in,
         RestProvider.CONTENT_TYPE);
+    n.getSession().save();
     jcrService.logout();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();

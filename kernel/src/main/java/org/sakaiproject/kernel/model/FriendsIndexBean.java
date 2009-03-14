@@ -77,17 +77,17 @@ public class FriendsIndexBean {
    */
   @Column(name = "lastName")
   private String lastName;
-  
+
   @Column(name = "friendStatus")
   private String friendStatus;
-  
+
   @Column(name = "lastUpdate")
   private long lastUpdate;
 
   public FriendsIndexBean() {
   }
   /**
-   * 
+   *
    */
   public FriendsIndexBean(FriendBean friendBean, UserProfile userProfile) {
     copy(friendBean,userProfile);
@@ -99,7 +99,7 @@ public class FriendsIndexBean {
   public String getUuid() {
     return uuid;
   }
-  
+
   /**
    * @return the firstName
    */
@@ -118,14 +118,14 @@ public class FriendsIndexBean {
   public String getFriendUuid() {
     return friendUuid;
   }
-  
+
   /**
    * @return the friendStatus
    */
   public String getFriendStatus() {
     return friendStatus;
   }
-  
+
   /**
    * @param friendStatus the friendStatus to set
    */
@@ -143,7 +143,7 @@ public class FriendsIndexBean {
    */
   public void setLastUpdate(long lastUpdate) {
     this.lastUpdate = lastUpdate;
-    
+
   }
   /**
    * @param friendBean
@@ -157,5 +157,5 @@ public class FriendsIndexBean {
     this.uuid = friendBean.getPersonUuid();
     this.lastUpdate = friendBean.getLastUpdate();
   }
-  
+
 }

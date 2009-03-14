@@ -29,7 +29,7 @@ public interface CacheManagerService {
    * cache of the same name in the same scope will return the same cache for
    * that scope. The thread invoking the method forms part of the scope for
    * CacheScopes THREAD or REQUEST.
-   * 
+   *
    * @param <T> The type of the elements, but be serializable for any non thread bound cache.
    * @param name the name of the cache.
    * @param scope the scope of the cache.
@@ -39,7 +39,7 @@ public interface CacheManagerService {
 
   /**
    * Unbind the the context specified in scope.
-   * 
+   *
    * @param scope
    */
   void unbind(CacheScope scope);

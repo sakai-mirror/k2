@@ -24,18 +24,18 @@ public enum FriendStatus {
   /**
    * The current user has been invited by another user.
    */
-  INVITED(), 
+  INVITED(),
   /**
-   * connection has been accepted 
+   * connection has been accepted
    */
-  ACCEPTED(), 
+  ACCEPTED(),
   /**
-   * The connection has been blocked, preventing connection 
+   * The connection has been blocked, preventing connection
    */
-  BLOCKED(), 
+  BLOCKED(),
   /**
    * An invitation has been sent to this user, but has not yet been accepted.
-   * 
+   *
    */
   PENDING();
 

@@ -42,7 +42,7 @@ import java.io.UnsupportedEncodingException;
 import javax.jcr.RepositoryException;
 
 /**
- * 
+ *
  */
 public class FriendsResolverServiceImpl implements FriendsResolverService {
 
@@ -53,13 +53,10 @@ public class FriendsResolverServiceImpl implements FriendsResolverService {
   private BeanConverter beanConverter;
   private Injector injector;
 
-  
   @Inject
-  public FriendsResolverServiceImpl(
-      JCRNodeFactoryService jcrNodeFactoryService,
+  public FriendsResolverServiceImpl(JCRNodeFactoryService jcrNodeFactoryService,
       UserFactoryService userFactoryService,
-      ProfileResolverService profileResolverService,
-      Injector injector,
+      ProfileResolverService profileResolverService, Injector injector,
       BeanConverter beanConverter,
       @Named(KernelConstants.PRIVATE_PATH_BASE) String privatePathBase) {
     this.jcrNodeFactoryService = jcrNodeFactoryService;
@@ -68,9 +65,10 @@ public class FriendsResolverServiceImpl implements FriendsResolverService {
     this.userFactoryService = userFactoryService;
     this.injector = injector;
   }
+
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.social.FriendsResolverService#resolve(java.lang.String)
    */
   public FriendsBean resolve(String uuid) {
@@ -80,23 +78,25 @@ public class FriendsResolverServiceImpl implements FriendsResolverService {
     try {
       in = jcrNodeFactoryService.getInputStream(userPath);
       String json = IOUtils.readFully(in, StringUtils.UTF8);
-      FriendsBean fb = beanConverter.convertToObject(json, FriendsBean.class);   
-      System.err.println("Loaded friends bean as "+fb);
+      FriendsBean fb = beanConverter.convertToObject(json, FriendsBean.class);
+      System.err.println("Loaded friends bean as " + fb);
       return fb;
     } catch (JCRNodeFactoryServiceException ex) {
       FriendsBean fb = injector.getInstance(FriendsBean.class);
       fb.setUuid(uuid);
-      System.err.println("create new friends bean as "+fb);
+      System.err.println("create new friends bean as " + fb);
       return fb;
     } catch (RepositoryException e) {
-      LOG.error(e.getMessage(),e);
+      LOG.error(e.getMessage(), e);
     } catch (UnsupportedEncodingException e) {
-      LOG.error(e.getMessage(),e);
+      LOG.error(e.getMessage(), e);
     } catch (IOException e) {
-      LOG.error(e.getMessage(),e);
+      LOG.error(e.getMessage(), e);
     } finally {
       try {
-        in.close();
+        if (in != null) {
+          in.close();
+        }
       } catch (Exception ex) {
       }
     }

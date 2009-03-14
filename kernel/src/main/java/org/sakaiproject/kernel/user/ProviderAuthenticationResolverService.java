@@ -43,7 +43,7 @@ public class ProviderAuthenticationResolverService implements
   private Registry<String,AuthenticationManagerProvider> managerRegistry;
 
   /**
-   * 
+   *
    */
   @Inject
   public ProviderAuthenticationResolverService(
@@ -52,13 +52,13 @@ public class ProviderAuthenticationResolverService implements
     this.nullService = nullService;
     this.registry = registryService
         .getRegistry(KernelConstants.AUTHENTICATION_PROVIDER_REGISTRY);
-    
+
    this.managerRegistry = registryService.getRegistry(KernelConstants.MANAGER_PROVIDER_REGISTRY);
   }
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.user.AuthenticationResolverService#authenticate(java.security.Principal)
    */
   public Authentication authenticate(Principal principal)

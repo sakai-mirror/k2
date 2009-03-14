@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
 /**
- * 
+ *
  */
 public class SakaiServletResponse extends HttpServletResponseWrapper {
 
@@ -68,7 +68,7 @@ public class SakaiServletResponse extends HttpServletResponseWrapper {
         default:
         }
       }
-      
+
       if ( error ) {
         if ( message != null ) {
           super.sendError(statusCode,message);
@@ -94,7 +94,7 @@ public class SakaiServletResponse extends HttpServletResponseWrapper {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.servlet.http.HttpServletResponseWrapper#sendError(int)
    */
   @Override
@@ -106,7 +106,7 @@ public class SakaiServletResponse extends HttpServletResponseWrapper {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.servlet.http.HttpServletResponseWrapper#sendError(int,
    *      java.lang.String)
    */
@@ -120,7 +120,7 @@ public class SakaiServletResponse extends HttpServletResponseWrapper {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.servlet.http.HttpServletResponseWrapper#setStatus(int)
    */
   @Override
@@ -132,7 +132,7 @@ public class SakaiServletResponse extends HttpServletResponseWrapper {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.servlet.http.HttpServletResponseWrapper#setStatus(int,
    *      java.lang.String)
    */

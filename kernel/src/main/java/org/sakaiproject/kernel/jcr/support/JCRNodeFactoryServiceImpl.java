@@ -45,7 +45,7 @@ import javax.jcr.ValueFactory;
 /**
  * @author ieb This is a support service to make it easier to treat a JCR service as a
  *         Filing System.
- * 
+ *
  **/
 @Singleton
 public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
@@ -108,7 +108,7 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
     if (jcrService.needsMixin(node, JCRConstants.MIX_ACL)) {
       node.addMixin(JCRConstants.MIX_ACL);
     }
-    
+
 
 
     // node.setProperty(JCRConstants.JCR_LASTMODIFIED, new GregorianCalendar());
@@ -117,7 +117,7 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService#createFile
    * (java.lang.String)
    */
@@ -128,7 +128,7 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService#createFolder
    * (java.lang.String)
    */
@@ -143,7 +143,7 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
    * Create a new node. Nodes are of the form nt:folder/nt:folder/nt:folder/nt:file
    * nt:folders have properties nt:files have properties nt:files have a nt:resource
    * subnode
-   * 
+   *
    * @param id
    * @param string
    * @param collection
@@ -198,24 +198,22 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
         try {
           savedNode = pathElements[i];
           currentNode = currentNode.getNode(pathElements[i]);
-          
+
         } catch ( PathNotFoundException pnfe ) {
           break;
         }
       }
-      @SuppressWarnings("unused")
-      Node lastComittedNode = currentNode;
       for( ; i < pathElements.length; i++ ) {
         if (i < pathElements.length - 1 || JCRConstants.NT_FOLDER.equals(type)) {
           savedNode = pathElements[i];
           Node newNode = currentNode.addNode(pathElements[i], JCRConstants.NT_FOLDER);
           populateFolder(newNode);
-          currentNode = newNode;          
+          currentNode = newNode;
         } else {
           savedNode = pathElements[i];
           Node newNode = currentNode.addNode(pathElements[i], JCRConstants.NT_FILE);
           populateFile(newNode, mimeType);
-          currentNode = newNode;          
+          currentNode = newNode;
         }
       }
       node = currentNode;
@@ -236,7 +234,7 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
       log.warn("Unspecified Repository Failiure ", rex);
       log.error("Unspecified Repository Failiure " + rex.getMessage());
       if ( currentNode != null ) {
-        
+
         try {
           log.info("Current Node was "+currentNode.getPath()+" saving "+savedNode);
         } catch (RepositoryException e) {
@@ -306,7 +304,7 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
       throws JCRNodeFactoryServiceException, RepositoryException {
     Node newNode = createNode(id, mimeType, JCRConstants.NT_FILE);
     if (newNode == null) {
-      log.error("Node is Null after create ");
+      throw new JCRNodeFactoryServiceException("Create File failed for path "+id);
     }
     Session s = newNode.getSession();
     ValueFactory vf = s.getValueFactory();
@@ -353,7 +351,7 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
       throws RepositoryException {
     node.setProperty(JCRConstants.JCR_SMARTNODE, language + ":" + statement);
   }
-  
+
   /**
    * {@inheritDoc}
    * @see org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService#setOwner(java.lang.String, java.lang.String)

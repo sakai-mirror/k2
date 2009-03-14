@@ -40,7 +40,7 @@ public class RestLogoutProvider implements RestProvider {
   private static final RestDescription DESCRIPTION = new RestDescription();
 
   /**
-   * 
+   *
    */
   @Inject
   public RestLogoutProvider(RegistryService registryService) {
@@ -51,7 +51,7 @@ public class RestLogoutProvider implements RestProvider {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.RestProvider#dispatch(java.lang.String[],
    *      javax.servlet.http.HttpServletRequest,
    *      javax.servlet.http.HttpServletResponse)
@@ -109,7 +109,7 @@ public class RestLogoutProvider implements RestProvider {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.RestProvider#getDescription()
    */
   public RestDescription getDescription() {
@@ -118,7 +118,7 @@ public class RestLogoutProvider implements RestProvider {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Provider#getKey()
    */
   public String getKey() {
@@ -127,7 +127,7 @@ public class RestLogoutProvider implements RestProvider {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Provider#getPriority()
    */
   public int getPriority() {

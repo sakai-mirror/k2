@@ -25,19 +25,19 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 
+ *
  */
 public class ReferenceResolverServiceProvider implements Provider<Map<String, ReferenceResolverService>> {
 
-  
+
   private Map<String, ReferenceResolverService> providerMap = new ConcurrentHashMap<String, ReferenceResolverService>();
 
   /**
-   * 
+   *
    */
   public ReferenceResolverServiceProvider() {
   }
-  
+
   /**
    * {@inheritDoc}
    * @see com.google.inject.Provider#get()

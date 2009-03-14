@@ -23,8 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Represents a Cache stored on the thread, used in the request thread and in other threads. 
- * When used in Threads there is a potential for memory leaks as perm space is not cleaned up. 
+ * Represents a Cache stored on the thread, used in the request thread and in other threads.
+ * When used in Threads there is a potential for memory leaks as perm space is not cleaned up.
  * This will be caused by references to classloaders being in the Map, and keeping the classloaders
  * open.
  */
@@ -37,9 +37,9 @@ public class ThreadLocalCacheMap extends ThreadLocal<Map<String,Cache<?>>> {
   protected Map<String, Cache<?>> initialValue() {
     return new HashMap<String, Cache<?>>();
   }
-    
-  
-  
-  
+
+
+
+
 
 }

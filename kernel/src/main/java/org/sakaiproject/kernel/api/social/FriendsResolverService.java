@@ -25,13 +25,13 @@ import org.sakaiproject.kernel.model.FriendsBean;
  */
 public interface FriendsResolverService {
 
-  
+
   /**
    * Get the FriendsBean for the user uuid.
    * @param uuid
    * @return
    */
   FriendsBean resolve(String uuid);
-  
-  
+
+
 }

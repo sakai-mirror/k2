@@ -49,6 +49,7 @@ public class SakaiRepositoryImpl extends RepositoryImpl {
   private Injector injector;
   private TransactionManager transactionManager;
   private ThreadLocal<Map<String, Session>> systemThreadSession = new ThreadLocal<Map<String, Session>>() {
+    @Override
     protected java.util.Map<String, Session> initialValue() {
       return new HashMap<String, Session>();
     };
@@ -85,7 +86,7 @@ public class SakaiRepositoryImpl extends RepositoryImpl {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.apache.jackrabbit.core.RepositoryImpl#createSessionInstance(org.apache.jackrabbit.core.security.AuthContext,
    *      org.apache.jackrabbit.core.config.WorkspaceConfig)
    */
@@ -117,7 +118,7 @@ public class SakaiRepositoryImpl extends RepositoryImpl {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.apache.jackrabbit.core.RepositoryImpl#getFileSystem()
    */
   @Override
@@ -127,7 +128,7 @@ public class SakaiRepositoryImpl extends RepositoryImpl {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.apache.jackrabbit.core.RepositoryImpl#getNamespaceRegistry()
    */
   @Override

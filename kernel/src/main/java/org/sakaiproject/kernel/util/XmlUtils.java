@@ -38,17 +38,17 @@ import javax.xml.validation.Validator;
 /**
  * Some of this code comes from Apache Axis. Header has been left as is, some
  * modifications have been made.
- * 
+ *
  * Abstract class for XML String encoders.
- * 
+ *
  * The new encoding mechanism fixes the following bugs/issues:
  * http://nagoya.apache.org/bugzilla/show_bug.cgi?id=15133
  * http://nagoya.apache.org/bugzilla/show_bug.cgi?id=15494
  * http://nagoya.apache.org/bugzilla/show_bug.cgi?id=19327
- * 
+ *
  * @author <a href="mailto:jens@void.fm">Jens Schumann</a>
  * @author <a href="mailto:dims@yahoo.com">Davanum Srinivas</a>
- * 
+ *
  */
 public class XmlUtils {
   /**
@@ -66,7 +66,7 @@ public class XmlUtils {
 
   /**
    * Encode a string
-   * 
+   *
    * @param xmlString
    *          string to be encoded
    * @return encoded string
@@ -150,7 +150,7 @@ public class XmlUtils {
 
   /**
    * Validate a xml input stream against a supplied schema.
-   * 
+   *
    * @param xml
    *          a stream containing the xml
    * @param schema
@@ -200,7 +200,7 @@ public class XmlUtils {
 
   /**
    * Attempts to parse the input xml into a single element.
-   * 
+   *
    * @param xml
    * @return The document object
    * @throws Exception

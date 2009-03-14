@@ -32,7 +32,7 @@ public class EntityManagerHolder implements ThreadBound {
   private String sourceThread;
 
   /**
-   * 
+   *
    */
   public EntityManagerHolder(EntityManager entityManager) {
     this.entityManager = entityManager;
@@ -41,7 +41,7 @@ public class EntityManagerHolder implements ThreadBound {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.memory.ThreadBound#unbind()
    */
   public void unbind() {
@@ -54,7 +54,7 @@ public class EntityManagerHolder implements ThreadBound {
       System.err.println("==========================Entity Manager is Closed=================");
     } else {
       System.err.println("==========================Entity Manager Already Closed=================");
-           
+
     }
   }
 

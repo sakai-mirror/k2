@@ -24,7 +24,7 @@ public interface SubjectPermissions {
 
   /**
    * Add a subject permission with the role that derived it.
-   * 
+   *
    * @param role
    *          the role performing the grant
    * @param permission
@@ -34,7 +34,7 @@ public interface SubjectPermissions {
 
   /**
    * Does the Subject have this permission token
-   * 
+   *
    * @param permissionToken
    *          the permission token
    * @return true if the subject does have the permission.

@@ -50,7 +50,7 @@ public class SessionMapProvider implements Provider<Map<String, HttpSession>> {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see com.google.inject.Provider#get()
    */
   public Map<String, HttpSession> get() {

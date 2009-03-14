@@ -87,8 +87,8 @@ public class GroupBean {
       return s;
     }
   }
-  
-  
+
+
 
   /**
    * @return the owners
@@ -96,16 +96,16 @@ public class GroupBean {
   public String[] getOwners() {
     return ArrayUtils.copy(owners, new String[owners.length]);
   }
-  
+
   public void setOwners(String[] owners) {
-   this.owners = ArrayUtils.copy(owners, new String[owners.length]); 
+   this.owners = ArrayUtils.copy(owners, new String[owners.length]);
   }
 
 
   public void addOwner(String owner) {
     owners = StringUtils.addString(owners,owner);
   }
-  
+
   public void removeOwner(String owner) {
     owners = StringUtils.removeString(owners,owner);
   }

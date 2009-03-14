@@ -36,7 +36,7 @@ public class EventRegistrationProvider implements Provider<List<EventRegistratio
   private List<EventRegistration> eventRegistrations;
 
   /**
-   * 
+   *
    */
   @Inject
   public EventRegistrationProvider(JcrContentListenerAdapter jcrContentListenerAdapter,
@@ -48,7 +48,7 @@ public class EventRegistrationProvider implements Provider<List<EventRegistratio
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see com.google.inject.Provider#get()
    */
   public List<EventRegistration> get() {

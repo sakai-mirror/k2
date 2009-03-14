@@ -22,7 +22,7 @@ import org.sakaiproject.kernel.api.authz.SubjectStatement;
 import org.sakaiproject.kernel.util.StringUtils;
 
 /**
- * 
+ *
  */
 public class JcrSubjectStatement implements SubjectStatement {
 
@@ -119,7 +119,7 @@ public class JcrSubjectStatement implements SubjectStatement {
   }
 
   /**
-   * 
+   *
    */
   private JcrSubjectStatement() {
     subjectType = SubjectType.UN;
@@ -129,7 +129,7 @@ public class JcrSubjectStatement implements SubjectStatement {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.authz.SubjectStatement#getPermissionToken()
    */
   public String getPermissionToken() {
@@ -138,7 +138,7 @@ public class JcrSubjectStatement implements SubjectStatement {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.authz.SubjectStatement#getSubjectToken()
    */
   public String getSubjectToken() {
@@ -147,7 +147,7 @@ public class JcrSubjectStatement implements SubjectStatement {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.authz.SubjectStatement#getSubjectType()
    */
   public SubjectType getSubjectType() {
@@ -156,7 +156,7 @@ public class JcrSubjectStatement implements SubjectStatement {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see java.lang.Object#hashCode()
    */
   @Override
@@ -167,7 +167,7 @@ public class JcrSubjectStatement implements SubjectStatement {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see java.lang.Object#equals(java.lang.Object)
    */
   @Override
@@ -183,7 +183,7 @@ public class JcrSubjectStatement implements SubjectStatement {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see java.lang.Object#toString()
    */
   @Override
