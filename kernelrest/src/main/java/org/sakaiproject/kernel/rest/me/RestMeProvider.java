@@ -105,6 +105,7 @@ public class RestMeProvider implements RestProvider, Initialisable {
 
   static {
     DESCRIPTION.setTitle("Me Service");
+    DESCRIPTION.setBackUrl("../__describe__");
     DESCRIPTION.setShortDescription("The Me service provides information about "
         + "the current user");
     DESCRIPTION.addSection(1, "Introduction",

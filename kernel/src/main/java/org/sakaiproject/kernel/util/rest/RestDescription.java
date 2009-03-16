@@ -79,8 +79,10 @@ public class RestDescription {
   private String xml;
   private String title;
   private String shortDescription;
-  private String backUrl = "../__describe__";
+  private String backUrl = "../?doc=1";
 
+  
+  
   /**
    * {@inheritDoc}
    *
@@ -333,7 +335,7 @@ public class RestDescription {
       sb.append("</p>");
       if (section.length > 3 && section[3] != null) {
         sb.append("<p> <a href=\"").append(section[3]).append(
-            "\" >More information</a> ");
+            "\" >More information</a> </p> ");
       }
     }
     sb.append("<h2>URL Patterns</h2>");

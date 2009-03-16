@@ -25,6 +25,7 @@ import org.sakaiproject.kernel.rest.friends.RestFriendsProvider;
 import org.sakaiproject.kernel.rest.me.RestMeProvider;
 import org.sakaiproject.kernel.rest.presence.PresenceProvider;
 import org.sakaiproject.kernel.rest.search.RestSearchProvider;
+import org.sakaiproject.kernel.rest.site.SiteProvider;
 import org.sakaiproject.kernel.webapp.Initialisable;
 
 import java.util.List;
@@ -43,9 +44,9 @@ public class RestServiceListProvider implements Provider<List<Initialisable>> {
   public RestServiceListProvider(RestFriendsProvider restFriendsProvider,
       DefaultRestProvider defaultRestProvider, RestMeProvider restMeProvider,
       RestSnoopProvider restSnoopProvider, RestSearchProvider restSearchProvider,
-      PresenceProvider presenceProvider) {
+      PresenceProvider presenceProvider, SiteProvider siteProvider) {
     list = ImmutableList.of((Initialisable) restFriendsProvider, defaultRestProvider,
-        restMeProvider, restSnoopProvider, restSearchProvider, presenceProvider);
+        restMeProvider, restSnoopProvider, restSearchProvider, presenceProvider, siteProvider);
   }
 
   /**

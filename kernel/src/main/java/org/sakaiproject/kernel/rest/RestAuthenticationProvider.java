@@ -47,6 +47,7 @@ public class RestAuthenticationProvider implements RestProvider {
 
   static {
     DESCRIPTION.setShortDescription("Authentication Rest Service");
+    DESCRIPTION.setBackUrl("../__describe__");
     DESCRIPTION.setTitle("Login Service");
     DESCRIPTION
         .addSection(

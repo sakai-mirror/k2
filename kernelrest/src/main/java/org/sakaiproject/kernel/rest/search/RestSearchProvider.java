@@ -75,6 +75,7 @@ public class RestSearchProvider implements RestProvider, Initialisable {
 
   static {
     DESC.setTitle("Search");
+    DESC.setBackUrl("../__describe__");
     DESC.setShortDescription("Provides search functionality into the JCR.");
     DESC.addSection(1, "Introduction",
         "This service allows search using the JCR search implemetation.");

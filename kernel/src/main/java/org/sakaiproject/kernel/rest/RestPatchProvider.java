@@ -118,6 +118,7 @@ public class RestPatchProvider implements RestProvider {
 
   static {
     DESC.setTitle("Patch");
+    DESC.setBackUrl("../__describe__");
     DESC.setShortDescription("Patches a json resource name value pairs.");
     DESC
         .addSection(1, "Introduction",

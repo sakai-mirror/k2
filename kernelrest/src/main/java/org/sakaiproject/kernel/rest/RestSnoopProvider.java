@@ -46,6 +46,7 @@ public class RestSnoopProvider implements RestProvider, Initialisable {
 
   static {
     DESCRIPTION.setTitle("Snoop Service");
+    DESCRIPTION.setBackUrl("../__describe__");
     DESCRIPTION
         .setShortDescription("The Snoop service provides information about "
             + "the current user session and request");

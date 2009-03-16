@@ -20,6 +20,7 @@ package org.sakaiproject.resteasy;
 
 import org.jboss.resteasy.spi.Registry;
 import org.sakaiproject.kernel.api.RegistryListener;
+import org.sakaiproject.kernel.api.rest.Documentable;
 import org.sakaiproject.kernel.api.rest.JaxRsPrototypeProvider;
 
 /**
@@ -32,12 +33,15 @@ public class JaxRsPrototypeRegistryListener implements
    *
    */
   private Registry registry;
+  private RootRestEasyDocumentation defaultDocumentation;
 
   /**
    * @param jaxRsRegistry the where we are registering JAXRS beans.
+   * @param defaultDocumentation 
    */
-  public JaxRsPrototypeRegistryListener(Registry jaxRsRegistry) {
+  public JaxRsPrototypeRegistryListener(Registry jaxRsRegistry, RootRestEasyDocumentation defaultDocumentation) {
     this.registry = jaxRsRegistry;
+    this.defaultDocumentation = defaultDocumentation;
   }
 
   /**
@@ -46,6 +50,7 @@ public class JaxRsPrototypeRegistryListener implements
    */
   public void added(JaxRsPrototypeProvider wasAdded) {
     registry.addPerRequestResource(wasAdded.getJaxRsPrototype());
+    defaultDocumentation.addRegistration(wasAdded.getJaxRsPrototype());
   }
 
   /**
@@ -54,6 +59,7 @@ public class JaxRsPrototypeRegistryListener implements
    */
   public void removed(JaxRsPrototypeProvider wasRemoved) {
     registry.removeRegistrations(wasRemoved.getJaxRsPrototype());
+    defaultDocumentation.removeRegistration(wasRemoved.getJaxRsPrototype().getClass());
   }
 
   /**
@@ -63,6 +69,7 @@ public class JaxRsPrototypeRegistryListener implements
   public void updated(JaxRsPrototypeProvider wasUpdated) {
     registry.removeRegistrations(wasUpdated.getJaxRsPrototype());
     registry.addPerRequestResource(wasUpdated.getJaxRsPrototype());
+    defaultDocumentation.addRegistration(wasUpdated.getJaxRsPrototype());
   }
 
 }

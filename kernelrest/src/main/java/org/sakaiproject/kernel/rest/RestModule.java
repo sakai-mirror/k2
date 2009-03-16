@@ -32,6 +32,7 @@ import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.presence.PresenceService;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
+import org.sakaiproject.kernel.api.site.SiteService;
 import org.sakaiproject.kernel.api.social.FriendsResolverService;
 import org.sakaiproject.kernel.api.user.ProfileResolverService;
 import org.sakaiproject.kernel.api.user.UserFactoryService;
@@ -126,6 +127,11 @@ public class RestModule extends AbstractModule {
 
     bind(PresenceService.class).toProvider(
         new ServiceProvider<PresenceService>(serviceManager, PresenceService.class)).in(
+        Scopes.SINGLETON);
+
+    
+    bind(SiteService.class).toProvider(
+        new ServiceProvider<SiteService>(serviceManager, SiteService.class)).in(
         Scopes.SINGLETON);
 
     // activate all the services

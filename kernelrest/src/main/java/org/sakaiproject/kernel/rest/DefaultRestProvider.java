@@ -93,6 +93,7 @@ public class DefaultRestProvider implements RestProvider, Initialisable {
     Map<String, RestProvider> providers = registry.getMap();
     restDescription.setShortDescription("All Rest Services in the system");
     restDescription.setTitle("List of rest Services");
+    restDescription.setBackUrl("__describe__");
     for (Entry<String, RestProvider> provider : providers.entrySet()) {
       if (!"default".equals(provider.getKey())) {
         RestDescription description = provider.getValue().getDescription();

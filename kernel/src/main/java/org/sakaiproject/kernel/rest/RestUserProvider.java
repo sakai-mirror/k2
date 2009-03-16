@@ -389,6 +389,7 @@ public class RestUserProvider implements RestProvider {
 
   static {
     DESCRIPTION.setTitle("User Rest Service");
+    DESCRIPTION.setBackUrl("../__describe__");
     DESCRIPTION
         .setShortDescription("The User service creates users, and sets the users password ");
     DESCRIPTION.addSection(1, "Create User",

@@ -27,6 +27,7 @@ import org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap;
 import org.jboss.resteasy.spi.Registry;
 import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.RegistryService;
+import org.sakaiproject.kernel.api.rest.Documentable;
 import org.sakaiproject.kernel.api.rest.JaxRsPrototypeProvider;
 import org.sakaiproject.kernel.api.rest.JaxRsSingletonProvider;
 
@@ -50,31 +51,40 @@ public class ResteasyK2Bootstrap extends ResteasyBootstrap {
    *
    */
   private JaxRsPrototypeRegistryListener prototypeListener;
+  /**
+   * The default documentation bean
+   */
+  private RootRestEasyDocumentation defaultDocumentation;
 
   /**
    * {@inheritDoc}
    *
-   * @see org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap#contextInitialized(
-   *   javax.servlet.ServletContextEvent)
+   * @see org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap#contextInitialized(javax.servlet.ServletContextEvent)
    */
   public void contextInitialized(ServletContextEvent event) {
     super.contextInitialized(event);
     Registry restEasyRegistry = (Registry) event.getServletContext().getAttribute(
         Registry.class.getName());
 
+    defaultDocumentation = (RootRestEasyDocumentation) event.getServletContext().getAttribute(
+        Documentable.class.getName());
+    if (defaultDocumentation == null) {
+      defaultDocumentation = new RootRestEasyDocumentation();
+      event.getServletContext().setAttribute(Documentable.class.getName(),
+          defaultDocumentation);
+    }
+
     // Add listeners to keep the kernel registries aligned with the resteasy
     // registry
-    singletonListener = new JaxRsSingletonRegistryListener(restEasyRegistry);
-    prototypeListener = new JaxRsPrototypeRegistryListener(restEasyRegistry);
+    singletonListener = new JaxRsSingletonRegistryListener(restEasyRegistry,defaultDocumentation);
+    prototypeListener = new JaxRsPrototypeRegistryListener(restEasyRegistry,defaultDocumentation);
 
     // Add all of the resources in our JAX-RS providers to the resteasy registry
     KernelManager km = new KernelManager();
     RegistryService registryService = km.getService(RegistryService.class);
-    org.sakaiproject.kernel.api.Registry<String, JaxRsSingletonProvider> jaxRsSingletonRegistry =
-      registryService
+    org.sakaiproject.kernel.api.Registry<String, JaxRsSingletonProvider> jaxRsSingletonRegistry = registryService
         .getRegistry(JAXRS_SINGLETON_REGISTRY);
-    org.sakaiproject.kernel.api.Registry<String, JaxRsPrototypeProvider> jaxRsPrototypeRegistry =
-      registryService
+    org.sakaiproject.kernel.api.Registry<String, JaxRsPrototypeProvider> jaxRsPrototypeRegistry = registryService
         .getRegistry(JAXRS_PROTOTYPE_REGISTRY);
 
     // Sync the JAX-RS implementation's registry with the kernel's registry
@@ -92,16 +102,18 @@ public class ResteasyK2Bootstrap extends ResteasyBootstrap {
   /**
    * {@inheritDoc}
    *
-   * @see org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap#contextDestroyed(
-   * javax.servlet.ServletContextEvent)
+   * @see org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap#contextDestroyed(javax.servlet.ServletContextEvent)
    */
   public void contextDestroyed(ServletContextEvent event) {
   }
 
   /**
-   * @param restEasyRegistry the registry to sync to.
-   * @param jaxRsSingletonRegistry the JAXRS Singleton Registry.
-   * @param jaxRsPrototypeRegistry the JAXRS Prototype Registry.
+   * @param restEasyRegistry
+   *          the registry to sync to.
+   * @param jaxRsSingletonRegistry
+   *          the JAXRS Singleton Registry.
+   * @param jaxRsPrototypeRegistry
+   *          the JAXRS Prototype Registry.
    */
   protected void syncRestEasyRegistry(
       Registry restEasyRegistry,
@@ -111,8 +123,10 @@ public class ResteasyK2Bootstrap extends ResteasyBootstrap {
     Map<String, JaxRsSingletonProvider> singletonProvidersMap = jaxRsSingletonRegistry
         .getMap();
     for (JaxRsSingletonProvider provider : singletonProvidersMap.values()) {
+      
       try {
         restEasyRegistry.removeRegistrations(provider.getJaxRsSingleton().getClass());
+        defaultDocumentation.removeRegistration(provider.getJaxRsSingleton().getClass());
       } catch (Exception e) {
         LOG.warn(e);
       }
@@ -120,11 +134,13 @@ public class ResteasyK2Bootstrap extends ResteasyBootstrap {
         LOG.info("Added JAX-RS singleton: " + provider.getJaxRsSingleton());
       }
       restEasyRegistry.addSingletonResource(provider.getJaxRsSingleton());
+      defaultDocumentation.addRegistration(provider.getJaxRsSingleton());
     }
     Map<String, JaxRsPrototypeProvider> prototypeProvidersMap = jaxRsPrototypeRegistry
         .getMap();
     for (JaxRsPrototypeProvider provider : prototypeProvidersMap.values()) {
       try {
+        defaultDocumentation.removeRegistration(provider.getJaxRsPrototype().getClass());
         restEasyRegistry.removeRegistrations(provider.getJaxRsPrototype());
       } catch (Exception e) {
         LOG.warn(e);
@@ -133,6 +149,7 @@ public class ResteasyK2Bootstrap extends ResteasyBootstrap {
         LOG.info("Added JAX-RS prototype: " + provider.getJaxRsPrototype());
       }
       restEasyRegistry.addPerRequestResource(provider.getJaxRsPrototype());
+      defaultDocumentation.addRegistration(provider.getJaxRsPrototype());
     }
   }
 }

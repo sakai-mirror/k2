@@ -92,6 +92,7 @@ public class RestLogoutProvider implements RestProvider {
 
   static {
     DESCRIPTION.setTitle("Logout Service");
+    DESCRIPTION.setBackUrl("../__describe__");
     DESCRIPTION.setShortDescription("The Logout service logs the user out ");
     DESCRIPTION
         .addURLTemplate(

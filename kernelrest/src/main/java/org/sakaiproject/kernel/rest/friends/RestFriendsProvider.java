@@ -69,6 +69,7 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
 
   static {
     DESC.setTitle("Friends");
+    DESC.setBackUrl("../__describe__");
     DESC.setShortDescription("Managed Friend Pairs");
     DESC.addSection(1, "Introduction",
         "This service allows the management of a friends list.");

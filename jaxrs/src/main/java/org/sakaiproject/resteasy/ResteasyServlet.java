@@ -18,31 +18,20 @@
 
 package org.sakaiproject.resteasy;
 
-import org.jboss.resteasy.core.ResourceInvoker;
-import org.jboss.resteasy.core.ResourceLocator;
-import org.jboss.resteasy.core.ResourceMethod;
 import org.jboss.resteasy.core.ThreadLocalResteasyProviderFactory;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 import org.jboss.resteasy.plugins.server.servlet.ServletSecurityContext;
-import org.jboss.resteasy.plugins.server.servlet.ServletUtil;
-import org.jboss.resteasy.specimpl.UriInfoImpl;
-import org.jboss.resteasy.spi.HttpRequest;
-import org.jboss.resteasy.spi.HttpResponse;
 import org.jboss.resteasy.spi.Registry;
-import org.jboss.resteasy.spi.ResourceFactory;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.sakaiproject.kernel.api.rest.Documentable;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.SecurityContext;
 
 /**
@@ -56,19 +45,31 @@ public class ResteasyServlet extends HttpServletDispatcher {
    *
    */
   private static final long serialVersionUID = 1L;
+  /**
+   * The JSR-311 registry.
+   */
   protected Registry registry;
-  
+  /**
+   * A documentation bean.
+   */
+  private RootRestEasyDocumentation defaultDocumentation;
+
+  /**
+   * {@inheritDoc}
+   * @see org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher#init(javax.servlet.ServletConfig)
+   */
   @Override
   public void init(ServletConfig sc) throws ServletException {
     super.init(sc);
     registry = (Registry) sc.getServletContext().getAttribute(Registry.class.getName());
+    defaultDocumentation = (RootRestEasyDocumentation) sc.getServletContext()
+        .getAttribute(Documentable.class.getName());
   }
-  
+
   /**
    * {@inheritDoc}
    *
-   * @see org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher#service(
-   *      javax.servlet.http.HttpServletRequest,
+   * @see org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher#service(javax.servlet.http.HttpServletRequest,
    *      javax.servlet.http.HttpServletResponse)
    */
   @Override
@@ -87,57 +88,23 @@ public class ResteasyServlet extends HttpServletDispatcher {
           ResteasyProviderFactory.pushContext(SecurityContext.class,
               new ServletSecurityContext(request));
           // end boilerplate
-
-          // JAX-RS uses its own request / response objects, not those defined in the
-          // servlet spec
-          HttpHeaders headers = ServletUtil.extractHttpHeaders(request);
-          UriInfoImpl uriInfo = ServletUtil.extractUriInfo(request, "");
-          HttpResponse jaxrsResponse = createServletResponse(response);
-          HttpRequest jaxrsRequest = createHttpRequest(request.getMethod(), request,
-              headers, uriInfo, jaxrsResponse);
-
-          ResourceInvoker invoker = registry.getResourceInvoker(jaxrsRequest,
-              jaxrsResponse);
-          PrintWriter writer = response.getWriter();
-          if (invoker instanceof ResourceLocator) {
-            ResourceLocator rl = (ResourceLocator) invoker;
-            try {
-              // Resteasy is designed to invoke, not list, resources, so finding the
-              // resource class
-              // requires reflection on the internal resteasy APIs
-              Method createResourceMethod = rl.getMethod().getDeclaringClass()
-                  .getDeclaredMethod("createResource",
-                      new Class[] {HttpRequest.class, HttpResponse.class });
-              Documentable documentable = (Documentable) createResourceMethod.invoke(rl,
-                  new Object[] {jaxrsRequest, jaxrsResponse });
-              writer.write(documentable.getRestDocumentation().toHtml());
-              writer.flush();
-              return;
-            } catch (Exception e) {
-              e.printStackTrace();
-              throw new RuntimeException(e);
-            }
-          } else if (invoker instanceof ResourceMethod) {
-            ResourceMethod rm = (ResourceMethod) invoker;
-            try {
-              // Again, we can't easily find the jax-rs resources, so we must use
-              // reflection to
-              // drill down into the internal resteasy APIs. Hopefully this will change
-              // with later
-              // resteasy releases.
-              Field resourceField = rm.getClass().getDeclaredField("resource");
-              resourceField.setAccessible(true);
-              ResourceFactory rf = (ResourceFactory) resourceField.get(rm);
-              Documentable documentable = (Documentable) rf.createResource(jaxrsRequest,
-                  jaxrsResponse, null);
-              writer.write(documentable.getRestDocumentation().toHtml());
-              writer.flush();
-              return;
-            } catch (Exception e) {
-              e.printStackTrace();
-              throw new RuntimeException(e);
-            }
+          String requestPath = request.getRequestURI();
+          if (!requestPath.endsWith("/")) {
+            response.sendRedirect(request.getRequestURI() + "/?"
+                + request.getQueryString());
+            return;
           }
+
+          String path = request.getPathInfo();
+          Documentable doc = defaultDocumentation.getDocumentable(path);
+          if (doc == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+          } else {
+            PrintWriter writer = response.getWriter();
+            writer.write(doc.getRestDocumentation().toHtml());
+            writer.flush();
+          }
+          return;
         } finally {
           ResteasyProviderFactory.clearContextData();
         }

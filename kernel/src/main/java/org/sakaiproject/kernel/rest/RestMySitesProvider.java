@@ -96,6 +96,7 @@ public class RestMySitesProvider implements RestProvider {
 
   static {
     DESCRIPTION.setTitle("MySites Service");
+    DESCRIPTION.setBackUrl("../__describe__");
     DESCRIPTION
         .setShortDescription("The MySites service provides information about "
             + "sites associated with the current user");

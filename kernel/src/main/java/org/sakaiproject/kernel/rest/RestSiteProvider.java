@@ -71,6 +71,7 @@ public class RestSiteProvider implements RestProvider {
 
   static {
     DESC = new RestDescription();
+    DESC.setBackUrl("../__describe__");
     DESC.setTitle("Site");
     DESC.setShortDescription("Creates a site and adds the current user as the owner.");
     DESC.addSection(1, "Introduction", "");
