@@ -53,8 +53,11 @@ public class RegistryServiceUT {
   public void testRegistryServiceAddReverse() {
     RegistryServiceImpl registryServiceImpl = new RegistryServiceImpl();
     Registry<String,TProvider<String>> r = registryServiceImpl.getRegistry("testRegistry");
+    List<TProvider<String>> providerStore = Lists.newArrayList();
     for ( int i = 99; i >= 0; i-- ) {
-      r.add(new TProvider<String>(i,String.valueOf(i)));
+      TProvider<String> p = new TProvider<String>(i,String.valueOf(i));
+      providerStore.add(p); // store so it doesnt get gc'd
+      r.add(p);
     }
     List<TProvider<String>> p = r.getList();
     for ( int i = 0; i < 100; i++ ) {
@@ -68,8 +71,11 @@ public class RegistryServiceUT {
     Registry<String,TProvider<String>> r = registryServiceImpl.getRegistry("testRegistry");
     TProvider<String> tp = new TProvider<String>(-2,String.valueOf(-2));
     r.add(tp);
+    List<TProvider<String>> providerStore = Lists.newArrayList();
     for ( int i = 99; i >= 0; i-- ) {
-      r.add(new TProvider<String>(i,String.valueOf(i)));
+      TProvider<String> p = new TProvider<String>(i,String.valueOf(i));
+      providerStore.add(p); // store so it doesnt get gc'd
+      r.add(p);
     }
     r.remove(tp);
     List<TProvider<String>> p = r.getList();
