@@ -94,4 +94,15 @@ public interface JCRNodeFactoryService {
    */
   Node getNode(String nodePath) throws RepositoryException,
       JCRNodeFactoryServiceException;
+
+  /**
+   * Set the owner of the a node.
+   * 
+   * @param userPrivatePath
+   * @param uuid
+   * @throws JCRNodeFactoryServiceException
+   * @throws RepositoryException
+   */
+  void setOwner(String path, String uuid) throws RepositoryException,
+      JCRNodeFactoryServiceException;
 }
