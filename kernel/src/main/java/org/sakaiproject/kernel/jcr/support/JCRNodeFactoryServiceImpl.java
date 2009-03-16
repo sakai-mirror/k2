@@ -340,32 +340,4 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
       throw new PermissionDeniedException(ax.getMessage(), ax);
     }
   }
-
-  /**
-   * {@inheritDoc}
-   *
-   * @see org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService#makeSmartNode(javax.jcr.Node,
-   *      java.lang.String, java.lang.String)
-   */
-  public void makeSmartNode(Node node, String language, String statement)
-      throws RepositoryException {
-    node.setProperty(JCRConstants.JCR_SMARTNODE, language + ":" + statement);
-  }
-
-  /**
-   * {@inheritDoc}
-   * @see org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService#setOwner(java.lang.String, java.lang.String)
-   */
-  public void setOwner(String path, String uuid) throws RepositoryException, JCRNodeFactoryServiceException {
-    Node node = null;
-    try {
-      node = getNode(path);
-    } catch (JCRNodeFactoryServiceException e) {
-    }
-    if ( node == null ) {
-      node = createFolder(path);
-    }
-    node.setProperty(JCRConstants.ACL_OWNER, uuid);
-  }
-
 }

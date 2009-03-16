@@ -348,4 +348,5 @@ public interface JCRConstants {
   public static final String NS_ACL_PREFIX = "acl";
   public static final String NS_ACL_URI = "http://www.jcp.org/acl/sv/1.0";
 
+  public static final String JCR_LABELS = "sakaijcr:labels";
 }

@@ -26,6 +26,8 @@
     </supertypes>
     <propertyDefinition name="*" requiredType="undefined" autoCreated="false"
       mandatory="false" onParentVersion="COPY" protected="false" multiple="false" />
+    <propertyDefinition name="*" requiredType="undefined" autoCreated="false"
+      mandatory="false" onParentVersion="COPY" protected="false" multiple="true" />
     <propertyDefinition name="sakai:authzGroup" requiredType="undefined"
       autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="true" />
     <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured"

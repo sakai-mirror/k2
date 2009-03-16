@@ -28,6 +28,7 @@ import org.sakaiproject.kernel.rest.test.RestMySitesProviderKernelUnitT;
 import org.sakaiproject.kernel.rest.test.RestPatchProviderKernelUnitT;
 import org.sakaiproject.kernel.rest.test.RestSiteProviderKernelUnitT;
 import org.sakaiproject.kernel.site.SiteServiceT;
+import org.sakaiproject.kernel.util.JcrUtilsT;
 import org.sakaiproject.kernel.webapp.test.SakaiAuthenticationFilterKernelUnitT;
 
 /**
@@ -40,7 +41,8 @@ import org.sakaiproject.kernel.webapp.test.SakaiAuthenticationFilterKernelUnitT;
     SessionManagerServiceKernelUnitT.class, AclListenerT.class,
     SiteServiceT.class, RestSiteProviderKernelUnitT.class,
     RestPatchProviderKernelUnitT.class,
-    RestMySitesProviderKernelUnitT.class, ActiveMQEmailDeliveryT.class })
+    RestMySitesProviderKernelUnitT.class,
+    ActiveMQEmailDeliveryT.class, JcrUtilsT.class })
 public class AllKernelTest {
   private static boolean shutdown;
   static {
