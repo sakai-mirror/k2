@@ -15,7 +15,7 @@
   xmlns:sakai="http://www.sakaiproject.org/CHS/jcr/sakai/1.0" xmlns:CHEF="http://www.sakaiproject.org/CHS/jcr/chef/1.0"
   xmlns:DAV="http://www.sakaiproject.org/CHS/jcr/dav/1.0" xmlns:mix="http://www.jcp.org/jcr/mix/1.0"
   xmlns:acl="http://www.jcp.org/jcr/acl/1.0">
-	<!--
+  <!--
 		this will allow any properties to be added to the node where the mixin
 		is added
 	-->
@@ -26,8 +26,8 @@
     </supertypes>
     <propertyDefinition name="*" requiredType="undefined" autoCreated="false"
       mandatory="false" onParentVersion="COPY" protected="false" multiple="false" />
-    <propertyDefinition name="*" requiredType="undefined" autoCreated="false"
-      mandatory="false" onParentVersion="COPY" protected="false" multiple="true" />
+    <propertyDefinition name="sakaijcr:labels" requiredType="undefined"
+      autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="true" />
     <propertyDefinition name="sakai:authzGroup" requiredType="undefined"
       autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="true" />
     <childNodeDefinition name="*" defaultPrimaryType="nt:unstructured"
