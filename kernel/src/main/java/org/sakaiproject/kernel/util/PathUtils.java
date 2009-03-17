@@ -31,7 +31,6 @@ import org.apache.commons.logging.LogFactory;
  */
 public class PathUtils {
 
-
   /**
    *
    */
@@ -41,7 +40,8 @@ public class PathUtils {
    * Generate a path using a SHA-1 hash split into path parts to generate a unique path to
    * the user information, that will not result in too many objects in each folder.
    *
-   * @param user the user for which the path will be generated.
+   * @param user
+   *          the user for which the path will be generated.
    * @return a structured path fragment for the user.
    */
   public static String getUserPrefix(String user) {
@@ -55,7 +55,8 @@ public class PathUtils {
   }
 
   /**
-   * @param target the target being formed into a structured path.
+   * @param target
+   *          the target being formed into a structured path.
    * @return the structured path.
    */
   private static String getStructuredHash(String target) {
@@ -117,7 +118,8 @@ public class PathUtils {
   }
 
   /**
-   * @param path the original path.
+   * @param path
+   *          the original path.
    * @return a pooled hash of the filename
    */
   public static String getPoolPrefix(String path) {
@@ -128,4 +130,43 @@ public class PathUtils {
         .append(hash);
     return sb.toString();
   }
+
+  /**
+   * Normalizes the input path to an absolute path prepending / and ensuring that the path
+   * does not end in /.
+   *
+   * @param pathFragment
+   *          the path.
+   * @return a normalized path.
+   */
+  public static String normalizePath(String pathFragment) {
+    char[] source = pathFragment.toCharArray();
+    char[] normalized = new char[source.length + 1];
+    int i = 0;
+    int j = 0;
+    if (source[i] != '/') {
+      normalized[j++] = '/';
+    }
+    boolean slash = false;
+    for (; i < source.length; i++) {
+      char c = source[i];
+      switch (c) {
+      case '/':
+        if (!slash) {
+          normalized[j++] = c;
+        }
+        slash = true;
+        break;
+      default:
+        slash = false;
+        normalized[j++] = c;
+        break;
+      }
+    }
+    if ( j > 1 && normalized[j-1] == '/' ) {
+      j--;
+    }
+    return new String(normalized,0,j);
+  }
+
 }

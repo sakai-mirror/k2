@@ -33,16 +33,16 @@ Add Owner
 <form method="POST" action="#" onsubmit="return submitToPath(this);"  >
 Site Path:<input type="text" name="path" value="testSiteId" value="1" />
 Owner:<input type="text" name="owner" value="new owner" />
-<input type="hidden" name="targetPath" value="/_rest/owner/add" />
-<input type="submit" name="submit" value="Create" />
+<input type="hidden" name="targetPath" value="/_rest/site/owner/add" />
+<input type="submit" name="submit" value="Add Owner" />
 </form>
 
 Remove Owner
 <form method="POST" action="#" onsubmit="return submitToPath(this);"  >
 Site Path:<input type="text" name="path" value="testSiteId" value="1" />
 Owner:<input type="text" name="owner" value="existing owner" />
-<input type="hidden" name="targetPath" value="/_rest/owner/remove" />
-<input type="submit" name="submit" value="Create" />
+<input type="hidden" name="targetPath" value="/_rest/site/owner/remove" />
+<input type="submit" name="submit" value="Remove Owner" />
 </form>
 
 Add Member
@@ -50,8 +50,8 @@ Add Member
 Site Path:<input type="text" name="path" value="testSiteId" value="1" />
 Member:<input type="text" name="uuserid" value="new member" />
 Membership Type:<input type="text" name="membertoken" value="access" />
-<input type="hidden" name="targetPath" value="/_rest/member/add" />
-<input type="submit" name="submit" value="Create" />
+<input type="hidden" name="targetPath" value="/_rest/site/members/add" />
+<input type="submit" name="submit" value="Add Member" />
 </form>
 
 Remove Member
@@ -59,8 +59,8 @@ Remove Member
 Site Path:<input type="text" name="path" value="testSiteId" value="1" />
 Member:<input type="text" name="uuserid" value="existing member" />
 Membership Type:<input type="text" name="membertoken" value="access" />
-<input type="hidden" name="targetPath" value="/_rest/member/remove" />
-<input type="submit" name="submit" value="Create" />
+<input type="hidden" name="targetPath" value="/_rest/site/members/remove" />
+<input type="submit" name="submit" value="Remove Member" />
 </form>
 
 </body>

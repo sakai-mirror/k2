@@ -21,6 +21,7 @@ import com.google.inject.util.ReferenceMap;
 import com.google.inject.util.ReferenceType;
 
 import org.sakaiproject.kernel.api.rest.Documentable;
+import org.sakaiproject.kernel.util.PathUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 
 import java.util.Map;
@@ -80,34 +81,11 @@ public class RootRestEasyDocumentation implements Documentable {
   public void addRegistration(Object documentatable) {
     Path path = documentatable.getClass().getAnnotation(Path.class);
     if (path != null) {
-      String pathFragment = normalizePath(path.value());
+      String pathFragment = PathUtils.normalizePath(path.value());
       paths.put(pathFragment, (Documentable) documentatable);
     }
   }
 
-  /**
-   * @param value
-   * @return
-   */
-  private String normalizePath(String pathFragment) {
-    if (pathFragment == null || "/".equals(pathFragment)) {
-      return "/";
-    }
-    pathFragment = pathFragment.trim();
-    if (pathFragment.length() == 0) {
-      return "/";
-    }
-    if (!pathFragment.startsWith("/")) {
-      pathFragment = "/" + pathFragment;
-    }
-    if (pathFragment.endsWith("/")) {
-      pathFragment = pathFragment.substring(0, pathFragment.length() - 1);
-    }
-    if (pathFragment.length() == 0) {
-      pathFragment = "/";
-    }
-    return pathFragment;
-  }
 
   /**
    * Get the documentable bean for a path.
@@ -116,7 +94,7 @@ public class RootRestEasyDocumentation implements Documentable {
    * @return
    */
   public Documentable getDocumentable(String path) {
-    path = normalizePath(path);
+    path = PathUtils.normalizePath(path);
     if (path == null || "/".equals(path)) {
       return this;
     } else {

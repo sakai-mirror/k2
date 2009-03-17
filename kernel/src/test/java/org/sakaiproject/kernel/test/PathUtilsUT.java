@@ -29,18 +29,17 @@ import org.sakaiproject.kernel.util.StringUtils;
  * 
  */
 public class PathUtilsUT {
-  private static final String[] USER_PATH_TEST = new String[] { null, "",
-      "~test", "ieb236" };
+  private static final String[] USER_PATH_TEST = new String[] {null, "", "~test",
+      "ieb236"};
   private static final String[] REFERENCE_PARENT_TEST = new String[] {
       "/user/home/ieb:/user/home", "/user/home/ieb///:/user/home",
-      "/user/home////ieb:/user/home", "/user////home////ieb:/user////home",
-      "/user/:/", "/////:/" };
+      "/user/home////ieb:/user/home", "/user////home////ieb:/user////home", "/user/:/",
+      "/////:/"};
   private static final Log LOG = LogFactory.getLog(PathUtilsUT.class);
 
   /**
    * Test method for
-   * {@link org.sakaiproject.kernel.util.PathUtils#getUserPrefix(java.lang.String)}
-   * .
+   * {@link org.sakaiproject.kernel.util.PathUtils#getUserPrefix(java.lang.String)} .
    */
   @Test
   public void testGetUserPrefix() {
@@ -57,17 +56,31 @@ public class PathUtilsUT {
 
   /**
    * Test method for
-   * {@link org.sakaiproject.kernel.util.PathUtils#getParentReference(java.lang.String)}
-   * .
+   * {@link org.sakaiproject.kernel.util.PathUtils#getParentReference(java.lang.String)} .
    */
   @Test
   public void testGetParentReference() {
     for (String testPair : REFERENCE_PARENT_TEST) {
       String[] p = StringUtils.split(testPair, ':');
       String parent = PathUtils.getParentReference(p[0]);
-      LOG.debug("Checking "+testPair+" gave  "+parent);
+      LOG.debug("Checking " + testPair + " gave  " + parent);
       assertEquals(p[1], parent);
     }
+  }
+
+  @Test
+  public void testPathNormalization() {
+    for (String testPair : REFERENCE_PARENT_TEST) {
+      String[] p = StringUtils.split(testPair, ':');
+      String normalized = PathUtils.normalizePath(p[0]);
+      LOG.debug("Normalizing " + testPair + " gave  " + normalized);
+      if (!"/".equals(normalized)) {
+        assertTrue("Bad Path " + normalized, normalized.startsWith("/"));
+        assertFalse("Bad Path " + normalized, normalized.endsWith("/"));
+        assertEquals("Bad Path " + normalized, -1, normalized.indexOf("//"));
+      }
+    }
+
   }
 
 }

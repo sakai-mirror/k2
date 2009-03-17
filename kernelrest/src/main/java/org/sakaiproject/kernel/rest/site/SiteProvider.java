@@ -32,6 +32,7 @@ import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.model.SiteBean;
 import org.sakaiproject.kernel.rest.RestSiteProvider.Params;
+import org.sakaiproject.kernel.util.PathUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.kernel.util.user.AnonUser;
 import org.sakaiproject.kernel.webapp.Initialisable;
@@ -47,10 +48,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 /**
- * 
+ *
  */
 @Path("/site")
 public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initialisable {
@@ -138,7 +140,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
   }
 
   /**
-   * 
+   *
    */
   @Inject
   public SiteProvider(RegistryService registryService, SiteService siteService,
@@ -159,13 +161,14 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
    * @return
    */
   @POST
-  @Path("/create/{" + SITE_PATH_PARAM + "}")
+  @Path("/create/{" + SITE_PATH_PARAM + ":.*}")
   @Produces(MediaType.TEXT_PLAIN)
   public String createSite(@PathParam(SITE_PATH_PARAM) String path,
       @FormParam(SITE_TYPE_PARAM) String type, @FormParam(NAME_PARAM) String name,
       @FormParam(DESCRIPTION_PARAM) String description) {
     try {
       User u = getAuthenticatedUser();
+      path = PathUtils.normalizePath(path);
       SiteBean siteBean = siteService.createSite(path, type);
       siteBean.addOwner(u.getUuid());
       siteBean.setDescription(description);
@@ -175,6 +178,8 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
       siteBean.save();
     } catch (SiteException e) {
       throw new WebApplicationException(e, Status.CONFLICT);
+    } catch ( WebApplicationException e) {
+      throw e;
     } catch ( Exception e) {
       throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
     }
@@ -186,14 +191,15 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
    * @return
    */
   @GET
-  @Path("/get/{" + SITE_PATH_PARAM + "}")
+  @Path("/get/{" + SITE_PATH_PARAM + ":.*}")
   @Produces(MediaType.TEXT_PLAIN)
   public String getSite(@PathParam(SITE_PATH_PARAM) String path) {
+    path = PathUtils.normalizePath(path);
     if (siteService.siteExists(path)) {
       SiteBean siteBean = siteService.getSite(path);
       return beanConverter.convertToString(siteBean);
     }
-    throw new WebApplicationException(Status.NOT_FOUND);
+    throw new WebApplicationException(Response.status(Status.NOT_FOUND).build());
   }
 
   /**
@@ -202,10 +208,11 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
    * @return
    */
   @POST
-  @Path("/owner/add/{" + SITE_PATH_PARAM + "}")
+  @Path("/owner/add/{" + SITE_PATH_PARAM + ":.*}")
   @Produces(MediaType.TEXT_PLAIN)
   public String addOwner(@PathParam(SITE_PATH_PARAM) String path,
       @FormParam(OWNER_PARAM) String ownerId) {
+    path = PathUtils.normalizePath(path);
     if (siteService.siteExists(path)) {
       try {
         SiteBean siteBean = siteService.getSite(path);
@@ -218,7 +225,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
         throw new WebApplicationException(e, Status.CONFLICT);
       }
     }
-    throw new WebApplicationException(Status.NOT_FOUND);
+    throw new WebApplicationException(Response.status(Status.NOT_FOUND).build());
   }
 
   /**
@@ -227,10 +234,11 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
    * @return
    */
   @POST
-  @Path("/owner/remove/{" + SITE_PATH_PARAM + "}")
+  @Path("/owner/remove/{" + SITE_PATH_PARAM + ":.*}")
   @Produces(MediaType.TEXT_PLAIN)
   public String removeOwner(@PathParam(SITE_PATH_PARAM) String path,
       @FormParam(OWNER_PARAM) String ownerId) {
+    path = PathUtils.normalizePath(path);
     if (siteService.siteExists(path)) {
       try {
         SiteBean siteBean = siteService.getSite(path);
@@ -248,15 +256,16 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
         throw new WebApplicationException(e, Status.CONFLICT);
       }
     }
-    throw new WebApplicationException(Status.NOT_FOUND);
+    throw new WebApplicationException(Response.status(Status.NOT_FOUND).build());
   }
 
   @POST
-  @Path("/members/add/{" + SITE_PATH_PARAM + "}")
+  @Path("/members/add/{" + SITE_PATH_PARAM + ":.*}")
   @Produces(MediaType.TEXT_PLAIN)
   public String addMember(@PathParam(SITE_PATH_PARAM) String path,
       @FormParam(USER_PARAM) String[] userIds,
       @FormParam(MEMBERSHIP_PARAM) String[] membershipType) {
+    path = PathUtils.normalizePath(path);
     if (siteService.siteExists(path)) {
       if (userIds == null || membershipType == null) {
         throw new WebApplicationException(new RuntimeException("Bad Parameters"),
@@ -274,15 +283,16 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
       }
       return OK;
     }
-    throw new WebApplicationException(Status.NOT_FOUND);
+    throw new WebApplicationException(Response.status(Status.NOT_FOUND).build());
   }
 
   @POST
-  @Path("/members/remove/{" + SITE_PATH_PARAM + "}")
+  @Path("/members/remove/{" + SITE_PATH_PARAM + ":.*}")
   @Produces(MediaType.TEXT_PLAIN)
   public String removeMember(@PathParam(SITE_PATH_PARAM) String path,
       @FormParam(USER_PARAM) String[] userIds,
       @FormParam(MEMBERSHIP_PARAM) String[] membershipType) {
+    path = PathUtils.normalizePath(path);
     if (siteService.siteExists(path)) {
       if (userIds == null || membershipType == null) {
         throw new WebApplicationException(new RuntimeException("Bad Parameters"),
@@ -300,7 +310,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
       }
       return OK;
     }
-    throw new WebApplicationException(Status.NOT_FOUND);
+    throw new WebApplicationException(Response.status(Status.NOT_FOUND).build());
   }
 
   /**
@@ -343,7 +353,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.Documentable#getRestDocumentation()
    */
   public RestDescription getRestDocumentation() {
@@ -352,7 +362,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.JaxRsSingletonProvider#getJaxRsSingleton()
    */
   public Documentable getJaxRsSingleton() {
@@ -361,7 +371,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Provider#getKey()
    */
   public String getKey() {
@@ -370,7 +380,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Provider#getPriority()
    */
   public int getPriority() {
@@ -379,7 +389,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.webapp.Initialisable#destroy()
    */
   public void destroy() {
@@ -388,7 +398,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.webapp.Initialisable#init()
    */
   public void init() {
