@@ -584,6 +584,11 @@
         <version>1.4</version>
       </dependency>
       <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-wordnet</artifactId>
+        <version>2.2.0</version>
+      </dependency>
+      <dependency>
         <groupId>net.sf.ehcache</groupId>
         <artifactId>ehcache</artifactId>
         <version>1.4.1</version>
@@ -619,6 +624,12 @@
         <version>tomcat-5.5.26</version>
       </dependency>
       <dependency>
+        <groupId>tomcat.tomcat</groupId>
+        <artifactId>tomcat</artifactId>
+        <version>5.5.26</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
         <groupId>net.sourceforge.htmlunit</groupId>
         <artifactId>htmlunit</artifactId>
         <version>2.1</version>
@@ -633,6 +644,23 @@
         <artifactId>jaxrs-api</artifactId>
         <version>1.0.2.GA</version>
       </dependency>
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jaxrs</artifactId>
+        <version>1.0.2.GA</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jaxb-provider</artifactId>
+        <version>1.0.2.GA</version>
+      </dependency>
+      <dependency>
+        <groupId>net.sf.json-lib</groupId>
+        <artifactId>json-lib</artifactId>
+        <version>2.2</version>
+        <classifier>jdk15</classifier>
+      </dependency>
+
       <!-- ==================== -->
       <!-- for persistence apis -->
       <!-- ==================== -->
@@ -681,6 +709,16 @@
         <groupId>javax.mail</groupId>
         <artifactId>mail</artifactId>
         <version>1.4.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.subethamail</groupId>
+        <artifactId>subethasmtp-wiser</artifactId>
+        <version>1.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.easymock</groupId>
+        <artifactId>easymock</artifactId>
+        <version>2.4</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

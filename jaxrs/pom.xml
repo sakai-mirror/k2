@@ -39,7 +39,6 @@
     <dependency>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-jaxrs</artifactId>
-        <version>1.0.2.GA</version>
         <!-- filter out unwanted jars -->
         <exclusions>
             <exclusion>
@@ -51,12 +50,10 @@
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jaxb-provider</artifactId>
-      <version>1.0.2.GA</version>
     </dependency>
     <dependency>
       <groupId>net.sf.json-lib</groupId>
       <artifactId>json-lib</artifactId>
-      <version>2.2</version>
       <classifier>jdk15</classifier>
     </dependency>
   </dependencies>
