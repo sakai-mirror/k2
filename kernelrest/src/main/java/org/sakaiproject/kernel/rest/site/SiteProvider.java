@@ -23,6 +23,7 @@ import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.rest.Documentable;
 import org.sakaiproject.kernel.api.rest.JaxRsSingletonProvider;
+import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.site.SiteException;
@@ -59,6 +60,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
   private Registry<String, JaxRsSingletonProvider> jaxRsSingletonRegistry;
   private SiteService siteService;
   private UserEnvironmentResolverService userEnvironmentResolverService;
+  private BeanConverter beanConverter;
 
   private static final RestDescription DESC = new RestDescription();
   private static final String SITE_PATH_PARAM = "sitePath";
@@ -96,6 +98,18 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
     DESC.addURLTemplate("/_rest/site/get/<siteId>",
         "Accepts GET to check if a site exists, see the secion on Check ID");
     DESC
+    .addURLTemplate(
+        "/_rest/site/member/add/<siteId>",
+        "Accepts POST to add the specified user ids (in the uuserid parameter (as an array)), " +
+        "with the membership specified in a corresponding array (membertoken). "
+            + " The member token is usually the role within a site.");
+    DESC
+    .addURLTemplate(
+        "/_rest/site/member/remove/<siteId>",
+        "Accepts POST to remove the specified user ids (in the uuserid parameter (as an array)), " +
+        "with the membership specified in a corresponding array (membertoken). "
+            + " The member token is usually the role within a site.");
+    DESC
         .addURLTemplate(
             "/_rest/site/owner/add/<siteId>",
             "Accepts POST to add the specified user id (in the owner paramerer) as an owner to the site id, "
@@ -106,11 +120,12 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
             "Accepts POST to remove the specified user id (in the owner parameter) as an owner to the site id, "
                 + "the current user must be a owner of the site, and there must be at least 1 owner after the specified user"
                 + "is removed from the list of owners.");
-    DESC.addParameter(Params.ID, "The Site ID");
-    DESC.addParameter(Params.NAME, "The Site Name");
-    DESC.addParameter(Params.DESCRIPTION, "The Site Description");
-    DESC.addParameter(Params.TYPE, "The Site Type");
-    DESC.addParameter(Params.OWNER, "The Site Owner, only available to super users");
+    DESC.addParameter(NAME_PARAM, "The Site Name");
+    DESC.addParameter(DESCRIPTION_PARAM, "The Site Description");
+    DESC.addParameter(SITE_TYPE_PARAM, "The Site Type");
+    DESC.addParameter(OWNER_PARAM, "The Site Owner, only available to owners of the site");
+    DESC.addParameter(USER_PARAM, "An array of unique user ids");
+    DESC.addParameter(MEMBERSHIP_PARAM, "An array of embership types");
     DESC.addResponse(String.valueOf(HttpServletResponse.SC_OK),
         "If the action completed Ok, or if the site exits");
     DESC.addResponse(String.valueOf(HttpServletResponse.SC_CONFLICT),
@@ -127,14 +142,15 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
    */
   @Inject
   public SiteProvider(RegistryService registryService, SiteService siteService,
-      UserEnvironmentResolverService userEnvironmentResolverService) {
+      UserEnvironmentResolverService userEnvironmentResolverService, SessionManagerService sessionManagerService, BeanConverter beanConverter) {
     jaxRsSingletonRegistry = registryService
         .getRegistry(JaxRsSingletonProvider.JAXRS_SINGLETON_REGISTRY);
 
     jaxRsSingletonRegistry.add(this);
     this.siteService = siteService;
     this.userEnvironmentResolverService = userEnvironmentResolverService;
-
+    this.sessionManagerService = sessionManagerService;
+    this.beanConverter = beanConverter;
   }
 
   /**
@@ -159,6 +175,8 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
       siteBean.save();
     } catch (SiteException e) {
       throw new WebApplicationException(e, Status.CONFLICT);
+    } catch ( Exception e) {
+      throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
     }
     return OK;
   }
@@ -172,7 +190,8 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
   @Produces(MediaType.TEXT_PLAIN)
   public String getSite(@PathParam(SITE_PATH_PARAM) String path) {
     if (siteService.siteExists(path)) {
-      throw new WebApplicationException(Status.OK);
+      SiteBean siteBean = siteService.getSite(path);
+      return beanConverter.convertToString(siteBean);
     }
     throw new WebApplicationException(Status.NOT_FOUND);
   }
@@ -253,7 +272,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
         userEnvironmentResolverService.addMembership(userIds[i], siteBean.getId(),
             membershipType[i]);
       }
-
+      return OK;
     }
     throw new WebApplicationException(Status.NOT_FOUND);
   }
@@ -279,7 +298,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
         userEnvironmentResolverService.removeMembership(userIds[i], siteBean.getId(),
             membershipType[i]);
       }
-
+      return OK;
     }
     throw new WebApplicationException(Status.NOT_FOUND);
   }
@@ -296,7 +315,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
         isOwner = true;
       }
     }
-    if (isOwner) {
+    if (!isOwner) {
       throw new WebApplicationException(new RuntimeException("Not a site owner"),
           Status.FORBIDDEN);
     }
