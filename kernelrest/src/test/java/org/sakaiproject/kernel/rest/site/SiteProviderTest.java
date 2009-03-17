@@ -69,7 +69,7 @@ public class SiteProviderTest extends BaseRestUT {
 
     try {
       siteProvider.createSite("/testsite/in/some/location", "project", "My New Site",
-          "A Short description");
+          "A Short description",null);
       fail();
     } catch (WebApplicationException ex) {
       LOG.info("OK");
@@ -89,7 +89,7 @@ public class SiteProviderTest extends BaseRestUT {
 
     try {
       siteProvider.createSite("/testsite/in/some/location", "project", "My New Site",
-          "A Short description");
+          "A Short description",null);
       fail();
     } catch (WebApplicationException ex) {
       LOG.info("OK");
@@ -121,7 +121,7 @@ public class SiteProviderTest extends BaseRestUT {
     replayMocks();
 
     siteProvider.createSite("/testsite/in/some/location", "project", "My New Site",
-        "A Short description");
+        "A Short description",new String[]{ "maintain:read", "maintain:write", "maintain:remove", "access:read" });
     assertEquals("My New Site", siteBean.getName());
     assertEquals("A Short description", siteBean.getDescription());
     assertArrayEquals(new String[] {"admin"}, siteBean.getOwners());

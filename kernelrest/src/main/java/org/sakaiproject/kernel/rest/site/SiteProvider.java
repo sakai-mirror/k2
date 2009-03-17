@@ -222,7 +222,6 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
       @FormParam(ROLES_ADD_PARAM) String[] toAdd,
       @FormParam(ROLES_REMOVE_PARAM) String[] toRemove) {
     try {
-      User u = getAuthenticatedUser();
       path = PathUtils.normalizePath(path);
       if (siteService.siteExists(path)) {
         SiteBean siteBean = siteService.getSite(path);
@@ -419,7 +418,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.Documentable#getRestDocumentation()
    */
   public RestDescription getRestDocumentation() {
@@ -428,7 +427,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.JaxRsSingletonProvider#getJaxRsSingleton()
    */
   public Documentable getJaxRsSingleton() {
@@ -437,7 +436,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Provider#getKey()
    */
   public String getKey() {
@@ -446,7 +445,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Provider#getPriority()
    */
   public int getPriority() {
@@ -455,7 +454,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.webapp.Initialisable#destroy()
    */
   public void destroy() {
@@ -464,7 +463,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.webapp.Initialisable#init()
    */
   public void init() {
