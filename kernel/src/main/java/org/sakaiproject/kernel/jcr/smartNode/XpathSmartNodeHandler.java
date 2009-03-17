@@ -21,6 +21,7 @@ import com.google.inject.Inject;
 
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
+import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.SmartNodeHandler;
 
 import javax.jcr.query.Query;
@@ -35,7 +36,9 @@ public class XpathSmartNodeHandler extends JcrSmartNodeHandler {
    *
    */
   @Inject
-  public XpathSmartNodeHandler(RegistryService registryService) {
+  public XpathSmartNodeHandler(RegistryService registryService,
+      JCRService jcrService) {
+    super(jcrService);
     Registry<String, SmartNodeHandler> registry = registryService
         .getRegistry(SmartNodeHandler.REGISTRY);
     registry.add(this);

@@ -23,10 +23,8 @@ import javax.jcr.Node;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-
 import javax.jcr.observation.Event;
 import javax.jcr.observation.ObservationManager;
-
 import javax.jcr.query.QueryManager;
 
 /**
@@ -153,11 +151,11 @@ public interface JCRService {
    */
   void save() throws RepositoryException;
 
-   /** 
+   /**
    * Get the QueryManager from the JCR, this can be used to search for nodes.
    *
    * @return
    */
-  QueryManager getQueryManager();
+  QueryManager getQueryManager() throws RepositoryException;
 
 }

@@ -19,6 +19,8 @@ package org.sakaiproject.kernel.api.jcr;
 
 import org.sakaiproject.kernel.api.Provider;
 
+import java.io.IOException;
+
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.servlet.http.HttpServletRequest;
@@ -30,6 +32,21 @@ import javax.servlet.http.HttpServletResponse;
 public interface SmartNodeHandler extends Provider<String> {
   String REGISTRY = "smartNode.registry";
 
+  /**
+   * Handle a smart node and the query statement assigned to it.
+   *
+   * @param request
+   * @param response
+   * @param node
+   *          The node requested.
+   * @param statement
+   *          The smart node statement associated to the node. This statement
+   *          will not contain the language the statement is written in.
+   * @throws RepositoryException
+   *           If there's a problem accessing the repository.
+   * @throws IOException
+   *           If there's a problem writing to the response.
+   */
   void handle(HttpServletRequest request, HttpServletResponse response,
-      Node node, String statement) throws RepositoryException;
+      Node node, String statement) throws RepositoryException, IOException;
 }

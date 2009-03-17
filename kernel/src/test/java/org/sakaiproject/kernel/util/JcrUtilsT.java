@@ -23,24 +23,18 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
-import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
 import org.sakaiproject.kernel.test.KernelIntegrationBase;
 
-import java.io.IOException;
-
 import javax.jcr.Node;
 import javax.jcr.Property;
-import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
-import javax.jcr.nodetype.NodeType;
 
 /**
  *
@@ -55,10 +49,8 @@ public class JcrUtilsT {
   private Node node;
 
   @BeforeClass
-  public static void beforeThisClass() throws ComponentActivatorException,
-      RepositoryException, JCRNodeFactoryServiceException, IOException {
+  public static void beforeThisClass() throws Exception {
     shutdown = KernelIntegrationBase.beforeClass();
-    // get some services
 
     KernelManager km = new KernelManager();
     Kernel kernel = km.getKernel();
@@ -75,9 +67,6 @@ public class JcrUtilsT {
   @Before
   public void setUp() throws Exception {
     node = nodeFactory.createFile(randomFile1, "text/plain");
-    for (NodeType type : node.getMixinNodeTypes()) {
-      System.err.println("Mixin type: " + type.getName());
-    }
   }
 
   @After

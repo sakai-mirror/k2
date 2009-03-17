@@ -21,6 +21,7 @@ import com.google.inject.Inject;
 
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
+import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.SmartNodeHandler;
 
 import javax.jcr.query.Query;
@@ -35,7 +36,9 @@ public class SqlSmartNodeHandler extends JcrSmartNodeHandler {
    *
    */
   @Inject
-  public SqlSmartNodeHandler(RegistryService registryService) {
+  public SqlSmartNodeHandler(RegistryService registryService,
+      JCRService jcrService) {
+    super(jcrService);
     Registry<String, SmartNodeHandler> registry = registryService
         .getRegistry(SmartNodeHandler.REGISTRY);
     registry.add(this);
@@ -43,6 +46,7 @@ public class SqlSmartNodeHandler extends JcrSmartNodeHandler {
 
   /**
    * {@inheritDoc}
+   *
    * @see org.sakaiproject.kernel.api.Provider#getKey()
    */
   public String getKey() {
@@ -51,6 +55,7 @@ public class SqlSmartNodeHandler extends JcrSmartNodeHandler {
 
   /**
    * {@inheritDoc}
+   *
    * @see org.sakaiproject.kernel.api.Provider#getPriority()
    */
   public int getPriority() {

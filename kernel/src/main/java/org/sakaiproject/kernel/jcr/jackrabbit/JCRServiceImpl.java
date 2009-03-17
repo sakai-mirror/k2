@@ -280,26 +280,11 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.jcr.JCRService#getQueryManager()
    */
-  public QueryManager getQueryManager() {
-    SakaiJCRCredentials ssp = new SakaiJCRCredentials();
-    Session s = null;
-    QueryManager queryManager = null;
-    try {
-      s = getRepository().login(ssp);
-      queryManager = s.getWorkspace().getQueryManager();
-    } catch (RepositoryException e) {
-      LOG.error("Failed to get QueryManager from workspace");
-      e.printStackTrace();
-    } finally {
-      try {
-        s.logout();
-      } catch (Exception ex) {
-      }
-      ;
-    }
+  public QueryManager getQueryManager() throws RepositoryException {
+    QueryManager queryManager = getSession().getWorkspace().getQueryManager();
     return queryManager;
   }
 }
