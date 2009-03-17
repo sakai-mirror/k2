@@ -31,7 +31,6 @@ import org.sakaiproject.kernel.api.site.SiteService;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.model.SiteBean;
-import org.sakaiproject.kernel.rest.RestSiteProvider.Params;
 import org.sakaiproject.kernel.util.PathUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.kernel.util.user.AnonUser;
@@ -72,6 +71,8 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
   private static final String MEMBERSHIP_PARAM = "membertoken";
   private static final String NAME_PARAM = "name";
   private static final String DESCRIPTION_PARAM = "description";
+  private static final String ROLES_ADD_PARAM = "addrole";
+  private static final String ROLES_REMOVE_PARAM = "removerole";
   static {
     DESC.setTitle("Site Service");
     DESC.setShortDescription("The rest service to support site management");
@@ -87,30 +88,42 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
             3,
             "Create",
             "Create a Site, returns {response: 'OK'} if the creation worked with a response code of 200. "
-                + "If permission is dentied a 403 will be returned, if there was any other sort of failure a 500 will be returned. The call expects the following parameters"
-                + Params.ID
+                + "If permission is denied a 403 will be returned, if the site exists a 409 will be returned, "
+                + "any other error will be a 500. When the site is created at the location it will be allocated"
+                + "a permanent ID that will stay with the site whereever its moved to in the future."
+                + "The call expects the following parameters:"
+                + " Path, the remainder of the URL "
                 + ","
-                + Params.NAME
+                + NAME_PARAM
                 + ","
-                + Params.DESCRIPTION
+                + DESCRIPTION_PARAM
                 + ","
-                + Params.TYPE + "," + Params.OWNER + " the Site ID must not exist");
+                + SITE_TYPE_PARAM
+                + ","
+                + ROLES_ADD_PARAM
+                + " (optional)");
     DESC.addURLTemplate("/_rest/site/create",
         "Accepts POST to create a site, see the section on Create for details");
+    DESC
+        .addURLTemplate(
+            "/_rest/site/update",
+            "Accepts POST to update a site. If the site does not exist a 404 is returned. THe parameters are "
+                + "the same as for the create operation with the addition that all parameters are optional, and "
+                + "where they are not supplied no change is made. There is an additional parameter "
+                + ROLES_REMOVE_PARAM
+                + " a list of role:permissions that are removed from the site");
     DESC.addURLTemplate("/_rest/site/get/<siteId>",
         "Accepts GET to check if a site exists, see the secion on Check ID");
-    DESC
-    .addURLTemplate(
-        "/_rest/site/member/add/<siteId>",
-        "Accepts POST to add the specified user ids (in the uuserid parameter (as an array)), " +
-        "with the membership specified in a corresponding array (membertoken). "
+    DESC.addURLTemplate("/_rest/site/members/add/<siteId>",
+        "Accepts POST to add the specified user ids (in the uuserid parameter (as an array)), "
+            + "with the membership specified in a corresponding array (membertoken). "
             + " The member token is usually the role within a site.");
     DESC
-    .addURLTemplate(
-        "/_rest/site/member/remove/<siteId>",
-        "Accepts POST to remove the specified user ids (in the uuserid parameter (as an array)), " +
-        "with the membership specified in a corresponding array (membertoken). "
-            + " The member token is usually the role within a site.");
+        .addURLTemplate(
+            "/_rest/site/members/remove/<siteId>",
+            "Accepts POST to remove the specified user ids (in the uuserid parameter (as an array)), "
+                + "with the membership specified in a corresponding array (membertoken). "
+                + " The member token is usually the role within a site.");
     DESC
         .addURLTemplate(
             "/_rest/site/owner/add/<siteId>",
@@ -125,9 +138,14 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
     DESC.addParameter(NAME_PARAM, "The Site Name");
     DESC.addParameter(DESCRIPTION_PARAM, "The Site Description");
     DESC.addParameter(SITE_TYPE_PARAM, "The Site Type");
-    DESC.addParameter(OWNER_PARAM, "The Site Owner, only available to owners of the site");
+    DESC
+        .addParameter(OWNER_PARAM, "The Site Owner, only available to owners of the site");
     DESC.addParameter(USER_PARAM, "An array of unique user ids");
-    DESC.addParameter(MEMBERSHIP_PARAM, "An array of embership types");
+    DESC.addParameter(MEMBERSHIP_PARAM, "An array of membership types");
+    DESC.addParameter(ROLES_ADD_PARAM,
+        "An array of role permissions to add in the form role:permission ");
+    DESC.addParameter(ROLES_REMOVE_PARAM,
+        "An array of role permissions in to remove the form role:permission ");
     DESC.addResponse(String.valueOf(HttpServletResponse.SC_OK),
         "If the action completed Ok, or if the site exits");
     DESC.addResponse(String.valueOf(HttpServletResponse.SC_CONFLICT),
@@ -144,7 +162,8 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
    */
   @Inject
   public SiteProvider(RegistryService registryService, SiteService siteService,
-      UserEnvironmentResolverService userEnvironmentResolverService, SessionManagerService sessionManagerService, BeanConverter beanConverter) {
+      UserEnvironmentResolverService userEnvironmentResolverService,
+      SessionManagerService sessionManagerService, BeanConverter beanConverter) {
     jaxRsSingletonRegistry = registryService
         .getRegistry(JaxRsSingletonProvider.JAXRS_SINGLETON_REGISTRY);
 
@@ -165,7 +184,8 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
   @Produces(MediaType.TEXT_PLAIN)
   public String createSite(@PathParam(SITE_PATH_PARAM) String path,
       @FormParam(SITE_TYPE_PARAM) String type, @FormParam(NAME_PARAM) String name,
-      @FormParam(DESCRIPTION_PARAM) String description) {
+      @FormParam(DESCRIPTION_PARAM) String description,
+      @FormParam(ROLES_ADD_PARAM) String[] roles) {
     try {
       User u = getAuthenticatedUser();
       path = PathUtils.normalizePath(path);
@@ -173,14 +193,60 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
       siteBean.addOwner(u.getUuid());
       siteBean.setDescription(description);
       siteBean.setName(name);
+      siteBean.addRoles(roles);
+
       userEnvironmentResolverService
           .addMembership(u.getUuid(), siteBean.getId(), "owner");
       siteBean.save();
     } catch (SiteException e) {
       throw new WebApplicationException(e, Status.CONFLICT);
-    } catch ( WebApplicationException e) {
+    } catch (WebApplicationException e) {
       throw e;
-    } catch ( Exception e) {
+    } catch (Exception e) {
+      throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
+    }
+    return OK;
+  }
+
+  /**
+   * @param path
+   * @param type
+   * @return
+   */
+  @POST
+  @Path("/update/{" + SITE_PATH_PARAM + ":.*}")
+  @Produces(MediaType.TEXT_PLAIN)
+  public String updateSite(@PathParam(SITE_PATH_PARAM) String path,
+      @FormParam(SITE_TYPE_PARAM) String type, @FormParam(NAME_PARAM) String name,
+      @FormParam(DESCRIPTION_PARAM) String description,
+      @FormParam(ROLES_ADD_PARAM) String[] toAdd,
+      @FormParam(ROLES_REMOVE_PARAM) String[] toRemove) {
+    try {
+      User u = getAuthenticatedUser();
+      path = PathUtils.normalizePath(path);
+      if (siteService.siteExists(path)) {
+        SiteBean siteBean = siteService.getSite(path);
+        if (description != null) {
+          siteBean.setDescription(description);
+        }
+        if (name != null) {
+          siteBean.setName(name);
+        }
+        if (toRemove != null && toRemove.length > 0) {
+          siteBean.removeRoles(toRemove);
+        }
+        if (toAdd != null && toAdd.length > 0) {
+          siteBean.addRoles(toAdd);
+        }
+        siteBean.save();
+      } else {
+        throw new WebApplicationException(Status.NOT_FOUND);
+      }
+    } catch (SiteException e) {
+      throw new WebApplicationException(e, Status.CONFLICT);
+    } catch (WebApplicationException e) {
+      throw e;
+    } catch (Exception e) {
       throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
     }
     return OK;
@@ -353,7 +419,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.api.rest.Documentable#getRestDocumentation()
    */
   public RestDescription getRestDocumentation() {
@@ -362,7 +428,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.api.rest.JaxRsSingletonProvider#getJaxRsSingleton()
    */
   public Documentable getJaxRsSingleton() {
@@ -371,7 +437,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.api.Provider#getKey()
    */
   public String getKey() {
@@ -380,7 +446,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.api.Provider#getPriority()
    */
   public int getPriority() {
@@ -389,7 +455,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.webapp.Initialisable#destroy()
    */
   public void destroy() {
@@ -398,7 +464,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.webapp.Initialisable#init()
    */
   public void init() {

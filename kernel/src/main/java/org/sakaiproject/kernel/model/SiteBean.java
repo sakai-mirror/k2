@@ -18,10 +18,19 @@
 
 package org.sakaiproject.kernel.model;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+
 import edu.emory.mathcs.backport.java.util.Arrays;
 
 import org.sakaiproject.kernel.api.site.SiteException;
 import org.sakaiproject.kernel.api.site.SiteService;
+import org.sakaiproject.kernel.util.StringUtils;
+
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 
 /**
  * Bean for holding information about a Site.
@@ -71,11 +80,13 @@ public class SiteBean extends GroupBean {
 
   /**
    * {@inheritDoc}
+   *
    * @see java.lang.Object#toString()
    */
   @Override
   public String toString() {
-    return getName()+":"+getId()+":"+getDescription()+":"+getType()+":"+Arrays.toString(getSubjectTokens());
+    return getName() + ":" + getId() + ":" + getDescription() + ":" + getType() + ":"
+        + Arrays.toString(getSubjectTokens());
   }
 
   /**
@@ -101,6 +112,95 @@ public class SiteBean extends GroupBean {
   }
 
   public void save() throws SiteException {
-   siteService.save(this);
+    siteService.save(this);
   }
+
+  /**
+   * @param roles
+   */
+  public void addRoles(String[] roles) {
+    if (roles != null && roles.length > 0) {
+      RoleBean[] rb = getRoles();
+
+      // convert to a set list
+      Map<String, Set<String>> permissions = Maps.newHashMap();
+      for ( RoleBean roleBean : rb) {
+        Set<String> rolePerms = permissions.get(roleBean.getName());
+        if (rolePerms == null) {
+          rolePerms = Sets.newHashSet();
+          permissions.put(roleBean.getName(), rolePerms);
+        }
+        rolePerms.addAll(Lists.immutableList(roleBean.getPermissions()));
+      }
+
+
+
+      // update the roles.
+      for (String role : roles) {
+        String[] rolePermission = StringUtils.split(role, ':', 2);
+        Set<String> rolePerms = permissions.get(rolePermission[0]);
+        if (rolePerms == null) {
+          rolePerms = Sets.newHashSet();
+          permissions.put(rolePermission[0], rolePerms);
+        }
+        rolePerms.add(rolePermission[1]);
+      }
+      // convert back
+      rb = new RoleBean[permissions.size()];
+      int i = 0;
+      for (Entry<String, Set<String>> roleBeanSpec : permissions.entrySet()) {
+        rb[i++] = new RoleBean(roleBeanSpec.getKey(), roleBeanSpec.getValue().toArray(
+            new String[0]));
+      }
+
+      setRoles(rb);
+    }
+
+  }
+
+
+  /**
+   * @param roles
+   */
+  public void removeRoles(String[] roles) {
+    if (roles != null && roles.length > 0) {
+      RoleBean[] rb = getRoles();
+
+      // convert to a set list
+      Map<String, Set<String>> permissions = Maps.newHashMap();
+      for ( RoleBean roleBean : rb) {
+        Set<String> rolePerms = permissions.get(roleBean.getName());
+        if (rolePerms == null) {
+          rolePerms = Sets.newHashSet();
+          permissions.put(roleBean.getName(), rolePerms);
+        }
+        rolePerms.addAll(Lists.immutableList(roleBean.getPermissions()));
+      }
+
+
+
+      // update the roles.
+      for (String role : roles) {
+        String[] rolePermission = StringUtils.split(role, ':', 2);
+        Set<String> rolePerms = permissions.get(rolePermission[0]);
+        if (rolePerms != null) {
+          rolePerms.remove(rolePermission[1]);
+          if ( rolePerms.size() == 0 ) {
+            permissions.remove(rolePermission[0]);
+          }
+        }
+      }
+      // convert back
+      rb = new RoleBean[permissions.size()];
+      int i = 0;
+      for (Entry<String, Set<String>> roleBeanSpec : permissions.entrySet()) {
+        rb[i++] = new RoleBean(roleBeanSpec.getKey(), roleBeanSpec.getValue().toArray(
+            new String[0]));
+      }
+
+      setRoles(rb);
+    }
+
+  }
+
 }
