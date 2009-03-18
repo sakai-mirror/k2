@@ -305,7 +305,7 @@ public class RestMySitesProvider implements RestProvider {
           if (s != null) {
             String[] parts = s.split(":");
             if (parts.length == 2) {
-              memSite = siteService.getSite(parts[0]);
+              memSite = siteService.getSiteById(parts[0]);
 
               if (null == memSite) {
                 LOG.warn("group id not found as a site id... subject token: "

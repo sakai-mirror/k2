@@ -84,4 +84,11 @@ public interface SiteService {
    * @throws SiteException if the save fails.
    */
   void save(SiteBean site) throws SiteException;
+
+  /**
+   * get a site bean using the Id
+   * @param string
+   * @return
+   */
+  SiteBean getSiteById(String string);
 }

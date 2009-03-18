@@ -34,6 +34,7 @@ import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.component.KernelLifecycle;
+import org.sakaiproject.kernel.site.SiteServiceImpl;
 import org.sakaiproject.kernel.user.jcr.JcrAuthenticationResolverProvider;
 import org.sakaiproject.kernel.util.FileUtil;
 import org.sakaiproject.kernel.util.PathUtils;
@@ -301,25 +302,16 @@ public class KernelIntegrationBase {
               .getClassLoader());
       @SuppressWarnings("unused")
       Node n = jcrNodeFactoryService
-          .setInputStream(KernelIntegrationBase.buildUsersOwnedSitesFilePath("ib236",
-              siteName), in, RestProvider.CONTENT_TYPE);
+          .setInputStream(PathUtils.normalizePath(siteName+SiteService.PATH_SITE+SiteService.FILE_GROUPDEF), in, RestProvider.CONTENT_TYPE);
 
       in.close();
-      LOG.info("Test site saved: "
-          + KernelIntegrationBase.buildUsersOwnedSitesFilePath("ib236", siteName));
+      LOG.info("Test site saved: "+siteName+SiteService.PATH_SITE+SiteService.FILE_GROUPDEF);
     }
     jcrService.getSession().save();
     Thread.yield();
     Thread.sleep(1000);
     LOG.info("test sites loaded.");
     jcrService.logout();
-  }
-
-  protected static String buildUsersOwnedSitesFilePath(String userId, String siteIndexId) {
-    String userPath = userEnvironmentResolverService.getUserEnvironmentBasePath(userId);
-    String siteNode = userPath + SiteService.PATH_SITE
-        + PathUtils.getUserPrefix(siteIndexId) + SiteService.FILE_GROUPDEF;
-    return siteNode;
   }
 
   /**

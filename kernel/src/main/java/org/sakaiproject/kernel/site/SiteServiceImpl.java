@@ -33,6 +33,7 @@ import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.site.SiteException;
 import org.sakaiproject.kernel.api.site.SiteService;
 import org.sakaiproject.kernel.model.SiteBean;
+import org.sakaiproject.kernel.model.SiteIndexBean;
 import org.sakaiproject.kernel.util.IOUtils;
 import org.sakaiproject.kernel.util.MapUtils;
 import org.sakaiproject.kernel.util.StringUtils;
@@ -42,10 +43,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 /**
  *
@@ -66,18 +70,21 @@ public class SiteServiceImpl implements SiteService {
 
   private AuthzResolverService authzResolverService;
 
+  private EntityManager entityManager;
+
   @Inject
   public SiteServiceImpl(JCRNodeFactoryService jcrNodeFactoryService,
       BeanConverter beanConverter, SessionManagerService sessionManagerService,
       AuthzResolverService authzResolverService,
       @Named(KernelConstants.JCR_SITE_TEMPLATES) String siteTemplates,
-      @Named(KernelConstants.JCR_SITE_DEFAULT_TEMPLATE) String defaultTemplate) {
+      @Named(KernelConstants.JCR_SITE_DEFAULT_TEMPLATE) String defaultTemplate, EntityManager entityManager) {
     this.jcrNodeFactoryService = jcrNodeFactoryService;
     this.beanConverter = beanConverter;
     this.sessionManagerService = sessionManagerService;
     this.siteTemplateMap = MapUtils.convertToImmutableMap(siteTemplates);
     this.defaultTemplate = defaultTemplate;
     this.authzResolverService = authzResolverService;
+    this.entityManager = entityManager;
   }
 
   /**
@@ -108,6 +115,22 @@ public class SiteServiceImpl implements SiteService {
         in.close();
       } catch (Exception ex) {
       }
+    }
+    return null;
+  }
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.site.SiteService#getSiteById(java.lang.String)
+   */
+  public SiteBean getSiteById(String siteId) {
+    Query findById = entityManager.createNamedQuery(SiteIndexBean.Queries.FINDBY_ID);
+    findById.setParameter(SiteIndexBean.QueryParams.FINDBY_ID_ID, siteId);
+    findById.setFirstResult(0);
+    findById.setMaxResults(1);
+    List<?> results = findById.getResultList();
+    if ( results.size() > 0 ) {
+      String path = (String) results.get(0);
+      return getSite(path);
     }
     return null;
   }
@@ -275,4 +298,5 @@ public class SiteServiceImpl implements SiteService {
     }
     return template;
   }
+
 }
