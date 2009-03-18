@@ -26,6 +26,8 @@ import static org.easymock.EasyMock.reset;
 import static org.easymock.EasyMock.verify;
 
 import org.sakaiproject.kernel.api.RegistryService;
+import org.sakaiproject.kernel.api.authz.AuthzResolverService;
+import org.sakaiproject.kernel.api.authz.PermissionQueryService;
 import org.sakaiproject.kernel.api.authz.SubjectPermissionService;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
@@ -58,7 +60,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
- * 
+ *
  */
 public class BaseRestUT {
 
@@ -85,11 +87,13 @@ public class BaseRestUT {
   protected UserEnvironment userEnvironment;
   protected User user;
   private String sessionID;
+  protected AuthzResolverService authzResolverService;
+  protected PermissionQueryService permissionQueryService;
 
   /**
-   * 
+   *
    */
-  protected void resetMocks(Object ... moreMocks) {
+  protected void resetMocks(Object... moreMocks) {
     if (moreMocks != null) {
       reset(join(mocks, moreMocks));
     } else {
@@ -98,9 +102,9 @@ public class BaseRestUT {
   }
 
   /**
-   * 
+   *
    */
-  protected void verifyMocks(Object ... moreMocks) {
+  protected void verifyMocks(Object... moreMocks) {
     if (moreMocks != null) {
       verify(join(mocks, moreMocks));
     } else {
@@ -109,12 +113,11 @@ public class BaseRestUT {
   }
 
   /**
-   * 
+   *
    */
   protected void replayMocks(Object... moreMocks) {
 
-    expect(sessionManagerService.getCurrentSession()).andReturn(sakaiSession)
-        .anyTimes();
+    expect(sessionManagerService.getCurrentSession()).andReturn(sakaiSession).anyTimes();
     expect(userEnvironmentResolverService.resolve(sakaiSession)).andReturn(
         userEnvironment).anyTimes();
 
@@ -125,8 +128,8 @@ public class BaseRestUT {
     } else {
       replay(mocks);
     }
-    sakaiServletRequest = new SakaiServletRequest(request, response,
-        userResolverService, sessionManagerService);
+    sakaiServletRequest = new SakaiServletRequest(request, response, userResolverService,
+        sessionManagerService);
   }
 
   /**
@@ -154,12 +157,12 @@ public class BaseRestUT {
    * @param string2
    * @param baos
    */
-  public void setupAnyTimes(final String username,
-      final ByteArrayOutputStream baos) throws IOException {
+  public void setupAnyTimes(final String username, final ByteArrayOutputStream baos)
+      throws IOException {
 
-     user = new User() {
+    user = new User() {
       /**
-       * 
+       *
        */
       private static final long serialVersionUID = -2124446523538688673L;
 
@@ -189,7 +192,7 @@ public class BaseRestUT {
     // map
     // .
     Cookie cookie = new Cookie("SAKAIID", sessionID);
-    expect(request.getCookies()).andReturn(new Cookie[] { cookie }).anyTimes();
+    expect(request.getCookies()).andReturn(new Cookie[] {cookie}).anyTimes();
     response.addCookie((Cookie) anyObject());
     expectLastCall().anyTimes();
 
@@ -207,7 +210,7 @@ public class BaseRestUT {
   }
 
   /**
-   * 
+   *
    */
   protected void setupServices() {
     registryService = new RegistryServiceImpl();
@@ -223,8 +226,8 @@ public class BaseRestUT {
     friendsResolverService = createMock(FriendsResolverService.class);
     sakaiSession = createMock(Session.class);
     beanConverter = createMock(BeanConverter.class);
-
-
+    authzResolverService = createMock(AuthzResolverService.class);
+    permissionQueryService = createMock(PermissionQueryService.class);
 
     siteService = createMock(SiteService.class);
     userResolverService = createMock(UserResolverService.class);
@@ -234,15 +237,15 @@ public class BaseRestUT {
 
     userEnvironment = createMock(UserEnvironment.class);
 
-    mocks = new Object[] { userEnvironmentResolverService,
-        sessionManagerService, subjectPermissionService, cacheManagerService,
-        jcrNodeFactoryService, jcrService, userFactoryService,
-        profileResolverService, entityManager, friendsResolverService,
-        siteService, userResolverService, request, response, session,
-        sakaiSession, userEnvironment, beanConverter };
+    mocks = new Object[] {userEnvironmentResolverService, sessionManagerService,
+        subjectPermissionService, cacheManagerService, jcrNodeFactoryService, jcrService,
+        userFactoryService, profileResolverService, entityManager,
+        friendsResolverService, siteService, userResolverService, request, response,
+        session, sakaiSession, userEnvironment, beanConverter, authzResolverService,
+        permissionQueryService};
 
   }
-  
+
   public void newSession() {
     try {
       sessionID = StringUtils.sha1Hash(String.valueOf(System.currentTimeMillis()));

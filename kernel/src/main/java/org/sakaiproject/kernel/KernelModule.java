@@ -61,11 +61,11 @@ import org.sakaiproject.kernel.api.user.UserFactoryService;
 import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
-import org.sakaiproject.kernel.authz.minimal.MinimalPermissionQueryServiceImpl;
 import org.sakaiproject.kernel.authz.simple.JcrReferenceResolverService;
 import org.sakaiproject.kernel.authz.simple.PathReferenceResolverService;
 import org.sakaiproject.kernel.authz.simple.SimpleAuthzResolverService;
 import org.sakaiproject.kernel.authz.simple.SimpleJcrUserEnvironmentResolverService;
+import org.sakaiproject.kernel.authz.simple.SimplePermissionQueryService;
 import org.sakaiproject.kernel.authz.simple.SubjectPermissionServiceImpl;
 import org.sakaiproject.kernel.component.core.guice.ServiceProvider;
 import org.sakaiproject.kernel.initialization.InitializationActionProvider;
@@ -174,7 +174,7 @@ public class KernelModule extends AbstractModule {
     bind(AuthzResolverService.class).to(SimpleAuthzResolverService.class).in(
         Scopes.SINGLETON);
 
-    bind(PermissionQueryService.class).to(MinimalPermissionQueryServiceImpl.class).in(
+    bind(PermissionQueryService.class).to(SimplePermissionQueryService.class).in(
         Scopes.SINGLETON);
 
     bind(ReferenceResolverService.class).to(PathReferenceResolverService.class).in(

@@ -39,6 +39,7 @@ public class SiteBean extends GroupBean {
 
   private String id;
   private String type;
+  private String joiningMembership;
   private transient String sitePath;
   private transient SiteService siteService;
 
@@ -201,6 +202,21 @@ public class SiteBean extends GroupBean {
       setRoles(rb);
     }
 
+  }
+
+  
+  /**
+   * @return the joiningMembership
+   */
+  public String getJoiningMembership() {
+    return joiningMembership;
+  }
+  
+  /**
+   * @param joiningMembership the joiningMembership to set
+   */
+  public void setJoiningMembership(String joiningMembership) {
+    this.joiningMembership = joiningMembership;
   }
 
 }

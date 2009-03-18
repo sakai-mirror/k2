@@ -26,6 +26,7 @@ import org.easymock.Capture;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.sakaiproject.kernel.api.authz.PermissionQuery;
 import org.sakaiproject.kernel.api.site.SiteException;
 import org.sakaiproject.kernel.model.SiteBean;
 import org.sakaiproject.kernel.rest.test.BaseRestUT;
@@ -33,10 +34,11 @@ import org.sakaiproject.kernel.rest.test.BaseRestUT;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import javax.servlet.ServletException;
 import javax.ws.rs.WebApplicationException;
 
 /**
- * 
+ *
  */
 public class SiteProviderTest extends BaseRestUT {
 
@@ -69,7 +71,7 @@ public class SiteProviderTest extends BaseRestUT {
 
     try {
       siteProvider.createSite("/testsite/in/some/location", "project", "My New Site",
-          "A Short description",null);
+          "A Short description", null, null);
       fail();
     } catch (WebApplicationException ex) {
       LOG.info("OK");
@@ -89,7 +91,7 @@ public class SiteProviderTest extends BaseRestUT {
 
     try {
       siteProvider.createSite("/testsite/in/some/location", "project", "My New Site",
-          "A Short description",null);
+          "A Short description", null,null);
       fail();
     } catch (WebApplicationException ex) {
       LOG.info("OK");
@@ -121,7 +123,8 @@ public class SiteProviderTest extends BaseRestUT {
     replayMocks();
 
     siteProvider.createSite("/testsite/in/some/location", "project", "My New Site",
-        "A Short description",new String[]{ "maintain:read", "maintain:write", "maintain:remove", "access:read" });
+        "A Short description", new String[] {"maintain:read", "maintain:write",
+            "maintain:remove", "access:read"},"access");
     assertEquals("My New Site", siteBean.getName());
     assertEquals("A Short description", siteBean.getDescription());
     assertArrayEquals(new String[] {"admin"}, siteBean.getOwners());
@@ -180,9 +183,13 @@ public class SiteProviderTest extends BaseRestUT {
     SiteBean siteBean = new SiteBean();
     siteBean.service(siteService);
     siteBean.setId("testSiteId");
+    PermissionQuery writePermission = createMock(PermissionQuery.class);
+    expect(permissionQueryService.getPermission("write")).andReturn(writePermission);
+    authzResolverService.check("/testsite/in/some/location/.site", writePermission);
+    expectLastCall();
     expect(siteService.siteExists("/testsite/in/some/location")).andReturn(true);
     expect(siteService.getSite("/testsite/in/some/location")).andReturn(siteBean);
-    replayMocks();
+    replayMocks(writePermission);
 
     try {
       siteProvider.addOwner("/testsite/in/some/location", "ieb");
@@ -190,7 +197,7 @@ public class SiteProviderTest extends BaseRestUT {
     } catch (WebApplicationException e) {
       assertEquals(403, e.getResponse().getStatus());
     }
-    verifyMocks();
+    verifyMocks(writePermission);
 
   }
 
@@ -203,19 +210,27 @@ public class SiteProviderTest extends BaseRestUT {
     siteBean.service(siteService);
     siteBean.setId("testSiteId");
     siteBean.setOwners(new String[] {"admin"});
+    PermissionQuery writePermission = createMock(PermissionQuery.class);
+    expect(permissionQueryService.getPermission("write")).andReturn(writePermission);
+    authzResolverService.check("/testsite/in/some/location/.site", writePermission);
+    expectLastCall();
+    authzResolverService.setRequestGrant("add Owner");
+    expectLastCall();
     expect(siteService.siteExists("/testsite/in/some/location")).andReturn(true);
     expect(siteService.getSite("/testsite/in/some/location")).andReturn(siteBean);
     userEnvironmentResolverService.addMembership("ieb", "testSiteId", "owner");
     expectLastCall();
     siteService.save(siteBean);
     expectLastCall();
-    replayMocks();
+    authzResolverService.clearRequestGrant();
+    expectLastCall();
+    replayMocks(writePermission);
 
     String resp = siteProvider.addOwner("/testsite/in/some/location", "ieb");
     assertEquals("{\"response\", \"OK\"}", resp);
     assertArrayEquals(new String[] {"admin", "ieb"}, siteBean.getOwners());
 
-    verifyMocks();
+    verifyMocks(writePermission);
   }
 
   @Test
@@ -226,17 +241,20 @@ public class SiteProviderTest extends BaseRestUT {
     SiteBean siteBean = new SiteBean();
     siteBean.service(siteService);
     siteBean.setId("testSiteId");
+    PermissionQuery writePermission = createMock(PermissionQuery.class);
+    expect(permissionQueryService.getPermission("write")).andReturn(writePermission);
     expect(siteService.siteExists("/testsite/in/some/location")).andReturn(true);
-    expect(siteService.getSite("/testsite/in/some/location")).andReturn(siteBean);
-    replayMocks();
+    authzResolverService.check("/testsite/in/some/location/.site", writePermission);
+    expectLastCall().andThrow(new SecurityException());
+    replayMocks(writePermission);
 
     try {
       siteProvider.removeOwner("/testsite/in/some/location", "ieb");
       fail();
-    } catch (WebApplicationException e) {
-      assertEquals(403, e.getResponse().getStatus());
+    } catch (SecurityException e) {
+      LOG.debug("OK");
     }
-    verifyMocks();
+    verifyMocks(writePermission);
 
   }
 
@@ -249,19 +267,27 @@ public class SiteProviderTest extends BaseRestUT {
     siteBean.service(siteService);
     siteBean.setId("testSiteId");
     siteBean.setOwners(new String[] {"ieb", "admin"});
+    PermissionQuery writePermission = createMock(PermissionQuery.class);
+    expect(permissionQueryService.getPermission("write")).andReturn(writePermission);
+    authzResolverService.check("/testsite/in/some/location/.site", writePermission);
+    expectLastCall();
+    authzResolverService.setRequestGrant("remove Owner");
+    expectLastCall();
     expect(siteService.siteExists("/testsite/in/some/location")).andReturn(true);
     expect(siteService.getSite("/testsite/in/some/location")).andReturn(siteBean);
     userEnvironmentResolverService.removeMembership("ieb", "testSiteId", "owner");
     expectLastCall();
     siteService.save(siteBean);
     expectLastCall();
-    replayMocks();
+    authzResolverService.clearRequestGrant();
+    expectLastCall();
+    replayMocks(writePermission);
 
     String resp = siteProvider.removeOwner("/testsite/in/some/location", "ieb");
     assertEquals("{\"response\", \"OK\"}", resp);
     assertArrayEquals(new String[] {"admin"}, siteBean.getOwners());
 
-    verifyMocks();
+    verifyMocks(writePermission);
   }
 
   @Test
@@ -273,9 +299,13 @@ public class SiteProviderTest extends BaseRestUT {
     siteBean.service(siteService);
     siteBean.setId("testSiteId");
     siteBean.setOwners(new String[] {"admin"});
+    PermissionQuery writePermission = createMock(PermissionQuery.class);
+    expect(permissionQueryService.getPermission("write")).andReturn(writePermission);
+    authzResolverService.check("/testsite/in/some/location/.site", writePermission);
+    expectLastCall();
     expect(siteService.siteExists("/testsite/in/some/location")).andReturn(true);
     expect(siteService.getSite("/testsite/in/some/location")).andReturn(siteBean);
-    replayMocks();
+    replayMocks(writePermission);
 
     try {
       siteProvider.removeOwner("/testsite/in/some/location", "ieb");
@@ -284,7 +314,7 @@ public class SiteProviderTest extends BaseRestUT {
       assertEquals(409, e.getResponse().getStatus());
     }
 
-    verifyMocks();
+    verifyMocks(writePermission);
   }
 
   @Test
@@ -296,11 +326,12 @@ public class SiteProviderTest extends BaseRestUT {
     siteBean.service(siteService);
     siteBean.setId("testSiteId");
     expect(siteService.siteExists("/testsite/in/some/location")).andReturn(true);
-    expect(siteService.getSite("/testsite/in/some/location")).andReturn(siteBean);
-    userEnvironmentResolverService.addMembership("ieb", "testSiteId", "access");
+    PermissionQuery writePermission = createMock(PermissionQuery.class);
+    expect(permissionQueryService.getPermission("write")).andReturn(writePermission);
+    authzResolverService.check("/testsite/in/some/location/.site", writePermission);
     expectLastCall().andThrow(new SecurityException());
 
-    replayMocks();
+    replayMocks(writePermission);
 
     try {
       siteProvider.addMember("/testsite/in/some/location", new String[] {"ieb", "john",
@@ -308,7 +339,7 @@ public class SiteProviderTest extends BaseRestUT {
     } catch (SecurityException e) {
       LOG.info("OK");
     }
-    verifyMocks();
+    verifyMocks(writePermission);
 
   }
 
@@ -320,6 +351,12 @@ public class SiteProviderTest extends BaseRestUT {
     SiteBean siteBean = new SiteBean();
     siteBean.service(siteService);
     siteBean.setId("testSiteId");
+    PermissionQuery writePermission = createMock(PermissionQuery.class);
+    expect(permissionQueryService.getPermission("write")).andReturn(writePermission);
+    authzResolverService.check("/testsite/in/some/location/.site", writePermission);
+    expectLastCall();
+    authzResolverService.setRequestGrant("Adding Membership");
+    expectLastCall();
     expect(siteService.siteExists("/testsite/in/some/location")).andReturn(true);
     expect(siteService.getSite("/testsite/in/some/location")).andReturn(siteBean);
     userEnvironmentResolverService.addMembership("ieb", "testSiteId", "access");
@@ -328,15 +365,17 @@ public class SiteProviderTest extends BaseRestUT {
     expectLastCall();
     userEnvironmentResolverService.addMembership("nico", "testSiteId", "custom");
     expectLastCall();
-    replayMocks();
+    authzResolverService.clearRequestGrant();
+    expectLastCall();
+    replayMocks(writePermission);
 
     String resp = siteProvider.addMember("/testsite/in/some/location", new String[] {
         "ieb", "john", "nico"}, new String[] {"access", "maintain", "custom"});
     assertEquals("{\"response\", \"OK\"}", resp);
-    verifyMocks();
+    verifyMocks(writePermission);
 
   }
-  
+
   @Test
   public void testAddMemberBadParams() throws IOException, SiteException {
 
@@ -358,7 +397,6 @@ public class SiteProviderTest extends BaseRestUT {
 
   }
 
-
   @Test
   public void testRemoveMember() throws IOException, SiteException {
 
@@ -367,16 +405,24 @@ public class SiteProviderTest extends BaseRestUT {
     SiteBean siteBean = new SiteBean();
     siteBean.service(siteService);
     siteBean.setId("testSiteId");
+    PermissionQuery writePermission = createMock(PermissionQuery.class);
+    expect(permissionQueryService.getPermission("write")).andReturn(writePermission);
+    authzResolverService.check("/testsite/in/some/location/.site", writePermission);
+    expectLastCall();
+    authzResolverService.setRequestGrant("Revoking Membership");
+    expectLastCall();
     expect(siteService.siteExists("/testsite/in/some/location")).andReturn(true);
     expect(siteService.getSite("/testsite/in/some/location")).andReturn(siteBean);
     userEnvironmentResolverService.removeMembership("ieb", "testSiteId", "access");
     expectLastCall();
-    replayMocks();
+    authzResolverService.clearRequestGrant();
+    expectLastCall();
+    replayMocks(writePermission);
 
     String resp = siteProvider.removeMember("/testsite/in/some/location",
         new String[] {"ieb"}, new String[] {"access"});
     assertEquals("{\"response\", \"OK\"}", resp);
-    verifyMocks();
+    verifyMocks(writePermission);
 
   }
 
@@ -413,11 +459,12 @@ public class SiteProviderTest extends BaseRestUT {
   }
 
   /**
-   * 
+   *
    */
   private void createProvider() {
     siteProvider = new SiteProvider(registryService, siteService,
-        userEnvironmentResolverService, sessionManagerService, beanConverter);
+        userEnvironmentResolverService, sessionManagerService, beanConverter,
+        authzResolverService, permissionQueryService);
   }
 
 }
