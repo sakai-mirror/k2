@@ -36,7 +36,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-import javax.jcr.Node;
 import javax.jcr.Session;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -57,8 +56,6 @@ public abstract class SmartNodeHandlerBaseT {
   protected final String[] randomFiles = new String[] { "random1.file",
       "random2.file", "random3.file" };
 
-  protected Node baseFolder;
-  protected XpathSmartNodeHandler handler;
   protected ServletOutputStream outputStream;
   protected HttpServletRequest request;
   protected HttpServletResponse response;
@@ -93,21 +90,11 @@ public abstract class SmartNodeHandlerBaseT {
     expectLastCall();
     response.setContentLength(EasyMock.anyInt());
     expectLastCall();
-    handler = new XpathSmartNodeHandler(registryService, jcrService);
-
-    baseFolder = nodeFactory.createFolder(prefix + randomFolder);
-    for (String file : randomFiles) {
-      nodeFactory.createFile(prefix + randomFolder + file, "text/plain");
-    }
-
-    session.save();
-
     replay(request, response);
   }
 
   public void tearDown() throws Exception {
-    baseFolder.remove();
-    session.save();
+
   }
 
   static class TestServletOutputStream extends ServletOutputStream {

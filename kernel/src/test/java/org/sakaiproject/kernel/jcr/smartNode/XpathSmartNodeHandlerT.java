@@ -28,12 +28,16 @@ import org.junit.Test;
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.kernel.util.JcrUtils;
 
+import javax.jcr.Node;
 import javax.jcr.query.Query;
 
 /**
  *
  */
 public class XpathSmartNodeHandlerT extends SmartNodeHandlerBaseT {
+  protected Node baseFolder;
+  protected XpathSmartNodeHandler handler;
+
   @BeforeClass
   public static void beforeClass() throws Exception {
     SmartNodeHandlerBaseT.beforeClass();
@@ -48,12 +52,24 @@ public class XpathSmartNodeHandlerT extends SmartNodeHandlerBaseT {
   @Before
   public void setUp() throws Exception {
     super.setUp();
+
+    handler = new XpathSmartNodeHandler(registryService, jcrService);
+
+    baseFolder = nodeFactory.createFolder(prefix + randomFolder);
+    for (String file : randomFiles) {
+      nodeFactory.createFile(prefix + randomFolder + file, "text/plain");
+    }
+
+    session.save();
   }
 
   @Override
   @After
   public void tearDown() throws Exception {
     super.tearDown();
+
+    baseFolder.remove();
+    session.save();
   }
 
   @Test
