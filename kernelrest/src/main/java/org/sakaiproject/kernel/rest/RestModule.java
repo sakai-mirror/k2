@@ -27,6 +27,7 @@ import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.ServiceManager;
+import org.sakaiproject.kernel.api.authz.AuthzResolverService;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.presence.PresenceService;
@@ -61,7 +62,7 @@ public class RestModule extends AbstractModule {
 
   /**
    * Create the bootstrap module with a kernel and supplied properties.
-   * 
+   *
    * @param kernel
    * @param properties
    */
@@ -73,7 +74,7 @@ public class RestModule extends AbstractModule {
 
   /**
    * Configure the guice bindings.
-   * 
+   *
    * @see com.google.inject.AbstractModule#configure()
    */
   @Override
@@ -129,9 +130,13 @@ public class RestModule extends AbstractModule {
         new ServiceProvider<PresenceService>(serviceManager, PresenceService.class)).in(
         Scopes.SINGLETON);
 
-    
+
     bind(SiteService.class).toProvider(
         new ServiceProvider<SiteService>(serviceManager, SiteService.class)).in(
+        Scopes.SINGLETON);
+
+    bind(AuthzResolverService.class).toProvider(
+        new ServiceProvider<AuthzResolverService>(serviceManager, AuthzResolverService.class)).in(
         Scopes.SINGLETON);
 
     // activate all the services
