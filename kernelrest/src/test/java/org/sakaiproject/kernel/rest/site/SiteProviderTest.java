@@ -20,9 +20,12 @@ package org.sakaiproject.kernel.rest.site;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
+import com.google.common.collect.ImmutableMap;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.easymock.Capture;
+import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,12 +33,19 @@ import org.sakaiproject.kernel.api.authz.PermissionQuery;
 import org.sakaiproject.kernel.api.site.SiteException;
 import org.sakaiproject.kernel.model.SiteBean;
 import org.sakaiproject.kernel.rest.test.BaseRestUT;
+import org.sakaiproject.kernel.util.rest.CollectionOptions;
+import org.sakaiproject.kernel.util.rest.CollectionOptions.FilterOption;
+import org.sakaiproject.kernel.util.rest.CollectionOptions.SortOption;
+import org.sakaiproject.kernel.util.rest.CollectionOptions.SortOrder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MultivaluedMap;
 
 /**
  *
@@ -91,7 +101,7 @@ public class SiteProviderTest extends BaseRestUT {
 
     try {
       siteProvider.createSite("/testsite/in/some/location", "project", "My New Site",
-          "A Short description", null,null);
+          "A Short description", null, null);
       fail();
     } catch (WebApplicationException ex) {
       LOG.info("OK");
@@ -124,7 +134,7 @@ public class SiteProviderTest extends BaseRestUT {
 
     siteProvider.createSite("/testsite/in/some/location", "project", "My New Site",
         "A Short description", new String[] {"maintain:read", "maintain:write",
-            "maintain:remove", "access:read"},"access");
+            "maintain:remove", "access:read"}, "access");
     assertEquals("My New Site", siteBean.getName());
     assertEquals("A Short description", siteBean.getDescription());
     assertArrayEquals(new String[] {"admin"}, siteBean.getOwners());
@@ -445,6 +455,107 @@ public class SiteProviderTest extends BaseRestUT {
     }
     verifyMocks();
 
+  }
+
+  @Test
+  public void testJoin() throws IOException, SiteException {
+
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    setupAnyTimes("ieb", baos);
+    SiteBean siteBean = new SiteBean();
+    siteBean.setJoiningMembership("access");
+    siteBean.service(siteService);
+    siteBean.setId("testSiteId");
+    expect(siteService.siteExists("/testsite/in/some/location")).andReturn(true);
+    expect(siteService.getSite("/testsite/in/some/location")).andReturn(siteBean);
+    userEnvironmentResolverService.addMembership("ieb", "testSiteId", "access");
+    expectLastCall();
+       
+    
+    replayMocks();
+    String resp = siteProvider.join("/testsite/in/some/location");
+    verifyMocks();
+    assertEquals("{\"response\", \"OK\"}", resp);
+
+  }
+
+  
+  @Test
+  public void testUnJoin() throws IOException, SiteException {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    setupAnyTimes("ieb", baos);
+    SiteBean siteBean = new SiteBean();
+    siteBean.setJoiningMembership("access");
+    siteBean.service(siteService);
+    siteBean.setId("testSiteId");
+    expect(siteService.siteExists("/testsite/in/some/location")).andReturn(true);
+    expect(siteService.getSite("/testsite/in/some/location")).andReturn(siteBean);
+    userEnvironmentResolverService.removeMembership("ieb", "testSiteId", "access");
+    expectLastCall();
+       
+    
+    replayMocks();
+    String resp = siteProvider.unjoin("/testsite/in/some/location","access");
+    verifyMocks();
+    assertEquals("{\"response\", \"OK\"}", resp);
+  }
+  
+  @Test
+  public void testListMembers() throws IOException, SiteException {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    setupAnyTimes("ieb", baos);
+    SiteBean siteBean = new SiteBean();
+    siteBean.setJoiningMembership("access");
+    siteBean.service(siteService);
+    siteBean.setId("testSiteId");
+    expect(siteService.siteExists("/testsite/in/some/location")).andReturn(true);
+    Capture<CollectionOptions> collectionOptions = new Capture<CollectionOptions>();
+    Capture<String> listPath = new Capture<String>();
+    Map<String, Object> resultMap = ImmutableMap.of("key", (Object)"value", "key1", "value1");
+    expect(siteService.getMemberList(capture(listPath), capture(collectionOptions))).andReturn(resultMap);
+    Capture<Map<String,Object>> serviceResponse = new Capture<Map<String,Object>>();
+    expect(beanConverter.convertToString(capture(serviceResponse))).andReturn("OK");   
+    
+    replayMocks();
+    MultivaluedMap<String, String> requestMap = new MultivaluedMapImpl<String, String>();
+    requestMap.add(CollectionOptions.START_INDEX, String.valueOf(5));
+    requestMap.add(CollectionOptions.COUNT, String.valueOf(10));
+    requestMap.add(CollectionOptions.SORT_BY, "FirstName");
+    requestMap.add(CollectionOptions.SORT_BY, "LastName");
+    requestMap.add(CollectionOptions.SORT_ORDER, SortOrder.asc.toString());
+    requestMap.add(CollectionOptions.SORT_ORDER, SortOrder.desc.toString());
+    requestMap.add(CollectionOptions.FILTER_BY, "FirstName");
+    requestMap.add(CollectionOptions.FILTER_BY, "LastName");
+    requestMap.add(CollectionOptions.FILTER_OPERATION, "=");
+    requestMap.add(CollectionOptions.FILTER_OPERATION, "like");
+    requestMap.add(CollectionOptions.FILTER_VALUE, "ian");
+    requestMap.add(CollectionOptions.FILTER_VALUE, "bost%");
+    
+    String resp = siteProvider.list("/testsite/in/some/location",requestMap);
+    assertEquals("OK", resp);
+    assertEquals("/testsite/in/some/location", listPath.getValue());
+    assertEquals(5, collectionOptions.getValue().getPagingOptions().getStartIndex());
+    assertEquals(10, collectionOptions.getValue().getPagingOptions().getCount());
+    List<SortOption> sortOptions = collectionOptions.getValue().getSortOptions();
+    assertEquals("FirstName", sortOptions.get(0).getField());
+    assertEquals(SortOrder.asc, sortOptions.get(0).getDirection());
+    assertEquals("LastName", sortOptions.get(1).getField());
+    assertEquals(SortOrder.desc, sortOptions.get(1).getDirection());
+    List<FilterOption> filterOptions = collectionOptions.getValue().getFilterOptions();
+    assertEquals("FirstName", filterOptions.get(0).getFilterBy());
+    assertEquals("LastName", filterOptions.get(1).getFilterBy());
+    assertEquals("=", filterOptions.get(0).getFilterOp());
+    assertEquals("like", filterOptions.get(1).getFilterOp());
+    assertEquals("ian", filterOptions.get(0).getFilterValue());
+    assertEquals("bost%", filterOptions.get(1).getFilterValue());
+
+    Map<String, Object> response = serviceResponse.getValue();
+    assertEquals(response.get("startIndex"), 5);
+    assertEquals(response.get("count"), 10);
+    
+    verifyMocks();
+    
+    
   }
 
   @Test

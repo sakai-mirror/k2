@@ -19,6 +19,9 @@
 package org.sakaiproject.kernel.api.site;
 
 import org.sakaiproject.kernel.model.SiteBean;
+import org.sakaiproject.kernel.util.rest.CollectionOptions;
+
+import java.util.Map;
 
 /**
  * Provides functionality for working with Sites.
@@ -91,4 +94,12 @@ public interface SiteService {
    * @return
    */
   SiteBean getSiteById(String string);
+
+  /**
+   * get a list of members, indexed by uuid, and presented in an order (probably using a LinkedHashMap). The object is a map of properties for each membership record.
+   * @param path the path of the site.
+   * @param collectionOptions the options for paging, sorting and filtering.
+   * @return a map of members meta data.
+   */
+  Map<String, Object> getMemberList(String path, CollectionOptions collectionOptions);
 }

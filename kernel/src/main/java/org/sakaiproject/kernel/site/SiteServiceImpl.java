@@ -18,11 +18,14 @@
 
 package org.sakaiproject.kernel.site;
 
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.google.inject.name.Named;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.poi.hssf.record.formula.MemErrPtg;
 import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
@@ -32,11 +35,18 @@ import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.site.SiteException;
 import org.sakaiproject.kernel.api.site.SiteService;
+import org.sakaiproject.kernel.api.user.UserResolverService;
+import org.sakaiproject.kernel.api.userenv.UserEnvironment;
+import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
+import org.sakaiproject.kernel.model.GroupMembershipBean;
 import org.sakaiproject.kernel.model.SiteBean;
 import org.sakaiproject.kernel.model.SiteIndexBean;
+import org.sakaiproject.kernel.model.UserEnvironmentBean;
 import org.sakaiproject.kernel.util.IOUtils;
+import org.sakaiproject.kernel.util.JpaUtils;
 import org.sakaiproject.kernel.util.MapUtils;
 import org.sakaiproject.kernel.util.StringUtils;
+import org.sakaiproject.kernel.util.rest.CollectionOptions;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -72,12 +82,21 @@ public class SiteServiceImpl implements SiteService {
 
   private EntityManager entityManager;
 
+  private UserEnvironmentResolverService userEnvironmentResolverService;
+
+  private UserResolverService userResolverService;
+
+  private Injector injector;
+
   @Inject
   public SiteServiceImpl(JCRNodeFactoryService jcrNodeFactoryService,
       BeanConverter beanConverter, SessionManagerService sessionManagerService,
       AuthzResolverService authzResolverService,
       @Named(KernelConstants.JCR_SITE_TEMPLATES) String siteTemplates,
-      @Named(KernelConstants.JCR_SITE_DEFAULT_TEMPLATE) String defaultTemplate, EntityManager entityManager) {
+      @Named(KernelConstants.JCR_SITE_DEFAULT_TEMPLATE) String defaultTemplate,
+      EntityManager entityManager,
+      UserEnvironmentResolverService userEnvironmentResolverService,
+      UserResolverService userResolverService, Injector injector) {
     this.jcrNodeFactoryService = jcrNodeFactoryService;
     this.beanConverter = beanConverter;
     this.sessionManagerService = sessionManagerService;
@@ -85,11 +104,14 @@ public class SiteServiceImpl implements SiteService {
     this.defaultTemplate = defaultTemplate;
     this.authzResolverService = authzResolverService;
     this.entityManager = entityManager;
+    this.userEnvironmentResolverService = userEnvironmentResolverService;
+    this.userResolverService = userResolverService;
+    this.injector = injector;
   }
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.api.site.SiteService#getSite(java.lang.String)
    */
   public SiteBean getSite(String path) {
@@ -118,8 +140,10 @@ public class SiteServiceImpl implements SiteService {
     }
     return null;
   }
+
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.site.SiteService#getSiteById(java.lang.String)
    */
   public SiteBean getSiteById(String siteId) {
@@ -128,7 +152,7 @@ public class SiteServiceImpl implements SiteService {
     findById.setFirstResult(0);
     findById.setMaxResults(1);
     List<?> results = findById.getResultList();
-    if ( results.size() > 0 ) {
+    if (results.size() > 0) {
       String path = (String) results.get(0);
       return getSite(path);
     }
@@ -137,7 +161,7 @@ public class SiteServiceImpl implements SiteService {
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.api.site.SiteService#siteExists(java.lang.String)
    */
   public boolean siteExists(String path) {
@@ -154,7 +178,7 @@ public class SiteServiceImpl implements SiteService {
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.api.site.SiteService#deleteSite(java.lang.String)
    */
   public void deleteSite(String id) {
@@ -163,9 +187,9 @@ public class SiteServiceImpl implements SiteService {
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @throws UnsupportedEncodingException
-   *
+   * 
    * @see org.sakaiproject.kernel.api.site.SiteService#saveSite(org.sakaiproject.kernel.model.SiteBean)
    */
   public void save(SiteBean siteBean) throws SiteException {
@@ -178,8 +202,7 @@ public class SiteServiceImpl implements SiteService {
       String siteBeanDef = beanConverter.convertToString(siteBean);
       LOG.info("Saving Site to " + path + " as " + siteBeanDef);
       bais = new ByteArrayInputStream(siteBeanDef.getBytes("UTF-8"));
-      jcrNodeFactoryService.setInputStream(path, bais,
-          RestProvider.CONTENT_TYPE);
+      jcrNodeFactoryService.setInputStream(path, bais, RestProvider.CONTENT_TYPE);
 
       // make the private and shares spaces for the user owned by this used.
       jcrNodeFactoryService.setOwner(buildSiteFolder(path), siteBean.getOwners()[0]);
@@ -201,7 +224,7 @@ public class SiteServiceImpl implements SiteService {
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.api.site.SiteService#createSite(java.lang.String,
    *      java.lang.String)
    */
@@ -229,7 +252,7 @@ public class SiteServiceImpl implements SiteService {
       SiteBean siteBean = beanConverter.convertToObject(template, SiteBean.class);
 
       // make the template this user
-      siteBean.setOwners(new String[] { userId });
+      siteBean.setOwners(new String[] {userId});
       siteBean.setId(generateSiteUuid(path));
       siteBean.setType(siteType);
       siteBean.location(sitePath);
@@ -257,7 +280,7 @@ public class SiteServiceImpl implements SiteService {
 
   /**
    * Build the full path with file name to the group definition for a given site ID.
-   *
+   * 
    * @param id
    * @return
    */
@@ -297,6 +320,39 @@ public class SiteServiceImpl implements SiteService {
       return defaultTemplate;
     }
     return template;
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.kernel.api.site.SiteService#getMemberList(java.lang.String,
+   *      org.sakaiproject.kernel.util.rest.CollectionOptions)
+   */
+  public Map<String, Object> getMemberList(String path,
+      CollectionOptions collectionOptions) {
+
+    List<GroupMembershipBean> results = JpaUtils.getResultList(entityManager,
+        "select g from GroupMembershipBean g where g.groupId = :groupId ", "g.",
+        collectionOptions);
+
+    Map<String, Object> resultMap = Maps.newLinkedHashMap();
+    for (GroupMembershipBean gmb : results) {
+      Map<String, Object> membershipMap = Maps.newHashMap();
+      membershipMap.put("group", gmb.getUserId());
+      membershipMap.put("role", gmb.getRoleId());
+      membershipMap.put("userid", gmb.getUserId());
+
+      UserEnvironmentBean workingCopy = injector.getInstance(UserEnvironmentBean.class);
+      UserEnvironment userEnvironment = userEnvironmentResolverService.resolve(gmb
+          .getUserId());
+      workingCopy.copyFrom(userEnvironment);
+      workingCopy.seal();
+      workingCopy.setProtected(true);
+      membershipMap.put("userEnvironment", workingCopy);
+      resultMap.put(gmb.getUserId(), membershipMap);
+    }
+
+    return resultMap;
   }
 
 }

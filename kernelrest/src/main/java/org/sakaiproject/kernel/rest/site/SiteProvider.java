@@ -17,6 +17,7 @@
  */
 package org.sakaiproject.kernel.rest.site;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 
 import org.sakaiproject.kernel.api.Registry;
@@ -35,14 +36,21 @@ import org.sakaiproject.kernel.api.site.SiteService;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.model.SiteBean;
+import org.sakaiproject.kernel.model.UserEnvironmentBean;
 import org.sakaiproject.kernel.util.PathUtils;
 import org.sakaiproject.kernel.util.StringUtils;
+import org.sakaiproject.kernel.util.rest.CollectionOptions;
 import org.sakaiproject.kernel.util.rest.RestDescription;
+import org.sakaiproject.kernel.util.rest.CollectionOptions.PagingOptions;
 import org.sakaiproject.kernel.util.user.AnonUser;
 import org.sakaiproject.kernel.webapp.Initialisable;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -52,6 +60,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -175,6 +184,19 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
         .addParameter(
             JOINABLE_PARAM,
             "The membership type of new members, if null or empty then the site may not be joined or unjoined.");
+    DESC.addParameter(CollectionOptions.START_INDEX,
+        "A single value parameter used to page lists of memembers.");
+    DESC.addParameter(CollectionOptions.COUNT,
+        "A single value parameter, the number of items to return.");
+    DESC.addParameter(CollectionOptions.SORT_BY, "An array of fields to sort by");
+    DESC
+        .addParameter(CollectionOptions.SORT_ORDER,
+            "An array of 'asc' or 'desc' denoting the sort order of each corresponding field.");
+    DESC.addParameter(CollectionOptions.FILTER_BY,
+        "An array of filter fields, an and operation is performed on multiple fields.");
+    DESC.addParameter(CollectionOptions.FILTER_OPERATION,
+        "An array of filter operations, '=', '<', '>' and 'like' are supported.");
+    DESC.addParameter(CollectionOptions.FILTER_VALUE, "An array of filter values.");
     DESC.addResponse(String.valueOf(HttpServletResponse.SC_OK),
         "If the action completed Ok, or if the site exits");
     DESC.addResponse(String.valueOf(HttpServletResponse.SC_CONFLICT),
@@ -506,6 +528,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
         }
       } else {
         membershipHandler.addMembership(siteBean, user.getUuid());
+        return OK;
       }
 
     }
@@ -538,8 +561,29 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
         }
       } else {
         membershipHandler.removeMembership(siteBean, user.getUuid(), membershipType);
+        return OK;
       }
       throw new WebApplicationException(Status.FORBIDDEN);
+    }
+    throw new WebApplicationException(Status.NOT_FOUND);
+  }
+
+  @GET
+  @Path("/members/list/{" + SITE_PATH_PARAM + ":.*}")
+  @Produces(MediaType.TEXT_PLAIN)
+  public String list(@PathParam(SITE_PATH_PARAM) String path,
+      MultivaluedMap<String, String> requestParameters) {
+    path = PathUtils.normalizePath(path);
+    User user = getAuthenticatedUser();
+    if (siteService.siteExists(path)) {
+
+      CollectionOptions collectionOptions = new CollectionOptions(requestParameters);
+      Map<String, Object> members = siteService.getMemberList(path, collectionOptions);
+      PagingOptions pagingOptions = collectionOptions.getPagingOptions();
+      Map<String, Object> response = ImmutableMap.of("startIndex", pagingOptions
+          .getStartIndex(), "count", pagingOptions.getCount(), "size", pagingOptions
+          .size(), "members", members);
+      return beanConverter.convertToString(response);
     }
     throw new WebApplicationException(Status.NOT_FOUND);
   }

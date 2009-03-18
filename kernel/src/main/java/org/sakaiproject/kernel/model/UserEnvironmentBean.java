@@ -371,9 +371,10 @@ public class UserEnvironmentBean implements UserEnvironment {
   /**
    * @param userEnv
    */
-  public void copyFrom(UserEnvironmentBean userEnv) {
-    uuid = userEnv.getUuid();
-    eid = userEnv.getEid();
+  public void copyFrom(UserEnvironment userEnv) {
+    
+    uuid = ((UserEnvironmentBean) userEnv).getUuid();
+    eid = ((UserEnvironmentBean) userEnv).getEid();
     user = userEnv.getUser();
     superUser = userEnv.isSuperUser();
     subjects = userEnv.getSubjects();
