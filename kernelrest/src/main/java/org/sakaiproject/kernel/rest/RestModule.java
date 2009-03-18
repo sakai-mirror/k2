@@ -28,6 +28,7 @@ import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.ServiceManager;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
+import org.sakaiproject.kernel.api.authz.PermissionQueryService;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.presence.PresenceService;
@@ -137,6 +138,10 @@ public class RestModule extends AbstractModule {
 
     bind(AuthzResolverService.class).toProvider(
         new ServiceProvider<AuthzResolverService>(serviceManager, AuthzResolverService.class)).in(
+        Scopes.SINGLETON);
+
+    bind(PermissionQueryService.class).toProvider(
+        new ServiceProvider<PermissionQueryService>(serviceManager, PermissionQueryService.class)).in(
         Scopes.SINGLETON);
 
     // activate all the services

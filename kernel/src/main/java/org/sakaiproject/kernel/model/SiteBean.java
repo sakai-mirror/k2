@@ -40,6 +40,7 @@ public class SiteBean extends GroupBean {
   private String id;
   private String type;
   private String joiningMembership;
+  private String membershipHandler;
   private transient String sitePath;
   private transient SiteService siteService;
 
@@ -125,7 +126,7 @@ public class SiteBean extends GroupBean {
 
       // convert to a set list
       Map<String, Set<String>> permissions = Maps.newHashMap();
-      for ( RoleBean roleBean : rb) {
+      for (RoleBean roleBean : rb) {
         Set<String> rolePerms = permissions.get(roleBean.getName());
         if (rolePerms == null) {
           rolePerms = Sets.newHashSet();
@@ -133,8 +134,6 @@ public class SiteBean extends GroupBean {
         }
         rolePerms.addAll(Lists.immutableList(roleBean.getPermissions()));
       }
-
-
 
       // update the roles.
       for (String role : roles) {
@@ -159,7 +158,6 @@ public class SiteBean extends GroupBean {
 
   }
 
-
   /**
    * @param roles
    */
@@ -169,7 +167,7 @@ public class SiteBean extends GroupBean {
 
       // convert to a set list
       Map<String, Set<String>> permissions = Maps.newHashMap();
-      for ( RoleBean roleBean : rb) {
+      for (RoleBean roleBean : rb) {
         Set<String> rolePerms = permissions.get(roleBean.getName());
         if (rolePerms == null) {
           rolePerms = Sets.newHashSet();
@@ -178,15 +176,13 @@ public class SiteBean extends GroupBean {
         rolePerms.addAll(Lists.immutableList(roleBean.getPermissions()));
       }
 
-
-
       // update the roles.
       for (String role : roles) {
         String[] rolePermission = StringUtils.split(role, ':', 2);
         Set<String> rolePerms = permissions.get(rolePermission[0]);
         if (rolePerms != null) {
           rolePerms.remove(rolePermission[1]);
-          if ( rolePerms.size() == 0 ) {
+          if (rolePerms.size() == 0) {
             permissions.remove(rolePermission[0]);
           }
         }
@@ -204,19 +200,33 @@ public class SiteBean extends GroupBean {
 
   }
 
-  
   /**
    * @return the joiningMembership
    */
   public String getJoiningMembership() {
     return joiningMembership;
   }
-  
+
   /**
-   * @param joiningMembership the joiningMembership to set
+   * @param joiningMembership
+   *          the joiningMembership to set
    */
   public void setJoiningMembership(String joiningMembership) {
     this.joiningMembership = joiningMembership;
   }
 
+  /**
+   * @return the membershipHandler
+   */
+  public String getMembershipHandler() {
+    return membershipHandler;
+  }
+
+  /**
+   * @param membershipHandler
+   *          the membershipHandler to set
+   */
+  public void setMembershipHandler(String membershipHandler) {
+    this.membershipHandler = membershipHandler;
+  }
 }

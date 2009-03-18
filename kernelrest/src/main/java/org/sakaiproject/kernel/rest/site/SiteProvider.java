@@ -29,6 +29,7 @@ import org.sakaiproject.kernel.api.rest.JaxRsSingletonProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
+import org.sakaiproject.kernel.api.site.MembershipHandler;
 import org.sakaiproject.kernel.api.site.SiteException;
 import org.sakaiproject.kernel.api.site.SiteService;
 import org.sakaiproject.kernel.api.user.User;
@@ -68,6 +69,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
   private BeanConverter beanConverter;
   private AuthzResolverService authzResolverService;
   private PermissionQueryService permissionQueryService;
+  private Registry<String, MembershipHandler> membershipHandlerRegistry;
 
   private static final RestDescription DESC = new RestDescription();
   private static final String SITE_PATH_PARAM = "sitePath";
@@ -108,8 +110,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
                 + SITE_TYPE_PARAM
                 + ","
                 + ROLES_ADD_PARAM
-                + " (optional)," +
-                	JOINABLE_PARAM + " (optional) ");
+                + " (optional)," + JOINABLE_PARAM + " (optional) ");
     DESC.addURLTemplate("/_rest/site/create",
         "Accepts POST to create a site, see the section on Create for details");
     DESC
@@ -144,30 +145,36 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
                 + "the current user must be a owner of the site, and there must be at least 1 owner after the specified user"
                 + "is removed from the list of owners.");
     DESC
-    .addURLTemplate(
-        "/_rest/site/join/<siteId>",
-        "On POST, if the user is logged in, and the site has a joining role defined the user is joined " +
-        "in that role. Otherwise a 404 is returned as the site is not joinable and we should not " +
-        "publicise the site by this means.");
+        .addURLTemplate(
+            "/_rest/site/join/<siteId>",
+            "On POST, if the user is logged in, and the site has a joining role defined the user is joined "
+                + "in that role. Otherwise a 404 is returned as the site is not joinable and we should not "
+                + "publicise the site by this means.");
     DESC
-    .addURLTemplate(
-        "/_rest/site/unjoin/<siteId>",
-        "On POST, if the user is logged in, and the site has a joining role defined the user is un-joined " +
-        " from the role specified in the "+MEMBERSHIP_PARAM+" parameter. If the site was not joinable, then the user " +
-        		" may not unjoin");
+        .addURLTemplate(
+            "/_rest/site/unjoin/<siteId>",
+            "On POST, if the user is logged in, and the site has a joining role defined the user is un-joined "
+                + " from the role specified in the "
+                + MEMBERSHIP_PARAM
+                + " parameter. If the site was not joinable, then the user "
+                + " may not unjoin");
     DESC.addParameter(NAME_PARAM, "The Site Name");
     DESC.addParameter(DESCRIPTION_PARAM, "The Site Description");
     DESC.addParameter(SITE_TYPE_PARAM, "The Site Type");
     DESC
         .addParameter(OWNER_PARAM, "The Site Owner, only available to owners of the site");
     DESC.addParameter(USER_PARAM, "An array of unique user ids");
-    DESC.addParameter(MEMBERSHIP_PARAM, "An array of membership types, or in the case of unjoin a single membership token");
+    DESC
+        .addParameter(MEMBERSHIP_PARAM,
+            "An array of membership types, or in the case of unjoin a single membership token");
     DESC.addParameter(ROLES_ADD_PARAM,
         "An array of role permissions to add in the form role:permission ");
     DESC.addParameter(ROLES_REMOVE_PARAM,
         "An array of role permissions in to remove the form role:permission ");
-    DESC.addParameter(JOINABLE_PARAM,
-    "The membership type of new members, if null or empty then the site may not be joined or unjoined.");
+    DESC
+        .addParameter(
+            JOINABLE_PARAM,
+            "The membership type of new members, if null or empty then the site may not be joined or unjoined.");
     DESC.addResponse(String.valueOf(HttpServletResponse.SC_OK),
         "If the action completed Ok, or if the site exits");
     DESC.addResponse(String.valueOf(HttpServletResponse.SC_CONFLICT),
@@ -192,6 +199,9 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
         .getRegistry(JaxRsSingletonProvider.JAXRS_SINGLETON_REGISTRY);
 
     jaxRsSingletonRegistry.add(this);
+
+    membershipHandlerRegistry = registryService
+        .getRegistry(MembershipHandler.MEMBERSHIP_HANDLER_REGISTRY);
     this.siteService = siteService;
     this.userEnvironmentResolverService = userEnvironmentResolverService;
     this.sessionManagerService = sessionManagerService;
@@ -268,7 +278,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
         if (toAdd != null && toAdd.length > 0) {
           siteBean.addRoles(toAdd);
         }
-        if (joiningMembershipType != null ) {
+        if (joiningMembershipType != null) {
           siteBean.setJoiningMembership(joiningMembershipType);
         }
         siteBean.save();
@@ -397,16 +407,26 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
       // to add a member you need write on the site config space.
       authzResolverService.check(path + SiteService.PATH_SITE, permissionQueryService
           .getPermission(PermissionQuery.WRITE));
-
       SiteBean siteBean = siteService.getSite(path);
-      authzResolverService.setRequestGrant("Adding Membership");
-      try {
-        for (int i = 0; i < userIds.length; i++) {
-          userEnvironmentResolverService.addMembership(userIds[i], siteBean.getId(),
-              membershipType[i]);
+      String membershipHandlerName = siteBean.getMembershipHandler();
+      MembershipHandler membershipHandler = null;
+      if (membershipHandlerName != null) {
+        membershipHandlerRegistry.getMap().get(membershipHandlerName);
+      }
+
+      if (membershipHandler == null) {
+
+        authzResolverService.setRequestGrant("Adding Membership");
+        try {
+          for (int i = 0; i < userIds.length; i++) {
+            userEnvironmentResolverService.addMembership(userIds[i], siteBean.getId(),
+                membershipType[i]);
+          }
+        } finally {
+          authzResolverService.clearRequestGrant();
         }
-      } finally {
-        authzResolverService.clearRequestGrant();
+      } else {
+        membershipHandler.addMembership(siteBean, userIds, membershipType);
       }
       return OK;
     }
@@ -436,21 +456,30 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
           .getPermission(PermissionQuery.WRITE));
 
       SiteBean siteBean = siteService.getSite(path);
+      String membershipHandlerName = siteBean.getMembershipHandler();
+      MembershipHandler membershipHandler = null;
+      if (membershipHandlerName != null) {
+        membershipHandlerRegistry.getMap().get(membershipHandlerName);
+      }
 
-      authzResolverService.setRequestGrant("Revoking Membership");
-      try {
-        for (int i = 0; i < userIds.length; i++) {
-          userEnvironmentResolverService.removeMembership(userIds[i], siteBean.getId(),
-              membershipType[i]);
+      if (membershipHandler == null) {
+
+        authzResolverService.setRequestGrant("Revoking Membership");
+        try {
+          for (int i = 0; i < userIds.length; i++) {
+            userEnvironmentResolverService.removeMembership(userIds[i], siteBean.getId(),
+                membershipType[i]);
+          }
+        } finally {
+          authzResolverService.clearRequestGrant();
         }
-      } finally {
-        authzResolverService.clearRequestGrant();
+      } else {
+        membershipHandler.removeMembership(siteBean, userIds, membershipType);
       }
       return OK;
     }
     throw new WebApplicationException(Response.status(Status.NOT_FOUND).build());
   }
-
 
   @POST
   @Path("/join/{" + SITE_PATH_PARAM + ":.*}")
@@ -461,11 +490,22 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
     if (siteService.siteExists(path)) {
       SiteBean siteBean = siteService.getSite(path);
 
-      String joiningRole = siteBean.getJoiningMembership();
-      if ( !StringUtils.isEmpty(joiningRole) ) {
-            userEnvironmentResolverService.addMembership(user.getUuid(), siteBean.getId(),
-                joiningRole);
-        return OK;
+      String membershipHandlerName = siteBean.getMembershipHandler();
+      MembershipHandler membershipHandler = null;
+      if (membershipHandlerName != null) {
+        membershipHandlerRegistry.getMap().get(membershipHandlerName);
+      }
+
+      if (membershipHandler == null) {
+        String joiningRole = siteBean.getJoiningMembership();
+
+        if (!StringUtils.isEmpty(joiningRole)) {
+          userEnvironmentResolverService.addMembership(user.getUuid(), siteBean.getId(),
+              joiningRole);
+          return OK;
+        }
+      } else {
+        membershipHandler.addMembership(siteBean, user.getUuid());
       }
 
     }
@@ -475,18 +515,29 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
   @POST
   @Path("/unjoin/{" + SITE_PATH_PARAM + ":.*}")
   @Produces(MediaType.TEXT_PLAIN)
-  public String unjoin(@PathParam(SITE_PATH_PARAM) String path, @PathParam(MEMBERSHIP_PARAM) String membershipType) {
+  public String unjoin(@PathParam(SITE_PATH_PARAM) String path,
+      @PathParam(MEMBERSHIP_PARAM) String membershipType) {
     path = PathUtils.normalizePath(path);
     User user = getAuthenticatedUser();
     if (siteService.siteExists(path)) {
       SiteBean siteBean = siteService.getSite(path);
+      String membershipHandlerName = siteBean.getMembershipHandler();
+      MembershipHandler membershipHandler = null;
+      if (membershipHandlerName != null) {
+        membershipHandlerRegistry.getMap().get(membershipHandlerName);
+      }
 
-      // if the site was joinable I can unjoin, otherwise I have to ask.
-      String joiningRole = siteBean.getJoiningMembership();
-      if ( !StringUtils.isEmpty(joiningRole) ) {
-            userEnvironmentResolverService.removeMembership(user.getUuid(), siteBean.getId(),
-                membershipType);
-            return OK;
+      if (membershipHandler == null) {
+
+        // if the site was joinable I can unjoin, otherwise I have to ask.
+        String joiningRole = siteBean.getJoiningMembership();
+        if (!StringUtils.isEmpty(joiningRole)) {
+          userEnvironmentResolverService.removeMembership(user.getUuid(), siteBean
+              .getId(), membershipType);
+          return OK;
+        }
+      } else {
+        membershipHandler.removeMembership(siteBean, user.getUuid(), membershipType);
       }
       throw new WebApplicationException(Status.FORBIDDEN);
     }
