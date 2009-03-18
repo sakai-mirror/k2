@@ -23,6 +23,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.authz.AclListenerT;
+import org.sakaiproject.kernel.jcr.smartNode.InboxActionUnitT;
 import org.sakaiproject.kernel.jcr.smartNode.XpathSmartNodeHandlerT;
 import org.sakaiproject.kernel.messaging.activemq.ActiveMQEmailDeliveryT;
 import org.sakaiproject.kernel.rest.test.RestMySitesProviderKernelUnitT;
@@ -42,7 +43,8 @@ import org.sakaiproject.kernel.webapp.test.SakaiAuthenticationFilterKernelUnitT;
     SessionManagerServiceKernelUnitT.class, AclListenerT.class,
     SiteServiceT.class, RestSiteProviderKernelUnitT.class,
     RestPatchProviderKernelUnitT.class, RestMySitesProviderKernelUnitT.class,
-    ActiveMQEmailDeliveryT.class, JcrUtilsT.class, XpathSmartNodeHandlerT.class })
+    ActiveMQEmailDeliveryT.class, JcrUtilsT.class,
+    XpathSmartNodeHandlerT.class, InboxActionUnitT.class })
 public class AllKernelTest {
   private static boolean shutdown;
   static {
