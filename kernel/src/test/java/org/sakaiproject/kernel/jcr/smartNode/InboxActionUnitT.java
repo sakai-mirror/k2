@@ -55,6 +55,8 @@ public class InboxActionUnitT extends SmartNodeHandlerBaseT {
   private static Node inboxNode = null;
   private static String query = null;
 
+  protected XpathSmartNodeHandler handler;
+
   @BeforeClass
   public static void beforeThisClass() throws Exception {
     SmartNodeHandlerBaseT.beforeClass();
@@ -99,8 +101,6 @@ public class InboxActionUnitT extends SmartNodeHandlerBaseT {
       in.close();
     }
 
-    session.save();
-
     // make a smart node that condenses the directories into a single inbox
     inboxNode = nodeFactory.createFolder(PREFIX + "inbox");
     query = "/" + PREFIX + "/element(*, " + JCRConstants.NT_FILE + ")[@"
@@ -109,6 +109,8 @@ public class InboxActionUnitT extends SmartNodeHandlerBaseT {
 
     // // clear the security bypass
     // authzResolverService.clearRequestGrant();
+
+    session.save();
   }
 
   @AfterClass
@@ -120,6 +122,8 @@ public class InboxActionUnitT extends SmartNodeHandlerBaseT {
   @Before
   public void setUp() throws Exception {
     super.setUp();
+
+    handler = new XpathSmartNodeHandler(registryService, jcrService);
   }
 
   @Override
