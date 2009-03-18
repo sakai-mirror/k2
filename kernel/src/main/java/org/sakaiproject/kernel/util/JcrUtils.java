@@ -42,6 +42,8 @@ public class JcrUtils {
   }
 
   /**
+   * Adds a label to a node. No action is taken if the label already exists on
+   * the node. Label is treated case-sensitively.
    *
    * @param node
    * @param label
@@ -51,48 +53,40 @@ public class JcrUtils {
    */
   public static void addNodeLabel(Node node, String label)
       throws RepositoryException {
-    // validate arguments
-    if (node == null) {
-      throw new IllegalArgumentException("Node must not be null.");
-    }
-    if (label == null) {
-      throw new IllegalArgumentException("Node label must not be null.");
-    }
-
-    // get properties from node
-    Value[] values = null;
-    if (node.hasProperty(JCRConstants.JCR_LABELS)) {
-      Property prop = node.getProperty(JCRConstants.JCR_LABELS);
-      values = prop.getValues();
-    } else {
-      values = new Value[0];
-    }
-
-    // see if the label already exists
-    boolean contains = false;
-    for (Value v : values) {
-      if (label.equals(v.getString())) {
-        contains = true;
-        break;
-      }
-    }
-
-    // if not found, add new label
-    if (!contains) {
-      // creating array that is 1 larger than before
-      Value[] newVals = new Value[values.length + 1];
-      // copy old labels to new array
-      for (int i = 0; i < values.length; i++) {
-        newVals[i] = values[i];
-      }
-      // add new label
-      newVals[newVals.length - 1] = new StringValue(label);
-      // set values back to the node property.
-      node.setProperty(JCRConstants.JCR_LABELS, newVals);
-    }
+    modifyNodeLabel(node, label, false);
   }
 
+  /**
+   * Removes a label from a node. No exception thrown if label not found on
+   * node. Label is treated case-sensitively.
+   *
+   * @param node
+   *          The node to act on.
+   * @param label
+   *          The label to remove.
+   * @throws RepositoryException
+   */
   public static void removeNodeLabel(Node node, String label)
+      throws RepositoryException {
+    modifyNodeLabel(node, label, true);
+  }
+
+  /**
+   * Adds/removes a label on a node. Label is treated case-sensitively. No
+   * action is taken nor exception thrown if:<br/>
+   * <ul>
+   * <li>add and label exists</li>
+   * <li>remove and label doesn't exist</li>
+   * </ul>
+   *
+   * @param node
+   * @param label
+   * @param remove
+   * @throws RepositoryException
+   * @throws IllegalArgumentException
+   *           If label or node is null.
+   */
+  protected static void modifyNodeLabel(Node node, String label, boolean remove)
       throws RepositoryException {
     // validate arguments
     if (node == null) {
@@ -120,10 +114,11 @@ public class JcrUtils {
       }
     }
 
+    Value[] newVals = null;
     // if found, remove label
-    if (contains) {
+    if (remove && contains) {
       // creating array that is 1 larger than before
-      Value[] newVals = new Value[values.length - 1];
+      newVals = new Value[values.length - 1];
       // copy old labels to new array, skipping label to be removed
       int newI = 0;
       for (Value value : values) {
@@ -131,8 +126,19 @@ public class JcrUtils {
           newVals[newI++] = value;
         }
       }
-      // set values back to the node property.
-      node.setProperty(JCRConstants.JCR_LABELS, newVals);
     }
+    // if not found, add new label
+    else if (!remove && !contains) {
+      // creating array that is 1 larger than before
+      newVals = new Value[values.length + 1];
+      // copy old labels to new array
+      for (int i = 0; i < values.length; i++) {
+        newVals[i] = values[i];
+      }
+      // add new label
+      newVals[newVals.length - 1] = new StringValue(label);
+    }
+    // set values back to the node property.
+    node.setProperty(JCRConstants.JCR_LABELS, newVals);
   }
 }
