@@ -29,6 +29,8 @@ import static org.junit.Assert.fail;
 
 import com.google.inject.Injector;
 
+import net.sf.json.JSONObject;
+
 import org.easymock.Capture;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -70,16 +72,17 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
   /**
    * {@inheritDoc}
+   *
    * @see org.sakaiproject.kernel.rest.test.BaseRestUnitT#setupServices()
    */
   @Override
   public void setupServices() {
     // TODO Auto-generated method stub
     super.setupServices();
-    rsp = new RestSiteProvider(registryService, siteService,
-        injector.getInstance(BeanConverter.class),
-        userEnvironmentResolverService, sessionManagerService);
-    
+    rsp = new RestSiteProvider(registryService, siteService, injector
+        .getInstance(BeanConverter.class), userEnvironmentResolverService,
+        sessionManagerService);
+
     assertFalse(jcrService.hasActiveSession());
 
   }
@@ -90,7 +93,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
   /**
    * Check 409 on already exists
-   * 
+   *
    * @throws ServletException
    * @throws IOException
    */
@@ -121,10 +124,10 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
   /**
    * Check create works.
-   * 
+   *
    * @throws ServletException
    * @throws IOException
-   * @throws SiteException 
+   * @throws SiteException
    */
   @Test
   public void testCreate() throws ServletException, IOException, SiteException {
@@ -144,8 +147,9 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     expect(request.getParameter("type")).andReturn("Type:sitethatdoesnotexist");
     Capture<String> sitePath = new Capture<String>();
     Capture<String> siteType = new Capture<String>();
-    SiteBean siteBean = new SiteBean();  
-    expect(siteService.createSite(capture(sitePath), capture(siteType))).andReturn(siteBean);
+    SiteBean siteBean = new SiteBean();
+    expect(siteService.createSite(capture(sitePath), capture(siteType)))
+        .andReturn(siteBean);
     expectLastCall();
     response.setContentType("text/plain");
     expectLastCall();
@@ -161,7 +165,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
     assertTrue(sitePath.hasCaptured());
     assertTrue(siteType.hasCaptured());
-    assertEquals("sitethatdoesnotexist", sitePath.getValue());    
+    assertEquals("sitethatdoesnotexist", sitePath.getValue());
     assertEquals("Type:sitethatdoesnotexist", siteType.getValue());
     assertEquals("Name:sitethatdoesnotexist", siteBean.getName());
     assertEquals("Description:sitethatdoesnotexist", siteBean.getDescription());
@@ -173,7 +177,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
   /**
    * Check for existence of a site by ID
-   * 
+   *
    * @throws ServletException
    * @throws IOException
    */
@@ -200,19 +204,21 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     rsp.dispatch(elements, request, response);
 
     String body = new String(baos.toByteArray(), "UTF-8");
+    JSONObject bodyJson = JSONObject.fromObject(body);
     assertEquals(
-        "{\"type\":\"type\",\"subjectTokens\":[\"name:maintain\",\"name:access\"],"
-            + "\"roles\":[{\"permissions\":[\"read\",\"write\",\"remove\"],"
-            + "\"name\":\"maintain\"},{\"permissions\":[\"read\"],"
-            + "\"name\":\"access\"}],\"name\":\"name\",\"id\":\"sitethatexists\"}",
-        body);
+        JSONObject
+            .fromObject("{\"type\":\"type\",\"subjectTokens\":[\"name:maintain\",\"name:access\"],"
+                + "\"roles\":[{\"permissions\":[\"read\",\"write\",\"remove\"],"
+                + "\"name\":\"maintain\"},{\"permissions\":[\"read\"],"
+                + "\"name\":\"access\"}],\"name\":\"name\",\"id\":\"sitethatexists\"}"),
+        bodyJson);
 
     verifyMocks();
   }
 
   /**
    * Check for non existance of a site.
-   * 
+   *
    * @throws ServletException
    * @throws IOException
    */
@@ -240,7 +246,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
   /**
    * Check for 400 if site id not specific on check.
-   * 
+   *
    * @throws ServletException
    * @throws IOException
    */
@@ -265,10 +271,9 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
     verifyMocks();
   }
 
-
   /**
    * Checks that for 400 on no site id
-   * 
+   *
    * @throws ServletException
    * @throws IOException
    */
@@ -299,7 +304,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
   /**
    * Check for 400 o no site id specified for remove.
-   * 
+   *
    * @throws ServletException
    * @throws IOException
    */
@@ -330,7 +335,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
   /**
    * Check for no user id specified on addOwner.
-   * 
+   *
    * @throws ServletException
    * @throws IOException
    */
@@ -362,7 +367,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
   /**
    * Check for remove owner with no user ID, should be 400.
-   * 
+   *
    * @throws ServletException
    * @throws IOException
    */
@@ -394,7 +399,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
   /**
    * Check for a 401 on anon add owner.
-   * 
+   *
    * @throws ServletException
    * @throws IOException
    */
@@ -426,7 +431,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
   /**
    * Check for a 401 on anon create site.
-   * 
+   *
    * @throws ServletException
    * @throws IOException
    */
@@ -457,7 +462,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
   /**
    * check for a bad method on create. (should be POST only)
-   * 
+   *
    * @throws ServletException
    * @throws IOException
    */
@@ -488,7 +493,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
   /**
    * Check for a bad method on addOwner should be POST only.
-   * 
+   *
    * @throws ServletException
    * @throws IOException
    */
@@ -519,7 +524,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
   /**
    * Check for a bad method on remove Owner should be POST only.
-   * 
+   *
    * @throws ServletException
    * @throws IOException
    */
@@ -550,7 +555,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
   /**
    * Test for 401 on anon remove owner.
-   * 
+   *
    * @throws ServletException
    * @throws IOException
    */
@@ -580,13 +585,14 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
   /**
    * Test for remove owner OK from list of 2.
-   * 
+   *
    * @throws ServletException
    * @throws IOException
-   * @throws SiteException 
+   * @throws SiteException
    */
   @Test
-  public void testRemoveOwnerOK() throws ServletException, IOException, SiteException {
+  public void testRemoveOwnerOK() throws ServletException, IOException,
+      SiteException {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -627,13 +633,14 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
   /**
    * Test fore remove owner from a list of 3 middle one removed.
-   * 
+   *
    * @throws ServletException
    * @throws IOException
-   * @throws SiteException 
+   * @throws SiteException
    */
   @Test
-  public void testRemoveOwnerOK2() throws ServletException, IOException, SiteException {
+  public void testRemoveOwnerOK2() throws ServletException, IOException,
+      SiteException {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -675,7 +682,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
   /**
    * test for remove owner no change.
-   * 
+   *
    * @throws ServletException
    * @throws IOException
    */
@@ -715,7 +722,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
   /**
    * test for 404 on remove with non existant site.
-   * 
+   *
    * @throws ServletException
    * @throws IOException
    */
@@ -747,7 +754,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
   /**
    * Test for 403 on non owner remove site attempt.
-   * 
+   *
    * @throws ServletException
    * @throws IOException
    */
@@ -787,7 +794,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
   /**
    * Test for 403 on remove last owner.
-   * 
+   *
    * @throws ServletException
    * @throws IOException
    */
@@ -827,7 +834,7 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
 
   /**
    * Test for add when not owner 403
-   * 
+   *
    * @throws ServletException
    * @throws IOException
    */
@@ -864,12 +871,13 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
   }
 
   @Test
-  public void testAddOwnerOK() throws ServletException, IOException, SiteException {
+  public void testAddOwnerOK() throws ServletException, IOException,
+      SiteException {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     newSession();
-    setupAnyTimes("user1",baos);
+    setupAnyTimes("user1", baos);
 
     expect(request.getMethod()).andReturn("POST").anyTimes();
     SiteBean siteBean = new SiteBean();
@@ -905,7 +913,8 @@ public class RestSiteProviderKernelUnitT extends BaseRestUnitT {
   }
 
   @Test
-  public void testAddOwnerOK2() throws ServletException, IOException, SiteException {
+  public void testAddOwnerOK2() throws ServletException, IOException,
+      SiteException {
     setupServices();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
