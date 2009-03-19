@@ -44,8 +44,10 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
+import javax.jcr.LoginException;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.persistence.Query;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
@@ -170,7 +172,7 @@ public class RestFriendsProviderTest extends BaseRestUT {
   public void createProvider() {
     rsp = new RestFriendsProvider(registryService, sessionManagerService,
         userEnvironmentResolverService, profileResolverService, entityManager,
-        friendsResolverService, userFactoryService, beanConverter);
+        friendsResolverService, userFactoryService, beanConverter, authzResolverService, jcrService);
   }
 
   /**
@@ -251,6 +253,14 @@ public class RestFriendsProviderTest extends BaseRestUT {
         .anyTimes();
     expect(beanConverter.convertToString(fb)).andReturn("{}").anyTimes();
     expect(beanConverter.convertToString(myFriend)).andReturn("{}").anyTimes();
+    
+    authzResolverService.setRequestGrant((String) anyObject());
+    expectLastCall().atLeastOnce();
+    authzResolverService.clearRequestGrant();
+    expectLastCall().atLeastOnce();
+
+    Session session = createMock(Session.class);
+   expect(jcrService.getSession()).andReturn(session).anyTimes();
 
     Node node = createMock(Node.class);
     Capture<InputStream> inputStream = new Capture<InputStream>();
@@ -266,6 +276,7 @@ public class RestFriendsProviderTest extends BaseRestUT {
         jcrNodeFactoryService.setInputStream(capture(stringCapture),
             capture(inputStream), capture(stringCapture2))).andReturn(node);
 
+    
 
     Capture<Map<String, String>> mapCapture = new Capture<Map<String, String>>();
     expect(beanConverter.convertToString(capture(mapCapture))).andReturn(
@@ -563,6 +574,14 @@ public class RestFriendsProviderTest extends BaseRestUT {
     resetMocks();
     newSession();
 
+    Session session = createMock(Session.class);
+    expect(jcrService.getSession()).andReturn(session).anyTimes();
+
+    authzResolverService.setRequestGrant((String) anyObject());
+    expectLastCall().atLeastOnce();
+    authzResolverService.clearRequestGrant();
+    expectLastCall().atLeastOnce();
+
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     setupAnyTimes(user, baos);
     expect(request.getMethod()).andReturn("POST");
@@ -630,9 +649,11 @@ public class RestFriendsProviderTest extends BaseRestUT {
    * @param strings
    * @param strings2
    * @throws IOException
+   * @throws RepositoryException 
+   * @throws LoginException 
    */
   private void checkFriend(String user, String[] friendUuids,
-      String[] friendStatus) throws IOException {
+      String[] friendStatus) throws IOException, LoginException, RepositoryException {
     resetMocks();
 
     newSession();
@@ -649,6 +670,10 @@ public class RestFriendsProviderTest extends BaseRestUT {
     expect(request.getParameterValues("s")).andReturn(null);
     expect(request.getParameterValues("o")).andReturn(null);
 
+    Session session = createMock(Session.class);
+    expect(jcrService.getSession()).andReturn(session).anyTimes();
+
+    
     FriendsBean fb = new FriendsBean(jcrNodeFactoryService, userFactoryService,
         beanConverter, "private");
     expect(friendsResolverService.resolve(user)).andReturn(fb).anyTimes();

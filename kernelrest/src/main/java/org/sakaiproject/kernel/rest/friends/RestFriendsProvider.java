@@ -23,9 +23,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 
-
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
+import org.sakaiproject.kernel.api.authz.AuthzResolverService;
+import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
@@ -57,9 +58,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * The rest friends provider provides management of friends lists. These are
- * stored in a known place with metadata, as a json file. The service works on
- * the basis of adding and removing friends records from a json file.
+ * The rest friends provider provides management of friends lists. These are stored in a
+ * known place with metadata, as a json file. The service works on the basis of adding and
+ * removing friends records from a json file.
  */
 public class RestFriendsProvider implements RestProvider, Initialisable {
 
@@ -97,38 +98,38 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
                 + "accept, otherwise its the current user. ");
     DESC
         .addURLTemplate(
-            "/rest/" + KEY + "/" + PathElement.connect + "/"
-                + PathElement.request + "/<userid>",
+            "/rest/" + KEY + "/" + PathElement.connect + "/" + PathElement.request
+                + "/<userid>",
             "Accepts POST to invite a friend to this user id. A super user may specify the user who is performing the "
                 + "invite, otherwise its the current user. The post must be accompanied by a text message and a friend to invite.");
     DESC
         .addURLTemplate(
-            "/rest/" + KEY + "/" + PathElement.connect + "/"
-                + PathElement.accept + "/<userid>",
+            "/rest/" + KEY + "/" + PathElement.connect + "/" + PathElement.accept
+                + "/<userid>",
             "Accepts POST to accept an earlier invitation. A super user may specify the user who is performing the "
                 + "accept, otherwise its the current user. The post must be accompanied by friend to accept.");
     DESC
         .addURLTemplate(
-            "/rest/" + KEY + "/" + PathElement.connect + "/"
-                + PathElement.reject + "/<userid>",
+            "/rest/" + KEY + "/" + PathElement.connect + "/" + PathElement.reject
+                + "/<userid>",
             "Accepts POST to reject an earlier invitation. A super user may specify the user who is performing the "
                 + "reject, otherwise its the current user. The post must be accompanied by friend to reject, the target user will be notified.");
     DESC
         .addURLTemplate(
-            "/rest/" + KEY + "/" + PathElement.connect + "/"
-                + PathElement.ignore + "/<userid>",
+            "/rest/" + KEY + "/" + PathElement.connect + "/" + PathElement.ignore
+                + "/<userid>",
             "Accepts POST to ignore an earlier invitation. A super user may specify the user who is performing the "
                 + "ignore, otherwise its the current user. The post must be accompanied by friend to reject, the target user will not be notified.");
     DESC
         .addURLTemplate(
-            "/rest/" + KEY + "/" + PathElement.connect + "/"
-                + PathElement.cancel + "/<userid>",
+            "/rest/" + KEY + "/" + PathElement.connect + "/" + PathElement.cancel
+                + "/<userid>",
             "Accepts POST to cancel an earlier invitation. A super user may specify the user who is performing the "
                 + "accept, otherwise its the current user. The post must be accompanied by friend to cancel.");
     DESC
         .addURLTemplate(
-            "/rest/" + KEY + "/" + PathElement.connect + "/"
-                + PathElement.remove + "/<userid>",
+            "/rest/" + KEY + "/" + PathElement.connect + "/" + PathElement.remove
+                + "/<userid>",
             "Accepts POST to remove an earlier connection. A super user may specify the user who is performing the "
                 + "accept, otherwise its the current user. The post must be accompanied by friend to cancel.");
     DESC.addSection(2, "POST", "");
@@ -145,17 +146,15 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
         "the number of friends per page. (optional, default 10)");
     DESC.addParameter(FriendsParams.SORT, "an array of fields to sort on from "
         + Arrays.toString(FriendsSortField.values()) + " (optional)");
-    DESC.addParameter(FriendsParams.SORTORDER,
-        "an array of directions to sort, from "
-            + Arrays.toString(FriendsSortOrder.values()) + " (optional)");
+    DESC.addParameter(FriendsParams.SORTORDER, "an array of directions to sort, from "
+        + Arrays.toString(FriendsSortOrder.values()) + " (optional)");
     DESC.addResponse(String.valueOf(HttpServletResponse.SC_OK),
         "If the action completed Ok");
     DESC.addResponse(String.valueOf(HttpServletResponse.SC_CONFLICT),
         "If the request could not be compelted at this time");
     DESC.addResponse(String.valueOf(HttpServletResponse.SC_FORBIDDEN),
         "If permission to manage the connection is denied");
-    DESC.addResponse(String
-        .valueOf(HttpServletResponse.SC_INTERNAL_SERVER_ERROR),
+    DESC.addResponse(String.valueOf(HttpServletResponse.SC_INTERNAL_SERVER_ERROR),
         " Any other error");
   }
 
@@ -177,17 +176,20 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
 
   private Registry<String, RestProvider> registry;
 
+  private AuthzResolverService authzResolverService;
+
+  private JCRService jcrService;
+
   @Inject
   public RestFriendsProvider(RegistryService registryService,
       SessionManagerService sessionManagerService,
       UserEnvironmentResolverService userEnvironmentResolverService,
-      ProfileResolverService profileResolverService,
-      EntityManager entityManager,
+      ProfileResolverService profileResolverService, EntityManager entityManager,
       FriendsResolverService friendsResolverService,
-      UserFactoryService userFactoryService,
-      BeanConverter beanConverter) {
-    this.registry = registryService
-        .getRegistry(RestProvider.REST_REGISTRY);
+      UserFactoryService userFactoryService, BeanConverter beanConverter,
+      AuthzResolverService authzResolverService,
+      JCRService jcrService) {
+    this.registry = registryService.getRegistry(RestProvider.REST_REGISTRY);
     this.registry.add(this);
     this.beanConverter = beanConverter;
     this.sessionManagerService = sessionManagerService;
@@ -196,16 +198,21 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
     this.profileResolverService = profileResolverService;
     this.friendsResolverService = friendsResolverService;
     this.userFactoryService = userFactoryService;
+    this.authzResolverService = authzResolverService;
+    this.jcrService = jcrService;
   }
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.webapp.Initialisable#init()
    */
   public void init() {
   }
+
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.webapp.Initialisable#destroy()
    */
   public void destroy() {
@@ -214,22 +221,20 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.api.rest.RestProvider#dispatch(java.lang.String[],
-   *      javax.servlet.http.HttpServletRequest,
-   *      javax.servlet.http.HttpServletResponse)
+   *      javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
    */
   public void dispatch(String[] elements, HttpServletRequest request,
       HttpServletResponse response) {
     try {
-      FriendsParams params = new FriendsParams(elements, request,
-          sessionManagerService, userEnvironmentResolverService);
+      FriendsParams params = new FriendsParams(elements, request, sessionManagerService,
+          userEnvironmentResolverService);
       Map<String, Object> map = Maps.newHashMap();
       switch (params.major) {
       case connect:
         if (!"POST".equals(request.getMethod())) {
-          throw new RestServiceFaultException(
-              HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+          throw new RestServiceFaultException(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
         }
         switch (params.minor) {
         case request:
@@ -257,8 +262,7 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
         break;
       case status:
         if (!"GET".equals(request.getMethod())) {
-          throw new RestServiceFaultException(
-              HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+          throw new RestServiceFaultException(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
         }
         map = doStatus(params, request, response);
         break;
@@ -294,17 +298,22 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
       HttpServletRequest request, HttpServletResponse response)
       throws JCRNodeFactoryServiceException, RepositoryException, IOException {
     FriendsBean myFriends = friendsResolverService.resolve(params.uuid);
-    FriendsBean friendFriends = friendsResolverService
-        .resolve(params.friendUuid);
-    if (!myFriends.hasFriend(params.friendUuid)
-        || !friendFriends.hasFriend(params.uuid)) {
+    FriendsBean friendFriends = friendsResolverService.resolve(params.friendUuid);
+    if (!myFriends.hasFriend(params.friendUuid) || !friendFriends.hasFriend(params.uuid)) {
       throw new RestServiceFaultException(HttpServletResponse.SC_NOT_FOUND,
           " The friend connection is missing ");
     }
     myFriends.removeFriend(params.friendUuid);
     friendFriends.removeFriend(params.uuid);
-    myFriends.save();
-    friendFriends.save();
+
+    authzResolverService.setRequestGrant("Saving Remove Connect");
+    try {
+      myFriends.save();
+      friendFriends.save();
+      jcrService.getSession().save();
+    } finally {
+      authzResolverService.clearRequestGrant();
+    }
     return OK;
   }
 
@@ -321,27 +330,29 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
       HttpServletRequest request, HttpServletResponse response)
       throws JCRNodeFactoryServiceException, RepositoryException, IOException {
     FriendsBean myFriends = friendsResolverService.resolve(params.uuid);
-    FriendsBean friendFriends = friendsResolverService
-        .resolve(params.friendUuid);
-    if (myFriends.hasFriend(params.friendUuid)
-        || friendFriends.hasFriend(params.uuid)) {
+    FriendsBean friendFriends = friendsResolverService.resolve(params.friendUuid);
+    if (myFriends.hasFriend(params.friendUuid) || friendFriends.hasFriend(params.uuid)) {
       throw new RestServiceFaultException(HttpServletResponse.SC_CONFLICT,
           "There is already a connection invited, pending or accepted ");
     }
     FriendBean friend = new FriendBean(params.uuid, params.friendUuid,
         FriendStatus.PENDING);
-    FriendBean me = new FriendBean(params.friendUuid, params.uuid,
-        FriendStatus.INVITED);
+    FriendBean me = new FriendBean(params.friendUuid, params.uuid, FriendStatus.INVITED);
     if (!StringUtils.isEmpty(params.type)) {
-      me.setProperties(ImmutableMap.of("type", params.type, "message",
-          params.message));
-      friend.setProperties(ImmutableMap.of("type", params.type, "message",
-          params.message));
+      me.setProperties(ImmutableMap.of("type", params.type, "message", params.message));
+      friend.setProperties(ImmutableMap
+          .of("type", params.type, "message", params.message));
     }
     myFriends.addFriend(friend);
     friendFriends.addFriend(me);
-    myFriends.save();
-    friendFriends.save();
+    authzResolverService.setRequestGrant("Saving Request Connect");
+    try {
+      myFriends.save();
+      friendFriends.save();
+      jcrService.getSession().save();
+    } finally {
+      authzResolverService.clearRequestGrant();
+    }
     return OK;
   }
 
@@ -358,10 +369,8 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
       HttpServletRequest request, HttpServletResponse response)
       throws JCRNodeFactoryServiceException, RepositoryException, IOException {
     FriendsBean myFriends = friendsResolverService.resolve(params.uuid);
-    FriendsBean friendFriends = friendsResolverService
-        .resolve(params.friendUuid);
-    if (!myFriends.hasFriend(params.friendUuid)
-        || !friendFriends.hasFriend(params.uuid)) {
+    FriendsBean friendFriends = friendsResolverService.resolve(params.friendUuid);
+    if (!myFriends.hasFriend(params.friendUuid) || !friendFriends.hasFriend(params.uuid)) {
       throw new RestServiceFaultException(HttpServletResponse.SC_NOT_FOUND,
           " The friend connection is missing ");
     }
@@ -375,8 +384,14 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
 
     myFriendBean.updateStatus(FriendStatus.ACCEPTED);
     friendFriendBean.updateStatus(FriendStatus.ACCEPTED);
-    myFriends.save();
-    friendFriends.save();
+    authzResolverService.setRequestGrant("Saving Accept Connect");
+    try {
+      myFriends.save();
+      friendFriends.save();
+      jcrService.getSession().save();
+    } finally {
+      authzResolverService.clearRequestGrant();
+    }
     return OK;
   }
 
@@ -393,10 +408,8 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
       HttpServletRequest request, HttpServletResponse response)
       throws JCRNodeFactoryServiceException, RepositoryException, IOException {
     FriendsBean myFriends = friendsResolverService.resolve(params.uuid);
-    FriendsBean friendFriends = friendsResolverService
-        .resolve(params.friendUuid);
-    if (!myFriends.hasFriend(params.friendUuid)
-        || !friendFriends.hasFriend(params.uuid)) {
+    FriendsBean friendFriends = friendsResolverService.resolve(params.friendUuid);
+    if (!myFriends.hasFriend(params.friendUuid) || !friendFriends.hasFriend(params.uuid)) {
       throw new RestServiceFaultException(HttpServletResponse.SC_NOT_FOUND,
           " The friend connection is missing ");
     }
@@ -410,8 +423,14 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
 
     myFriends.removeFriend(params.friendUuid);
     friendFriends.removeFriend(params.uuid);
-    myFriends.save();
-    friendFriends.save();
+    authzResolverService.setRequestGrant("Saving Cancel Connect");
+    try {
+      myFriends.save();
+      friendFriends.save();
+      jcrService.getSession().save();
+    } finally {
+      authzResolverService.clearRequestGrant();
+    }
     return OK;
   }
 
@@ -428,10 +447,8 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
       HttpServletRequest request, HttpServletResponse response)
       throws JCRNodeFactoryServiceException, RepositoryException, IOException {
     FriendsBean myFriends = friendsResolverService.resolve(params.uuid);
-    FriendsBean friendFriends = friendsResolverService
-        .resolve(params.friendUuid);
-    if (!myFriends.hasFriend(params.friendUuid)
-        || !friendFriends.hasFriend(params.uuid)) {
+    FriendsBean friendFriends = friendsResolverService.resolve(params.friendUuid);
+    if (!myFriends.hasFriend(params.friendUuid) || !friendFriends.hasFriend(params.uuid)) {
       throw new RestServiceFaultException(HttpServletResponse.SC_NOT_FOUND,
           " The friend connection is missing ");
     }
@@ -445,8 +462,14 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
 
     myFriends.removeFriend(params.friendUuid);
     friendFriends.removeFriend(params.uuid);
-    myFriends.save();
-    friendFriends.save();
+    authzResolverService.setRequestGrant("Saving Reject Connect");
+    try {
+      myFriends.save();
+      friendFriends.save();
+      jcrService.getSession().save();
+    } finally {
+      authzResolverService.clearRequestGrant();
+    }
     return OK;
   }
 
@@ -463,10 +486,8 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
       HttpServletRequest request, HttpServletResponse response)
       throws JCRNodeFactoryServiceException, RepositoryException, IOException {
     FriendsBean myFriends = friendsResolverService.resolve(params.uuid);
-    FriendsBean friendFriends = friendsResolverService
-        .resolve(params.friendUuid);
-    if (!myFriends.hasFriend(params.friendUuid)
-        || !friendFriends.hasFriend(params.uuid)) {
+    FriendsBean friendFriends = friendsResolverService.resolve(params.friendUuid);
+    if (!myFriends.hasFriend(params.friendUuid) || !friendFriends.hasFriend(params.uuid)) {
       throw new RestServiceFaultException(HttpServletResponse.SC_NOT_FOUND,
           " The friend connection is missing ");
     }
@@ -480,8 +501,14 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
 
     myFriends.removeFriend(params.friendUuid);
     friendFriends.removeFriend(params.uuid);
-    myFriends.save();
-    friendFriends.save();
+    authzResolverService.setRequestGrant("Saving Ignore Connect");
+    try {
+      myFriends.save();
+      friendFriends.save();
+      jcrService.getSession().save();
+    } finally {
+      authzResolverService.clearRequestGrant();
+    }
     return OK;
   }
 
@@ -494,17 +521,17 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
    * @throws RepositoryException
    * @throws UnsupportedEncodingException
    */
-  private Map<String, Object> doStatus(FriendsParams params,
-      HttpServletRequest request, HttpServletResponse response)
-      throws UnsupportedEncodingException, RepositoryException, IOException {
+  private Map<String, Object> doStatus(FriendsParams params, HttpServletRequest request,
+      HttpServletResponse response) throws UnsupportedEncodingException,
+      RepositoryException, IOException {
     FriendsBean myFriends = friendsResolverService.resolve(params.uuid);
 
     Query query = null;
     StringBuilder sb = new StringBuilder();
     sb.append(FriendsIndexBean.FINDBY_UUID_WITH_SORT);
     if (params.filterStatus != null) {
-      sb.append(" and ").append(FriendsIndexBean.FRIENDS_STATUS_FIELD).append(
-          " = :").append(FriendsIndexBean.PARAM_FRIENDSTATUS);
+      sb.append(" and ").append(FriendsIndexBean.FRIENDS_STATUS_FIELD).append(" = :")
+          .append(FriendsIndexBean.PARAM_FRIENDSTATUS);
     }
     if (params.sort != null && params.sort.length > 0) {
       sb.append(" order by ");
@@ -513,8 +540,7 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
           sb.append(",");
         }
         sb.append(" s.").append(params.sort[i]);
-        if (params.sortOrder != null
-            && params.sortOrder.length == params.sort.length) {
+        if (params.sortOrder != null && params.sortOrder.length == params.sort.length) {
           sb.append(" ").append(params.sortOrder[i]);
         }
       }
@@ -524,12 +550,13 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
     query.setFirstResult(params.start);
     query.setMaxResults(params.end);
     query.setParameter(FriendsIndexBean.PARAM_UUID, params.uuid);
-    if (params.filterStatus != null ) {
-      query.setParameter(FriendsIndexBean.PARAM_FRIENDSTATUS, params.filterStatus.toString());
+    if (params.filterStatus != null) {
+      query.setParameter(FriendsIndexBean.PARAM_FRIENDSTATUS, params.filterStatus
+          .toString());
     }
 
     List<?> results = query.getResultList();
-    System.err.println(" Results: "+results.size());
+    System.err.println(" Results: " + results.size());
 
     Map<String, FriendBean> myFriendMap = myFriends.friendsMap();
     Map<String, FriendBean> sortedFriendMap = Maps.newLinkedHashMap();
@@ -538,11 +565,11 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
       FriendBean fb = myFriendMap.get(fi.getFriendUuid());
       if (fb != null) {
         sortedFriendMap.put(fb.getFriendUuid(), fb);
-        UserProfile profile = profileResolverService
-            .resolve(fb.getFriendUuid());
+        UserProfile profile = profileResolverService.resolve(fb.getFriendUuid());
         fb.setProfile(profile.getProperties());
         Map<String, String> properties = fb.getProperties();
-        properties.put("userStoragePrefix", userFactoryService.getUserPathPrefix(fb.getFriendUuid()));
+        properties.put("userStoragePrefix", userFactoryService.getUserPathPrefix(fb
+            .getFriendUuid()));
         fb.setProperties(properties);
       }
     }
@@ -560,7 +587,7 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.api.rest.RestProvider#getDescription()
    */
   public RestDescription getDescription() {
@@ -569,7 +596,7 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.api.Provider#getKey()
    */
   public String getKey() {
@@ -578,7 +605,7 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.api.Provider#getPriority()
    */
   public int getPriority() {
