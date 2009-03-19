@@ -33,6 +33,7 @@ import org.sakaiproject.kernel.webapp.SakaiServletResponse;
 
 import java.io.IOException;
 
+import javax.jcr.AccessDeniedException;
 import javax.jcr.Session;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -141,6 +142,8 @@ public class SakaiRequestFilter implements Filter {
           Session session = jcrService.getSession();
           session.save();
         }
+      } catch (AccessDeniedException e ) {
+        throw new SecurityException(e.getMessage(),e);
       } catch (Exception e) {
         LOG.warn(e);
       }
