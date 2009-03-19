@@ -23,6 +23,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 import org.sakaiproject.kernel.api.ComponentActivatorException;
 import org.sakaiproject.kernel.authz.AclListenerT;
+import org.sakaiproject.kernel.friend.FriendResolverServiceT;
 import org.sakaiproject.kernel.jcr.smartNode.InboxActionUnitT;
 import org.sakaiproject.kernel.jcr.smartNode.XpathSmartNodeHandlerT;
 import org.sakaiproject.kernel.messaging.activemq.ActiveMQEmailDeliveryT;
@@ -44,7 +45,7 @@ import org.sakaiproject.kernel.webapp.test.SakaiAuthenticationFilterKernelUnitT;
     SiteServiceT.class, RestSiteProviderKernelUnitT.class,
     RestPatchProviderKernelUnitT.class, RestMySitesProviderKernelUnitT.class,
     ActiveMQEmailDeliveryT.class, JcrUtilsT.class,
-    XpathSmartNodeHandlerT.class, InboxActionUnitT.class })
+    XpathSmartNodeHandlerT.class, InboxActionUnitT.class, FriendResolverServiceT.class })
 public class AllKernelTest {
   private static boolean shutdown;
   static {
