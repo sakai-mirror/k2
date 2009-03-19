@@ -20,7 +20,6 @@ package org.sakaiproject.resteasy;
 
 import org.jboss.resteasy.spi.Registry;
 import org.sakaiproject.kernel.api.RegistryListener;
-import org.sakaiproject.kernel.api.rest.Documentable;
 import org.sakaiproject.kernel.api.rest.JaxRsPrototypeProvider;
 
 /**

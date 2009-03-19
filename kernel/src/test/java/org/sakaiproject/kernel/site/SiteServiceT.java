@@ -51,7 +51,6 @@ import org.sakaiproject.kernel.test.KernelIntegrationBase;
 import org.sakaiproject.kernel.webapp.SakaiServletRequest;
 import org.sakaiproject.kernel.webapp.test.InternalUser;
 
-import java.util.Map;
 import java.util.Random;
 
 import javax.jcr.AccessDeniedException;
@@ -384,7 +383,7 @@ public class SiteServiceT {
 
 
 
-    Map<String, Object> memebrList  = siteService.getMemberList(sitePath, null);
+    siteService.getMemberList(sitePath, null);
 
 
     verify(request, response, session);

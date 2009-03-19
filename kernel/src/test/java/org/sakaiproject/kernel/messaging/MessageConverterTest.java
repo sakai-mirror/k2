@@ -31,7 +31,6 @@ import org.sakaiproject.kernel.api.messaging.Message;
 import org.sakaiproject.kernel.api.messaging.MessageConverter;
 import org.sakaiproject.kernel.api.messaging.MessagingService;
 import org.sakaiproject.kernel.model.test.ModelModule;
-import org.sakaiproject.kernel.serialization.json.BeanJsonLibConverter;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -47,7 +46,6 @@ import java.util.Map.Entry;
  *
  */
 public class MessageConverterTest {
-  private BeanJsonLibConverter converter;
   private MessageConverter msgConverter;
   private Injector injector;
   private Message msg;
@@ -56,7 +54,6 @@ public class MessageConverterTest {
   public void setUp() {
     injector = Guice.createInjector(new ModelModule(),
         new MessagingTestModule());
-    converter = injector.getInstance(BeanJsonLibConverter.class);
     msgConverter = injector.getInstance(MessageConverter.class);
 
     // setup 5 different calls to createMessage
@@ -166,7 +163,7 @@ public class MessageConverterTest {
     fw.append(body);
     fw.flush();
     fw.close();
-    URL url = f.toURL();
+    URL url = f.toURI().toURL();
     return url;
   }
 

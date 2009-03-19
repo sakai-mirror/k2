@@ -17,8 +17,14 @@
  */
 package org.sakaiproject.kernel.rest.site;
 
-import static org.easymock.EasyMock.*;
-import static org.junit.Assert.*;
+import static org.easymock.EasyMock.capture;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -43,7 +49,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MultivaluedMap;
 

@@ -34,7 +34,6 @@ import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.component.KernelLifecycle;
-import org.sakaiproject.kernel.site.SiteServiceImpl;
 import org.sakaiproject.kernel.user.jcr.JcrAuthenticationResolverProvider;
 import org.sakaiproject.kernel.util.FileUtil;
 import org.sakaiproject.kernel.util.PathUtils;
