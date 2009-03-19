@@ -94,9 +94,7 @@ public class ResteasyK2Bootstrap extends ResteasyBootstrap {
     jaxRsSingletonRegistry.addListener(singletonListener);
     jaxRsPrototypeRegistry.addListener(prototypeListener);
 
-    if (LOG.isInfoEnabled()) {
-      LOG.info("Added JAX-RS registry listener for updates to " + jaxRsSingletonRegistry);
-    }
+    LOG.info("Added JAX-RS registry listener for updates to " + jaxRsSingletonRegistry);
   }
 
   /**
@@ -130,9 +128,7 @@ public class ResteasyK2Bootstrap extends ResteasyBootstrap {
       } catch (Exception e) {
         LOG.warn(e);
       }
-      if (LOG.isInfoEnabled()) {
-        LOG.info("Added JAX-RS singleton: " + provider.getJaxRsSingleton());
-      }
+      LOG.info("Added JAX-RS singleton: " + provider.getJaxRsSingleton());
       restEasyRegistry.addSingletonResource(provider.getJaxRsSingleton());
       defaultDocumentation.addRegistration(provider.getJaxRsSingleton());
     }
@@ -145,9 +141,7 @@ public class ResteasyK2Bootstrap extends ResteasyBootstrap {
       } catch (Exception e) {
         LOG.warn(e);
       }
-      if (LOG.isInfoEnabled()) {
-        LOG.info("Added JAX-RS prototype: " + provider.getJaxRsPrototype());
-      }
+      LOG.info("Added JAX-RS prototype: " + provider.getJaxRsPrototype());
       restEasyRegistry.addPerRequestResource(provider.getJaxRsPrototype());
       defaultDocumentation.addRegistration(provider.getJaxRsPrototype());
     }

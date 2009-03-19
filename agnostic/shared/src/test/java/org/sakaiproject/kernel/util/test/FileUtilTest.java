@@ -38,6 +38,7 @@ import java.io.IOException;
 public class FileUtilTest {
 
   private static final Log LOG = LogFactory.getLog(FileUtilTest.class);
+  private static final boolean debug = LOG.isDebugEnabled();
   private File baseFile;
 
   @Before
@@ -65,7 +66,8 @@ public class FileUtilTest {
    */
   private void touchFile(File f) throws IOException {
     if ( f.getParentFile().mkdirs() ) {
-      LOG.debug("Created directory for "+f);
+      if (debug)
+        LOG.debug("Created directory for "+f);
     }
     FileWriter fw = new FileWriter(f);
     fw.write(String.valueOf(System.currentTimeMillis()));

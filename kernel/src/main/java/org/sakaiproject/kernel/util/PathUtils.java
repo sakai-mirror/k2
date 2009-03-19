@@ -34,7 +34,7 @@ public class PathUtils {
   /**
    *
    */
-  private static final Log log = LogFactory.getLog(PathUtils.class);
+  private static final Log LOG = LogFactory.getLog(PathUtils.class);
 
   /**
    * Generate a path using a SHA-1 hash split into path parts to generate a unique path to
@@ -88,9 +88,9 @@ public class PathUtils {
       chars[7 + target.length()] = '/';
       return new String(chars);
     } catch (NoSuchAlgorithmException e) {
-      log.error(e);
+      LOG.error(e);
     } catch (UnsupportedEncodingException e) {
-      log.error(e);
+      LOG.error(e);
     }
     return null;
   }

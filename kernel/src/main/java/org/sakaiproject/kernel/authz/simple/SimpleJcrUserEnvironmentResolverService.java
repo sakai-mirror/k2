@@ -181,13 +181,16 @@ public class SimpleJcrUserEnvironmentResolverService implements
       LOG.error(e);
     } catch (IOException e) {
       LOG.warn("Failed to read userenv " + userEnvPath + " cause :" + e.getMessage());
-      LOG.debug(e);
+      if (debug)
+        LOG.debug(e);
     } catch (RepositoryException e) {
       LOG.warn("Failed to read userenv for " + userEnvPath + " cause :" + e.getMessage());
-      LOG.debug(e);
+      if (debug)
+        LOG.debug(e);
     } catch (JCRNodeFactoryServiceException e) {
       LOG.warn("Failed to read userenv for " + userEnvPath + " cause :" + e.getMessage());
-      LOG.debug(e);
+      if (debug)
+        LOG.debug(e);
     } finally {
       try {
         in.close();
@@ -210,13 +213,16 @@ public class SimpleJcrUserEnvironmentResolverService implements
       LOG.error(e);
     } catch (IOException e) {
       LOG.warn("Failed to read userenv " + userEnvPath + " cause :" + e.getMessage());
-      LOG.debug(e);
+      if (debug)
+        LOG.debug(e);
     } catch (RepositoryException e) {
       LOG.warn("Failed to read userenv for " + userEnvPath + " cause :" + e.getMessage());
-      LOG.debug(e);
+      if (debug)
+        LOG.debug(e);
     } catch (JCRNodeFactoryServiceException e) {
       LOG.warn("Failed to read userenv for " + userEnvPath + " cause :" + e.getMessage());
-      LOG.debug(e);
+      if (debug)
+        LOG.debug(e);
     } finally {
       authzResolverService.clearRequestGrant();
     }

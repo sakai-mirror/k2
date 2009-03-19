@@ -51,6 +51,7 @@ public class SakaiAuthenticationFilter implements Filter {
 
   private static final Log LOG = LogFactory
       .getLog(SakaiAuthenticationFilter.class);
+  private static final boolean debug = LOG.isDebugEnabled();
   private AuthenticationResolverService authenticationResolverService;
 
   /**
@@ -76,7 +77,7 @@ public class SakaiAuthenticationFilter implements Filter {
         doBasicAuth(hrequest);
       } catch (SecurityException se) {
         // catch any Security exceptions and send a 401
-        LOG.info("Login Failed " + se.getMessage());
+        LOG.info("Login Failed: " + se.getMessage());
         hresponse.reset();
         hresponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, se
             .getMessage());
@@ -87,7 +88,7 @@ public class SakaiAuthenticationFilter implements Filter {
         try {
           AuthenticationType authNType = AuthenticationType.valueOf(request
               .getParameter("a"));
-          if (LOG.isDebugEnabled()) {
+          if (debug) {
             LOG.debug("Authentication Filter: " + authNType);
           }
           switch (authNType) {
@@ -167,14 +168,14 @@ public class SakaiAuthenticationFilter implements Filter {
           }
 
         };
-        if (LOG.isDebugEnabled()) {
+        if (debug) {
           LOG.debug("Performing authentication for " + eid + " with "
               + principal);
         }
         Authentication a = authenticationResolverService
             .authenticate(principal);
         if (a != null) {
-          if (LOG.isDebugEnabled()) {
+          if (debug) {
             LOG.debug("Sucess for " + eid + " with " + a);
           }
           hrequest.setAttribute(Authentication.REQUESTTOKEN, a);

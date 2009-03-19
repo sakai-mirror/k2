@@ -50,9 +50,9 @@ import javax.jcr.ValueFactory;
 @Singleton
 public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
 
-  private static final Log log = LogFactory.getLog(JCRNodeFactoryServiceImpl.class);
+  private static final Log LOG = LogFactory.getLog(JCRNodeFactoryServiceImpl.class);
 
-  private static final boolean debug = log.isDebugEnabled();
+  private static final boolean debug = LOG.isDebugEnabled();
 
   private JCRService jcrService;
 
@@ -91,7 +91,7 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
   private void populateFolder(Node node) throws RepositoryException {
     // JCR Types
     if (debug) {
-      log.debug("Doing populate Folder");
+      LOG.debug("Doing populate Folder");
     }
     if (jcrService.needsMixin(node, JCRConstants.MIX_LOCKABLE)) {
       node.addMixin(JCRConstants.MIX_LOCKABLE);
@@ -175,7 +175,7 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
         n = s.getRootNode();
       }
       if (debug) {
-        log.debug("VPath is " + vpath);
+        LOG.debug("VPath is " + vpath);
       }
       String relPath = id.substring(vpath.length());
       // Node rootNode = s.getRootNode();
@@ -185,10 +185,10 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
 
       String[] pathElements = relPath.split("/");
       if (debug) {
-        log.debug("RelPath is " + relPath + " split into " + pathElements.length
+        LOG.debug("RelPath is " + relPath + " split into " + pathElements.length
             + " elements ");
         for (String pathel : pathElements) {
-          log.debug("       Path Element is [" + pathel + "]");
+          LOG.debug("       Path Element is [" + pathel + "]");
         }
       }
 
@@ -218,12 +218,12 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
       }
       node = currentNode;
       if (node == null) {
-        log.error("Failed to create Node " + id + " got null ");
+        LOG.error("Failed to create Node " + id + " got null ");
         throw new JCRNodeFactoryServiceException("Failed to create node " + id
             + " got null ");
       } else if (!id.equals(node.getPath())) {
 
-        log.error("Failed to create Node " + id + " got" + node.getPath());
+        LOG.error("Failed to create Node " + id + " got" + node.getPath());
         throw new JCRNodeFactoryServiceException("Failed to create node " + id + " got "
             + node.getPath());
       }
@@ -231,22 +231,22 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
     } catch (AccessDeniedException ax) {
       throw new PermissionDeniedException(ax.getMessage(), ax);
     } catch (RepositoryException rex) {
-      log.warn("Unspecified Repository Failiure ", rex);
-      log.error("Unspecified Repository Failiure " + rex.getMessage());
+      LOG.warn("Unspecified Repository Failiure ", rex);
+      LOG.error("Unspecified Repository Failiure " + rex.getMessage());
       if ( currentNode != null ) {
 
         try {
-          log.info("Current Node was "+currentNode.getPath()+" saving "+savedNode);
+          LOG.info("Current Node was "+currentNode.getPath()+" saving "+savedNode);
         } catch (RepositoryException e) {
           // TODO Auto-generated catch block
           e.printStackTrace();
         }
       } else {
-        log.info("Current Node was null saving "+savedNode);
+        LOG.info("Current Node was null saving "+savedNode);
       }
     }
     if ( node == null ) {
-     log.error("NODE IS NULL after Create! ");
+     LOG.error("NODE IS NULL after Create! ");
     }
     return node;
 
@@ -269,7 +269,7 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
       i = s.getItem(id);
     } catch (PathNotFoundException e) {
       if ( debug ) {
-        log.debug("getNodeFromSession: Node Does Not Exist :" + id);
+        LOG.debug("getNodeFromSession: Node Does Not Exist :" + id);
       }
       return null;
     }
@@ -293,7 +293,7 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
     if (pre > 0) {
       String parentPath = absPath.substring(0, pre);
       if (debug) {
-        log.debug("Parent path is [" + parentPath + "]");
+        LOG.debug("Parent path is [" + parentPath + "]");
       }
       return parentPath;
     }

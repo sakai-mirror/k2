@@ -42,6 +42,7 @@ import java.net.URI;
 public class ResourceLoaderTest {
 
   private static final Log LOG = LogFactory.getLog(ResourceLoaderTest.class);
+  private static final boolean debug = LOG.isDebugEnabled();
   private File baseFile;
 
   @Before
@@ -61,7 +62,8 @@ public class ResourceLoaderTest {
    */
   private void touchFile(File f) throws IOException {
     if ( f.getParentFile().mkdirs() ) {
-      LOG.debug("Created parent "+f);
+      if (debug)
+        LOG.debug("Created parent "+f);
     }
     FileWriter fw = new FileWriter(f);
     try {

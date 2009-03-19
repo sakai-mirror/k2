@@ -66,7 +66,7 @@ import javax.security.auth.Subject;
 /**
  */
 public class SecureSakaiAccessManager implements AccessManager {
-  private static final Log log = LogFactory.getLog(SecureSakaiAccessManager.class);
+  private static final Log LOG = LogFactory.getLog(SecureSakaiAccessManager.class);
 
   private static final int ADMIN_READ = 0x10;
 
@@ -83,7 +83,7 @@ public class SecureSakaiAccessManager implements AccessManager {
   private static final SimplePermissionQuery[] PERMISSION_QUERIES = new SimplePermissionQuery[READ
       | WRITE | REMOVE | ADMIN_READ | ADMIN_WRITE | ADMIN_REMOVE];
 
-  private static final boolean debug = log.isDebugEnabled();
+  private static final boolean debug = LOG.isDebugEnabled();
 
   private static final long TTL = 60000L; // cache for a minute
 
@@ -245,8 +245,8 @@ public class SecureSakaiAccessManager implements AccessManager {
       Set<SakaiUserPrincipal> principals = subject
           .getPrincipals(SakaiUserPrincipal.class);
       if (principals.size() == 0) {
-        if (log.isDebugEnabled()) {
-          log.debug("No SakaiUserPrincipal found for context: " + context);
+        if (debug) {
+          LOG.debug("No SakaiUserPrincipal found for context: " + context);
         }
       } else {
         for (Principal p : principals) {
@@ -288,12 +288,12 @@ public class SecureSakaiAccessManager implements AccessManager {
     }
     if (!isGranted(item, permission)) {
       if (debug) {
-        log.debug("Denied " + permission + " on " + item);
+        LOG.debug("Denied " + permission + " on " + item);
       }
       throw new AccessDeniedException("Permission deined to " + sakaiUserId + " to "
           + PERMISSION_QUERIES[permission] + "on" + item);
     }
-    log.info("Granted " + permission + " on " + item);
+    LOG.info("Granted " + permission + " on " + item);
   }
 
   /*
@@ -353,7 +353,7 @@ public class SecureSakaiAccessManager implements AccessManager {
           // If the node is in the active session, then permission is already granted
           // We have to convert the itemId into a state that works for this ode
           if (debug) {
-            log.debug("Resolving " + item.toString());
+            LOG.debug("Resolving " + item.toString());
           }
           // item will have the node name, we should check this to see if we need to
           // translate the permission
@@ -382,12 +382,12 @@ public class SecureSakaiAccessManager implements AccessManager {
             String jcrPath = pathResolver.getJCRPath(path);
             try {
               if (debug) {
-                log.info("Searching for " + jcrPath + " usign " + session);
+                LOG.info("Searching for " + jcrPath + " usign " + session);
               }
               Item realItem = session.getItem(jcrPath);
               if (realItem.isNode()) {
                 if (debug) {
-                  log.info("Got " + realItem);
+                  LOG.info("Got " + realItem);
                 }
                 node = (Node) realItem;
                 break;
@@ -442,22 +442,22 @@ public class SecureSakaiAccessManager implements AccessManager {
             cache.put(sakaiUserId + ":" + queryKey,
                 new ExpiringGrant<Boolean>(false, TTL));
             if (debug) {
-              log.debug("Permission Denied for " + sakaiUserId + " on "
+              LOG.debug("Permission Denied for " + sakaiUserId + " on "
                   + resourceReference + ":" + denied.getMessage());
             }
             return false;
           }
         } catch (RuntimeException e) {
-          log.error(e); // remove later
+          LOG.error(e); // remove later
           throw e;
         } catch (ItemNotFoundException e) {
-          log.error(e); // remove later
+          LOG.error(e); // remove later
           throw e;
         } catch (RepositoryException e) {
-          log.error(e); // remove later
+          LOG.error(e); // remove later
           throw e;
         } catch (Exception ex) {
-          log.error(ex); // remove later
+          LOG.error(ex); // remove later
           throw new RepositoryException(ex.getMessage(), ex);
         } finally {
           // out of checking
@@ -495,7 +495,7 @@ public class SecureSakaiAccessManager implements AccessManager {
           pfullresolvegrant = nfullresolvegrant * 100 / nresolve;
           pcachedresolve = ncachedresolve * 100 / nresolve;
         }
-        log.info("Calls:" + ncalls + "," + " Resolved:" + nresolve + "(" + presolve
+        LOG.info("Calls:" + ncalls + "," + " Resolved:" + nresolve + "(" + presolve
             + "%)," + " Cache(Hit:" + ncachedresolve + "(" + pcachedresolve + "%),"
             + " Miss:" + ncachemiss + "(" + pcachemiss + "%))," + " Resolved(Grant:"
             + nfullresolvegrant + "(" + pfullresolvegrant + "%)," + " Deny:"

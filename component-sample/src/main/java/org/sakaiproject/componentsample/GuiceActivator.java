@@ -70,16 +70,15 @@ public class GuiceActivator implements ComponentActivator {
     // get the service manager
     ServiceManager serviceManager = kernel.getServiceManager();
 
-    // just for fun.. resolve the JCRService and get a reference to the
-    // respository.
-    LOG.info("Getting JCR =============================");
+    // just for fun.. resolve the JCRService and get a reference to the repository.
+    LOG.info("Resolving a reference to the JCR service");
     JCRService service = serviceManager.getService(new ServiceSpec(
         JCRService.class));
     Repository repo = service.getRepository();
     for (String k : repo.getDescriptorKeys()) {
-      LOG.info("  JCR Repo Key " + k + "::" + repo.getDescriptor(k));
+      LOG.info("JCR Repo Key "+k+":"+repo.getDescriptor(k));
     }
-    LOG.info("Logged In OK-=============================");
+    LOG.info("Successfully logged in to the JCR service");
 
     // create a ServiceSpecification for the class I want to register,
     // the class here MUST be a class that was exported (see component.xml)

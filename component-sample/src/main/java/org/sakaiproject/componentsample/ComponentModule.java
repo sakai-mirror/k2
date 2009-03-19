@@ -43,6 +43,7 @@ public class ComponentModule extends AbstractModule {
    *
    */
   private static final Log LOG = LogFactory.getLog(ComponentModule.class);
+  private static final boolean debug = LOG.isDebugEnabled();
   /**
    *
    */
@@ -75,7 +76,7 @@ public class ComponentModule extends AbstractModule {
         Scopes.SINGLETON);
     bind(HelloWorldService.class).to(HelloWorldServiceGuicedImpl.class).in(
         Scopes.SINGLETON);
-    if (LOG.isDebugEnabled()) {
+    if (debug) {
       LOG.debug("Bound HelloWorldService");
     }
   }

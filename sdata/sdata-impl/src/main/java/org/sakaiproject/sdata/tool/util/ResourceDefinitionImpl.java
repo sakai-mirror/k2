@@ -30,8 +30,9 @@ import org.sakaiproject.sdata.tool.api.SecurityAssertion;
  */
 public class ResourceDefinitionImpl implements ResourceDefinition {
 
-  private static final Log log = LogFactory
+  private static final Log LOG = LogFactory
       .getLog(ResourceDefinitionImpl.class);
+  private static final boolean debug = LOG.isDebugEnabled();
 
   /**
    * The version
@@ -75,8 +76,8 @@ public class ResourceDefinitionImpl implements ResourceDefinition {
   public ResourceDefinitionImpl(String method, String f, int depth,
       String inbasePath, String inpath, String inversion,
       SecurityAssertion securityAssertion) throws SDataException {
-    if (log.isDebugEnabled()) {
-      log.debug("ResourceDef: Base:" + inbasePath + ": path:" + inpath
+    if (debug) {
+      LOG.debug("ResourceDef: Base:" + inbasePath + ": path:" + inpath
           + ": version:" + inversion);
     }
 

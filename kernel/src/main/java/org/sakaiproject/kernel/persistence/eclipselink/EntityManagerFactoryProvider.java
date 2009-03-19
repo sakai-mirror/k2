@@ -51,6 +51,7 @@ import javax.persistence.spi.PersistenceUnitTransactionType;
  */
 public class EntityManagerFactoryProvider implements Provider<EntityManagerFactory> {
   private static final Log LOG = LogFactory.getLog(EntityManagerFactoryProvider.class);
+  private static final boolean debug = LOG.isDebugEnabled();
 
 
 
@@ -96,7 +97,7 @@ public class EntityManagerFactoryProvider implements Provider<EntityManagerFacto
     // minWrite);
 
     // Configure logging. FINE ensures all SQL is shown
-    properties.put(LOGGING_LEVEL, "FINE");
+    properties.put(LOGGING_LEVEL, (debug?"FINE":"INFO"));
     properties.put(LOGGING_TIMESTAMP, "true");
     properties.put(LOGGING_THREAD, "true");
     properties.put(LOGGING_SESSION, "true");

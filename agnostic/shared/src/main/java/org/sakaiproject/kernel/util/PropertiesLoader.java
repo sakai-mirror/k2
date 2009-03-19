@@ -31,11 +31,11 @@ import java.util.Properties;
 import java.util.Map.Entry;
 
 /**
- * Loads properties accepting overrides from named system varaibles and named
+ * Loads properties accepting overrides from named system variables and named
  * environment variables.
  */
 public final class PropertiesLoader {
-  private static final Log log = LogFactory.getLog(PropertiesLoader.class);
+  private static final Log LOG = LogFactory.getLog(PropertiesLoader.class);
 
   /**
    * @param classLoader
@@ -64,7 +64,7 @@ public final class PropertiesLoader {
       is = ResourceLoader.openResource(defaultPropertiesLocation, classLoader);
       properties = new Properties();
       properties.load(is);
-      log.info("Loaded " + properties.size() + " properties from "
+      LOG.info("Loaded " + properties.size() + " default properties from: "
           + defaultPropertiesLocation);
     } catch (IOException e) {
       throw new CreationException(Arrays.asList(new Message(
@@ -103,24 +103,24 @@ public final class PropertiesLoader {
             properties.put(o.getKey(), o.getValue());
           }
         }
-        log.info("Loaded " + localProperties.size() + " properties from "
+        LOG.info("Loaded " + localProperties.size() + " local properties from "
             + localPropertiesLocation);
       } else {
-        log.info("No Local Properties Override, set system property "
+        LOG.info("No Local Properties Override, set system property "
             + localPropertiesName
             + " to a resource location to override kernel properties");
       }
 
       StringBuilder sb = new StringBuilder();
-      sb.append("Merged Propery Set:\n");
+      sb.append("Merged Property Set includes keys: ");
       for (Entry<?, ?> e : properties.entrySet()) {
-        sb.append("\tKey[").append(e.getKey()).append("] value[").append(
-            e.getValue()).append("]\n");
+        sb.append("\"").append(e.getKey()).append("\"").append("; ");
       }
-      log.info(sb.toString());
+      LOG.info("Loaded " + properties.size() + " properties into merged property set");
+      LOG.debug(sb.toString());
 
     } catch (IOException e) {
-      log.info("Failed to startup ", e);
+      LOG.info("Failed to startup ", e);
       throw new CreationException(Arrays.asList(new Message(
           "Unable to load properties: " + localPropertiesLocation)));
     } finally {
@@ -147,7 +147,7 @@ public final class PropertiesLoader {
       is = ResourceLoader.openResource(defaultPropertiesLocation, classLoader);
       properties = new Properties();
       properties.load(is);
-      log.info("Loaded " + properties.size() + " properties from "
+      LOG.info("Loaded " + properties.size() + " properties from "
           + defaultPropertiesLocation);
     } catch (IOException e) {
       throw new CreationException(Arrays.asList(new Message(

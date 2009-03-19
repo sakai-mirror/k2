@@ -24,7 +24,7 @@ package org.sakaiproject.kernel.api.authz;
 public interface AccessControlStatement {
 
   /**
-   * @return the key for the statement, that binds to a QeueryStatement
+   * @return the key for the statement, that binds to a QueryStatement
    */
   String getStatementKey();
 

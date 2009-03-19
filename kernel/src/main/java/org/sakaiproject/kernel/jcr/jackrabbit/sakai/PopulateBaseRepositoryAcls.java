@@ -113,11 +113,8 @@ public class PopulateBaseRepositoryAcls implements StartupAction {
    * @param value
    */
   private void listAcl(String path, List<AccessControlStatement> acl) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("Set ACL at Path:").append(path).append("\n");
     for ( AccessControlStatement acs : acl ) {
-      sb.append("\t").append(String.valueOf(acs)).append("\n");
+      LOG.info( "ACL set, Path: " + path + " " + String.valueOf( acs ) );
     }
-    LOG.info(sb.toString());
   }
 }

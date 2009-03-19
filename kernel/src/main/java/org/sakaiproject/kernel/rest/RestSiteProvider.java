@@ -84,34 +84,32 @@ public class RestSiteProvider implements RestProvider {
             3,
             "Create",
             "Create a Site, returns {response: 'OK'} if the creation worked with a response code of 200. "
-                + "If permission is dentied a 403 will be returned, if there was any other sort of failure a 500 will be returned. The call expects the following parameters"
+                + "If permission is denied a 403 will be returned, if there was any other sort of failure "
+                + "a 500 will be returned. The call expects the following parameters: "
                 + Params.ID
-                + ","
+                + ", "
                 + Params.NAME
-                + ","
+                + ", "
                 + Params.DESCRIPTION
-                + ","
-                + Params.TYPE + "," + Params.OWNER + " the Site ID must not exist");
+                + ", " + Params.TYPE + ", " + Params.OWNER + " and the Site ID must not exist");
     DESC.addURLTemplate("/rest/" + KEY + "/" + CREATE,
         "Accepts POST to create a site, see the section on Create for details");
     DESC.addURLTemplate("/rest/" + KEY + "/" + GET + "/<siteId>",
         "Accepts GET to check if a site exists, see the secion on Check ID");
     DESC.addURLTemplate("/rest/" + KEY + "/" + ADD_OWNER + "/<siteId>/<userID>",
-        "Accepts POST to add the specified user id as an owner to the site id, "
-            + "the current user must be a owner of the site.");
-    DESC
-        .addURLTemplate(
-            "/rest/" + KEY + "/" + REMOVE_OWNER + "/<siteId>/<userID>",
-            "Accepts POST to remove the specified user id as an owner to the site id, "
-                + "the current user must be a owner of the site, and there must be at least 1 owner after the specified user"
-                + "is removed from the list of owners.");
+    "Accepts POST to add the specified user id as an owner to the site id, " +
+    "the current user must be a owner of the site.");
+    DESC.addURLTemplate("/rest/" + KEY + "/" + REMOVE_OWNER + "/<siteId>/<userID>",
+        "Accepts POST to remove the specified user id as an owner to the site id, " +
+        "the current user must be a owner of the site, and there must be at least 1 " +
+	"owner after the specified user is removed from the list of owners.");
     DESC.addSection(4, "GET", "");
     DESC.addParameter(Params.ID, "The Site ID");
     DESC.addParameter(Params.NAME, "The Site Name");
     DESC.addParameter(Params.DESCRIPTION, "The Site Description");
     DESC.addParameter(Params.TYPE, "The Site Type");
     DESC.addResponse(String.valueOf(HttpServletResponse.SC_OK),
-        "If the action completed Ok, or if the site exits");
+        "If the action completed Ok, or if the site exists");
     DESC.addResponse(String.valueOf(HttpServletResponse.SC_CONFLICT),
         "If a site exists when trying to create a site");
     DESC.addResponse(String.valueOf(HttpServletResponse.SC_FORBIDDEN),

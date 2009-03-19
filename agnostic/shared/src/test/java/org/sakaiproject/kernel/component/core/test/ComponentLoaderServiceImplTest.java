@@ -48,6 +48,7 @@ public class ComponentLoaderServiceImplTest {
   private static final String COMPONENT1 = "res://org/sakaiproject/kernel/component/core/test/component1.xml";
   private static final String COMPONENT2 = "res://org/sakaiproject/kernel/component/core/test/component2.xml";
   private static final Log LOG = LogFactory.getLog(ComponentLoaderServiceImplTest.class) ;
+  private static final boolean debug = LOG.isDebugEnabled();
   private File baseFile;
 
   /**
@@ -75,7 +76,8 @@ public class ComponentLoaderServiceImplTest {
    */
   private void createComponent(File f, String component) throws IOException {
     if (f.getParentFile().mkdirs()) {
-      LOG.debug("Created Directory " + f);
+      if (debug)
+        LOG.debug("Created Directory " + f);
     }
     JarOutputStream jarOutput = new JarOutputStream(new FileOutputStream(f));
     JarEntry jarEntry = new JarEntry("SAKAI-INF/component.xml");
@@ -93,7 +95,8 @@ public class ComponentLoaderServiceImplTest {
    */
   private void touchFile(File f) throws IOException {
     if (f.getParentFile().mkdirs()) {
-      LOG.debug("Created Directory " + f);
+      if (debug)
+        LOG.debug("Created Directory " + f);
     }
     FileWriter fw = new FileWriter(f);
     try {

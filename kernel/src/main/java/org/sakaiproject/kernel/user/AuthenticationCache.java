@@ -47,6 +47,8 @@ import java.security.Principal;
 public class AuthenticationCache {
   private static final Log LOG = LogFactory.getLog(AuthenticationCache.class);
 
+  private static final boolean debug = LOG.isDebugEnabled();
+
   private Cache<AuthenticationRecord> authCache;
 
   /**
@@ -71,14 +73,14 @@ public class AuthenticationCache {
           if (MessageDigest.isEqual(record.encodedPassword,
               getEncrypted(idPwPrincipal.getPassword()))) {
             if (record.authentication == null) {
-              if (LOG.isDebugEnabled()) {
+              if (debug) {
                 LOG
                     .debug("getAuthentication: replaying authentication failure for authenticationId="
                         + idPrincipal.getIdentifier());
               }
               throw new SecurityException("repeated invalid login");
             } else {
-              if (LOG.isDebugEnabled()) {
+              if (debug) {
                 LOG
                     .debug("getAuthentication: returning record for authenticationId="
                         + idPrincipal.getIdentifier());
@@ -89,7 +91,7 @@ public class AuthenticationCache {
             // Since the passwords didn't match, we're no longer getting
             // repeats,
             // and so the record should be removed.
-            if (LOG.isDebugEnabled()) {
+            if (debug) {
               LOG.debug("getAuthentication: record for authenticationId="
                   + idPrincipal.getIdentifier() + " failed password check");
             }

@@ -45,7 +45,7 @@ public class JCRDumper implements Handler {
    * 
    */
   private static final long serialVersionUID = 1318034804063535506L;
-  private static final Log log = LogFactory.getLog(JCRDumper.class);
+  private static final Log LOG = LogFactory.getLog(JCRDumper.class);
   private static final RestDescription DESCRIPTION = new RestDescription();
   static {
     DESCRIPTION.setTitle("JCR Dump");
@@ -94,7 +94,7 @@ public class JCRDumper implements Handler {
 
       }
     } catch (RepositoryException e) {
-      log.error("Failed", e);
+      LOG.error("Failed", e);
     }
   }
 

@@ -55,6 +55,7 @@ import javax.servlet.http.HttpServletResponse;
 public class JCRCopyFunction extends JCRSDataFunction {
   public static final String TO = "to";
   private static final Log LOG = LogFactory.getLog(JCRCopyFunction.class);
+  private static final boolean debug = LOG.isDebugEnabled();
   private static final String KEY = "cp";
   private static final RestDescription DESCRIPTION = new RestDescription();
   static {
@@ -127,7 +128,8 @@ public class JCRCopyFunction extends JCRSDataFunction {
       try {
         targetNode = jcrNodeFactoryService.getNode(targetPath);
       } catch ( JCRNodeFactoryServiceException e) {
-        LOG.debug("Node Does not exist ");
+        if (debug)
+          LOG.debug("Node Does not exist ");
       }
       if ( targetNode == null ) {
         targetNode = jcrNodeFactoryService.createFolder(targetParent);

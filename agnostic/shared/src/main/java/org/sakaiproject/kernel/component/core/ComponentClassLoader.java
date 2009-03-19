@@ -42,6 +42,7 @@ public class ComponentClassLoader extends URLClassLoader implements
     Exporter {
 
   private static final Log LOG = LogFactory.getLog(ComponentClassLoader.class);
+  private static final boolean debug = LOG.isDebugEnabled();
   private PackageRegistryService packageRegistryService;
   private Artifact artifact;
   private static final ThreadLocal<String> spacing = new ThreadLocal<String>() {
@@ -82,11 +83,11 @@ public class ComponentClassLoader extends URLClassLoader implements
       if (exporter != null) {
         try {
 
-          if (LOG.isDebugEnabled()) {
+          if (debug) {
             LOG.debug("Using export ClassLoader " + exporter);
           }
           c = exporter.loadExportedClass(name);
-          if (LOG.isDebugEnabled()) {
+          if (debug) {
             LOG.debug("Got Exported Class " + c + " from " + exporter);
           }
         } catch (ClassNotFoundException e) {
@@ -94,7 +95,7 @@ public class ComponentClassLoader extends URLClassLoader implements
         }
       }
     } else {
-      if (LOG.isDebugEnabled()) {
+      if (debug) {
         LOG.info("Not Loading from exports ");
       }
     }
@@ -103,7 +104,7 @@ public class ComponentClassLoader extends URLClassLoader implements
     if (c == null) {
       try {
         c = this.findClass(name);
-        if (LOG.isDebugEnabled()) {
+        if (debug) {
           LOG.debug("Got Internal Class " + c + " from " + this);
         }
       } catch (ClassNotFoundException e) {
@@ -114,7 +115,7 @@ public class ComponentClassLoader extends URLClassLoader implements
     if (c == null) {
       try {
         c = getParent().loadClass(name);
-        if (LOG.isDebugEnabled()) {
+        if (debug) {
           LOG.debug("Got Parent Class " + c + " from " + getParent());
         }
       } catch (ClassNotFoundException e) {
@@ -122,7 +123,7 @@ public class ComponentClassLoader extends URLClassLoader implements
       }
     }
 
-    if (LOG.isDebugEnabled()) {
+    if (debug) {
       LOG.debug("Resolved " + name + " as " + c);
     }
     if (c == null)
@@ -132,7 +133,7 @@ public class ComponentClassLoader extends URLClassLoader implements
       resolveClass(c);
     }
 
-    if (LOG.isDebugEnabled()) {
+    if (debug) {
       LOG.debug("loaded " + c + " from " + c.getClassLoader());
     }
     return c;
@@ -207,7 +208,7 @@ public class ComponentClassLoader extends URLClassLoader implements
         in = exporter.getExportedResourceAsStream(name);
 
         if (in != null) {
-          if (LOG.isDebugEnabled())
+          if (debug)
             LOG.debug("Loaded from Export " + in);
           return in;
         }

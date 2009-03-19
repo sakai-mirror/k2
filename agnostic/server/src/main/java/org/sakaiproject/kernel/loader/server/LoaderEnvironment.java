@@ -78,9 +78,8 @@ public final class LoaderEnvironment {
       p.load(in);
       in.close();
     } catch (Exception ioex) {
-      LOG
-          .warn("No Lifecycle Loader Properties (/loader.properties in the server classpath)  loaded: "
-              + ioex.getMessage());
+      LOG.info("Lifecycle /loader.properties in server classpath not loaded due to: "
+          + ioex.getMessage() + ". Using defaults.");
     }
     String lifecycleClass = p.getProperty(SYS_LIFECYCLE_PROPERTY,
         DEFAULT_LIFECYCLE_CLASS);

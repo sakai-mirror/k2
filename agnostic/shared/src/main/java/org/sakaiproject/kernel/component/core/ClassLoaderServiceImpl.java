@@ -96,11 +96,11 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
         URL url = artifactResolverService.resolve(u, artifact);
         if (url != null) {
           urls.add(url);
-          LOG.warn(spec.getName() + "::Added  " + artifact
-              + " to local component classloader ");
+          LOG.info(spec.getName() + " " + artifact
+              + " -> local component classloader ");
         } else {
-          LOG.warn(spec.getName() + "::Did not add dependency " + artifact
-              + " to local component classloader ");
+          LOG.info(spec.getName() + " dependency " + artifact
+              + " not added to local component classloader ");
         }
       }
         break;
@@ -110,10 +110,10 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
           URL url = artifactResolverService.resolve(u, artifact);
           if (url != null) {
             urls.add(url);
-            LOG.warn(spec.getName() + "::Added  " + artifact
+            LOG.info(spec.getName() + " Added " + artifact
                 + " to local component classloader ");
           } else {
-            LOG.warn(spec.getName() + "::Did not add dependency " + artifact
+            LOG.info(spec.getName() + " Did not add dependency " + artifact
                 + " to local component classloader ");
           }
         }
@@ -152,12 +152,12 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
       }
       switch (scope) {
       case SHARE:
-        LOG.info(spec.getName() + "::Adding Shared Artifact " + artifact);
+        LOG.info(spec.getName() + " Add Shared Artifact " + artifact);
         sharedClassLoader.addDependency(artifact);
         break;
       case SHARE_RUNTIME:
         if (!testMode) {
-          LOG.info(spec.getName() + "::Adding Shared Artifact " + artifact);
+          LOG.info(spec.getName() + " Add Shared Artifact " + artifact);
           sharedClassLoader.addDependency(artifact);
         }
         break;
@@ -167,7 +167,7 @@ public class ClassLoaderServiceImpl implements ClassLoaderService {
     if (cl instanceof Exporter) {
       // export the packages
       for (PackageExport pe : spec.getExports()) {
-        LOG.info(spec.getName() + "::Exported [" + pe.getName() + "]");
+        LOG.info(spec.getName() + " Export \"" + pe.getName() + "\"" );
         packageRegistryService.addExport(pe.getName(), (Exporter) cl);
       }
     }

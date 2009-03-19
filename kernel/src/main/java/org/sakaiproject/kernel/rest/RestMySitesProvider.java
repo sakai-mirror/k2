@@ -62,6 +62,7 @@ public class RestMySitesProvider implements RestProvider {
   public static final String SITES_ELEMENT = "sites";
   private static final RestDescription DESCRIPTION = new RestDescription();
   private static final Log LOG = LogFactory.getLog(RestMySitesProvider.class);
+  private static final boolean debug = LOG.isDebugEnabled();
   private SessionManagerService sessionManagerService;
   private BeanConverter beanConverter;
 
@@ -252,12 +253,10 @@ public class RestMySitesProvider implements RestProvider {
 
         LOG.info("getting subjects....");
         String[] subjects = env.getSubjects();
-        if (LOG.isInfoEnabled()) {
-          LOG.info("list of subjects for user (" + uuid + ", "
-              + subjects.length + " total):");
-          for (int i = 0; i < subjects.length; ++i) {
-            LOG.info("--> " + subjects[i]);
-          }
+        LOG.info("list of subjects for user (" + uuid + ", "
+            + subjects.length + " total):");
+        for (int i = 0; i < subjects.length; ++i) {
+          LOG.info("--> " + subjects[i]);
         }
 
         LOG.info("Parsing for startindex param from request ....." + request);
@@ -294,7 +293,7 @@ public class RestMySitesProvider implements RestProvider {
               .error("General Exception thrown parsing request for itemsPerPage");
         }
 
-        if (LOG.isDebugEnabled()) {
+        if (debug) {
           LOG.debug("getting subjects as sites....");
         }
 
@@ -311,7 +310,7 @@ public class RestMySitesProvider implements RestProvider {
                 LOG.warn("group id not found as a site id... subject token: "
                     + s);
               } else {
-                if (LOG.isDebugEnabled()) {
+                if (debug) {
                   LOG.debug("Site found: " + memSite.getName());
                 }
                 if (!sites.contains(memSite)) {

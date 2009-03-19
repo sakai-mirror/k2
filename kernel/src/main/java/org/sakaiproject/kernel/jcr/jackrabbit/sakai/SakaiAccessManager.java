@@ -45,7 +45,8 @@ import javax.security.auth.Subject;
  * @author ieb
  */
 public class SakaiAccessManager implements AccessManager {
-  private static final Log log = LogFactory.getLog(SakaiAccessManager.class);
+  private static final Log LOG = LogFactory.getLog(SakaiAccessManager.class);
+  private static final boolean debug = LOG.isDebugEnabled();
 
   private Subject subject;
 
@@ -94,8 +95,8 @@ public class SakaiAccessManager implements AccessManager {
 
       Set<SakaiUserPrincipal> principals = subject.getPrincipals(SakaiUserPrincipal.class);
       if (principals.size() == 0) {
-        if (log.isDebugEnabled()) {
-          log.debug("No SakaiUserPrincipal found for context: " + context);
+        if (debug) {
+          LOG.debug("No SakaiUserPrincipal found for context: " + context);
         }
       } else {
         for (Principal p :principals ) {

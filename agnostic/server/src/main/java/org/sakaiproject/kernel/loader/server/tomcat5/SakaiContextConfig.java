@@ -45,7 +45,7 @@ import org.sakaiproject.kernel.loader.common.stats.OldMemoryStats;
  */
 public class SakaiContextConfig extends ContextConfig {
 
-  private static final Log log = LogFactory.getLog(SakaiContextConfig.class);
+  private static final Log LOG = LogFactory.getLog(SakaiContextConfig.class);
   /**
    * old style memory statistics recorder.
    */
@@ -64,7 +64,7 @@ public class SakaiContextConfig extends ContextConfig {
  * 
  */
   public SakaiContextConfig() {
-    log.info("Created Context Config");
+    LOG.info("Created Context Config");
   }
 
   /**
@@ -80,7 +80,7 @@ public class SakaiContextConfig extends ContextConfig {
     super.lifecycleEvent(event);
 
     if (Lifecycle.AFTER_START_EVENT.equals(type)) {
-      log.warn(event.getSource() + oldMemoryStats.measure()
+      LOG.warn(event.getSource() + oldMemoryStats.measure()
           + newMemoryStats.measure());
     }
   }

@@ -100,7 +100,8 @@ public class ComponentManagerImpl implements ComponentManager {
    * 
    */
   public void start() throws KernelConfigurationException {
-    LOG.info("Starting Component Manager");
+    LOG.info("==============> K2 system starting up!");
+    LOG.info("==============> Starting Component Manager");
     startDefaultComponents();
   }
 
@@ -108,9 +109,9 @@ public class ComponentManagerImpl implements ComponentManager {
    * Stop the component manager and all the components.
    */
   public void stop() {
-    LOG.info("== Starting ComponentManager Shutdown");
+    LOG.info("Starting ComponentManager Shutdown");
     stopComponents();
-    LOG.info("== ComponentManager Shutdown Complete");
+    LOG.info("ComponentManager Shutdown Complete");
   }
 
   public boolean prepareStartComponent(ComponentSpecification spec)
@@ -161,7 +162,7 @@ public class ComponentManagerImpl implements ComponentManager {
       return true;
     }
 
-    LOG.info("==================STARTING " + spec.getName());
+    LOG.info("==============> Starting Component " + spec.getName());
     ClassLoader componentClassloader = classloaders.get(spec);
     ClassLoader currentClassloader = Thread.currentThread()
         .getContextClassLoader();
@@ -175,7 +176,7 @@ public class ComponentManagerImpl implements ComponentManager {
         }
       }
 
-      LOG.info("Activating " + spec.getName() + " with Class "
+      LOG.info("Activating component: " + spec.getName() + " with class: "
           + spec.getComponentActivatorClassName());
       Class<ComponentActivator> clazz = null;
       try {
@@ -202,14 +203,14 @@ public class ComponentManagerImpl implements ComponentManager {
 
       components.put(spec, activator);
       startedComponents.put(spec.getName(), spec);
-      LOG.info("==================STARTED   " + spec.getName());
+      LOG.info("==============> Component " + spec.getName() + " start successful");
       return true;
     } catch (RuntimeException e) {
-      LOG.error("==================FAILED   " + spec.getName());
+      LOG.error("=============> Component " + spec.getName() + " start failed");
       throw new KernelConfigurationException("Unable to start component "
           + spec + " cause:" + e.getMessage(), e);
     } catch (Exception e) {
-      LOG.error("==================FAILED   " + spec.getName());
+      LOG.error("=============> Component start failed for: " + spec.getName());
       throw new KernelConfigurationException("Unable to start component "
           + spec + " cause:" + e.getMessage(), e);
     } finally {
@@ -390,13 +391,12 @@ public class ComponentManagerImpl implements ComponentManager {
 
     });
 
-    LOG.info("===START ORDER================There are " + notStarted
-        + " components to start");
+    LOG.info("Components start order decided: " + notStarted.size()
+        + " component(s) to start");
     for (ComponentSpecification spec : notStarted) {
-      LOG.info(spec.getName() + " level " + speclevel.get(spec));
+      LOG.info("Component: " + spec.getName() + " will start at level " + speclevel.get(spec));
     }
-    LOG
-        .info("===END OF START ORDER=============================================");
+    LOG.info("==============> Component Start Order End");
 
     return notStarted;
 

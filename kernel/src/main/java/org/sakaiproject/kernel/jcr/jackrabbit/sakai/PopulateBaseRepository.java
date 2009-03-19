@@ -180,8 +180,6 @@ public class PopulateBaseRepository implements StartupAction {
           }
           LOG.info("Added Startup File at "+n.getPath());
 
-        } else {
-          LOG.info("Starting Node already exists " + path);
         }
       }
 

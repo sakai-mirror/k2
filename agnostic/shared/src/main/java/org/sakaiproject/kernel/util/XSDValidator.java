@@ -40,7 +40,7 @@ public class XSDValidator {
    * The schema langiage being used.
    */
   private static final String W3C_XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
-  protected static final Log log = LogFactory.getLog(XSDValidator.class);
+  protected static final Log LOG = LogFactory.getLog(XSDValidator.class);
 
   /**
    * Validate a xml string against a supplied schema.

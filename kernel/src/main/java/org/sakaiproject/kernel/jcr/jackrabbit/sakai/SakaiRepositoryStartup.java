@@ -35,7 +35,7 @@ import javax.jcr.Session;
  *
  */
 public class SakaiRepositoryStartup implements StartupAction {
-  private static final Log log = LogFactory
+  private static final Log LOG = LogFactory
       .getLog(SakaiRepositoryStartup.class);
 
   /**
@@ -49,29 +49,19 @@ public class SakaiRepositoryStartup implements StartupAction {
       List<String> existingWorkspaces = Arrays.asList(workspace
           .getAccessibleWorkspaceNames());
       if (!existingWorkspaces.contains(JCRServiceImpl.DEFAULT_WORKSPACE)) {
-        if (log.isInfoEnabled()) {
-          log.info("Creating Workspace Sakai ");
-        }
+        LOG.info("Creating Workspace Sakai ");
         workspace.createWorkspace(JCRServiceImpl.DEFAULT_WORKSPACE);
-        log.info("Created default Sakai Jackrabbit Workspace: "
+        LOG.info("Created default Sakai Jackrabbit Workspace: "
             + JCRServiceImpl.DEFAULT_WORKSPACE);
       }
       if (!s.getRootNode().hasNode("testdata")) {
-        if (log.isInfoEnabled()) {
-          log.info("Creating Test Data ");
-        }
+        LOG.info("Creating Test Data");
         s.getRootNode().addNode("testdata", "nt:unstructured");
-        if (log.isInfoEnabled()) {
-          log.info("Added Test Data Node Under Root");
-        }
-      } else {
-        if (log.isInfoEnabled()) {
-          log.info("Added Test Data Node Under Already present");
-        }
+        LOG.info("Added Test Data Node Under Root");
       }
 
     } catch (RepositoryException ex) {
-      log.info("Failed to startup repo", ex);
+      LOG.info("Failed to startup repo", ex);
       throw new IllegalStateException(
           "Failed to add Sakai Jackrabbit JCR root node, JCR workspace/repository failure",
           ex);

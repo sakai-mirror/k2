@@ -41,7 +41,7 @@ public class SnoopHandler extends AbstractHandler {
    * 
    */
   private static final long serialVersionUID = -936439457646310920L;
-  private static final Log log = LogFactory.getLog(SnoopHandler.class);
+  private static final Log LOG = LogFactory.getLog(SnoopHandler.class);
   private static final String KEY = "snoop";
 
   private static final RestDescription DESCRIPTION = new RestDescription();
@@ -178,7 +178,7 @@ public class SnoopHandler extends AbstractHandler {
       sb.append("\n\tNo Session");
     }
 
-    log.info(sb.toString());
+    LOG.info(sb.toString());
   }
 
   /*

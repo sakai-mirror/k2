@@ -49,8 +49,8 @@ public class KernelBootstrapActivator implements ComponentActivator {
   /**
    * A logger
    */
-  private static final Log LOG = LogFactory
-      .getLog(KernelBootstrapActivator.class);
+  private static final Log LOG = LogFactory.getLog(KernelBootstrapActivator.class);
+  private static final boolean debug = LOG.isDebugEnabled();
   private static final Class<?>[] KERNEL_SERVICES = {
       KernelInjectorService.class, SharedClassLoaderContainer.class,
       ShutdownService.class, PackageRegistryService.class,
@@ -75,13 +75,13 @@ public class KernelBootstrapActivator implements ComponentActivator {
    * @see org.sakaiproject.kernel.api.ComponentActivator#activate(org.sakaiproject.kernel.api.Kernel)
    */
   public void activate(Kernel kernel) throws ComponentActivatorException {
-    LOG.info("Starting Shared Container");
+    LOG.info("Activating the bootstrap shared container");
     this.kernel = kernel;
     KernelBootstrapModule kbmodule = new KernelBootstrapModule(kernel);
     Injector injector = Guice.createInjector(kbmodule);
     for (Class<?> c : KERNEL_SERVICES) {
       Object s = injector.getInstance(c);
-      if (LOG.isDebugEnabled()) {
+      if (debug) {
         LOG.debug("Loaded " + c + " as " + s);
       }
     }
@@ -95,10 +95,10 @@ public class KernelBootstrapActivator implements ComponentActivator {
         throw new ComponentActivatorException("Failed to register service " + c
             + " cause:" + e.getMessage(), e);
       }
-      if (LOG.isDebugEnabled()) {
-        LOG.debug("Registerd " + c + " as " + s);
+      if (debug) {
+        LOG.debug("Registered " + c + " as " + s);
       } else {
-        LOG.info("Registerd service " + c);
+        LOG.info("Registered service " + c);
       }
     }
 
@@ -107,20 +107,20 @@ public class KernelBootstrapActivator implements ComponentActivator {
         new ServiceSpec(ComponentLoaderService.class));
     Properties p = kbmodule.getProperties();
 
-    LOG.info("==========PHASE 1 START COMPLETE============");
+    LOG.info("==============> Phase 1 Start Complete: Bootstrap activation successful");
     try {
       loader.load(p.getProperty("core.component.locations")+p.getProperty("component.locations"), false);
-      LOG.info("==========PHASE 2 START COMPLETE============");
+      LOG.info("==============> Phase 2 Start Complete: Core kernel component load success");
     } catch (IOException e) {
-      LOG.info("==========PHASE 2 START FAILED============");
+      LOG.info("==============> Phase 2 Start Failed: Core kernel component loading failed");
           throw new ComponentActivatorException("Failed to load kernel components "
           + e.getMessage(), e);
     } catch (ComponentSpecificationException e) {
-      LOG.info("==========PHASE 2 START FAILED============");
+      LOG.info("==============> Phase 2 Start Failed: Core kernel component loading failed");
             throw new ComponentActivatorException("Failed to load kernel components "
           + e.getMessage(), e);
     } catch (KernelConfigurationException e) {
-      LOG.info("==========PHASE 2 START FAILED============");
+      LOG.info("==============> Phase 2 Start Failed: Core kernel component loading failed");
            throw new ComponentActivatorException("Failed to load kernel components "
           + e.getMessage(), e);
     }

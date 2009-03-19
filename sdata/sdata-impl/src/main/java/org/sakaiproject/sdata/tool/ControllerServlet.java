@@ -70,7 +70,9 @@ public class ControllerServlet extends HttpServlet {
 	 */
   private static final long serialVersionUID = -7098194528761855627L;
 
-  private static final Log log = LogFactory.getLog(ControllerServlet.class);
+  private static final Log LOG = LogFactory.getLog(ControllerServlet.class);
+
+  private static final boolean debug = LOG.isDebugEnabled();
 
   private static final RestDescription DESCRIPTION = new RestDescription();
 
@@ -405,8 +407,8 @@ public class ControllerServlet extends HttpServlet {
    */
   public Handler getHandler(HttpServletRequest request) {
     String pathInfo = request.getPathInfo();
-    if (log.isDebugEnabled()) {
-      log.debug("Path is " + pathInfo);
+    if (debug) {
+      LOG.debug("Path is " + pathInfo);
     }
     if ("/checkRunning".equals(pathInfo)) {
       return nullHandler;
@@ -446,7 +448,7 @@ public class ControllerServlet extends HttpServlet {
       throws ServletException, IOException {
     long start = System.currentTimeMillis();
     super.service(req, resp);
-    log.info((System.currentTimeMillis() - start) + " ms " + req.getMethod()
+    LOG.info((System.currentTimeMillis() - start) + " ms " + req.getMethod()
         + ":" + req.getRequestURL());
   }
 

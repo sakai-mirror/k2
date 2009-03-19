@@ -32,8 +32,8 @@ import java.net.URL;
  * of tomcat all webapps share the same common classloader. It is registered
  */
 public class SakaiSharedClassLoader extends WebappClassLoader {
-  private static final Log LOG = LogFactory
-      .getLog(SakaiSharedClassLoader.class);
+  private static final Log LOG = LogFactory.getLog(SakaiSharedClassLoader.class);
+  private static final boolean debug = LOG.isDebugEnabled();
   private ClassLoader containerClassloader;
 
   /**
@@ -76,8 +76,9 @@ public class SakaiSharedClassLoader extends WebappClassLoader {
     } catch (CommonObjectConfigurationException e) {
       LOG.error(e);
     }
-    LOG.debug("Using Custom Shared Classloader Ok Using parent as  "
-        + parentClassLoader);
+    if (debug)
+      LOG.debug("Using Custom Shared Classloader Ok Using parent as  "
+          + parentClassLoader);
     return parentClassLoader;
   }
 
@@ -96,7 +97,7 @@ public class SakaiSharedClassLoader extends WebappClassLoader {
       try {
         c = containerClassloader.loadClass(name);
 
-        if (LOG.isDebugEnabled())
+        if (debug)
           LOG.debug("loaded " + c);
       } catch (ClassNotFoundException e) {
         ex = e;
@@ -111,12 +112,12 @@ public class SakaiSharedClassLoader extends WebappClassLoader {
       }
     }
 
-    if (LOG.isDebugEnabled())
+    if (debug)
       LOG.debug("Resolved " + name + " as " + c);
     if (c == null)
       throw ex;
 
-    if (LOG.isDebugEnabled())
+    if (debug)
       LOG.debug("loaded " + c + " from " + c.getClassLoader());
 
     return c;
@@ -153,7 +154,7 @@ public class SakaiSharedClassLoader extends WebappClassLoader {
       in = containerClassloader.getResourceAsStream(name);
 
       if (in != null) {
-        if (LOG.isDebugEnabled())
+        if (debug)
           LOG.debug("loaded " + in);
         return in;
       }

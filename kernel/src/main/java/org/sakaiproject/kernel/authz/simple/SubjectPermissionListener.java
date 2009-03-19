@@ -54,6 +54,7 @@ public class SubjectPermissionListener implements JcrContentListener {
 
   private static final Log LOG = LogFactory
       .getLog(SubjectPermissionListener.class);
+  private static final boolean debug = LOG.isDebugEnabled();
   private final BeanConverter beanConverter;
   private final JCRNodeFactoryService jcrNodeFactoryService;
   private final EntityManager entityManager;
@@ -109,15 +110,18 @@ public class SubjectPermissionListener implements JcrContentListener {
       } catch (IOException e) {
         LOG.warn("Failed to read userenv " + filePath + " cause :"
             + e.getMessage());
-        LOG.debug(e);
+        if (debug)
+          LOG.debug(e);
       } catch (RepositoryException e) {
         LOG.warn("Failed to read userenv for " + filePath + " cause :"
             + e.getMessage());
-        LOG.debug(e);
+        if (debug)
+          LOG.debug(e);
       } catch (JCRNodeFactoryServiceException e) {
         LOG.warn("Failed to read userenv for " + filePath + " cause :"
             + e.getMessage());
-        LOG.debug(e);
+        if (debug)
+          LOG.debug(e);
       } finally {
         try {
           in.close();

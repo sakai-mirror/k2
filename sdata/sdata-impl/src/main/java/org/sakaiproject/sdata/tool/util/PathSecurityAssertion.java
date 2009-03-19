@@ -49,7 +49,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class PathSecurityAssertion implements SecurityAssertion {
 
-  private static final Log log = LogFactory.getLog(PathSecurityAssertion.class);
+  private static final Log LOG = LogFactory.getLog(PathSecurityAssertion.class);
 
   /**
    * The base location that is Security Advisor applies to. Only paths that
@@ -134,7 +134,7 @@ public class PathSecurityAssertion implements SecurityAssertion {
 
     if (!(basePath.length() == 0)
         && (resourcePath == null || !resourcePath.startsWith(basePath))) {
-      log.info("Denied " + method + " on [" + resourcePath
+      LOG.info("Denied " + method + " on [" + resourcePath
           + "] base mismatch [" + basePath + "]");
       throw new SDataException(HttpServletResponse.SC_FORBIDDEN,
           "Access Forbidden");

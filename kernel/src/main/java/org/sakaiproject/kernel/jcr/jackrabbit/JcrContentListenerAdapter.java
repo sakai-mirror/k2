@@ -43,6 +43,7 @@ import javax.jcr.observation.ObservationManager;
 public class JcrContentListenerAdapter implements EventListener, EventRegistration {
 
   private static final Log LOG = LogFactory.getLog(JcrContentListenerAdapter.class);
+  private static final boolean debug = LOG.isDebugEnabled();
   private static final String DATA_NODE = "/" + JCRConstants.JCR_CONTENT + "/"
       + JCRConstants.JCR_DATA;
   private List<JcrContentListener> listeners;
@@ -74,7 +75,7 @@ public class JcrContentListenerAdapter implements EventListener, EventRegistrati
     observationManager.addEventListener(this, Event.PROPERTY_ADDED
         | Event.PROPERTY_CHANGED | Event.PROPERTY_REMOVED, "/", true, null, new String[] {
         JCRConstants.NT_RESOURCE, JCRConstants.NT_UNSTRUCTURED }, false);
-    LOG.info("Registerd  " + this.getClass().getName());
+    LOG.info("Registered " + this.getClass().getName());
   }
 
   /**
@@ -101,9 +102,13 @@ public class JcrContentListenerAdapter implements EventListener, EventRegistrati
                 listener.onEvent(event.getType(), event.getUserID(), filePath, fileName);
               }
             }
+            LOG.info("User \"" + event.getUserID() + "\" fired content event \"" + event.getType() + "\" at path \"" + path + "\"." );
           }
         } catch (Exception rex) {
-          rex.printStackTrace();
+	  LOG.error("Exception firing event.");
+          if (debug)
+            LOG.debug("Cause: " + rex.getMessage());
+	  LOG.trace("Trace: " + rex.getStackTrace().toString());
         }
       }
 
@@ -123,12 +128,12 @@ public class JcrContentListenerAdapter implements EventListener, EventRegistrati
         try {
           cacheManager.unbind(CacheScope.REQUEST);
         } catch (Exception ex) {
-          // dont care about this
+	  LOG.warn("Exception unbinding cache manager from request.");
         }
         try {
           cacheManager.unbind(CacheScope.THREAD);
         } catch (Exception ex) {
-          // dont care about this
+	  LOG.warn("Exception unbinding cache manager from thread.");
         }
       }
     }

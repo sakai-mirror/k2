@@ -42,7 +42,7 @@ import javax.jcr.query.QueryManager;
  */
 public class UnboundJCRServiceImpl implements JCRService {
 
-  private static final Log log = LogFactory.getLog(UnboundJCRServiceImpl.class);
+  private static final Log LOG = LogFactory.getLog(UnboundJCRServiceImpl.class);
 
   public static final String DEFAULT_WORKSPACE = "sakai";
 
@@ -61,15 +61,15 @@ public class UnboundJCRServiceImpl implements JCRService {
     boolean error = false;
     try {
       if (repositoryBuilder == null) {
-        log.error("Repository has not been set ");
+        LOG.error("Repository has not been set ");
         error = true;
       }
       if (repositoryCredentials == null) {
-        log.error("Credentials has not been set ");
+        LOG.error("Credentials has not been set ");
         error = true;
       }
     } catch (Throwable t) {
-      log.error("Failed init(): ", t);
+      LOG.error("Failed init(): ", t);
       error = true;
     } finally {
       if (error) {
@@ -80,7 +80,7 @@ public class UnboundJCRServiceImpl implements JCRService {
         // System.exit(-1);
       }
     }
-    log.info("JCR Service initialised...");
+    LOG.info("JCR Service initialised...");
   }
 
   /**
@@ -88,7 +88,7 @@ public class UnboundJCRServiceImpl implements JCRService {
    */
   public void destroy() {
     // repositoryBuilder.destroy();
-    log.info("destroy()");
+    LOG.info("destroy()");
   }
 
   public Session getSession() throws LoginException, RepositoryException {
@@ -154,7 +154,7 @@ public class UnboundJCRServiceImpl implements JCRService {
       s = getRepository().login(ssp);
       observationManager = s.getWorkspace().getObservationManager();
     } catch (RepositoryException e) {
-      log.error("Failed to get ObservationManager from workspace");
+      LOG.error("Failed to get ObservationManager from workspace");
       e.printStackTrace();
     } finally {
       try {
@@ -187,7 +187,7 @@ public class UnboundJCRServiceImpl implements JCRService {
       s = getRepository().login(ssp);
       queryManager = s.getWorkspace().getQueryManager();
     } catch (RepositoryException e) {
-      log.error("Failed to get QueryManager from workspace");
+      LOG.error("Failed to get QueryManager from workspace");
       e.printStackTrace();
     } finally {
       try {

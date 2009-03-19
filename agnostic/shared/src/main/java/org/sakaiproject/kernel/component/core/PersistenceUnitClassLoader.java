@@ -79,6 +79,7 @@ public class PersistenceUnitClassLoader extends ClassLoader {
 
   private static final Log LOG = LogFactory
       .getLog(PersistenceUnitClassLoader.class);
+  private static final boolean debug = LOG.isDebugEnabled();
 
   public static final String KERNEL_PERSISTENCE_XML = "META-INF/kernel-persistence.xml";
   public static final String PERSISTENCE_XML = "META-INF/persistence.xml";
@@ -228,14 +229,16 @@ public class PersistenceUnitClassLoader extends ClassLoader {
    */
   private URL constructUrl(final String xml, final String filename)
       throws IOException {
-    LOG.debug(filename + " " + xml);
+    if (debug)
+      LOG.debug(filename + " " + xml);
 
     // The base directory must be empty since JPA will scan it searching for
     // classes.
     final File file = new File(System.getProperty("java.io.tmpdir") + "/sakai/"
         + filename);
     if ( file.getParentFile().mkdirs() ) {
-      LOG.debug("Created "+file);
+      if (debug)
+        LOG.debug("Created "+file);
     }
     final PrintWriter pw = new PrintWriter(new FileWriter(file));
     pw.print(xml);
@@ -246,7 +249,8 @@ public class PersistenceUnitClassLoader extends ClassLoader {
     } catch (MalformedURLException e) {
         LOG.error("cannot convert file to URL " + e.toString());
     }
-    LOG.debug("URL: " + url);
+    if (debug)
+      LOG.debug("URL: " + url);
     final URL urlout = url;
     return urlout;
   }
@@ -337,7 +341,8 @@ public class PersistenceUnitClassLoader extends ClassLoader {
     if (masterURL == null) {
       LOG.error("Can't find " + KERNEL_PERSISTENCE_XML);
     } else {
-      LOG.debug(String.format(">>>> master persistence.xml: %s", masterURL));
+      if (debug)
+        LOG.debug(String.format(">>>> master persistence.xml: %s", masterURL));
       final Document masterDocument = builder.parse(masterURL.toExternalForm());
 
       // collect the class and mappings together so they can be added to the
@@ -451,8 +456,9 @@ public class PersistenceUnitClassLoader extends ClassLoader {
       final NodeList nodes, final EntityType entityType) {
     for (int i = 0; i < nodes.getLength(); i++) {
       final String entity = nodes.item(i).getNodeValue();
-      LOG.debug(String.format(">>>>>>>> entity %s: %s", entityType.getType(),
-          entity));
+      if (debug)
+        LOG.debug(String.format(">>>>>>>> entity %s: %s", entityType.getType(),
+            entity));
 
       final Node child = masterDocument.createElement(entityType.getType());
       child.appendChild(masterDocument.createTextNode(entity));

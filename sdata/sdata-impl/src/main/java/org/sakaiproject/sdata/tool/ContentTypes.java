@@ -32,7 +32,7 @@ import org.sakaiproject.kernel.util.ResourceLoader;
  */
 public class ContentTypes {
 
-  private static final Log log = LogFactory.getLog(ContentTypes.class);
+  private static final Log LOG = LogFactory.getLog(ContentTypes.class);
 
   private static Map<String, String> contentTypes = new HashMap<String, String>();
 
@@ -46,7 +46,7 @@ public class ContentTypes {
       p.load(in);
       in.close();
     } catch (IOException e) {
-      log.error("Failed to load Content Types ", e);
+      LOG.error("Failed to load Content Types ", e);
     }
     for (Object k : p.keySet()) {
       for (String ext : p.getProperty(String.valueOf(k)).split(" ")) {

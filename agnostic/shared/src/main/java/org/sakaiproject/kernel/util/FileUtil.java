@@ -109,9 +109,7 @@ public class FileUtil {
         // searchIndexDirectory... hence this is correct
 
         File f = new File(destination, zipEntry.getName());
-        if (LOG.isInfoEnabled()) {
-          LOG.info("         Unpack " + f.getAbsolutePath());
-        }
+        LOG.info("         Unpack " + f.getAbsolutePath());
         f.getParentFile().mkdirs();
 
         if (!zipEntry.isDirectory()) {

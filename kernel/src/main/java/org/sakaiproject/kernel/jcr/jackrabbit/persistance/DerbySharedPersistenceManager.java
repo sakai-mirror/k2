@@ -26,20 +26,20 @@ import org.apache.jackrabbit.core.persistence.PMContext;
 import org.apache.jackrabbit.core.persistence.bundle.DerbyPersistenceManager;
 
 public class DerbySharedPersistenceManager extends DerbyPersistenceManager {
-	private static final Log log = LogFactory.getLog(DerbySharedPersistenceManager.class);
+	private static final Log LOG = LogFactory.getLog(DerbySharedPersistenceManager.class);
 	private String sharedLocation;
 	private boolean useSharedFsBlobStore;
 
 	@Override
 	protected CloseableBLOBStore createDBBlobStore(PMContext context)
 			throws Exception {
-		log.info("Creating DBBlobStore");
+		LOG.info("Creating DBBlobStore");
 		return super.createDBBlobStore(context);
 	}
 
 	@Override
 	protected CloseableBLOBStore createBlobStore() throws Exception {
-		log.info("Creating BlobStore");
+		LOG.info("Creating BlobStore");
 		return super.createBlobStore();
 	}
 
@@ -68,7 +68,7 @@ public class DerbySharedPersistenceManager extends DerbyPersistenceManager {
 		if ( useSharedFsBlobStore ) {
 			baseLocation = new File(sharedLocation);
 		}
-		log.info("Using File Based Blobs at "+baseLocation);
+		LOG.info("Using File Based Blobs at "+baseLocation);
 		LocalFileSystem blobFS = new LocalFileSystem();
 		blobFS.setRoot(new File(baseLocation, "blobs"));
 		blobFS.init();

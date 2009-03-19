@@ -39,7 +39,7 @@ import org.sakaiproject.kernel.api.rest.JaxRsSingletonProvider;
  * "sakai.jaxrs.application" context-param.
  */
 public class JaxRsApplicationListener implements ServletContextListener {
-  private static final Log log = LogFactory
+  private static final Log LOG = LogFactory
       .getLog(JaxRsApplicationListener.class);
 
   protected Set<JaxRsSingletonProvider> jaxRsSingletonProviders = new HashSet<JaxRsSingletonProvider>();
@@ -58,7 +58,7 @@ public class JaxRsApplicationListener implements ServletContextListener {
           .loadClass(appClass.trim());
       app = (Application) clazz.newInstance();
     } catch (Exception e) {
-      log.warn("Unable to instantiate JAX-RS Application " + appClass);
+      LOG.warn("Unable to instantiate JAX-RS Application " + appClass);
       e.printStackTrace();
       return;
     }
@@ -91,10 +91,8 @@ public class JaxRsApplicationListener implements ServletContextListener {
       };
       jaxRsSingletonProviders.add(provider);
       singletonRegistry.add(provider);
-      if (log.isInfoEnabled()) {
-        log.info("Added " + provider.getJaxRsSingleton()
-            + " to JAX-RS registry " + singletonRegistry);
-      }
+      LOG.info("Added " + provider.getJaxRsSingleton()
+          + " to JAX-RS registry " + singletonRegistry);
     }
     for (final Class<?> clazz : app.getClasses()) {
       if (!(Documentable.class.isAssignableFrom(clazz))) {
@@ -126,10 +124,8 @@ public class JaxRsApplicationListener implements ServletContextListener {
       };
       jaxRsPrototypeProviders.add(provider);
       prototypeRegistry.add(provider);
-      if (log.isInfoEnabled()) {
-        log.info("Added " + provider.getJaxRsPrototype()
-            + " to JAX-RS registry " + prototypeRegistry);
-      }
+      LOG.info("Added " + provider.getJaxRsPrototype()
+          + " to JAX-RS registry " + prototypeRegistry);
 
     }
   }

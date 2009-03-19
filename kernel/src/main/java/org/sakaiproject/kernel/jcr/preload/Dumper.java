@@ -31,12 +31,13 @@ import org.apache.commons.logging.LogFactory;
 public class Dumper
 {
 
-	private static final Log log = LogFactory.getLog(Dumper.class);
+	private static final Log LOG = LogFactory.getLog(Dumper.class);
+        private static final boolean debug = LOG.isDebugEnabled();
 
 	/** Recursively outputs the contents of the given node. */
 	public static void dump(Node node)
 	{
-		if (!log.isDebugEnabled())
+		if (!debug)
 		{
 			return;
 		}
@@ -96,7 +97,7 @@ public class Dumper
 				}
 			}
 
-			log.debug("Node " + node.getPath() + "\n" + sb.toString());
+			LOG.debug("Node " + node.getPath() + "\n" + sb.toString());
 			// Finally output all the child nodes recursively
 			NodeIterator nodes = node.getNodes();
 			while (nodes.hasNext())

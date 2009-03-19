@@ -353,7 +353,7 @@ public class RestUserProvider implements RestProvider {
       User u = userResolverService.resolve(externalId);
       if (u != null) {
         throw new RestServiceFaultException(HttpServletResponse.SC_CONFLICT,
-            USER_TYPE_PARAM + " is empty");
+            "Conflict, unable to create new user. Perhaps user already exists?");
       }
 
       u = userFactoryService.createNewUser(externalId);

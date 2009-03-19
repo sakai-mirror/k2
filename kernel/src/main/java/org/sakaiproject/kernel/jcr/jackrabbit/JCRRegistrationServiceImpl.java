@@ -41,7 +41,7 @@ import javax.jcr.Workspace;
 @Singleton
 public class JCRRegistrationServiceImpl implements JCRRegistrationService {
 
-  private static final Log log = LogFactory
+  private static final Log LOG = LogFactory
       .getLog(JCRRegistrationServiceImpl.class);
 
   private RepositoryBuilder repositoryBuilder;
@@ -109,7 +109,7 @@ public class JCRRegistrationServiceImpl implements JCRRegistrationService {
       NodeTypeManagerImpl ntm = (NodeTypeManagerImpl) w.getNodeTypeManager();
       ntm.registerNodeTypes(xml, "text/xml");
     } catch (Exception e) {
-      log.info("Error Registering Additional JCR NameSpaces/Nodetypes "
+      LOG.info("Error Registering Additional JCR NameSpaces/Nodetypes "
           + e.getMessage());
     } finally {
       try {

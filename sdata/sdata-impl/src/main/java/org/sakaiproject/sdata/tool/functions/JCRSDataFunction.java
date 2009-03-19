@@ -29,17 +29,18 @@ import org.sakaiproject.sdata.tool.api.SDataFunction;
  */
 public abstract class JCRSDataFunction implements SDataFunction {
 
-  private static final Log log = LogFactory.getLog(JCRSDataFunction.class);
+  private static final Log LOG = LogFactory.getLog(JCRSDataFunction.class);
+  private static final boolean debug = LOG.isDebugEnabled();
 
   /**
    * @param string
    * @param e
    */
   protected void logException(String string, Exception e) {
-    if (log.isDebugEnabled()) {
-      log.warn("Type missmatch ", e);
+    if (debug) {
+      LOG.warn("Type missmatch ", e);
     } else {
-      log.warn("Type missmatch " + e.getMessage());
+      LOG.warn("Type missmatch " + e.getMessage());
     }
   }
   

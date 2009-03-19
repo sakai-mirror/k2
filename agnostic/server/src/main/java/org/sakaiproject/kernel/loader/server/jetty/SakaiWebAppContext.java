@@ -40,6 +40,7 @@ import java.security.PrivilegedAction;
  */
 public class SakaiWebAppContext extends WebAppContext {
   private static final Log LOG = LogFactory.getLog(SakaiWebAppContext.class);
+  private static final boolean debug = LOG.isDebugEnabled();
   private ClassLoader parentClassloader = null;
   private WebAppClassLoader webappClassLoader = null;
   private Object lock = new Object();
@@ -83,7 +84,7 @@ public class SakaiWebAppContext extends WebAppContext {
 
             LOG.info("Got Classloader fromm JMX as " + parentClassloader + "("
                 + parentClassloader.getClass() + ")");
-            if (LOG.isDebugEnabled()) {
+            if (debug) {
               LOG.debug("Thread Context class loader is: " + parentClassloader);
               ClassLoader loader = parentClassloader.getParent();
               while (loader != null) {

@@ -34,6 +34,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class ShutdownServiceImpl implements RequiresStop, ShutdownService {
 
   private static final Log LOG = LogFactory.getLog(ShutdownServiceImpl.class);
+  private static final boolean debug = LOG.isDebugEnabled();
   /**
    * A list of services to stop on reload.
    */
@@ -60,7 +61,8 @@ public class ShutdownServiceImpl implements RequiresStop, ShutdownService {
       try {
         s.stop();
       } catch ( Exception ex ) {
-        LOG.debug("Failed to Shutdown "+s,ex);
+        if (debug)
+          LOG.debug("Failed to Shutdown "+s,ex);
         LOG.error("Failed to Shutdown "+s+" because:"+ex.getMessage());
       }
     }

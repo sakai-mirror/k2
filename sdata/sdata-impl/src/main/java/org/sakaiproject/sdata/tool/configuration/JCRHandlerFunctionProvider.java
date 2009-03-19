@@ -43,6 +43,7 @@ import java.util.Map;
 public class JCRHandlerFunctionProvider implements Provider<Map<String, SDataFunction>> {
 
   private static final Log LOG = LogFactory.getLog(JCRHandlerFunctionProvider.class);
+  private static final boolean debug = LOG.isDebugEnabled();
   private Map<String, SDataFunction> functionMap = new HashMap<String, SDataFunction>();
 
   /**
@@ -73,7 +74,8 @@ public class JCRHandlerFunctionProvider implements Provider<Map<String, SDataFun
     if ( functionMap.containsKey(f.getKey())) {
       throw new RuntimeException("Function "+f.getKey()+" Overwritten existing:"+functionMap.get(f.getKey())+"  new:"+f);
     }
-    LOG.debug("Added function "+f.getKey()+" as "+f);
+    if (debug)
+      LOG.debug("Added function "+f.getKey()+" as "+f);
     functionMap.put(f.getKey(),f);
   }
 

@@ -73,15 +73,13 @@ public class SakaiRepositoryImpl extends RepositoryImpl {
     long maxMem = Math.max(16, ((memoryMB * 16) / 128));
     long maxMemCache = Math.max(4, ((memoryMB * 4) / 128));
     long minMemCache = Math.max(128, ((memoryMB * 128) / 128));
-    LOG.info("Setting Cache sizes for " + memoryMB + " MB of heap (Max:"
-        + maxMem + ":MB, MaxPerCache:" + maxMemCache
-        + ":MB, MaxPerCache:" + minMemCache + " KB");
+    LOG.info("Set Cache sizes: Heap=" + memoryMB + "MB, Max="
+        + maxMem + "MB, Max/Cache=" + maxMemCache
+        + "MB, Min/Cache=" + minMemCache + "KB");
     CacheManager manager = getCacheManager();
-    manager.setMaxMemory(maxMem * 1024 * 1024); // default is 16 * 1024 *
-                                                               // 1024
-    manager.setMaxMemoryPerCache(maxMemCache * 1024 * 1024); // default is 4 *
-                                                                      // 1024 * 1024
-    manager.setMinMemoryPerCache(minMemCache * 1024); // default is 128 * 1024]
+    manager.setMaxMemory(maxMem * 1024 * 1024); // default is 16 * 1024 * 1024
+    manager.setMaxMemoryPerCache(maxMemCache * 1024 * 1024); // default is 4 * 1024 * 1024
+    manager.setMinMemoryPerCache(minMemCache * 1024); // default is 128 * 1024
   }
 
   /**

@@ -58,7 +58,7 @@ import javax.mail.internet.MimePart;
  */
 public class EmailMessageListener implements MessageListener {
 
-  private static final Log log = LogFactory.getLog(EmailMessageListener.class);
+  private static final Log LOG = LogFactory.getLog(EmailMessageListener.class);
   private final javax.mail.Session session;
   /**
    * Testing variable to enable/disable the calling of Transport.send
@@ -95,17 +95,17 @@ public class EmailMessageListener implements MessageListener {
       } catch (JMSException e) {
         // log for now. We need to return a message to the sender that something
         // died while processing this message
-        log.error(e.getMessage(), e);
+        LOG.error(e.getMessage(), e);
       } catch (AddressException e) {
-        log.error(e.getMessage(), e);
+        LOG.error(e.getMessage(), e);
       } catch (UnsupportedEncodingException e) {
-        log.error(e.getMessage(), e);
+        LOG.error(e.getMessage(), e);
       } catch (SendFailedException e) {
-        log.error(e.getMessage(), e);
+        LOG.error(e.getMessage(), e);
       } catch (MessagingException e) {
-        log.error(e.getMessage(), e);
+        LOG.error(e.getMessage(), e);
       } catch (IOException e) {
-        log.error(e.getMessage(), e);
+        LOG.error(e.getMessage(), e);
       }
     }
   }
@@ -192,10 +192,10 @@ public class EmailMessageListener implements MessageListener {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         mimeMsg.writeTo(output);
         String emailString = output.toString();
-        log.info(emailString);
+        LOG.info(emailString);
         observable.notifyObservers(emailString);
       } catch (IOException e) {
-        log.info("Transport disabled and unable to write message to log: "
+        LOG.info("Transport disabled and unable to write message to log: "
             + e.getMessage(), e);
       }
     }

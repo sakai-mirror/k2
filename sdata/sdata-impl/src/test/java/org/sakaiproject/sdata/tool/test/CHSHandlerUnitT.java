@@ -29,7 +29,7 @@ public class CHSHandlerUnitT extends TestCase
  * <pre>
 	protected static final Map<String, Object> componentMap = new HashMap<String, Object>();
 
-	protected static final Log log = LogFactory.getLog(CHSHandlerUnitT.class);
+	protected static final Log LOG = LogFactory.getLog(CHSHandlerUnitT.class);
 
 	/**
 	 * @param arg0
@@ -64,12 +64,12 @@ public class CHSHandlerUnitT extends TestCase
 				ContentCollection cc = ccMap.get(path);
 				if ("/content/group/testcollection/".equals(path))
 				{
-					log.info("Request for " + path + " was mockCC ");
+					LOG.info("Request for " + path + " was mockCC ");
 					return new MockContentCollection(path);
 				}
 				else
 				{
-					log.info("Request for " + path + " was " + cc);
+					LOG.info("Request for " + path + " was " + cc);
 				}
 				return cc;
 			}

@@ -29,6 +29,7 @@ import java.net.URLClassLoader;
 public class SwitchedClassLoader extends URLClassLoader {
 
   private static final Log LOG = LogFactory.getLog(SwitchedClassLoader.class);
+  private static final boolean debug = LOG.isDebugEnabled();
   private ClassLoader containerClassloader;
 
   /**
@@ -54,7 +55,7 @@ public class SwitchedClassLoader extends URLClassLoader {
     if (c == null && containerClassloader != null) {
       try {
         c = containerClassloader.loadClass(name);
-        if (LOG.isDebugEnabled())
+        if (debug)
           LOG.debug("loaded " + c);
       } catch (ClassNotFoundException e) {
         ex = e;
@@ -69,14 +70,16 @@ public class SwitchedClassLoader extends URLClassLoader {
       }
     }
 
-    LOG.debug("Resolved "+name+" as "+c);
+    if (debug)
+      LOG.debug("Resolved "+name+" as "+c);
     if (c == null)
       throw ex;
 
     if (resolve)
       resolveClass(c);
 
-    LOG.debug("loaded " + c + " from " + c.getClassLoader());
+    if (debug)
+      LOG.debug("loaded " + c + " from " + c.getClassLoader());
 
     return c;
   }

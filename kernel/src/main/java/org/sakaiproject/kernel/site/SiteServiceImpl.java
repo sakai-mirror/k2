@@ -67,6 +67,7 @@ import javax.persistence.Query;
 public class SiteServiceImpl implements SiteService {
 
   private static final Log LOG = LogFactory.getLog(SiteServiceImpl.class);
+  private static final boolean debug = LOG.isDebugEnabled();
 
   private final JCRNodeFactoryService jcrNodeFactoryService;
   private final BeanConverter beanConverter;
@@ -127,7 +128,8 @@ public class SiteServiceImpl implements SiteService {
     } catch (RepositoryException e) {
       LOG.error("Failed to find site " + e.getMessage());
     } catch (JCRNodeFactoryServiceException e) {
-      LOG.debug("Failed to find site " + e.getMessage());
+      if (debug)
+        LOG.debug("Failed to find site " + e.getMessage());
     } finally {
       try {
         in.close();

@@ -44,6 +44,7 @@ public class ProfileResolverServiceImpl implements ProfileResolverService {
 
   private static final Log LOG = LogFactory
       .getLog(ProfileResolverServiceImpl.class);
+  private static final boolean debug = LOG.isDebugEnabled();
   private JCRNodeFactoryService jcrNodeFactoryService;
   private UserFactoryService userFactoryService;
   private BeanConverter beanConverter;
@@ -119,7 +120,8 @@ public class ProfileResolverServiceImpl implements ProfileResolverService {
     } catch (RepositoryException e) {
       LOG.error(e.getMessage(), e);
     } catch (JCRNodeFactoryServiceException e) {
-      LOG.debug(e.getMessage(), e);
+      if (debug)
+        LOG.debug(e.getMessage(), e);
     } catch (UnsupportedEncodingException e) {
       LOG.error(e.getMessage(), e);
     } catch (IOException e) {

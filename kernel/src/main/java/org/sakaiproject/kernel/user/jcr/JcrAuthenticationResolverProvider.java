@@ -116,14 +116,14 @@ public class JcrAuthenticationResolverProvider implements
             }
           }
         } catch (Exception ex) {
-          throw new SecurityException("Authentication Failed for user "
-              + idPwPrincipal.getIdentifier(), ex);
+          throw new SecurityException("user "
+              + idPwPrincipal.getIdentifier() + ": problem authenticating.", ex);
         } finally {
           authzResolverService.clearRequestGrant();
         }
       }
-      throw new SecurityException("Authentication Failed for user "
-          + idPwPrincipal.getIdentifier() + ": not known to the system ");
+      throw new SecurityException("user "
+          + idPwPrincipal.getIdentifier() + ": problem resolving");
     }
     throw new SecurityException("Authentication Principal " + principal
         + " not suitable for " + this.getClass().getName());

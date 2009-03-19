@@ -36,6 +36,7 @@ public class PathUtilsUT {
       "/user/home////ieb:/user/home", "/user////home////ieb:/user////home", "/user/:/",
       "/////:/"};
   private static final Log LOG = LogFactory.getLog(PathUtilsUT.class);
+  private static final boolean debug = LOG.isDebugEnabled();
 
   /**
    * Test method for
@@ -50,7 +51,8 @@ public class PathUtilsUT {
         assertNotNull(userPath);
         assertTrue(userPath.length() > 2);
       }
-      LOG.debug("User:" + user + ":" + userPath);
+      if (debug)
+        LOG.debug("User:" + user + ":" + userPath);
     }
   }
 
@@ -63,7 +65,8 @@ public class PathUtilsUT {
     for (String testPair : REFERENCE_PARENT_TEST) {
       String[] p = StringUtils.split(testPair, ':');
       String parent = PathUtils.getParentReference(p[0]);
-      LOG.debug("Checking " + testPair + " gave  " + parent);
+      if (debug)
+        LOG.debug("Checking " + testPair + " gave  " + parent);
       assertEquals(p[1], parent);
     }
   }

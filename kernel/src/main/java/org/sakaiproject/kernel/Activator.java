@@ -127,9 +127,9 @@ public class Activator implements ComponentActivator {
           "Failed to initialize the Kernel into a Ready State ", e1);
     }
 
-    LOG.info("Services:\n");
+    LOG.info("Start Kernel Component; invoke Guice; export services:");
     for (ServiceSpec s : serviceManager.getServices()) {
-      LOG.info("\t" + s);
+      LOG.info("-> " + s);
     }
 
   }

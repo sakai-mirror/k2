@@ -46,6 +46,7 @@ public class KernelLoader implements LifecycleListener {
    * the standard Logger.
    */
   private static final Log LOG = LogFactory.getLog(KernelLoader.class);
+  private static final boolean debug = LOG.isDebugEnabled();
 
   /**
    * The name of the container Mbean where the shared classloader comes from.
@@ -77,25 +78,34 @@ public class KernelLoader implements LifecycleListener {
       String type = event.getType();
       LOG.debug("At " + type);
       if (Lifecycle.INIT_EVENT.equals(type)) {
-        LOG.debug("INIT");
+	if (debug)
+	  LOG.debug("INIT");
       } else if (Lifecycle.BEFORE_START_EVENT.equals(type)) {
-        LOG.debug("Before Start");
+	if (debug)
+          LOG.debug("Before Start");
         start();
       } else if (Lifecycle.START_EVENT.equals(type)) {
-        LOG.debug("Start");
+	if (debug)
+          LOG.debug("Start");
       } else if (Lifecycle.AFTER_START_EVENT.equals(type)) {
-        LOG.debug("After Start");
+	if (debug)
+          LOG.debug("After Start");
       } else if (Lifecycle.PERIODIC_EVENT.equals(type)) {
-        LOG.debug("Periodic");
+	if (debug)
+          LOG.debug("Periodic");
       } else if (Lifecycle.BEFORE_STOP_EVENT.equals(type)) {
-        LOG.debug("Before Stop");
+	if (debug)
+          LOG.debug("Before Stop");
       } else if (Lifecycle.STOP_EVENT.equals(type)) {
-        LOG.debug("Stop");
+	if (debug)
+          LOG.debug("Stop");
       } else if (Lifecycle.AFTER_STOP_EVENT.equals(type)) {
-        LOG.debug("After Stop");
+	if (debug)
+          LOG.debug("After Stop");
         stop();
       } else if (Lifecycle.DESTROY_EVENT.equals(type)) {
-        LOG.debug("Destroy ");
+	if (debug)
+          LOG.debug("Destroy ");
       } else {
         LOG.warn("Unrecognised Container Lifecycle Event ");
       }

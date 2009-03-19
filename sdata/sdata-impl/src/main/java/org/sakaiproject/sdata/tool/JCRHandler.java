@@ -93,7 +93,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author ieb
  */
 public class JCRHandler extends AbstractHandler {
-  private static final Log log = LogFactory.getLog(JCRHandler.class);
+  private static final Log LOG = LogFactory.getLog(JCRHandler.class);
 
   /**
    * Required for serialization... also to stop eclipse from giving me a warning!
@@ -272,7 +272,7 @@ public class JCRHandler extends AbstractHandler {
       sendError(request, response, e);
 
       snoopRequest(request);
-      log.error("Failed  TO service Request ", e);
+      LOG.error("Failed  TO service Request ", e);
     }
   }
 
@@ -302,7 +302,7 @@ public class JCRHandler extends AbstractHandler {
         }
       }
       sb.append("]");
-      log.info(sb.toString());
+      LOG.info(sb.toString());
     }
   }
 
@@ -316,7 +316,7 @@ public class JCRHandler extends AbstractHandler {
   public void doHead(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     try {
-      log.info("Doing Head ");
+      LOG.info("Doing Head ");
       snoopRequest(request);
 
       ResourceDefinition rp = resourceDefinitionFactory.getSpec(request);
@@ -352,7 +352,7 @@ public class JCRHandler extends AbstractHandler {
       sendError(request, response, e);
 
       snoopRequest(request);
-      log.error("Failed  TO service Request ", e);
+      LOG.error("Failed  TO service Request ", e);
     }
   }
 
@@ -421,11 +421,11 @@ public class JCRHandler extends AbstractHandler {
       response.sendError(HttpServletResponse.SC_FORBIDDEN, pde.getMessage());
     } catch (SDataException e) {
       sendError(request, response, e);
-      log.error("Failed  To service Request " + e.getMessage());
+      LOG.error("Failed  To service Request " + e.getMessage());
     } catch (Exception e) {
       sendError(request, response, e);
       snoopRequest(request);
-      log.error("Failed  TO service Request ", e);
+      LOG.error("Failed  TO service Request ", e);
     }
   }
 
@@ -553,7 +553,7 @@ public class JCRHandler extends AbstractHandler {
                 + (ranges[1] - 1) + "/" + totallength);
             response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
 
-            log.info("Partial Content Sent " + HttpServletResponse.SC_PARTIAL_CONTENT);
+            LOG.info("Partial Content Sent " + HttpServletResponse.SC_PARTIAL_CONTENT);
           } else {
             response.setStatus(HttpServletResponse.SC_OK);
           }
@@ -595,11 +595,11 @@ public class JCRHandler extends AbstractHandler {
       response.sendError(HttpServletResponse.SC_FORBIDDEN, pde.getMessage());
 
     } catch (SDataException e) {
-      log.error("Failed  To service Request " + e.getMessage());
+      LOG.error("Failed  To service Request " + e.getMessage());
       e.printStackTrace();
       sendError(request, response, e);
     } catch (Exception e) {
-      log.error("Failed  TO service Request ", e);
+      LOG.error("Failed  TO service Request ", e);
       sendError(request, response, e);
       snoopRequest(request);
     } finally {
@@ -640,7 +640,7 @@ public class JCRHandler extends AbstractHandler {
         handled = true;
       }
     } catch (RepositoryException e) {
-      // log this then let default handler happen
+      // Log this then let default handler happen
     }
 
     // do the default get if not handled
@@ -807,7 +807,7 @@ public class JCRHandler extends AbstractHandler {
   public void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     if (request.getRemoteUser() == null) {
-      log.info("No User, denied ");
+      LOG.info("No User, denied ");
       response.sendError(401);
     } else {
       snoopRequest(request);
@@ -826,7 +826,7 @@ public class JCRHandler extends AbstractHandler {
           if (m != null) {
             m.call(this, request, response, n, rp);
           } else {
-            log.info("NOP Post performed");
+            LOG.info("NOP Post performed");
             throw new SDataException(HttpServletResponse.SC_NOT_FOUND,
                 "Method not found ");
           }
@@ -834,23 +834,23 @@ public class JCRHandler extends AbstractHandler {
         }
       } catch (UnauthorizedException ape) {
         // catch any Unauthorized exceptions and send a 401
-        log.info(ape);
+        LOG.info(ape);
         response.reset();
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ape.getMessage());
       } catch (PermissionDeniedException pde) {
         // catch any permission denied exceptions, and send a 403
-        log.info(pde);
+        LOG.info(pde);
         response.reset();
         response.sendError(HttpServletResponse.SC_FORBIDDEN, pde.getMessage());
       } catch (SDataException sde) {
-        log.info(sde);
+        LOG.info(sde);
         sendError(request, response, sde);
 
       } catch (RepositoryException rex) {
-        log.info(rex);
+        LOG.info(rex);
         sendError(request, response, rex);
       } catch (JCRNodeFactoryServiceException jfe) {
-        log.info(jfe);
+        LOG.info(jfe);
         sendError(request, response, jfe);
       }
     }
@@ -886,7 +886,7 @@ public class JCRHandler extends AbstractHandler {
       } catch (Exception ex) {
         sendError(request, response, ex);
         snoopRequest(request);
-        log.error("Failed  TO service Request ", ex);
+        LOG.error("Failed  TO service Request ", ex);
         return;
       }
 
@@ -904,12 +904,12 @@ public class JCRHandler extends AbstractHandler {
       int uploadNumber = 0;
       while (iter.hasNext()) {
         FileItemStream item = iter.next();
-        log.debug("Got Upload through Uploads");
+        LOG.debug("Got Upload through Uploads");
         String name = item.getName();
         String fieldName = item.getFieldName();
-        log.info("    Name is " + name + " field Name " + fieldName);
+        LOG.info("    Name is " + name + " field Name " + fieldName);
         for (String headerName : item.getHeaderNames()) {
-          log.info("Header " + headerName + " is " + item.getHeader(headerName));
+          LOG.info("Header " + headerName + " is " + item.getHeader(headerName));
         }
         InputStream stream = item.openStream();
         if (!item.isFormField()) {
@@ -967,7 +967,7 @@ public class JCRHandler extends AbstractHandler {
               uploads.put(fieldName, uploadMap);
             }
           } catch (Exception ex) {
-            log.error("Failed to Upload Content", ex);
+            LOG.error("Failed to Upload Content", ex);
             Map<String, Object> uploadMap = new HashMap<String, Object>();
             uploadMap.put("mimeType", "text/plain");
             uploadMap.put("encoding", "UTF-8");
@@ -1001,9 +1001,9 @@ public class JCRHandler extends AbstractHandler {
       responseMap.put("errors", errors.toArray(new String[1]));
       responseMap.put("uploads", uploads);
       sendMap(request, response, responseMap);
-      log.info("Response Complete Saved to " + rp.getRepositoryPath());
+      LOG.info("Response Complete Saved to " + rp.getRepositoryPath());
     } catch (Throwable ex) {
-      log.error("Failed  TO service Request ", ex);
+      LOG.error("Failed  TO service Request ", ex);
       sendError(request, response, ex);
       return;
     }

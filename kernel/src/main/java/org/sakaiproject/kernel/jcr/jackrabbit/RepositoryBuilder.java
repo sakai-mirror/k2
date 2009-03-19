@@ -64,7 +64,8 @@ import javax.transaction.TransactionManager;
 @Singleton
 public class RepositoryBuilder implements InitializationAction {
 
-  private static final Log log = LogFactory.getLog(RepositoryBuilder.class);
+  private static final Log LOG = LogFactory.getLog(RepositoryBuilder.class);
+  private static final boolean debug = LOG.isDebugEnabled();
 
   private static final String DB_URL = "\\$\\{db.url\\}";
 
@@ -220,7 +221,7 @@ public class RepositoryBuilder implements InitializationAction {
     dbURL = dbURL.replaceAll("&(?!amp;)", "&amp;");
 
     String persistanceManagerClass = persistanceManagers.get(dbDialect);
-    log.info(MessageFormat.format("\nJCR Repository Config is \n"
+    LOG.info(MessageFormat.format("\nJCR Repository Config is \n"
         + "\trepositoryConfig = {0} \n" + "\tdbURL = {1}\n" + "\tdbUser = {2} \n"
         + "\tdbDriver = {4} \n" + "\tdbDialect = {5} \n" + "\trepository Home = {6}\n"
         + "\tcontentOnFilesystem = {7}\n" + "\tpersistanceManageerClass= {8}\n",
@@ -243,8 +244,8 @@ public class RepositoryBuilder implements InitializationAction {
     contentStr = contentStr.replaceAll(JOURNAL_LOCATION, journalLocation);
     contentStr = contentStr.replaceAll(PERSISTANCE_MANAGER, persistanceManagerClass);
 
-    if (log.isDebugEnabled()) {
-      log.debug("Repositroy Config is \n" + contentStr);
+    if (debug) {
+      LOG.debug("Repositroy Config is \n" + contentStr);
     }
 
     this.injector = injector;
@@ -269,11 +270,11 @@ public class RepositoryBuilder implements InitializationAction {
 
       File shared = new File(sharedFSBlobLocation);
       if (shared.mkdirs()) {
-        log.info("Created " + sharedFSBlobLocation);
+        LOG.info("Created " + sharedFSBlobLocation);
       }
       File journal = new File(journalLocation);
       if (journal.mkdirs()) {
-        log.info("Created " + journalLocation);
+        LOG.info("Created " + journalLocation);
       }
 
       RepositoryConfig rc = RepositoryConfig.create(bais, repositoryHome);
@@ -305,17 +306,17 @@ public class RepositoryBuilder implements InitializationAction {
       }
     }
 
-    log.info("Repository Builder passed init ");
+    LOG.info("Repository Builder passed init ");
   }
 
   public void stop() {
     if (repository != null) {
       try {
         repository.shutdown();
-        log
+        LOG
             .debug("An A No current connection exception from the version manager is normal, if the version manager hasnt been used");
       } catch (Exception ex) {
-        log.debug("Repository Shutdown failed, this may be normal " + ex.getMessage());
+        LOG.debug("Repository Shutdown failed, this may be normal " + ex.getMessage());
       }
       repository = null;
     }
@@ -352,7 +353,7 @@ public class RepositoryBuilder implements InitializationAction {
           reg.getPrefix(e.getValue());
         } catch (NamespaceException nex) {
           try {
-            log.info("Registering Namespage [" + e.getKey() + "] [" + e.getValue() + "]");
+            LOG.info("Registering Namespace [" + e.getKey() + "] [" + e.getValue() + "]");
             reg.registerNamespace(e.getKey(), e.getValue());
           } catch (Exception ex) {
             throw new RuntimeException("Failed to register namespace prefix ("
@@ -370,10 +371,11 @@ public class RepositoryBuilder implements InitializationAction {
         NodeTypeManagerImpl ntm = (NodeTypeManagerImpl) w.getNodeTypeManager();
         ntm.registerNodeTypes(in, "text/xml");
       } catch (Exception ex) {
-        log
-            .info("Exception Loading Types, this is expected for all loads after the first one: "
-                + ex.getMessage()
-                + "(this message is here because Jackrabbit does not give us a good way to detect that the node types are already added)");
+        // Exception Loading Types, this is expected for all loads after the first one:
+        // (this message is here because Jackrabbit does not give us a good way to detect
+        // that the node types are already added)
+        LOG.info("On repository setup: Node types already added - Either: a) not 1st load, or problem: "
+            + ex.getMessage());
       } finally {
         try {
           in.close();

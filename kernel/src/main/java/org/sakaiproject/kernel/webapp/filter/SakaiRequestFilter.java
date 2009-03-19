@@ -57,6 +57,8 @@ import javax.transaction.TransactionManager;
 public class SakaiRequestFilter implements Filter {
   private static final Log LOG = LogFactory.getLog(SakaiRequestFilter.class);
 
+  private static final boolean debug = LOG.isDebugEnabled();
+
   private static final String TIME_REQUEST = "time-requests";
 
   private static final String NO_SESSION = "no-session";
@@ -88,8 +90,8 @@ public class SakaiRequestFilter implements Filter {
     userResolverService = kernelManager.getService(UserResolverService.class);
     transactionManager = kernelManager.getService(TransactionManager.class);
     jcrService = kernelManager.getService(JCRService.class);
-    LOG.info(" SessionManagerService " + sessionManagerService);
-    LOG.info(" Cache Manager Service " + cacheManagerService);
+    LOG.info("Initializing SessionManagerService " + sessionManagerService);
+    LOG.info("Initializing Cache Manager Service " + cacheManagerService);
     noSession = "true".equals(config.getInitParameter(NO_SESSION));
   }
 
@@ -174,7 +176,7 @@ public class SakaiRequestFilter implements Filter {
       wresponse.commitStatus(sessionManagerService);
       cacheManagerService.unbind(CacheScope.REQUEST);
     }
-    if (LOG.isDebugEnabled()) {
+    if (debug) {
       HttpSession hsession = hrequest.getSession(false);
       if (hsession != null && !hsession.getId().equals(requestedSessionID)) {
         LOG.debug("New Session Created with ID " + hsession.getId());
@@ -203,9 +205,11 @@ public class SakaiRequestFilter implements Filter {
         transactionManager.commit();
       }
     } catch (RollbackException e) {
-      LOG.debug(e);
+      if (debug)
+        LOG.debug(e);
     } catch (IllegalStateException e) {
-      LOG.debug(e);
+      if (debug)
+        LOG.debug(e);
     } catch (HeuristicMixedException e) {
       LOG.warn(e);
     } catch (HeuristicRollbackException e) {
@@ -220,7 +224,8 @@ public class SakaiRequestFilter implements Filter {
     try {
       transactionManager.rollback();
     } catch (IllegalStateException e) {
-      LOG.debug(e);
+      if (debug)
+        LOG.debug(e);
     } catch (Exception e) {
       LOG.error(e.getMessage(), e);
     }
