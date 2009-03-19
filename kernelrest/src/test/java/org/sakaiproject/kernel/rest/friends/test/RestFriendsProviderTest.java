@@ -61,7 +61,7 @@ public class RestFriendsProviderTest extends BaseRestUT {
 
   /**
    * Test a bad request
-   * 
+   *
    * @throws ServletException
    * @throws IOException
    * @throws JCRNodeFactoryServiceException
@@ -166,7 +166,7 @@ public class RestFriendsProviderTest extends BaseRestUT {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.rest.test.BaseRestUnitT#setupServices()
    */
   public void createProvider() {
@@ -177,7 +177,7 @@ public class RestFriendsProviderTest extends BaseRestUT {
 
   /**
    * Test a bad request for a non admin user
-   * 
+   *
    * @throws ServletException
    * @throws IOException
    * @throws JCRNodeFactoryServiceException
@@ -214,7 +214,7 @@ public class RestFriendsProviderTest extends BaseRestUT {
 
   /**
    * Test a bad request for a non admin user
-   * 
+   *
    * @throws ServletException
    * @throws IOException
    * @throws JCRNodeFactoryServiceException
@@ -253,7 +253,7 @@ public class RestFriendsProviderTest extends BaseRestUT {
         .anyTimes();
     expect(beanConverter.convertToString(fb)).andReturn("{}").anyTimes();
     expect(beanConverter.convertToString(myFriend)).andReturn("{}").anyTimes();
-    
+
     authzResolverService.setRequestGrant((String) anyObject());
     expectLastCall().atLeastOnce();
     authzResolverService.clearRequestGrant();
@@ -276,7 +276,7 @@ public class RestFriendsProviderTest extends BaseRestUT {
         jcrNodeFactoryService.setInputStream(capture(stringCapture),
             capture(inputStream), capture(stringCapture2))).andReturn(node);
 
-    
+
 
     Capture<Map<String, String>> mapCapture = new Capture<Map<String, String>>();
     expect(beanConverter.convertToString(capture(mapCapture))).andReturn(
@@ -301,7 +301,7 @@ public class RestFriendsProviderTest extends BaseRestUT {
 
   /**
    * Connect to the user
-   * 
+   *
    * @throws ServletException
    * @throws IOException
    * @throws JCRNodeFactoryServiceException
@@ -366,7 +366,7 @@ public class RestFriendsProviderTest extends BaseRestUT {
 
   /**
    * Connect to the user
-   * 
+   *
    * @throws ServletException
    * @throws IOException
    * @throws JCRNodeFactoryServiceException
@@ -415,7 +415,7 @@ public class RestFriendsProviderTest extends BaseRestUT {
 
   /**
    * Connect to the user
-   * 
+   *
    * @throws ServletException
    * @throws IOException
    * @throws JCRNodeFactoryServiceException
@@ -465,7 +465,7 @@ public class RestFriendsProviderTest extends BaseRestUT {
 
   /**
    * Connect to the user
-   * 
+   *
    * @throws ServletException
    * @throws IOException
    * @throws JCRNodeFactoryServiceException
@@ -649,8 +649,8 @@ public class RestFriendsProviderTest extends BaseRestUT {
    * @param strings
    * @param strings2
    * @throws IOException
-   * @throws RepositoryException 
-   * @throws LoginException 
+   * @throws RepositoryException
+   * @throws LoginException
    */
   private void checkFriend(String user, String[] friendUuids,
       String[] friendStatus) throws IOException, LoginException, RepositoryException {
@@ -673,7 +673,7 @@ public class RestFriendsProviderTest extends BaseRestUT {
     Session session = createMock(Session.class);
     expect(jcrService.getSession()).andReturn(session).anyTimes();
 
-    
+
     FriendsBean fb = new FriendsBean(jcrNodeFactoryService, userFactoryService,
         beanConverter, "private");
     expect(friendsResolverService.resolve(user)).andReturn(fb).anyTimes();
