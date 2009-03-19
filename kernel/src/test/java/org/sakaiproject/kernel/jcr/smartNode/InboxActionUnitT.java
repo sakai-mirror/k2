@@ -54,7 +54,6 @@ public class InboxActionUnitT extends SmartNodeHandlerBaseT {
   private static final String INBOX_LABEL = "inbox";
 
   private static Node inboxNode = null;
-  private static String query = null;
 
   protected XpathSmartNodeHandler xpathHandler;
   protected SqlSmartNodeHandler sqlHandler;
@@ -82,14 +81,6 @@ public class InboxActionUnitT extends SmartNodeHandlerBaseT {
       JcrUtils.addNodeLabel(n, INBOX_LABEL);
       in.close();
     }
-
-    // make a smart node that condenses the directories into a single inbox
-    inboxNode = nodeFactory.createFolder(PREFIX + "inbox");
-    query = "/" + PREFIX + "/element(*, " + JCRConstants.NT_FILE + ")[@"
-        + JCRConstants.JCR_LABELS + "='" + INBOX_LABEL + "']";
-    JcrUtils.makeSmartNode(inboxNode, Query.XPATH, query);
-
-    session.save();
   }
 
   @AfterClass
@@ -102,6 +93,10 @@ public class InboxActionUnitT extends SmartNodeHandlerBaseT {
   public void setUp() throws Exception {
     super.setUp();
 
+    // make a smart node that condenses the directories into a single inbox
+    inboxNode = nodeFactory.createFolder(PREFIX + "inbox");
+    session.save();
+
     xpathHandler = new XpathSmartNodeHandler(registryService, jcrService);
     sqlHandler = new SqlSmartNodeHandler(registryService, jcrService);
   }
@@ -110,10 +105,17 @@ public class InboxActionUnitT extends SmartNodeHandlerBaseT {
   @After
   public void tearDown() throws Exception {
     super.tearDown();
+
+    inboxNode.remove();
+    session.save();
   }
 
   @Test
-  public void testInboxActions() throws Exception {
+  public void inboxByXpath() throws Exception {
+    String query = "/" + PREFIX + "/element(*, " + JCRConstants.NT_FILE + ")[@"
+        + JCRConstants.JCR_LABELS + "='" + INBOX_LABEL + "']";
+    JcrUtils.makeSmartNode(inboxNode, Query.XPATH, query);
+    session.save();
 
     xpathHandler.handle(request, response, inboxNode, query);
 
@@ -126,6 +128,24 @@ public class InboxActionUnitT extends SmartNodeHandlerBaseT {
     Assert.assertEquals(7, jsonArray.size());
 
     // get the items in inbox and verify them
+  }
+
+  @Test
+  public void inboxBySql() throws Exception {
+    String query = "select * from nt:base where jcr:path like '" + PREFIX
+        + "%' and " + JCRConstants.JCR_LABELS + " = '" + INBOX_LABEL + "'";
+    JcrUtils.makeSmartNode(inboxNode, Query.XPATH, query);
+    session.save();
+
+    sqlHandler.handle(request, response, inboxNode, query);
+
+    String json = outputStream.toString();
+    System.err.println("Results: " + json);
+
+    JSONArray jsonArray = JSONArray.fromObject(json);
+
+    // get a count of the items in inbox and verify it
+    Assert.assertEquals(7, jsonArray.size());
   }
 
   @Ignore
