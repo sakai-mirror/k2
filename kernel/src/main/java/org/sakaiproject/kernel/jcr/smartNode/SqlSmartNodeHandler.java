@@ -19,12 +19,20 @@ package org.sakaiproject.kernel.jcr.smartNode;
 
 import com.google.inject.Inject;
 
+import net.sf.json.JSONArray;
+
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.SmartNodeHandler;
 
+import java.io.IOException;
+
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * SQL handler for smart folder actions.
@@ -62,4 +70,16 @@ public class SqlSmartNodeHandler extends JcrSmartNodeHandler {
     return 0;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @see org.sakaiproject.kernel.api.jcr.SmartNodeHandler#handle(javax.servlet.http.HttpServletRequest,
+   *      javax.servlet.http.HttpServletResponse, javax.jcr.Node,
+   *      java.lang.String)
+   */
+  public void handle(HttpServletRequest request, HttpServletResponse response,
+      Node node, String statement) throws RepositoryException, IOException {
+    JSONArray jsonArray = performQuery(Query.SQL, statement);
+    writeUtf8(response, jsonArray);
+  }
 }

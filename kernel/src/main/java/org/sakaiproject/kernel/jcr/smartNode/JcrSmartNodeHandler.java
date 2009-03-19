@@ -24,6 +24,7 @@ import org.sakaiproject.kernel.api.jcr.SmartNodeHandler;
 import org.sakaiproject.kernel.util.JCRNodeMap;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -32,7 +33,6 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -50,12 +50,11 @@ public abstract class JcrSmartNodeHandler implements SmartNodeHandler {
    *
    * @see org.sakaiproject.kernel.api.jcr.SmartNodeHandler#handle(javax.jcr.Node)
    */
-  public void handle(HttpServletRequest request, HttpServletResponse response,
-      Node node, String statement) throws RepositoryException, IOException {
+  protected JSONArray performQuery(String language, String statement)
+      throws RepositoryException {
     // handle statement by calling the JCR query manager.
-
     QueryManager qm = jcrService.getQueryManager();
-    Query query = qm.createQuery(statement, Query.XPATH);
+    Query query = qm.createQuery(statement, language);
     QueryResult result = query.execute();
     NodeIterator nodes = result.getNodes();
     JSONArray jsonArray = new JSONArray();
@@ -66,6 +65,11 @@ public abstract class JcrSmartNodeHandler implements SmartNodeHandler {
       // JSONObject jsonObject = JSONObject.fromObject(nodeMap);
       // jsonArray.add(jsonObject);
     }
+    return jsonArray;
+  }
+
+  protected void writeUtf8(HttpServletResponse response, JSONArray jsonArray)
+      throws UnsupportedEncodingException, IOException {
     byte[] b = jsonArray.toString().getBytes("UTF-8");
     response.setContentType("text/plain;charset=UTF-8");
     response.setContentLength(b.length);

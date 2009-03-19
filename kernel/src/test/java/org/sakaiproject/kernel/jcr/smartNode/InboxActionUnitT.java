@@ -27,6 +27,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.kernel.api.rest.RestProvider;
@@ -55,31 +56,12 @@ public class InboxActionUnitT extends SmartNodeHandlerBaseT {
   private static Node inboxNode = null;
   private static String query = null;
 
-  protected XpathSmartNodeHandler handler;
+  protected XpathSmartNodeHandler xpathHandler;
+  protected SqlSmartNodeHandler sqlHandler;
 
   @BeforeClass
   public static void beforeThisClass() throws Exception {
     SmartNodeHandlerBaseT.beforeClass();
-
-    // shutdown = KernelIntegrationBase.beforeClass();
-    //
-    // // get some services
-    //
-    // KernelManager km = new KernelManager();
-    // Kernel kernel = km.getKernel();
-    // AuthzResolverService authzResolverService = kernel
-    // .getService(AuthzResolverService.class);
-    // JCRNodeFactoryService jcrNodeFactoryService = kernel
-    // .getService(JCRNodeFactoryService.class);
-    // jcrService = kernel.getService(JCRService.class);
-    //
-    // // bypass security
-    // authzResolverService.setRequestGrant("Populating Test JSON");
-    //
-    // // login to the repo with super admin
-    // SakaiJCRCredentials credentials = new SakaiJCRCredentials();
-    // Session session = jcrService.getRepository().login(credentials);
-    // jcrService.setSession(session);
 
     // make a couple of directories with messages in them
     LOG.info("Creating test messages.");
@@ -107,9 +89,6 @@ public class InboxActionUnitT extends SmartNodeHandlerBaseT {
         + JCRConstants.JCR_LABELS + "='" + INBOX_LABEL + "']";
     JcrUtils.makeSmartNode(inboxNode, Query.XPATH, query);
 
-    // // clear the security bypass
-    // authzResolverService.clearRequestGrant();
-
     session.save();
   }
 
@@ -123,7 +102,8 @@ public class InboxActionUnitT extends SmartNodeHandlerBaseT {
   public void setUp() throws Exception {
     super.setUp();
 
-    handler = new XpathSmartNodeHandler(registryService, jcrService);
+    xpathHandler = new XpathSmartNodeHandler(registryService, jcrService);
+    sqlHandler = new SqlSmartNodeHandler(registryService, jcrService);
   }
 
   @Override
@@ -135,7 +115,7 @@ public class InboxActionUnitT extends SmartNodeHandlerBaseT {
   @Test
   public void testInboxActions() throws Exception {
 
-    handler.handle(request, response, inboxNode, query);
+    xpathHandler.handle(request, response, inboxNode, query);
 
     String json = outputStream.toString();
     System.err.println("Results: " + json);
@@ -146,5 +126,13 @@ public class InboxActionUnitT extends SmartNodeHandlerBaseT {
     Assert.assertEquals(7, jsonArray.size());
 
     // get the items in inbox and verify them
+  }
+
+  @Ignore
+  // count is not available in JCR
+  public void inboxCount() throws Exception {
+    String statement = "select count() from nt:file where jcr:path like "
+        + prefix + "%";
+    sqlHandler.handle(request, response, inboxNode, statement);
   }
 }
