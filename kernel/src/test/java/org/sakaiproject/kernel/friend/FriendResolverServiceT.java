@@ -57,7 +57,6 @@ import org.sakaiproject.kernel.webapp.SakaiServletRequest;
 import org.sakaiproject.kernel.webapp.test.InternalUser;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Random;
 
 import javax.jcr.LoginException;
 import javax.jcr.RepositoryException;
@@ -160,7 +159,7 @@ public class FriendResolverServiceT {
     response.addCookie((Cookie) anyObject());
     expectLastCall().anyTimes();
     /*
-     * 
+     *
      * expect(request.getRemoteUser()).andReturn("").anyTimes();
      * expect(request.getAttribute("_uuid")).andReturn(null).anyTimes();
      */
@@ -240,7 +239,7 @@ public class FriendResolverServiceT {
     assertFalse(hasFriend(myFriend,me));
     verify(request, response, session);
   }
-  
+
 
   /**
    * @param me
@@ -254,9 +253,9 @@ public class FriendResolverServiceT {
   /**
    * @param me
    * @param myFriend
-   * @throws RepositoryException 
-   * @throws JCRNodeFactoryServiceException 
-   * @throws UnsupportedEncodingException 
+   * @throws RepositoryException
+   * @throws JCRNodeFactoryServiceException
+   * @throws UnsupportedEncodingException
    */
   private void cancleConnect(String me, String myFriend) throws UnsupportedEncodingException, JCRNodeFactoryServiceException, RepositoryException {
     FriendsBean myFriends = friendResolverService.resolve(me);
@@ -282,9 +281,9 @@ public class FriendResolverServiceT {
   /**
    * @param string
    * @param string2
-   * @throws RepositoryException 
-   * @throws JCRNodeFactoryServiceException 
-   * @throws UnsupportedEncodingException 
+   * @throws RepositoryException
+   * @throws JCRNodeFactoryServiceException
+   * @throws UnsupportedEncodingException
    */
   private void acceptConnect(String me, String myFriend) throws UnsupportedEncodingException, JCRNodeFactoryServiceException, RepositoryException {
     FriendsBean myFriends = friendResolverService.resolve(me);
@@ -311,9 +310,9 @@ public class FriendResolverServiceT {
   /**
    * @param string
    * @param string2
-   * @throws RepositoryException 
-   * @throws JCRNodeFactoryServiceException 
-   * @throws UnsupportedEncodingException 
+   * @throws RepositoryException
+   * @throws JCRNodeFactoryServiceException
+   * @throws UnsupportedEncodingException
    */
   private void requestConnection(String me, String myFriend) throws UnsupportedEncodingException, JCRNodeFactoryServiceException, RepositoryException {
     FriendsBean myFriends = friendResolverService.resolve(me);

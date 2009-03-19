@@ -197,7 +197,7 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
     this.friendsResolverService = friendsResolverService;
     this.userFactoryService = userFactoryService;
   }
-  
+
   /**
    * {@inheritDoc}
    * @see org.sakaiproject.kernel.webapp.Initialisable#init()
@@ -209,12 +209,12 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
    * @see org.sakaiproject.kernel.webapp.Initialisable#destroy()
    */
   public void destroy() {
-    registry.remove(this);    
+    registry.remove(this);
   }
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.RestProvider#dispatch(java.lang.String[],
    *      javax.servlet.http.HttpServletRequest,
    *      javax.servlet.http.HttpServletResponse)
@@ -552,7 +552,7 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
   }
 
   /**
-   * 
+   *
    */
   private void doRequestError() {
     throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST);
@@ -560,7 +560,7 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.RestProvider#getDescription()
    */
   public RestDescription getDescription() {
@@ -569,7 +569,7 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Provider#getKey()
    */
   public String getKey() {
@@ -578,7 +578,7 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Provider#getPriority()
    */
   public int getPriority() {

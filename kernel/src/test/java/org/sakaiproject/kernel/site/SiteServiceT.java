@@ -120,12 +120,12 @@ public class SiteServiceT {
   public static void afterClass() {
     KernelIntegrationBase.afterClass(shutdown);
   }
-  
+
   @Before
   public void beforeTest() {
     assertFalse(jcrService.hasActiveSession());
   }
-  
+
   @After
   public void afterTest() {
     try {
@@ -136,7 +136,7 @@ public class SiteServiceT {
       e.printStackTrace();
     }
   }
-  
+
 
   private void setupUser(String username) {
     request = createMock(HttpServletRequest.class);
@@ -164,7 +164,7 @@ public class SiteServiceT {
     response.addCookie((Cookie) anyObject());
     expectLastCall().anyTimes();
     /*
-     * 
+     *
      * expect(request.getRemoteUser()).andReturn("").anyTimes();
      * expect(request.getAttribute("_uuid")).andReturn(null).anyTimes();
      */
@@ -247,7 +247,7 @@ public class SiteServiceT {
   @Test
   public void getSite() throws SiteException, AccessDeniedException, ItemExistsException, ConstraintViolationException, InvalidItemStateException, VersionException, LockException, NoSuchNodeTypeException, LoginException, RepositoryException {
     assertFalse(jcrService.hasActiveSession());
-    
+
     jcrService.loginSystem();
     setupUser("testUser1");
     replay(request, response, session);
@@ -264,12 +264,12 @@ public class SiteServiceT {
     site.setRoles(roles);
 
     site.save();
-    
+
     jcrService.getSession().save();
     jcrService.logout();
-    
+
     assertFalse(jcrService.hasActiveSession());
-    
+
     SiteBean siteGet = siteService.getSite(sitePath);
     assertNotNull("Site not found when searching.", siteGet);
     assertEquals(siteGet.getId(), site.getId());
@@ -308,7 +308,7 @@ public class SiteServiceT {
 
     verify(request, response, session);
   }
-  
+
   @Test
   public void findSiteById() throws SiteException, AccessDeniedException, ItemExistsException, ConstraintViolationException, InvalidItemStateException, VersionException, LockException, NoSuchNodeTypeException, LoginException, RepositoryException {
     setupUser("admin");
@@ -326,9 +326,9 @@ public class SiteServiceT {
     site.setRoles(roles);
 
     site.save();
-    
+
     jcrService.getSession().save();
-    
+
     SiteBean siteBean = null;
     long sleep = 50;
     for ( int i = 0; i < 10; i++ ) {
@@ -351,7 +351,7 @@ public class SiteServiceT {
 
     verify(request, response, session);
   }
-  
+
   @Test
   public void getMemberList() throws SiteException, AccessDeniedException,
       ItemExistsException, ConstraintViolationException, InvalidItemStateException,
@@ -372,7 +372,7 @@ public class SiteServiceT {
     site.setRoles(roles);
 
     site.save();
-    
+
 
     for (int i = 1; i < 6; i++) {
       userEnvironmentResolverService.addMembership("user"+i, site.getId(),
@@ -381,15 +381,15 @@ public class SiteServiceT {
 
     jcrService.getSession().save();
     Thread.sleep(1000);
-    
-    
-    
+
+
+
     Map<String, Object> memebrList  = siteService.getMemberList(sitePath, null);
-    
+
 
     verify(request, response, session);
   }
-  
+
 
   private String generateSitePath() {
     String siteBase = "/testSite/";
