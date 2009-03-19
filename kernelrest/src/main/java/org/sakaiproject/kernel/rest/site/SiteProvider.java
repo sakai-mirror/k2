@@ -36,7 +36,6 @@ import org.sakaiproject.kernel.api.site.SiteService;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.model.SiteBean;
-import org.sakaiproject.kernel.model.UserEnvironmentBean;
 import org.sakaiproject.kernel.util.PathUtils;
 import org.sakaiproject.kernel.util.StringUtils;
 import org.sakaiproject.kernel.util.rest.CollectionOptions;
@@ -46,11 +45,8 @@ import org.sakaiproject.kernel.util.user.AnonUser;
 import org.sakaiproject.kernel.webapp.Initialisable;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -574,7 +570,6 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
   public String list(@PathParam(SITE_PATH_PARAM) String path,
       MultivaluedMap<String, String> requestParameters) {
     path = PathUtils.normalizePath(path);
-    User user = getAuthenticatedUser();
     if (siteService.siteExists(path)) {
 
       CollectionOptions collectionOptions = new CollectionOptions(requestParameters);

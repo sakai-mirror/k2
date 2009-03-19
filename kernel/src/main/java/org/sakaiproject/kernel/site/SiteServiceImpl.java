@@ -18,6 +18,7 @@
 
 package org.sakaiproject.kernel.site;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -25,7 +26,6 @@ import com.google.inject.name.Named;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.poi.hssf.record.formula.MemErrPtg;
 import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
@@ -35,7 +35,6 @@ import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.site.SiteException;
 import org.sakaiproject.kernel.api.site.SiteService;
-import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.model.GroupMembershipBean;
@@ -45,6 +44,7 @@ import org.sakaiproject.kernel.model.UserEnvironmentBean;
 import org.sakaiproject.kernel.util.IOUtils;
 import org.sakaiproject.kernel.util.JpaUtils;
 import org.sakaiproject.kernel.util.MapUtils;
+import org.sakaiproject.kernel.util.PathUtils;
 import org.sakaiproject.kernel.util.StringUtils;
 import org.sakaiproject.kernel.util.rest.CollectionOptions;
 
@@ -84,8 +84,6 @@ public class SiteServiceImpl implements SiteService {
 
   private UserEnvironmentResolverService userEnvironmentResolverService;
 
-  private UserResolverService userResolverService;
-
   private Injector injector;
 
   @Inject
@@ -95,8 +93,7 @@ public class SiteServiceImpl implements SiteService {
       @Named(KernelConstants.JCR_SITE_TEMPLATES) String siteTemplates,
       @Named(KernelConstants.JCR_SITE_DEFAULT_TEMPLATE) String defaultTemplate,
       EntityManager entityManager,
-      UserEnvironmentResolverService userEnvironmentResolverService,
-      UserResolverService userResolverService, Injector injector) {
+      UserEnvironmentResolverService userEnvironmentResolverService, Injector injector) {
     this.jcrNodeFactoryService = jcrNodeFactoryService;
     this.beanConverter = beanConverter;
     this.sessionManagerService = sessionManagerService;
@@ -105,7 +102,6 @@ public class SiteServiceImpl implements SiteService {
     this.authzResolverService = authzResolverService;
     this.entityManager = entityManager;
     this.userEnvironmentResolverService = userEnvironmentResolverService;
-    this.userResolverService = userResolverService;
     this.injector = injector;
   }
 
@@ -153,8 +149,11 @@ public class SiteServiceImpl implements SiteService {
     findById.setMaxResults(1);
     List<?> results = findById.getResultList();
     if (results.size() > 0) {
-      String path = (String) results.get(0);
-      return getSite(path);
+      SiteIndexBean index = (SiteIndexBean) results.get(0);
+      String sitePath = PathUtils.getParentReference(PathUtils.getParentReference(index
+          .getRef()));
+      System.err.println("Loading " + sitePath);
+      return getSite(sitePath);
     }
     return null;
   }
@@ -331,9 +330,11 @@ public class SiteServiceImpl implements SiteService {
   public Map<String, Object> getMemberList(String path,
       CollectionOptions collectionOptions) {
 
+    SiteBean siteBean = getSite(path);
+
     List<GroupMembershipBean> results = JpaUtils.getResultList(entityManager,
         "select g from GroupMembershipBean g where g.groupId = :groupId ", "g.",
-        collectionOptions);
+        ImmutableMap.of("groupId", (Object)siteBean.getId()), collectionOptions);
 
     Map<String, Object> resultMap = Maps.newLinkedHashMap();
     for (GroupMembershipBean gmb : results) {

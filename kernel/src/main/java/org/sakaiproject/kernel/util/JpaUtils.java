@@ -24,6 +24,7 @@ import org.sakaiproject.kernel.util.rest.CollectionOptions.SortOption;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -35,6 +36,7 @@ public class JpaUtils {
 
   /**
    * Get a paged, sorted, result list
+   * 
    * @param entityManager
    * @param sql
    * @param prefix
@@ -43,29 +45,45 @@ public class JpaUtils {
    */
   @SuppressWarnings("unchecked")
   public static <T> List<T> getResultList(EntityManager entityManager, String sql,
-      String prefix, CollectionOptions collectionOptions) {
+      String prefix, Map<String, Object> parameters, CollectionOptions collectionOptions) {
     StringBuilder queryText = new StringBuilder(sql);
-    int i = 0;
-    for ( FilterOption fo : collectionOptions.getFilterOptions() ) {
-      if ( i != 0 ) {
-        queryText.append(" and ");
+    if (collectionOptions != null) {
+      int i = 0;
+      for (FilterOption fo : collectionOptions.getFilterOptions()) {
+        if (i != 0) {
+          queryText.append(" and ");
+        } else {
+          queryText.append(" where ");
+        }
+        queryText.append(prefix).append(fo.getFilterBy()).append(" ").append(
+            fo.getFilterOp()).append(" :fb").append(i++);
       }
-      queryText.append(prefix).append(fo.getFilterBy()).append(" ").append(fo.getFilterOp()).append(" :fb").append(i++);
-    }
-    i = 0;
-    for ( SortOption fo : collectionOptions.getSortOptions() ) {
-      if ( i != 0 ) {
-        queryText.append(", ");
-      } else {
-        queryText.append(" order by ");
+      i = 0;
+      for (SortOption fo : collectionOptions.getSortOptions()) {
+        if (i != 0) {
+          queryText.append(", ");
+        } else {
+          queryText.append(" order by ");
+        }
+        queryText.append(prefix).append(fo.getField()).append(" ").append(
+            fo.getDirection());
       }
-      queryText.append(prefix).append(fo.getField()).append(" ").append(fo.getDirection());
+
     }
-    
     Query q = entityManager.createQuery(queryText.toString());
-    PagingOptions pagingOptions = collectionOptions.getPagingOptions();
-    q.setFirstResult(pagingOptions.getStartIndex());
-    q.setMaxResults(pagingOptions.getCount());    
+    if (collectionOptions == null) {
+      q.setFirstResult(0);
+      q.setMaxResults(10);
+    } else {
+      PagingOptions pagingOptions = collectionOptions.getPagingOptions();
+      q.setFirstResult(pagingOptions.getStartIndex());
+      q.setMaxResults(pagingOptions.getCount());
+    }
+    if ( parameters != null ) {
+      for ( Entry<String, Object> param : parameters.entrySet() ) {
+        q.setParameter(param.getKey(), param.getValue());
+      }
+    }
     return (List<T>) q.getResultList();
   }
 

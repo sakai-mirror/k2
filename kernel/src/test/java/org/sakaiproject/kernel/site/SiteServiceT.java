@@ -43,6 +43,7 @@ import org.sakaiproject.kernel.api.site.SiteException;
 import org.sakaiproject.kernel.api.site.SiteService;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.user.UserResolverService;
+import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.model.RoleBean;
 import org.sakaiproject.kernel.model.SiteBean;
 import org.sakaiproject.kernel.session.SessionImpl;
@@ -50,6 +51,7 @@ import org.sakaiproject.kernel.test.KernelIntegrationBase;
 import org.sakaiproject.kernel.webapp.SakaiServletRequest;
 import org.sakaiproject.kernel.webapp.test.InternalUser;
 
+import java.util.Map;
 import java.util.Random;
 
 import javax.jcr.AccessDeniedException;
@@ -80,6 +82,7 @@ public class SiteServiceT {
   private static UserResolverService userRes;
   private static JCRNodeFactoryService jcrNodeFactoryService;
   private static JCRService jcrService;
+  private static UserEnvironmentResolverService userEnvironmentResolverService;
 
   private HttpServletRequest request;
   private HttpServletResponse response;
@@ -106,6 +109,9 @@ public class SiteServiceT {
     KernelIntegrationBase.checkNotNull(jcrNodeFactoryService);
     jcrService = kernel.getService(JCRService.class);
     KernelIntegrationBase.checkNotNull(jcrService);
+
+    userEnvironmentResolverService = kernel.getService(UserEnvironmentResolverService.class);
+    KernelIntegrationBase.checkNotNull(userEnvironmentResolverService);
 
 
   }
@@ -302,6 +308,88 @@ public class SiteServiceT {
 
     verify(request, response, session);
   }
+  
+  @Test
+  public void findSiteById() throws SiteException, AccessDeniedException, ItemExistsException, ConstraintViolationException, InvalidItemStateException, VersionException, LockException, NoSuchNodeTypeException, LoginException, RepositoryException {
+    setupUser("admin");
+    replay(request, response, session);
+    String sitePath = generateSitePath();
+    SiteBean site = siteService.createSite(sitePath, "project");
+    site.setName("Test Site");
+    site.setDescription("Site for unit testing");
+    site.setType("project");
+
+    RoleBean[] roles = new RoleBean[1];
+    roles[0] = new RoleBean();
+    roles[0].setName("admin");
+    roles[0].setPermissions(new String[] { "read", "write", "delete" });
+    site.setRoles(roles);
+
+    site.save();
+    
+    jcrService.getSession().save();
+    
+    SiteBean siteBean = null;
+    long sleep = 50;
+    for ( int i = 0; i < 10; i++ ) {
+      siteBean = siteService.getSiteById(site.getId());
+      if ( siteBean == null ) {
+        try {
+          Thread.sleep(sleep);
+        } catch (InterruptedException e) {
+        }
+        sleep = sleep * 2;
+      } else {
+        break;
+      }
+    }
+
+    assertNotNull(siteBean);
+    assertEquals(site.getId(), siteBean.getId());
+    assertEquals(site.getName(), siteBean.getName());
+    assertEquals(site.getDescription(), siteBean.getDescription());
+
+    verify(request, response, session);
+  }
+  
+  @Test
+  public void getMemberList() throws SiteException, AccessDeniedException,
+      ItemExistsException, ConstraintViolationException, InvalidItemStateException,
+      VersionException, LockException, NoSuchNodeTypeException, LoginException,
+      RepositoryException, InterruptedException {
+    setupUser("admin");
+    replay(request, response, session);
+    String sitePath = generateSitePath();
+    SiteBean site = siteService.createSite(sitePath, "project");
+    site.setName("Test Site");
+    site.setDescription("Site for unit testing");
+    site.setType("project");
+
+    RoleBean[] roles = new RoleBean[1];
+    roles[0] = new RoleBean();
+    roles[0].setName("admin");
+    roles[0].setPermissions(new String[] { "read", "write", "delete" });
+    site.setRoles(roles);
+
+    site.save();
+    
+
+    for (int i = 1; i < 6; i++) {
+      userEnvironmentResolverService.addMembership("user"+i, site.getId(),
+          "access");
+    }
+
+    jcrService.getSession().save();
+    Thread.sleep(1000);
+    
+    
+    
+    Map<String, Object> memebrList  = siteService.getMemberList(sitePath, null);
+    
+
+    verify(request, response, session);
+  }
+  
 
   private String generateSitePath() {
     String siteBase = "/testSite/";
