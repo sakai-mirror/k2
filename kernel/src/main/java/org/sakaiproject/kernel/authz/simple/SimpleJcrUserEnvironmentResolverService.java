@@ -366,12 +366,6 @@ public class SimpleJcrUserEnvironmentResolverService implements
       jcrNodeFactoryService.setOwner(userFactoryService.getUserPrivatePath(u.getUuid()),u.getUuid());
       jcrNodeFactoryService.setOwner(userFactoryService.getUserSharedPrivatePath(u.getUuid()),u.getUuid());
 
-      // make the private and shares spaces for the user owned by this used.
-      jcrNodeFactoryService.setOwner(userFactoryService.getUserPrivatePath(u.getUuid()),
-          u.getUuid());
-      jcrNodeFactoryService.setOwner(userFactoryService.getUserSharedPrivatePath(u
-          .getUuid()), u.getUuid());
-
       userEnvironmentBean.seal();
       return userEnvironmentBean;
 
