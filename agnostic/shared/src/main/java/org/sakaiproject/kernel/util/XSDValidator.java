@@ -71,10 +71,11 @@ public class XSDValidator {
     final StringBuilder errors = new StringBuilder();
     try {
       SchemaFactory schemaFactory = SchemaFactory.newInstance(W3C_XML_SCHEMA);
-      Schema s = schemaFactory.newSchema(new StreamSource(schema));      
+      Schema s = schemaFactory.newSchema(new StreamSource(schema));
       Validator validator = s.newValidator();
       validator.validate(new StreamSource(xml));
     } catch (IOException e) {
+      errors.append(e.getMessage()).append("\n");
     } catch (SAXException e) {
       errors.append(e.getMessage()).append("\n");
     }

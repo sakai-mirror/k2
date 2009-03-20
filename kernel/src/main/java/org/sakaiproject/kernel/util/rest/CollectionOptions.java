@@ -32,7 +32,7 @@ public class CollectionOptions {
     asc(), desc();
   }
 
-  public class SortOption {
+  public static class SortOption {
     private String field;
     private SortOrder direction;
 
@@ -59,7 +59,7 @@ public class CollectionOptions {
     }
   }
 
-  public class PagingOptions {
+  public static class PagingOptions {
     private int startIndex;
     private int count;
     private int end;
@@ -109,7 +109,7 @@ public class CollectionOptions {
     }
   }
 
-  public class FilterOption {
+  public static class FilterOption {
     private String filterBy;
     private String filterValue;
     private String filterOp;
@@ -257,11 +257,11 @@ public class CollectionOptions {
   public List<SortOption> getSortOptions() {
     return sortOptions;
   }
-  
+
   public void addSortOption(String field, SortOrder order) {
     sortOptions.add(new SortOption(field,order));
   }
-  
+
   public void addFilterOption(String filterBy, String filterOp, String filterValue) {
     filterOptions.add(new FilterOption(filterBy,filterOp,filterValue));
   }

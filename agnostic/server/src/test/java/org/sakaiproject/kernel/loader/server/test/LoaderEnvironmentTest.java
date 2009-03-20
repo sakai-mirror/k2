@@ -30,16 +30,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 
 /**
- * 
+ *
  */
 public class LoaderEnvironmentTest {
-
 
   /**
    * Test method for
    * {@link org.sakaiproject.kernel.loader.server.LoaderEnvironment#getLifecyleClass(java.lang.ClassLoader)}
    * .
-   * 
+   *
    * @throws ClassNotFoundException
    */
   @Test
@@ -55,7 +54,7 @@ public class LoaderEnvironmentTest {
    * Test method for
    * {@link org.sakaiproject.kernel.loader.server.LoaderEnvironment#getLifecyleClass(java.lang.ClassLoader)}
    * .
-   * 
+   *
    * @throws ClassNotFoundException
    * @throws IOException
    * @throws NoSuchMethodException
@@ -70,15 +69,19 @@ public class LoaderEnvironmentTest {
       IllegalArgumentException, IllegalAccessException,
       InvocationTargetException {
     File f = new File("target/test-classes/loader.properties");
-    f.getParentFile().mkdirs();
-    Properties p = new Properties();
-    p.setProperty(LoaderEnvironment.SYS_LIFECYCLE_PROPERTY,
-        SwitchedClassLoader.class.getName());
-    FileOutputStream fo = new FileOutputStream(f);
-    p.store(fo, "Just for testing");
-    fo.close(); 
-    assertNotNull(LoaderEnvironment.getLifecyleClass(this.getClass().getClassLoader()));
-    f.delete();
+    if (f.getParentFile().mkdirs()) {
+      Properties p = new Properties();
+      p.setProperty(LoaderEnvironment.SYS_LIFECYCLE_PROPERTY,
+          SwitchedClassLoader.class.getName());
+      FileOutputStream fo = new FileOutputStream(f);
+      p.store(fo, "Just for testing");
+      fo.close();
+      assertNotNull(LoaderEnvironment.getLifecyleClass(this.getClass()
+          .getClassLoader()));
+      if (!f.delete()) {
+        System.err.println("Unable to delete " + f.getAbsolutePath());
+      }
+    }
   }
 
 }

@@ -44,7 +44,7 @@ public class JcrUtilsT {
   private static boolean shutdown;
   private static Session session;
 
-  private final String randomFile1 = "/userenv/test/random1.file";
+  private static final String randomFile1 = "/userenv/test/random1.file";
 
   private Node node;
 

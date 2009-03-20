@@ -53,7 +53,7 @@ public class InboxActionUnitT extends SmartNodeHandlerBaseT {
       "2009/01/msg3.json" };
   private static final String INBOX_LABEL = "inbox";
 
-  private static Node inboxNode = null;
+  private Node inboxNode = null;
 
   protected XpathSmartNodeHandler xpathHandler;
   protected SqlSmartNodeHandler sqlHandler;

@@ -116,7 +116,7 @@ public abstract class SmartNodeHandlerBaseT {
 
     @Override
     public String toString() {
-      String s = null;
+      String s = "";
       try {
         s = new String(outputStream.toByteArray(), "UTF-8");
       } catch (UnsupportedEncodingException e) {

@@ -70,7 +70,7 @@ import javax.servlet.http.HttpServletResponse;
  * will be a single value property to start with, but if later (including in the
  * same request) it is converted into a list.</li>
  * </ul>
- * 
+ *
  */
 public class JCRPropertiesFunction extends JCRSDataFunction {
   private static final String KEY = "pr";
@@ -135,7 +135,7 @@ public class JCRPropertiesFunction extends JCRSDataFunction {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.sakaiproject.sdata.tool.api.SDataFunction#call(org.sakaiproject.sdata
    * .tool.api.Handler, javax.servlet.http.HttpServletRequest,
@@ -172,7 +172,8 @@ public class JCRPropertiesFunction extends JCRSDataFunction {
       for (int i = 0; i < names.length; i++) {
         Node node = target;
         if (items.length == names.length
-            && JCRConstants.NT_FOLDER.equals(target.getPrimaryNodeType())) {
+            && JCRConstants.NT_FOLDER.equals(target.getPrimaryNodeType()
+                .toString())) {
           node = node.getNode(items[i]);
         }
         switch (Action.valueOf(actions[i])) {
@@ -246,7 +247,7 @@ public class JCRPropertiesFunction extends JCRSDataFunction {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.sdata.tool.api.SDataFunction#getKey()
    */
   public String getKey() {
@@ -255,7 +256,7 @@ public class JCRPropertiesFunction extends JCRSDataFunction {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.sdata.tool.api.SDataFunction#getDescription()
    */
   public RestDescription getDescription() {

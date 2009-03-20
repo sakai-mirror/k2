@@ -28,6 +28,7 @@ import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
 import org.sakaiproject.kernel.jcr.api.JcrContentListener;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.jcr.LoginException;
@@ -106,9 +107,10 @@ public class JcrContentListenerAdapter implements EventListener, EventRegistrati
           }
         } catch (Exception rex) {
 	  LOG.error("Exception firing event.");
-          if (debug)
+          if (debug) {
             LOG.debug("Cause: " + rex.getMessage());
-	  LOG.trace("Trace: " + rex.getStackTrace().toString());
+          }
+	  LOG.trace("Trace: " + Arrays.toString(rex.getStackTrace()));
         }
       }
 

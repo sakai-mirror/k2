@@ -18,6 +18,9 @@
 
 package org.sakaiproject.webappsample;
 
+import org.sakaiproject.kernel.api.rest.Documentable;
+import org.sakaiproject.kernel.util.rest.RestDescription;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -28,9 +31,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
-
-import org.sakaiproject.kernel.api.rest.Documentable;
-import org.sakaiproject.kernel.util.rest.RestDescription;
 
 /**
  * Sample singleton Hello World.
@@ -104,7 +104,7 @@ public class SingletonHelloWorld implements Documentable {
   /**
    * A sample object to be returned by the methods in this resource.
    */
-  public class MyModel {
+  public static class MyModel {
 
     /**
      * The model.
