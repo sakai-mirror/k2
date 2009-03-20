@@ -18,6 +18,8 @@ package org.sakaiproject.kernel.util;
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -28,8 +30,12 @@ import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
-import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
+import org.sakaiproject.kernel.api.locking.Lock;
+import org.sakaiproject.kernel.api.memory.CacheManagerService;
+import org.sakaiproject.kernel.api.memory.CacheScope;
 import org.sakaiproject.kernel.test.KernelIntegrationBase;
+
+import java.util.Random;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
@@ -40,13 +46,17 @@ import javax.jcr.Value;
  *
  */
 public class JcrUtilsT {
+  protected static final Log LOG = LogFactory.getLog(JcrUtilsT.class);
   private static JCRNodeFactoryService nodeFactory;
   private static boolean shutdown;
-  private static Session session;
 
   private static final String randomFile1 = "/userenv/test/random1.file";
 
-  private Node node;
+  private static JCRService jcrService;
+  private int running;
+  private int failed;
+  protected int locked;
+  protected static CacheManagerService cacheManagerService;
 
   @BeforeClass
   public static void beforeThisClass() throws Exception {
@@ -56,23 +66,28 @@ public class JcrUtilsT {
     Kernel kernel = km.getKernel();
     nodeFactory = kernel.getService(JCRNodeFactoryService.class);
 
-    JCRService jcrService = kernel.getService(JCRService.class);
+    jcrService = kernel.getService(JCRService.class);
 
-    // login to the repo with super admin
-    SakaiJCRCredentials credentials = new SakaiJCRCredentials();
-    session = jcrService.getRepository().login(credentials);
-    jcrService.setSession(session);
+    cacheManagerService = kernel.getService(CacheManagerService.class);
+
   }
 
   @Before
   public void setUp() throws Exception {
-    node = nodeFactory.createFile(randomFile1, "text/plain");
+    Session session = jcrService.loginSystem();
+    Node node = nodeFactory.createFile(randomFile1, "text/plain");
+    session.save();
+    jcrService.logout();
   }
 
   @After
   public void tearDown() throws Exception {
+    jcrService.logout();
+    Session session = jcrService.loginSystem();
+    Node node = nodeFactory.getNode(randomFile1);
     node.remove();
     session.save();
+    jcrService.logout();
   }
 
   @AfterClass
@@ -82,6 +97,8 @@ public class JcrUtilsT {
 
   @Test
   public void addLabel() throws Exception {
+    Session session = jcrService.loginSystem();
+    Node node = nodeFactory.getNode(randomFile1);
     JcrUtils.addNodeLabel(node, "test label");
     session.save();
 
@@ -94,6 +111,8 @@ public class JcrUtilsT {
 
   @Test
   public void addMultipleLabels() throws Exception {
+    Session session = jcrService.loginSystem();
+    Node node = nodeFactory.getNode(randomFile1);
     JcrUtils.addNodeLabel(node, "test label");
     JcrUtils.addNodeLabel(node, "another test label");
     session.save();
@@ -108,6 +127,8 @@ public class JcrUtilsT {
 
   @Test
   public void removeLabel() throws Exception {
+    Session session = jcrService.loginSystem();
+    Node node = nodeFactory.getNode(randomFile1);
     JcrUtils.addNodeLabel(node, "test label");
     JcrUtils.addNodeLabel(node, "another test label");
     session.save();
@@ -126,6 +147,8 @@ public class JcrUtilsT {
 
   @Test
   public void removeLabels() throws Exception {
+    Session session = jcrService.loginSystem();
+    Node node = nodeFactory.getNode(randomFile1);
     JcrUtils.addNodeLabel(node, "test label");
     JcrUtils.addNodeLabel(node, "another test label");
     JcrUtils.addNodeLabel(node, "yet another test label");
@@ -155,6 +178,8 @@ public class JcrUtilsT {
 
   @Test
   public void removeLastLabel() throws Exception {
+    Session session = jcrService.loginSystem();
+    Node node = nodeFactory.getNode(randomFile1);
     JcrUtils.addNodeLabel(node, "test label");
     session.save();
 
@@ -168,4 +193,85 @@ public class JcrUtilsT {
     Value[] values = prop.getValues();
     assertEquals(0, values.length);
   }
+
+  @Test
+  public void multiThreadTest() throws Exception {
+    Session session = jcrService.loginSystem();
+    nodeFactory.createFile(randomFile1 + "xyz1", "text/plain");
+    session.save();
+    jcrService.logout();
+    
+    
+    Thread[] threads = new Thread[10];
+    running = 0;
+    failed = 0;
+    for (int i = 0; i < threads.length; i++) {
+      threads[i] = new Thread(new Runnable() {
+
+        public void run() {
+          running++;
+          Random random = new Random();
+          try {
+            for (int j = 0; j < 10; j++) {
+              try {
+                Session session = jcrService.loginSystem();
+                Node node = (Node) session.getItem(randomFile1);
+                Lock lock = jcrService.lock(node);
+                LOG.info("Locked "+lock.getLocked());
+                locked++;
+                assertEquals(1, locked);
+                try {
+                  node.getProperty("sakaijcr:test").remove();
+                } catch (Exception e) {
+
+                }
+                session.save();
+                LOG.info("Unlocking "+lock.getLocked());
+                locked--;
+                assertEquals(0, locked);
+                lock.unlock();
+                Thread.sleep(100);
+                lock = jcrService.lock(node);
+                LOG.info("Locked "+lock.getLocked());
+                locked++;
+                assertEquals(1, locked);
+                node.setProperty("sakaijcr:test", "new value" + random.nextLong());
+                session.save();
+                LOG.info("Unlocking "+lock.getLocked());
+                locked--;
+                assertEquals(0, locked);
+                lock.unlock();
+              } catch (Exception e) {
+                failed++;
+                e.printStackTrace();
+              } finally {
+                try {
+                  jcrService.logout();
+                } catch (Exception e) {
+                  e.printStackTrace();
+                }
+                cacheManagerService.unbind(CacheScope.REQUEST);
+              }
+            }
+          } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+          } finally {
+            System.err.println("Exiting " + Thread.currentThread());
+            running--;
+          }
+        }
+      });
+    }
+    for (int i = 0; i < threads.length; i++) {
+      threads[i].start();
+      Thread.sleep(100);
+    }
+
+    while (running > 0) {
+      Thread.sleep(100);
+    }
+    assertEquals(0, failed);
+  }
+
 }

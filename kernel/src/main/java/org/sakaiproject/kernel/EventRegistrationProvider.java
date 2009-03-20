@@ -25,6 +25,7 @@ import org.sakaiproject.kernel.api.jcr.EventRegistration;
 import org.sakaiproject.kernel.authz.simple.AclListener;
 import org.sakaiproject.kernel.jcr.jackrabbit.JcrContentListenerAdapter;
 import org.sakaiproject.kernel.jcr.jackrabbit.JcrSynchronousContentListenerAdapter;
+import org.sakaiproject.kernel.jcr.jackrabbit.NodeUpdateListener;
 
 import java.util.List;
 
@@ -39,10 +40,10 @@ public class EventRegistrationProvider implements Provider<List<EventRegistratio
    *
    */
   @Inject
-  public EventRegistrationProvider(JcrContentListenerAdapter jcrContentListenerAdapter,
+  public EventRegistrationProvider(NodeUpdateListener nodeUpdateListener, JcrContentListenerAdapter jcrContentListenerAdapter,
       JcrSynchronousContentListenerAdapter jcrSynchronousContentListenerAdapter,
       AclListener aclListener) {
-    eventRegistrations = Lists.immutableList((EventRegistration) aclListener,
+    eventRegistrations = Lists.immutableList((EventRegistration) nodeUpdateListener, aclListener,
         jcrContentListenerAdapter, jcrSynchronousContentListenerAdapter);
   }
 

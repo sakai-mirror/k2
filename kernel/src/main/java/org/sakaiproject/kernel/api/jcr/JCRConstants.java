@@ -220,6 +220,11 @@ public interface JCRConstants {
    * jcr:versionableUuid
    */
   public static final String JCR_VERSIONABLEUUID = "jcr:versionableUuid";
+  
+  public static final String JCR_CREATEDBY = "jcr:createdBy";
+  
+  public static final String JCR_MODIFIEDBY = "jcr:modifiedBy";
+
 
   /**
    * Pseudo property jcr:path used with query results
