@@ -28,6 +28,9 @@ import org.apache.jackrabbit.core.observation.EventImpl;
 import org.sakaiproject.kernel.api.RequiresStop;
 import org.sakaiproject.kernel.api.jcr.EventRegistration;
 import org.sakaiproject.kernel.api.jcr.JCRService;
+import org.sakaiproject.kernel.api.locking.Lock;
+import org.sakaiproject.kernel.api.locking.LockManager;
+import org.sakaiproject.kernel.api.locking.LockTimeoutException;
 import org.sakaiproject.kernel.api.memory.Cache;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
@@ -70,6 +73,11 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
   private Injector injector;
 
   /**
+   * This is the sakai lock manager that does not hit the databse.
+   */
+  private LockManager lockManager;
+
+  /**
    * @throws RepositoryException
    *
    */
@@ -77,12 +85,13 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
   public JCRServiceImpl(RepositoryBuilder repositoryBuilder,
       CacheManagerService cacheManager,
       @Named(JCRService.NAME_REQUEST_SCOPE) boolean requestScope,
-      List<EventRegistration> registrations, Injector injector)
+      List<EventRegistration> registrations, LockManager lockManager, Injector injector)
       throws RepositoryException {
     this.repositoryBuilder = repositoryBuilder;
     this.cacheManager = cacheManager;
     this.requestScope = requestScope;
     this.injector = injector;
+    this.lockManager = lockManager;
   }
 
   /*
@@ -286,5 +295,19 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
   public QueryManager getQueryManager() throws RepositoryException {
     QueryManager queryManager = getSession().getWorkspace().getQueryManager();
     return queryManager;
+  }
+
+  /**
+   * {@inheritDoc}
+   * @throws RepositoryException 
+   * @throws LockTimeoutException 
+   * @see org.sakaiproject.kernel.api.jcr.JCRService#lock(javax.jcr.Node)
+   */
+  public Lock lock(Node node) throws RepositoryException, LockTimeoutException {
+    Node lockable = node;
+    while ( lockable.isNew() ) {
+      lockable = lockable.getParent();
+    }
+    return lockManager.waitForLock(lockable.getUUID());
   }
 }

@@ -42,6 +42,7 @@ import org.sakaiproject.kernel.api.jcr.JCRRegistrationService;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.SmartNodeHandler;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
+import org.sakaiproject.kernel.api.locking.LockManager;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.messaging.EmailMessage;
 import org.sakaiproject.kernel.api.messaging.Message;
@@ -81,6 +82,7 @@ import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SecureSakaiAccessManager;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.StartupActionProvider;
 import org.sakaiproject.kernel.jcr.smartNode.SmartNodeHandlerListProvider;
 import org.sakaiproject.kernel.jcr.support.JCRNodeFactoryServiceImpl;
+import org.sakaiproject.kernel.locking.LockManagerImpl;
 import org.sakaiproject.kernel.memory.CacheManagerServiceImpl;
 import org.sakaiproject.kernel.messaging.EmailMessageImpl;
 import org.sakaiproject.kernel.messaging.JmsSessionProvider;
@@ -146,7 +148,7 @@ public class KernelModule extends AbstractModule {
 
   /**
    * Create the bootstrap module with a kernel and supplied properties.
-   *
+   * 
    * @param kernel
    * @param properties
    */
@@ -157,7 +159,7 @@ public class KernelModule extends AbstractModule {
 
   /**
    * Configure the guice bindings.
-   *
+   * 
    * @see com.google.inject.AbstractModule#configure()
    */
   @Override
@@ -208,8 +210,7 @@ public class KernelModule extends AbstractModule {
     bind(UserResolverService.class).to(ProviderUserResolverService.class).in(
         Scopes.SINGLETON);
 
-    bind(PresenceService.class).to(PresenceServiceImpl.class).in(
-        Scopes.SINGLETON);
+    bind(PresenceService.class).to(PresenceServiceImpl.class).in(Scopes.SINGLETON);
 
     bind(UserEnvironmentResolverService.class).to(
         SimpleJcrUserEnvironmentResolverService.class).in(Scopes.SINGLETON);
@@ -352,7 +353,10 @@ public class KernelModule extends AbstractModule {
     // bring in the outgoing message handler so it can register
     TypeLiteral<List<OutboxNodeHandler>> outboxNodeHandlerList = new TypeLiteral<List<OutboxNodeHandler>>() {
     };
-    bind(outboxNodeHandlerList).toProvider(
-        OutboxNodeHandlerListProvider.class).asEagerSingleton();
+    bind(outboxNodeHandlerList).toProvider(OutboxNodeHandlerListProvider.class)
+        .asEagerSingleton();
+
+    // lock manager
+    bind(LockManager.class).to(LockManagerImpl.class).in(Scopes.SINGLETON);
   }
 }

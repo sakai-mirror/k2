@@ -24,6 +24,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.core.observation.EventImpl;
 import org.sakaiproject.kernel.api.jcr.JCRService;
+import org.sakaiproject.kernel.api.locking.Lock;
+import org.sakaiproject.kernel.api.locking.LockManager;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
 
 import javax.jcr.Credentials;
@@ -52,12 +54,16 @@ public class UnboundJCRServiceImpl implements JCRService {
   private RepositoryBuilder repositoryBuilder = null;
 
   private Credentials repositoryCredentials;
+  /**
+   * This is the sakai lock manager that does not hit the databse.
+   */
+  private LockManager lockManager;
 
   @Inject
   public UnboundJCRServiceImpl(RepositoryBuilder repositoryBuilder,
       @Named(JCRService.NAME_CREDENTIALS) Credentials repositoryCredentials,
-      @Named(JCRService.NAME_REQUEST_SCOPE) boolean requestScope) {
-
+      @Named(JCRService.NAME_REQUEST_SCOPE) boolean requestScope, LockManager lockManager) {
+    this.lockManager = lockManager;
     boolean error = false;
     try {
       if (repositoryBuilder == null) {
@@ -198,4 +204,18 @@ public class UnboundJCRServiceImpl implements JCRService {
     }
     return queryManager;
   }
+  
+  /**
+   * {@inheritDoc}
+   * @throws RepositoryException 
+   * @see org.sakaiproject.kernel.api.jcr.JCRService#lock(javax.jcr.Node)
+   */
+  public Lock lock(Node node) throws RepositoryException {
+    Node lockable = node;
+    while ( lockable.isNew() ) {
+      lockable = lockable.getParent();
+    }
+    return lockManager.getLock(lockable.getUUID());
+  }
+
 }

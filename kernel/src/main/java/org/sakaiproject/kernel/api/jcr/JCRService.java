@@ -18,6 +18,9 @@
 
 package org.sakaiproject.kernel.api.jcr;
 
+import org.sakaiproject.kernel.api.locking.Lock;
+import org.sakaiproject.kernel.api.locking.LockTimeoutException;
+
 import javax.jcr.LoginException;
 import javax.jcr.Node;
 import javax.jcr.Repository;
@@ -157,5 +160,15 @@ public interface JCRService {
    * @return
    */
   QueryManager getQueryManager() throws RepositoryException;
+
+  /**
+   * Locks a node using the <b>Kernel Locking</a> api, returning a lock.
+   * The lock is scoped to the request but will auto expire after time or memory pressure.
+   * @param node the node to be locked
+   * @return the lock bound to this thread
+   * @throws RepositoryException 
+   * @throws LockTimeoutException 
+   */
+  Lock lock(Node node) throws RepositoryException, LockTimeoutException;
 
 }
