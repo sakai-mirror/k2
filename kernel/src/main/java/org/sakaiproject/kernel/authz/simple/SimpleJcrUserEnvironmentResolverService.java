@@ -23,6 +23,7 @@ import com.google.inject.name.Named;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.KernelConstants;
+import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.UpdateFailedException;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
@@ -37,6 +38,7 @@ import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.user.UserFactoryService;
+import org.sakaiproject.kernel.api.user.UserProvisionAgent;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.model.UserEnvironmentBean;
@@ -181,16 +183,19 @@ public class SimpleJcrUserEnvironmentResolverService implements
       LOG.error(e);
     } catch (IOException e) {
       LOG.warn("Failed to read userenv " + userEnvPath + " cause :" + e.getMessage());
-      if (debug)
+      if (debug) {
         LOG.debug(e);
+      }
     } catch (RepositoryException e) {
       LOG.warn("Failed to read userenv for " + userEnvPath + " cause :" + e.getMessage());
-      if (debug)
+      if (debug) {
         LOG.debug(e);
+      }
     } catch (JCRNodeFactoryServiceException e) {
       LOG.warn("Failed to read userenv for " + userEnvPath + " cause :" + e.getMessage());
-      if (debug)
+      if (debug) {
         LOG.debug(e);
+      }
     } finally {
       try {
         in.close();
@@ -213,16 +218,19 @@ public class SimpleJcrUserEnvironmentResolverService implements
       LOG.error(e);
     } catch (IOException e) {
       LOG.warn("Failed to read userenv " + userEnvPath + " cause :" + e.getMessage());
-      if (debug)
+      if (debug) {
         LOG.debug(e);
+      }
     } catch (RepositoryException e) {
       LOG.warn("Failed to read userenv for " + userEnvPath + " cause :" + e.getMessage());
-      if (debug)
+      if (debug) {
         LOG.debug(e);
+      }
     } catch (JCRNodeFactoryServiceException e) {
       LOG.warn("Failed to read userenv for " + userEnvPath + " cause :" + e.getMessage());
-      if (debug)
+      if (debug) {
         LOG.debug(e);
+      }
     } finally {
       authzResolverService.clearRequestGrant();
     }
@@ -365,6 +373,13 @@ public class SimpleJcrUserEnvironmentResolverService implements
       // make the private and shares spaces for the user owned by this used.
       jcrNodeFactoryService.setOwner(userFactoryService.getUserPrivatePath(u.getUuid()),u.getUuid());
       jcrNodeFactoryService.setOwner(userFactoryService.getUserSharedPrivatePath(u.getUuid()),u.getUuid());
+
+      // allow other provisioning agents to perform
+      Registry<String, UserProvisionAgent> registry = registryService
+          .getRegistry("user provisioner");
+      for (UserProvisionAgent agent : registry.getList()) {
+        agent.provision(userEnvironmentBean, externalId, userType);
+      }
 
       userEnvironmentBean.seal();
       return userEnvironmentBean;
