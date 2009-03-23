@@ -369,7 +369,6 @@ public class SimpleJcrUserEnvironmentResolverService implements
       userEnvNode.setProperty(JcrAuthenticationResolverProvider.JCRPASSWORDHASH,
           StringUtils.sha1Hash(password));
 
-
       // make the private and shares spaces for the user owned by this used.
       jcrNodeFactoryService.setOwner(userFactoryService.getUserPrivatePath(u.getUuid()),u.getUuid());
       jcrNodeFactoryService.setOwner(userFactoryService.getUserSharedPrivatePath(u.getUuid()),u.getUuid());
