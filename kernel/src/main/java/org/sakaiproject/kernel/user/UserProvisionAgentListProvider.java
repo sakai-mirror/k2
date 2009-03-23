@@ -33,8 +33,9 @@ public class UserProvisionAgentListProvider implements
   private ArrayList<UserProvisionAgent> agents;
 
   @Inject
-  public UserProvisionAgentListProvider() {
+  public UserProvisionAgentListProvider(InboxAgent inboxAgent) {
     agents = new ArrayList<UserProvisionAgent>();
+    agents.add(inboxAgent);
   }
 
   /**
