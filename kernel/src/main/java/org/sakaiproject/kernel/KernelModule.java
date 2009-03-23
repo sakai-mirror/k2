@@ -59,6 +59,7 @@ import org.sakaiproject.kernel.api.user.AuthenticationManagerService;
 import org.sakaiproject.kernel.api.user.AuthenticationResolverService;
 import org.sakaiproject.kernel.api.user.ProfileResolverService;
 import org.sakaiproject.kernel.api.user.UserFactoryService;
+import org.sakaiproject.kernel.api.user.UserProvisionAgent;
 import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
@@ -105,6 +106,7 @@ import org.sakaiproject.kernel.user.AuthenticationResolverServiceImpl;
 import org.sakaiproject.kernel.user.ProfileResolverServiceImpl;
 import org.sakaiproject.kernel.user.ProviderAuthenticationResolverService;
 import org.sakaiproject.kernel.user.ProviderUserResolverService;
+import org.sakaiproject.kernel.user.UserProvisionAgentListProvider;
 import org.sakaiproject.kernel.user.jcr.JcrUserFactoryService;
 import org.sakaiproject.kernel.util.user.NullUserEnvironment;
 
@@ -148,7 +150,7 @@ public class KernelModule extends AbstractModule {
 
   /**
    * Create the bootstrap module with a kernel and supplied properties.
-   * 
+   *
    * @param kernel
    * @param properties
    */
@@ -159,7 +161,7 @@ public class KernelModule extends AbstractModule {
 
   /**
    * Configure the guice bindings.
-   * 
+   *
    * @see com.google.inject.AbstractModule#configure()
    */
   @Override
@@ -358,5 +360,11 @@ public class KernelModule extends AbstractModule {
 
     // lock manager
     bind(LockManager.class).to(LockManagerImpl.class).in(Scopes.SINGLETON);
+
+    // bring in the user provision agents so they can register
+    TypeLiteral<List<UserProvisionAgent>> userProvAgentList = new TypeLiteral<List<UserProvisionAgent>>() {
+    };
+    bind(userProvAgentList).toProvider(UserProvisionAgentListProvider.class)
+        .asEagerSingleton();
   }
 }
