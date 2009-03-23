@@ -63,9 +63,8 @@ public class OutboxListener implements JcrContentListener {
         // get the input stream from jcr
         Node n = jcrNodeFactory.getNode(filePath + fileName);
 
-        // message type is written
+        // call up the appropriate handler and pass off based on message type
         Property messageType = n.getProperty(JCRConstants.JCR_MESSAGE_TYPE);
-        // call up the appropriate handler and pass off
         OutboxNodeHandler handler = registry.getMap().get(messageType);
         if (handler != null) {
           handler.handle(userID, filePath, fileName, n);
