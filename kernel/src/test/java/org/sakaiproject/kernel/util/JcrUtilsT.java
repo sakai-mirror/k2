@@ -75,7 +75,7 @@ public class JcrUtilsT {
   @Before
   public void setUp() throws Exception {
     Session session = jcrService.loginSystem();
-    Node node = nodeFactory.createFile(randomFile1, "text/plain");
+    nodeFactory.createFile(randomFile1, "text/plain");
     session.save();
     jcrService.logout();
   }
@@ -200,8 +200,8 @@ public class JcrUtilsT {
     nodeFactory.createFile(randomFile1 + "xyz1", "text/plain");
     session.save();
     jcrService.logout();
-    
-    
+
+
     Thread[] threads = new Thread[10];
     running = 0;
     failed = 0;
@@ -263,8 +263,8 @@ public class JcrUtilsT {
         }
       });
     }
-    for (int i = 0; i < threads.length; i++) {
-      threads[i].start();
+    for (Thread thread : threads) {
+      thread.start();
       Thread.sleep(100);
     }
 
