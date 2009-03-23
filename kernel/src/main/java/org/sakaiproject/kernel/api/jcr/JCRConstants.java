@@ -220,9 +220,9 @@ public interface JCRConstants {
    * jcr:versionableUuid
    */
   public static final String JCR_VERSIONABLEUUID = "jcr:versionableUuid";
-  
+
   public static final String JCR_CREATEDBY = "jcr:createdBy";
-  
+
   public static final String JCR_MODIFIEDBY = "jcr:modifiedBy";
 
 
@@ -354,4 +354,5 @@ public interface JCRConstants {
   public static final String NS_ACL_URI = "http://www.jcp.org/acl/sv/1.0";
 
   public static final String JCR_LABELS = "sakaijcr:labels";
+  public static final String JCR_MESSAGE_TYPE = "sakaijcr:messageType";
 }

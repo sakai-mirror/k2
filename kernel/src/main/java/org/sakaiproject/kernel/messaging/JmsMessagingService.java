@@ -23,6 +23,7 @@ import com.google.inject.Injector;
 import com.google.inject.name.Named;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.messaging.EmailMessage;
@@ -33,6 +34,7 @@ import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
+import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jms.ConnectionFactory;
 
@@ -82,7 +84,8 @@ public class JmsMessagingService implements MessagingService {
       String json = beanConverter.convertToString(msg);
       ByteArrayInputStream bais = new ByteArrayInputStream(json
           .getBytes("UTF-8"));
-      jcrNodeFactory.setInputStream(path, bais, "application/json");
+      Node n = jcrNodeFactory.setInputStream(path, bais, "application/json");
+      n.setProperty(JCRConstants.JCR_MESSAGE_TYPE, msg.getType());
     } catch (JCRNodeFactoryServiceException e) {
       // FIXME do something here
     } catch (RepositoryException e) {

@@ -19,9 +19,12 @@ package org.sakaiproject.kernel.messaging;
 
 import com.google.inject.Inject;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
+import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.messaging.OutboxNodeHandler;
@@ -35,6 +38,7 @@ import javax.jcr.RepositoryException;
  *
  */
 public class OutboxListener implements JcrContentListener {
+  private static final Log log = LogFactory.getLog(OutboxListener.class);
 
   private JCRNodeFactoryService jcrNodeFactory;
   private Registry<String, OutboxNodeHandler> registry;
@@ -59,16 +63,17 @@ public class OutboxListener implements JcrContentListener {
         // get the input stream from jcr
         Node n = jcrNodeFactory.getNode(filePath + fileName);
 
-        Property outboxItemType = n.getProperty("sakaijcr:deliverableType");
+        // message type is written
+        Property messageType = n.getProperty(JCRConstants.JCR_MESSAGE_TYPE);
         // call up the appropriate handler and pass off
-        OutboxNodeHandler handler = registry.getMap().get(outboxItemType);
+        OutboxNodeHandler handler = registry.getMap().get(messageType);
         if (handler != null) {
           handler.handle(userID, filePath, fileName, n);
         }
       } catch (JCRNodeFactoryServiceException e) {
-        //
+        log.error(e.getMessage(), e);
       } catch (RepositoryException e) {
-        //
+        log.error(e.getMessage(), e);
       }
     }
   }
