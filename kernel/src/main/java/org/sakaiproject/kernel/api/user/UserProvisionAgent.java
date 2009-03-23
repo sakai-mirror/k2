@@ -21,10 +21,17 @@ import org.sakaiproject.kernel.api.Provider;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 
 /**
- *
+ * Interface to be implemented by parties interested in participating in the
+ * provisioning of users. Provisioning agents are called by order of priority at
+ * the end of the provisioning process.
  */
 public interface UserProvisionAgent extends Provider<String> {
   String REGISTRY = "userProvisioning";
 
+  /**
+   * Injection point provisioning a user.
+   *
+   * @param userEnv
+   */
   void provision(UserEnvironment userEnv);
 }
