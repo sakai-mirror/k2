@@ -18,11 +18,13 @@
 package org.sakaiproject.kernel.api.user;
 
 import org.sakaiproject.kernel.api.Provider;
-import org.sakaiproject.kernel.model.UserEnvironmentBean;
+import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 
 /**
  *
  */
 public interface UserProvisionAgent extends Provider<String> {
-  void provision(UserEnvironmentBean userEnv, String externalId, String userType);
+  String REGISTRY = "userProvisioning";
+
+  void provision(UserEnvironment userEnv);
 }

@@ -375,9 +375,9 @@ public class SimpleJcrUserEnvironmentResolverService implements
 
       // allow other provisioning agents to perform
       Registry<String, UserProvisionAgent> registry = registryService
-          .getRegistry("user provisioner");
+          .getRegistry(UserProvisionAgent.REGISTRY);
       for (UserProvisionAgent agent : registry.getList()) {
-        agent.provision(userEnvironmentBean, externalId, userType);
+        agent.provision(userEnvironmentBean);
       }
 
       userEnvironmentBean.seal();
