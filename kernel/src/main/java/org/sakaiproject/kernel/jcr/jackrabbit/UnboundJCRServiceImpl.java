@@ -204,10 +204,10 @@ public class UnboundJCRServiceImpl implements JCRService {
     }
     return queryManager;
   }
-  
+
   /**
    * {@inheritDoc}
-   * @throws RepositoryException 
+   * @throws RepositoryException
    * @see org.sakaiproject.kernel.api.jcr.JCRService#lock(javax.jcr.Node)
    */
   public Lock lock(Node node) throws RepositoryException {
@@ -218,7 +218,7 @@ public class UnboundJCRServiceImpl implements JCRService {
     return lockManager.getLock(lockable.getUUID());
   }
 
-  
+
   public void clearLocks() {
     lockManager.clearLocks();
   }

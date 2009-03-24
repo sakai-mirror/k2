@@ -28,6 +28,7 @@ import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
+import org.sakaiproject.kernel.api.locking.LockTimeoutException;
 
 import java.io.InputStream;
 import java.util.GregorianCalendar;
@@ -108,8 +109,6 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
     if (jcrService.needsMixin(node, JCRConstants.MIX_ACL)) {
       node.addMixin(JCRConstants.MIX_ACL);
     }
-
-
 
     // node.setProperty(JCRConstants.JCR_LASTMODIFIED, new GregorianCalendar());
 
@@ -194,18 +193,18 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
 
       currentNode = n;
       int i = 0;
-      for( ; i< pathElements.length; i++ ) {
+      for (; i < pathElements.length; i++) {
         try {
           savedNode = pathElements[i];
           currentNode = currentNode.getNode(pathElements[i]);
 
-        } catch ( PathNotFoundException pnfe ) {
+        } catch (PathNotFoundException pnfe) {
           break;
         }
       }
-      LOG.info("Locking Node on creation "+currentNode.getPath());
+      LOG.info("Locking Node on creation " + currentNode.getPath());
       jcrService.lock(currentNode);
-      for( ; i < pathElements.length; i++ ) {
+      for (; i < pathElements.length; i++) {
         if (i < pathElements.length - 1 || JCRConstants.NT_FOLDER.equals(type)) {
           savedNode = pathElements[i];
           Node newNode = currentNode.addNode(pathElements[i], JCRConstants.NT_FOLDER);
@@ -232,23 +231,26 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
 
     } catch (AccessDeniedException ax) {
       throw new PermissionDeniedException(ax.getMessage(), ax);
+    } catch (LockTimeoutException e) {
+      throw new JCRNodeFactoryServiceException(
+          "Unable to obtain lock to create new node :" + e.getMessage(), e);
     } catch (RepositoryException rex) {
       LOG.warn("Unspecified Repository Failiure ", rex);
       LOG.error("Unspecified Repository Failiure " + rex.getMessage());
-      if ( currentNode != null ) {
+      if (currentNode != null) {
 
         try {
-          LOG.info("Current Node was "+currentNode.getPath()+" saving "+savedNode);
+          LOG.info("Current Node was " + currentNode.getPath() + " saving " + savedNode);
         } catch (RepositoryException e) {
           // TODO Auto-generated catch block
           e.printStackTrace();
         }
       } else {
-        LOG.info("Current Node was null saving "+savedNode);
+        LOG.info("Current Node was null saving " + savedNode);
       }
     }
-    if ( node == null ) {
-     LOG.error("NODE IS NULL after Create! ");
+    if (node == null) {
+      LOG.error("NODE IS NULL after Create! ");
     }
     return node;
 
@@ -270,7 +272,7 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
     try {
       i = s.getItem(id);
     } catch (PathNotFoundException e) {
-      if ( debug ) {
+      if (debug) {
         LOG.debug("getNodeFromSession: Node Does Not Exist :" + id);
       }
       return null;
@@ -306,7 +308,7 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
       throws JCRNodeFactoryServiceException, RepositoryException {
     Node newNode = createNode(id, mimeType, JCRConstants.NT_FILE);
     if (newNode == null) {
-      throw new JCRNodeFactoryServiceException("Create File failed for path "+id);
+      throw new JCRNodeFactoryServiceException("Create File failed for path " + id);
     }
     Session s = newNode.getSession();
     ValueFactory vf = s.getValueFactory();

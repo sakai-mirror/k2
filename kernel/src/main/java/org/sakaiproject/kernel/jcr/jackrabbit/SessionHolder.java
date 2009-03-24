@@ -63,7 +63,7 @@ public class SessionHolder implements ThreadBound {
   public void keepLoggedIn() {
     keepLoggedIn = true;
   }
-  
-  
+
+
 
 }

@@ -160,7 +160,7 @@ public class RepositoryBuilder implements InitializationAction {
   private String nodeTypeConfiguration;
 
   private TransactionManager transactionManager;
-  
+
   private LockManager lockManager;
 
   // private String repositoryConfig;

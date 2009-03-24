@@ -70,7 +70,7 @@ public class SakaiRepositoryImpl extends RepositoryImpl {
     this.lockManager = lockManager;
     long maxMemory = Runtime.getRuntime().maxMemory() / (1024 * 1024);
     setCacheSize(maxMemory);
-    
+
   }
 
   public void setCacheSize(long memoryMB) {
