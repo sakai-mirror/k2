@@ -202,7 +202,6 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
           break;
         }
       }
-      LOG.info("Locking Node on creation " + currentNode.getPath());
       jcrService.lock(currentNode);
       for (; i < pathElements.length; i++) {
         if (i < pathElements.length - 1 || JCRConstants.NT_FOLDER.equals(type)) {

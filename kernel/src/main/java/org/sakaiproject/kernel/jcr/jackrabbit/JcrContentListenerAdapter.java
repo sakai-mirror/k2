@@ -55,7 +55,7 @@ public class JcrContentListenerAdapter implements EventListener, EventRegistrati
   /**
    * @param listeners
    * @throws RepositoryException
-   *
+   * 
    */
   @Inject
   public JcrContentListenerAdapter(List<JcrContentListener> listeners,
@@ -67,21 +67,21 @@ public class JcrContentListenerAdapter implements EventListener, EventRegistrati
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @throws RepositoryException
-   *
+   * 
    * @see org.sakaiproject.kernel.api.jcr.EventRegistration#register(javax.jcr.observation.ObservationManager)
    */
   public void register(ObservationManager observationManager) throws RepositoryException {
     observationManager.addEventListener(this, Event.PROPERTY_ADDED
         | Event.PROPERTY_CHANGED | Event.PROPERTY_REMOVED, "/", true, null, new String[] {
-        JCRConstants.NT_RESOURCE, JCRConstants.NT_UNSTRUCTURED }, false);
+        JCRConstants.NT_RESOURCE, JCRConstants.NT_UNSTRUCTURED}, false);
     LOG.info("Registered " + this.getClass().getName());
   }
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see javax.jcr.observation.EventListener#onEvent(javax.jcr.observation.EventIterator)
    */
   public void onEvent(EventIterator events) {
@@ -89,7 +89,9 @@ public class JcrContentListenerAdapter implements EventListener, EventRegistrati
       if (unbind) {
         jcrService.loginSystem();
       }
-      LOG.info("Firing event set ");
+      if (debug) {
+        LOG.debug("Firing event set ");
+      }
       for (; events.hasNext();) {
         try {
           Event event = events.nextEvent();
@@ -103,14 +105,17 @@ public class JcrContentListenerAdapter implements EventListener, EventRegistrati
                 listener.onEvent(event.getType(), event.getUserID(), filePath, fileName);
               }
             }
-            LOG.info("User \"" + event.getUserID() + "\" fired content event \"" + event.getType() + "\" at path \"" + path + "\"." );
+            if (debug) {
+              LOG.debug("User \"" + event.getUserID() + "\" fired content event \""
+                  + event.getType() + "\" at path \"" + path + "\".");
+            }
           }
         } catch (Exception rex) {
-	  LOG.error("Exception firing event.");
+          LOG.error("Exception firing event.");
           if (debug) {
             LOG.debug("Cause: " + rex.getMessage());
           }
-	  LOG.trace("Trace: " + Arrays.toString(rex.getStackTrace()));
+          LOG.trace("Trace: " + Arrays.toString(rex.getStackTrace()));
         }
       }
 
@@ -130,12 +135,12 @@ public class JcrContentListenerAdapter implements EventListener, EventRegistrati
         try {
           cacheManager.unbind(CacheScope.REQUEST);
         } catch (Exception ex) {
-	  LOG.warn("Exception unbinding cache manager from request.");
+          LOG.warn("Exception unbinding cache manager from request.");
         }
         try {
           cacheManager.unbind(CacheScope.THREAD);
         } catch (Exception ex) {
-	  LOG.warn("Exception unbinding cache manager from thread.");
+          LOG.warn("Exception unbinding cache manager from thread.");
         }
       }
     }
