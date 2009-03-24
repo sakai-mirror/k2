@@ -23,6 +23,7 @@ import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.jcr.SmartNodeHandler;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.jcr.Node;
@@ -34,7 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Handler for smart folder actions that use an ad-hoc JPA query.
  */
-public class JpaSmartNodeHandler implements SmartNodeHandler {
+public class JpaSmartNodeHandler extends AbstractSmartNodeHandler {
   public static final String KEY = "jpa";
 
   private final EntityManager entityManager;
@@ -53,14 +54,31 @@ public class JpaSmartNodeHandler implements SmartNodeHandler {
   /**
    * {@inheritDoc}
    *
-   * @see org.sakaiproject.kernel.api.jcr.SmartNodeHandler#handle(javax.jcr.Node)
+   * @see org.sakaiproject.kernel.api.jcr.SmartNodeHandler#handle(HttpServletRequest,
+   *      HttpServletResponse, Node, String)
    */
   @SuppressWarnings("unchecked")
   public void handle(HttpServletRequest request, HttpServletResponse response,
-      Node node, String statement) throws RepositoryException {
+      Node node, String statement) throws RepositoryException, IOException {
     javax.persistence.Query jpaQuery = entityManager.createQuery(statement);
-    @SuppressWarnings("unused")
     List results = jpaQuery.getResultList();
+    /** FIXME make results into json */
+    writeUtf8(response, results);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @see org.sakaiproject.kernel.api.jcr.SmartNodeHandler#count(HttpServletRequest,
+   *      HttpServletResponse, Node, String)
+   */
+  @SuppressWarnings("unchecked")
+  public void count(HttpServletRequest request, HttpServletResponse response,
+      Node node, String statement) throws RepositoryException, IOException {
+    javax.persistence.Query jpaQuery = entityManager.createQuery(statement);
+    List results = jpaQuery.getResultList();
+    int size = results.size();
+    writeUtf8(response, size);
   }
 
   /**

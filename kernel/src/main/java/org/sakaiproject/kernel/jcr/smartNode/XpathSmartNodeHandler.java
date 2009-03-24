@@ -29,6 +29,7 @@ import org.sakaiproject.kernel.api.jcr.SmartNodeHandler;
 import java.io.IOException;
 
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
 import javax.servlet.http.HttpServletRequest;
@@ -79,7 +80,21 @@ public class XpathSmartNodeHandler extends JcrSmartNodeHandler {
    */
   public void handle(HttpServletRequest request, HttpServletResponse response,
       Node node, String statement) throws RepositoryException, IOException {
-    JSONArray jsonArray = performQuery(Query.XPATH, statement);
+    NodeIterator nodes = performQuery(Query.XPATH, statement);
+    JSONArray jsonArray = transform(nodes);
     writeUtf8(response, jsonArray);
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * @see org.sakaiproject.kernel.api.jcr.SmartNodeHandler#count(javax.servlet.http.HttpServletRequest,
+   *      javax.servlet.http.HttpServletResponse, javax.jcr.Node,
+   *      java.lang.String)
+   */
+  public void count(HttpServletRequest request, HttpServletResponse response,
+      Node node, String statement) throws RepositoryException, IOException {
+    Long countResult = performCount(Query.XPATH, statement);
+    writeUtf8(response, countResult);
   }
 }

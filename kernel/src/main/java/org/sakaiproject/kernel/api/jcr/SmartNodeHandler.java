@@ -49,4 +49,22 @@ public interface SmartNodeHandler extends Provider<String> {
    */
   void handle(HttpServletRequest request, HttpServletResponse response,
       Node node, String statement) throws RepositoryException, IOException;
+
+  /**
+   * Get the count of the results expected from a smart node.
+   * 
+   * @param request
+   * @param response
+   * @param node
+   *          The node requested.
+   * @param statement
+   *          The smart node statement associated to the node. This statement
+   *          will not contain the language the statement is written in.
+   * @throws RepositoryException
+   *           If there's a problem accessing the repository.
+   * @throws IOException
+   *           If there's a problem writing to the response.
+   */
+  void count(HttpServletRequest request, HttpServletResponse response,
+      Node node, String statement) throws RepositoryException, IOException;
 }

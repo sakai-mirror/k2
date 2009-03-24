@@ -20,11 +20,7 @@ package org.sakaiproject.kernel.jcr.smartNode;
 import net.sf.json.JSONArray;
 
 import org.sakaiproject.kernel.api.jcr.JCRService;
-import org.sakaiproject.kernel.api.jcr.SmartNodeHandler;
 import org.sakaiproject.kernel.util.JCRNodeMap;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -32,13 +28,13 @@ import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  *
  */
-public abstract class JcrSmartNodeHandler implements SmartNodeHandler {
+public abstract class JcrSmartNodeHandler extends AbstractSmartNodeHandler {
+  protected static final String COUNT_PARAM = "count";
+
   private JCRService jcrService;
 
   public JcrSmartNodeHandler(JCRService jcrService) {
@@ -50,30 +46,34 @@ public abstract class JcrSmartNodeHandler implements SmartNodeHandler {
    *
    * @see org.sakaiproject.kernel.api.jcr.SmartNodeHandler#handle(javax.jcr.Node)
    */
-  protected JSONArray performQuery(String language, String statement)
+  protected NodeIterator performQuery(String language, String statement)
       throws RepositoryException {
     // handle statement by calling the JCR query manager.
     QueryManager qm = jcrService.getQueryManager();
     Query query = qm.createQuery(statement, language);
     QueryResult result = query.execute();
     NodeIterator nodes = result.getNodes();
+    return nodes;
+  }
+
+  protected long performCount(String language, String statement) {
+    long retval = -1;
+    try {
+      NodeIterator nodes = performQuery(language, statement);
+      retval = nodes.getSize();
+    } catch (RepositoryException e) {
+      // use default value above
+    }
+    return retval;
+  }
+
+  protected JSONArray transform(NodeIterator nodes) throws RepositoryException {
     JSONArray jsonArray = new JSONArray();
     while (nodes.hasNext()) {
       Node n = nodes.nextNode();
       JCRNodeMap nodeMap = new JCRNodeMap(n, 1);
       jsonArray.add(nodeMap);
-      // JSONObject jsonObject = JSONObject.fromObject(nodeMap);
-      // jsonArray.add(jsonObject);
     }
     return jsonArray;
-  }
-
-  protected void writeUtf8(HttpServletResponse response, JSONArray jsonArray)
-      throws UnsupportedEncodingException, IOException {
-    byte[] b = jsonArray.toString().getBytes("UTF-8");
-    response.setContentType("text/plain;charset=UTF-8");
-    response.setContentLength(b.length);
-    ServletOutputStream output = response.getOutputStream();
-    output.write(b);
   }
 }
