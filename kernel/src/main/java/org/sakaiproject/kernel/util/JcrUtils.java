@@ -19,6 +19,8 @@ package org.sakaiproject.kernel.util;
 
 import org.apache.jackrabbit.value.StringValue;
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
+import org.sakaiproject.kernel.api.jcr.JCRService;
+import org.sakaiproject.kernel.api.locking.LockTimeoutException;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
@@ -48,12 +50,13 @@ public class JcrUtils {
    * @param node
    * @param label
    * @throws RepositoryException
+   * @throws LockTimeoutException 
    * @throws IllegalArgumentException
    *           If label or node is null.
    */
-  public static void addNodeLabel(Node node, String label)
-      throws RepositoryException {
-    modifyNodeLabel(node, label, false);
+  public static void addNodeLabel(JCRService jcrService, Node node, String label)
+      throws RepositoryException, LockTimeoutException {
+    modifyNodeLabel(jcrService, node, label, false);
   }
 
   /**
@@ -65,10 +68,11 @@ public class JcrUtils {
    * @param label
    *          The label to remove.
    * @throws RepositoryException
+   * @throws LockTimeoutException 
    */
-  public static void removeNodeLabel(Node node, String label)
-      throws RepositoryException {
-    modifyNodeLabel(node, label, true);
+  public static void removeNodeLabel(JCRService jcrService, Node node, String label)
+      throws RepositoryException, LockTimeoutException {
+    modifyNodeLabel(jcrService, node, label, true);
   }
 
   /**
@@ -83,11 +87,12 @@ public class JcrUtils {
    * @param label
    * @param remove
    * @throws RepositoryException
+   * @throws LockTimeoutException 
    * @throws IllegalArgumentException
    *           If label or node is null.
    */
-  protected static void modifyNodeLabel(Node node, String label, boolean remove)
-      throws RepositoryException {
+  protected static void modifyNodeLabel(JCRService jcrService, Node node, String label, boolean remove)
+      throws RepositoryException, LockTimeoutException {
     // validate arguments
     if (node == null) {
       throw new IllegalArgumentException("Node must not be null.");
@@ -95,6 +100,7 @@ public class JcrUtils {
     if (label == null) {
       throw new IllegalArgumentException("Node label must not be null.");
     }
+    jcrService.lock(node);
 
     // get properties from node
     Value[] values = null;

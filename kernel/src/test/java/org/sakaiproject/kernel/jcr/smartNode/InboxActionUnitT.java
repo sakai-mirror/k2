@@ -69,7 +69,7 @@ public class InboxActionUnitT extends SmartNodeHandlerBaseT {
           InboxActionUnitT.class.getClassLoader());
       Node n = nodeFactory.setInputStream(PREFIX + path, in,
           RestProvider.CONTENT_TYPE);
-      JcrUtils.addNodeLabel(n, INBOX_LABEL);
+      JcrUtils.addNodeLabel(jcrService, n, INBOX_LABEL);
       in.close();
     }
 
@@ -78,7 +78,7 @@ public class InboxActionUnitT extends SmartNodeHandlerBaseT {
           InboxActionUnitT.class.getClassLoader());
       Node n = nodeFactory.setInputStream(PREFIX + path, in,
           RestProvider.CONTENT_TYPE);
-      JcrUtils.addNodeLabel(n, INBOX_LABEL);
+      JcrUtils.addNodeLabel(jcrService, n, INBOX_LABEL);
       in.close();
     }
   }

@@ -100,7 +100,7 @@ public class JcrUtilsT {
     Session session = jcrService.loginSystem();
     Node node = nodeFactory.getNode(randomFile1);
     jcrService.lock(node);
-    JcrUtils.addNodeLabel(node, "test label");
+    JcrUtils.addNodeLabel(jcrService, node, "test label");
     session.save();
 
     assertTrue(node.hasProperty(JCRConstants.JCR_LABELS));
@@ -114,9 +114,8 @@ public class JcrUtilsT {
   public void addMultipleLabels() throws Exception {
     Session session = jcrService.loginSystem();
     Node node = nodeFactory.getNode(randomFile1);
-    jcrService.lock(node);
-    JcrUtils.addNodeLabel(node, "test label");
-    JcrUtils.addNodeLabel(node, "another test label");
+    JcrUtils.addNodeLabel(jcrService, node, "test label");
+    JcrUtils.addNodeLabel(jcrService, node, "another test label");
     session.save();
 
     assertTrue(node.hasProperty(JCRConstants.JCR_LABELS));
@@ -131,13 +130,13 @@ public class JcrUtilsT {
   public void removeLabel() throws Exception {
     Session session = jcrService.loginSystem();
     Node node = nodeFactory.getNode(randomFile1);
-    JcrUtils.addNodeLabel(node, "test label");
-    JcrUtils.addNodeLabel(node, "another test label");
+    JcrUtils.addNodeLabel(jcrService, node, "test label");
+    JcrUtils.addNodeLabel(jcrService, node, "another test label");
     session.save();
 
     assertTrue(node.hasProperty(JCRConstants.JCR_LABELS));
 
-    JcrUtils.removeNodeLabel(node, "test label");
+    JcrUtils.removeNodeLabel(jcrService, node, "test label");
     session.save();
 
     assertTrue(node.hasProperty(JCRConstants.JCR_LABELS));
@@ -151,14 +150,14 @@ public class JcrUtilsT {
   public void removeLabels() throws Exception {
     Session session = jcrService.loginSystem();
     Node node = nodeFactory.getNode(randomFile1);
-    JcrUtils.addNodeLabel(node, "test label");
-    JcrUtils.addNodeLabel(node, "another test label");
-    JcrUtils.addNodeLabel(node, "yet another test label");
+    JcrUtils.addNodeLabel(jcrService, node, "test label");
+    JcrUtils.addNodeLabel(jcrService, node, "another test label");
+    JcrUtils.addNodeLabel(jcrService, node, "yet another test label");
     session.save();
 
     assertTrue(node.hasProperty(JCRConstants.JCR_LABELS));
 
-    JcrUtils.removeNodeLabel(node, "test label");
+    JcrUtils.removeNodeLabel(jcrService, node, "test label");
     session.save();
 
     assertTrue(node.hasProperty(JCRConstants.JCR_LABELS));
@@ -168,7 +167,7 @@ public class JcrUtilsT {
     assertEquals("another test label", values[0].getString());
     assertEquals("yet another test label", values[1].getString());
 
-    JcrUtils.removeNodeLabel(node, "yet another test label");
+    JcrUtils.removeNodeLabel(jcrService, node, "yet another test label");
     session.save();
 
     assertTrue(node.hasProperty(JCRConstants.JCR_LABELS));
@@ -182,12 +181,12 @@ public class JcrUtilsT {
   public void removeLastLabel() throws Exception {
     Session session = jcrService.loginSystem();
     Node node = nodeFactory.getNode(randomFile1);
-    JcrUtils.addNodeLabel(node, "test label");
+    JcrUtils.addNodeLabel(jcrService, node, "test label");
     session.save();
 
     assertTrue(node.hasProperty(JCRConstants.JCR_LABELS));
 
-    JcrUtils.removeNodeLabel(node, "test label");
+    JcrUtils.removeNodeLabel(jcrService, node, "test label");
     session.save();
 
     assertTrue(node.hasProperty(JCRConstants.JCR_LABELS));
