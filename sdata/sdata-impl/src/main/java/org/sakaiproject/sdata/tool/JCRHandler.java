@@ -65,6 +65,7 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
+import javax.jcr.version.VersionException;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -187,8 +188,8 @@ public class JCRHandler extends AbstractHandler {
   private transient RegistryService registryService;
 
   /**
-   * Create a JCRHandler and give it a resource definition factory that will
-   * convert a URL into a location in the repository.
+   * Create a JCRHandler and give it a resource definition factory that will convert a URL
+   * into a location in the repository.
    *
    * @param serializer
    * @param securityAssertion
@@ -277,8 +278,8 @@ public class JCRHandler extends AbstractHandler {
   }
 
   /**
-   * Snoop on the request if the request parameter snoop=1 output appears in the
-   * log, at level INFO
+   * Snoop on the request if the request parameter snoop=1 output appears in the log, at
+   * level INFO
    *
    * @param request
    */
@@ -327,8 +328,13 @@ public class JCRHandler extends AbstractHandler {
         return;
       }
       String version = rp.getVersion();
-      if ( version != null ) {
-        n = n.getVersionHistory().getVersion(version);
+      if (version != null) {
+        try {
+          n = n.getVersionHistory().getVersion(version);
+        } catch (VersionException e) {
+          throw new SDataAccessException(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
+        }
+        n = n.getNode(JCRConstants.JCR_FROZENNODE);
       }
 
       Node resource = n.getNode(JCRConstants.JCR_CONTENT);
@@ -455,7 +461,6 @@ public class JCRHandler extends AbstractHandler {
 
     content.setValue(in);
 
-
     return content.getLength();
   }
 
@@ -476,8 +481,8 @@ public class JCRHandler extends AbstractHandler {
    * HttpServletRequest, javax.servlet.http.HttpServletResponse)
    */
   @Override
-  public void doGet(final HttpServletRequest request,
-      HttpServletResponse response) throws ServletException, IOException {
+  public void doGet(final HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
 
     OutputStream out = null;
     InputStream in = null;
@@ -487,11 +492,9 @@ public class JCRHandler extends AbstractHandler {
       ResourceDefinition rp = resourceDefinitionFactory.getSpec(request);
       SDataFunction m = resourceFunctionFactory.get(rp.getFunctionDefinition());
 
-      if ( describe(request, response, m) ) {
+      if (describe(request, response, m)) {
         return;
       }
-
-
 
       Node n = jcrNodeFactory.getNode(rp.getRepositoryPath());
       if (n == null) {
@@ -500,18 +503,25 @@ public class JCRHandler extends AbstractHandler {
         return;
       }
 
+      String primaryNodeType = n.getPrimaryNodeType().getName();
       String version = rp.getVersion();
-      if ( version != null ) {
-        n = n.getVersionHistory().getVersion(version);
+      if (version != null) {
+        try {
+          n = n.getVersionHistory().getVersion(version);
+        } catch (VersionException e) {
+          throw new SDataAccessException(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
+        }
+        n = n.getNode(JCRConstants.JCR_FROZENNODE);
+        if (n.hasProperty(JCRConstants.JCR_FROZENPRIMARYTYPE)) {
+          primaryNodeType = n.getProperty(JCRConstants.JCR_FROZENPRIMARYTYPE).getString();
+        }
       }
-
-      NodeType nt = n.getPrimaryNodeType();
 
       if (m != null) {
         m.call(this, request, response, n, rp);
       } else {
 
-        if (JCRConstants.NT_FILE.equals(nt.getName())) {
+        if (JCRConstants.NT_FILE.equals(primaryNodeType)) {
 
           Node resource = n.getNode(JCRConstants.JCR_CONTENT);
           Property lastModified = resource.getProperty(JCRConstants.JCR_LASTMODIFIED);
@@ -616,8 +626,8 @@ public class JCRHandler extends AbstractHandler {
   }
 
   private void handleSmartNode(final HttpServletRequest request,
-      final HttpServletResponse response, final ResourceDefinition rp,
-      final Node n) throws IOException, RepositoryException {
+      final HttpServletResponse response, final ResourceDefinition rp, final Node n)
+      throws IOException, RepositoryException {
     boolean handled = false;
 
     try {
@@ -665,10 +675,10 @@ public class JCRHandler extends AbstractHandler {
   }
 
   /**
-   * Check the ranges requested in the request headers, this conforms to the RFC
-   * on the range, if-range headers. On return, it the request is to be
-   * processed, true will be returned, and ranges[0] will the the start byte of
-   * the response stream and ranges[1] will be the end byte.
+   * Check the ranges requested in the request headers, this conforms to the RFC on the
+   * range, if-range headers. On return, it the request is to be processed, true will be
+   * returned, and ranges[0] will the the start byte of the response stream and ranges[1]
+   * will be the end byte.
    *
    * @param request
    *          the request object from the Servlet Container.
@@ -858,9 +868,9 @@ public class JCRHandler extends AbstractHandler {
   }
 
   /**
-   * Perform a mime multipart upload into the JCR repository based on a location
-   * specified by the rp parameter. The parts of the multipart upload are
-   * relative to the current request path
+   * Perform a mime multipart upload into the JCR repository based on a location specified
+   * by the rp parameter. The parts of the multipart upload are relative to the current
+   * request path
    *
    * @param request
    *          the request object of the current request.
@@ -1012,8 +1022,7 @@ public class JCRHandler extends AbstractHandler {
   /*
    * (non-Javadoc)
    *
-   * @see
-   * org.sakaiproject.sdata.tool.api.Handler#setHandlerHeaders(javax.servlet
+   * @see org.sakaiproject.sdata.tool.api.Handler#setHandlerHeaders(javax.servlet
    * .http.HttpServletResponse)
    */
   public void setHandlerHeaders(HttpServletRequest request, HttpServletResponse response) {
