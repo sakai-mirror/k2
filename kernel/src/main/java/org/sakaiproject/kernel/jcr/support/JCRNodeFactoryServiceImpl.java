@@ -309,6 +309,11 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
     if (newNode == null) {
       throw new JCRNodeFactoryServiceException("Create File failed for path " + id);
     }
+    try {
+      jcrService.lock(newNode);
+    } catch (LockTimeoutException e) {
+      throw new JCRNodeFactoryServiceException("Failed to Lock node " + id);
+    }
     Session s = newNode.getSession();
     ValueFactory vf = s.getValueFactory();
     Value v = vf.createValue(in);
@@ -347,6 +352,8 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
   /**
    * {@inheritDoc}
    *
+   * @throws LockTimeoutException
+   *
    * @see org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService#setOwner(java.lang.String,
    *      java.lang.String)
    */
@@ -359,6 +366,11 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
     }
     if (node == null) {
       node = createFolder(path);
+    }
+    try {
+      jcrService.lock(node);
+    } catch (LockTimeoutException e) {
+      throw new JCRNodeFactoryServiceException("Failed to Lock node " + path);
     }
     node.setProperty(JCRConstants.ACL_OWNER, uuid);
   }

@@ -19,7 +19,6 @@ package org.sakaiproject.kernel.jcr.jackrabbit;
 
 import com.google.inject.Inject;
 
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.core.observation.EventImpl;
@@ -42,6 +41,12 @@ import javax.jcr.observation.Event;
 import javax.jcr.observation.EventIterator;
 import javax.jcr.observation.EventListener;
 import javax.jcr.observation.ObservationManager;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+import javax.transaction.TransactionManager;
 
 /**
  * 
@@ -52,6 +57,7 @@ public class NodeUpdateListener implements EventListener, EventRegistration {
   private static final boolean debug = LOG.isDebugEnabled();
   private JCRService jcrService;
   private CacheManagerService cacheManagerService;
+  private TransactionManager transactionManager;
 
   /**
    * @param listeners
@@ -60,10 +66,11 @@ public class NodeUpdateListener implements EventListener, EventRegistration {
    */
   @Inject
   public NodeUpdateListener(JCRService jcrService,
-      CacheManagerService cacheManagerService)
+      CacheManagerService cacheManagerService, TransactionManager transactionManager)
       throws RepositoryException {
     this.jcrService = jcrService;
     this.cacheManagerService = cacheManagerService;
+    this.transactionManager = transactionManager;
   }
 
   /**
@@ -87,12 +94,17 @@ public class NodeUpdateListener implements EventListener, EventRegistration {
    */
   public void onEvent(EventIterator events) {
     try {
+      transactionManager.begin();
       Session s = jcrService.loginSystem();
 
+      String sessionUser = s.getUserID();
       for (; events.hasNext();) {
 
         EventImpl e = (EventImpl) events.nextEvent();
         if (e.isExternal()) {
+          continue;
+        }
+        if (sessionUser.equals(e.getUserID())) {
           continue;
         }
         try {
@@ -105,13 +117,15 @@ public class NodeUpdateListener implements EventListener, EventRegistration {
           if (nodePath.endsWith(JCRConstants.JCR_CONTENT)) {
             nodePath = PathUtils.getParentReference(nodePath);
           }
-          Session session = jcrService.getSession();
-          Node n = (Node) session.getItem(nodePath);
+          Node n = (Node) s.getItem(nodePath);
 
           if (!n.hasProperty(JCRConstants.JCR_CREATEDBY)) {
             Lock lock = jcrService.lock(n);
             try {
               n.setProperty(JCRConstants.JCR_CREATEDBY, e.getUserID());
+              if (!n.hasProperty(JCRConstants.JCR_MODIFIEDBY)) {
+                n.setProperty(JCRConstants.JCR_MODIFIEDBY, e.getUserID());
+              }
               if (debug) {
                 LOG.debug("Node created by " + e.getUserID());
               }
@@ -138,12 +152,13 @@ public class NodeUpdateListener implements EventListener, EventRegistration {
 
             } else {
               String userId = n.getProperty(JCRConstants.JCR_MODIFIEDBY).getString();
-              if (!s.getUserID().equals(e.getUserID()) && !e.getUserID().equals(userId) ) {
+              if (!sessionUser.equals(e.getUserID()) && !e.getUserID().equals(userId)) {
                 Lock lock = jcrService.lock(n);
                 try {
                   n.setProperty(JCRConstants.JCR_MODIFIEDBY, e.getUserID());
                   if (debug) {
-                    LOG.debug("Node modified by " + e.getUserID() + " previously " + userId);
+                    LOG.debug("Node modified by " + e.getUserID() + " previously "
+                        + userId);
                   }
                   n.save();
                 } finally {
@@ -153,16 +168,49 @@ public class NodeUpdateListener implements EventListener, EventRegistration {
             }
           }
         } catch (LockTimeoutException t) {
-          LOG.error("Failed to get lock on node "+t.getMessage());
+          LOG.error("Failed to get lock on node " + t.getMessage());
         } catch (RepositoryException ex) {
           LOG.error("Failed to update node ", ex);
         }
       }
       s.save();
+      transactionManager.commit();
     } catch (LoginException e) {
+      try {
+        transactionManager.rollback();
+      } catch (IllegalStateException e1) {
+        LOG.warn("Rollback Transaction " + e.getMessage(), e);
+      } catch (SecurityException e1) {
+        LOG.warn("Rollback Transaction " + e.getMessage(), e);
+      } catch (SystemException e1) {
+        LOG.warn("Rollback Transaction " + e.getMessage(), e);
+      }
       LOG.warn("Cant Login to JCR " + e.getMessage(), e);
     } catch (RepositoryException e) {
+      try {
+        transactionManager.rollback();
+      } catch (IllegalStateException e1) {
+        LOG.warn("Rollback Transaction " + e.getMessage(), e);
+      } catch (SecurityException e1) {
+        LOG.warn("Rollback Transaction " + e.getMessage(), e);
+      } catch (SystemException e1) {
+        LOG.warn("Rollback Transaction " + e.getMessage(), e);
+      }
       LOG.warn("Cant Login to JCR " + e.getMessage(), e);
+    } catch (SecurityException e) {
+      LOG.warn("Commit Transaction " + e.getMessage(), e);
+    } catch (IllegalStateException e) {
+      LOG.warn("Commit Transaction " + e.getMessage(), e);
+    } catch (RollbackException e) {
+      LOG.warn("Commit Transaction " + e.getMessage(), e);
+    } catch (HeuristicMixedException e) {
+      LOG.warn("Commit Transaction " + e.getMessage(), e);
+    } catch (HeuristicRollbackException e) {
+      LOG.warn("Commit Transaction " + e.getMessage(), e);
+    } catch (SystemException e) {
+      LOG.warn("Commit Transaction " + e.getMessage(), e);
+    } catch (NotSupportedException e) {
+      LOG.warn("Transaction Not Supported " + e.getMessage(), e);
     } finally {
       try {
         jcrService.logout();

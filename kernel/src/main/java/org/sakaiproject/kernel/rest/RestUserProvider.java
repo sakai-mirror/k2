@@ -348,8 +348,7 @@ public class RestUserProvider implements RestProvider {
         }
       }
     }
-    try {
-
+ 
       User u = userResolverService.resolve(externalId);
       if (u != null) {
         throw new RestServiceFaultException(HttpServletResponse.SC_CONFLICT,
@@ -375,16 +374,12 @@ public class RestUserProvider implements RestProvider {
       userProfile.setProperties(profileMap);
       userProfile.save();
 
-      jcrService.save();
-
+ 
       Map<String, Object> r = new HashMap<String, Object>();
       r.put("response", "OK");
       r.put("uuid", u.getUuid());
       return r;
-    } finally {
-        authzResolverService.clearRequestGrant();
-    }
-
+ 
   }
 
   static {
