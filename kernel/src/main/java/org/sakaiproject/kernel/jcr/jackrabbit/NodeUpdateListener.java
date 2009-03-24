@@ -133,7 +133,7 @@ public class NodeUpdateListener implements EventListener, EventRegistration {
 
             } else {
               String userId = n.getProperty(JCRConstants.JCR_MODIFIEDBY).getString();
-              if (!e.getUserID().equals(userId)) {
+              if (!s.getUserID().equals(e.getUserID()) && !e.getUserID().equals(userId) ) {
                 Lock lock = jcrService.lock(n);
                 try {
                   n.setProperty(JCRConstants.JCR_MODIFIEDBY, e.getUserID());
