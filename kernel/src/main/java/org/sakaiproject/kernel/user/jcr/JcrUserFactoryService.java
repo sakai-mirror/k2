@@ -178,5 +178,21 @@ public class JcrUserFactoryService implements UserFactoryService {
     return sharedPrivatePathBase + PathUtils.getUserPrefix(uuid);
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @see org.sakaiproject.kernel.api.user.UserFactoryService#getMessagesPath(java.lang.String)
+   */
+  public String getMessagesPath(String id) {
+    return getUserPrivatePath(id) + KernelConstants.MESSAGES;
+  }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @see org.sakaiproject.kernel.api.user.UserFactoryService#getNewMessagePath(java.lang.String)
+   */
+  public String getNewMessagePath(String id) {
+    return getMessagesPath(id) + PathUtils.getMessagePrefix();
+  }
 }

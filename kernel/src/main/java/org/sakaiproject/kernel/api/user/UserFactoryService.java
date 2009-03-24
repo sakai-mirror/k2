@@ -101,4 +101,20 @@ public interface UserFactoryService {
    */
   String getUserSharedPrivatePath(String uuid);
 
+  /**
+   * Get the path to messages for the entity identified.
+   * 
+   * @param id
+   * @return
+   */
+  String getMessagesPath(String id);
+
+  /**
+   * Get the path where a new message should be stored for the entity
+   * identified.
+   * 
+   * @param id
+   * @return
+   */
+  String getNewMessagePath(String id);
 }

@@ -17,13 +17,13 @@
  */
 package org.sakaiproject.kernel.util;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Generate a path prefix based on the user id.
@@ -52,6 +52,18 @@ public class PathUtils {
       return getStructuredHash(user);
     }
     return null;
+  }
+
+  /**
+   * Get the prefix for a message.
+   *
+   * @return Prefix used to store a message. Defaults to a yyyy/mm/dd structure.
+   * @see java.text.SimpleDateFormat for pattern definitions.
+   */
+  public static String getMessagePrefix() {
+    Calendar c = Calendar.getInstance();
+    String prefix = c.get(Calendar.YEAR) + "/" + c.get(Calendar.MONTH) + "/";
+    return prefix;
   }
 
   /**
@@ -168,8 +180,8 @@ public class PathUtils {
     }
     return new String(normalized,0,j);
   }
-  
-  
-  
+
+
+
 
 }

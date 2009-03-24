@@ -20,6 +20,8 @@ package org.sakaiproject.kernel.messaging;
 
 import com.google.inject.Inject;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
@@ -31,6 +33,7 @@ import org.sakaiproject.kernel.api.messaging.OutboxNodeHandler;
 import org.sakaiproject.kernel.api.user.UserFactoryService;
 
 import java.io.InputStream;
+import java.util.StringTokenizer;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
@@ -38,6 +41,8 @@ import javax.jcr.RepositoryException;
 
 public class InternalMessageHandler implements OutboxNodeHandler {
 
+  private static final Log log = LogFactory
+      .getLog(InternalMessageHandler.class);
   private static final String key = Message.Type.INTERNAL.toString();
   private static final int priority = 0;
 
@@ -58,25 +63,24 @@ public class InternalMessageHandler implements OutboxNodeHandler {
     this.msgConv = msgConv;
   }
 
-  public void handle(String userID, String filePath, String fileName,
-      Node node) {
+  public void handle(String userID, String filePath, String fileName, Node node) {
     try {
       Property prop = node.getProperty(JCRConstants.JCR_MESSAGE_RCPTS);
       String rcptsVal = prop.getString();
-      String[] rcpts = rcptsVal.split(",");
+      StringTokenizer rcpts = new StringTokenizer(rcptsVal, ",");
 
-      for (String rcpt : rcpts) {
-        String userPath = userFactory.getUserEnvPath(rcpt);
+      while (rcpts.hasMoreTokens()) {
+        String rcpt = rcpts.nextToken();
         /** FIXME set message path for the user. */
-        String msgPath = "SET TO SOMETHING USEFUL";
-        InputStream in = nodeFactory.getInputStream(node.getPath() + msgPath);
-        nodeFactory.setInputStream(userPath, in, "UTF-8");
+        String msgPath = userFactory.getNewMessagePath(rcpt);
+        InputStream in = nodeFactory.getInputStream(node.getPath());
+        nodeFactory.setInputStream(msgPath, in, "UTF-8");
         /** TODO remove any properties that are associated to the sender */
       }
     } catch (RepositoryException e) {
-
+      log.error(e.getMessage(), e);
     } catch (JCRNodeFactoryServiceException e) {
-
+      log.error(e.getMessage(), e);
     }
   }
 

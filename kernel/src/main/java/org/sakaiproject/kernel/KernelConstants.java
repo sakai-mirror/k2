@@ -21,89 +21,83 @@ package org.sakaiproject.kernel;
 /**
  * Holds the configuration properties that are used in the kernel.
  */
-public class KernelConstants {
+public interface KernelConstants {
 
-  public static final String JCR_USERENV_BASE = "jcruserenv.base";
-  public static final String JCR_USERENV_TEMPLATES = "jcruserenv.templates";
-  public static final String JCR_DEFAULT_TEMPLATE = "jcruserenv.templates.default";
-  public static final String JCR_PROFILE_TEMPLATES = "jcrprofile.templates";
-  public static final String JCR_PROFILE_DEFAUT_TEMPLATES = "jcrprofile.templates.default";
-  public static final String JCR_SITE_TEMPLATES = "jcrsite.templates";
-  public static final String JCR_SITE_DEFAULT_TEMPLATE = "jcrsite.templates.default";
+  String JCR_USERENV_BASE = "jcruserenv.base";
+  String JCR_USERENV_TEMPLATES = "jcruserenv.templates";
+  String JCR_DEFAULT_TEMPLATE = "jcruserenv.templates.default";
+  String JCR_PROFILE_TEMPLATES = "jcrprofile.templates";
+  String JCR_PROFILE_DEFAUT_TEMPLATES = "jcrprofile.templates.default";
+  String JCR_SITE_TEMPLATES = "jcrsite.templates";
+  String JCR_SITE_DEFAULT_TEMPLATE = "jcrsite.templates.default";
 
   /**
    * The property name defining the shared private data
    */
-  public static final String PRIVATE_SHARED_PATH_BASE = "jcrprivateshared.base";
+  String PRIVATE_SHARED_PATH_BASE = "jcrprivateshared.base";
   /**
    * The property name defining the data that is completely private to the user
    */
-  public static final String PRIVATE_PATH_BASE = "jcrprivate.base";
+  String PRIVATE_PATH_BASE = "jcrprivate.base";
   /**
    * Setting: The time to live of User Env objects the local cache, this should
    * be set in the kernel properties file.
    */
-  public static final String TTL = "userenv.ttl";
+  String TTL = "userenv.ttl";
 
-  public static final String PROP_ANON_ACCOUNTING = "rest.user.anonymous.account.creation";
-  public static final String ENTITY_MANAGER_SCOPE = "jpa.entitymanager.scope";
+  String PROP_ANON_ACCOUNTING = "rest.user.anonymous.account.creation";
+  String ENTITY_MANAGER_SCOPE = "jpa.entitymanager.scope";
 
+  String JDBC_DRIVER_NAME = "jdbc.driver";
+  String JDBC_URL = "jdbc.url";
+  String JDBC_USERNAME = "jdbc.username";
+  String JDBC_PASSWORD = "jdbc.password";
+  String JDBC_VALIDATION_QUERY = "jdbc.validation";
+  String JDBC_DEFAULT_READ_ONLY = "jdbc.defaultReadOnly";
+  String JDBC_DEFAULT_AUTO_COMMIT = "jdbc.defaultAutoCommit";
+  String JDBC_DEFAULT_PREPARED_STATEMENTS = "jdbc.defaultPreparedStatement";
+  String TRANSACTION_TIMEOUT_SECONDS = "transaction.timeoutSeconds";
+  String DB_MIN_WRITE = "eclipselink.write.min";
+  String DB_MIN_NUM_READ = "eclipselink.read.min";
+  String DB_UNITNAME = "jpa.unitname";
+  String SESSION_COOKIE = "http.global.cookiename";
 
-  public static final String JDBC_DRIVER_NAME = "jdbc.driver";
-  public static final String JDBC_URL = "jdbc.url";
-  public static final String JDBC_USERNAME = "jdbc.username";
-  public static final String JDBC_PASSWORD = "jdbc.password";
-  public static final String JDBC_VALIDATION_QUERY = "jdbc.validation";
-  public static final String JDBC_DEFAULT_READ_ONLY = "jdbc.defaultReadOnly";
-  public static final String JDBC_DEFAULT_AUTO_COMMIT = "jdbc.defaultAutoCommit";
-  public static final String JDBC_DEFAULT_PREPARED_STATEMENTS = "jdbc.defaultPreparedStatement";
-  public static final String TRANSACTION_TIMEOUT_SECONDS = "transaction.timeoutSeconds";
-  public static final String DB_MIN_WRITE = "eclipselink.write.min";
-  public static final String DB_MIN_NUM_READ = "eclipselink.read.min";
-  public static final String DB_UNITNAME = "jpa.unitname";
-  public static final String SESSION_COOKIE = "http.global.cookiename";
-
-
-
-
-
-  public static final String GROUP_FILE_NAME = "groupdef.json";
+  String GROUP_FILE_NAME = "groupdef.json";
   /**
    * The Name of the userenv file in the system.
    */
-  public static final String USERENV = "userenv";
+  String USERENV = "userenv";
 
   /**
    * The name of the profile file.
    */
-  public static final String PROFILE_JSON = "profile.json";
+  String PROFILE_JSON = "profile.json";
 
   /**
    * The name of the friends file
    */
-  public static final String FRIENDS_FILE = "friends.json";
+  String FRIENDS_FILE = "friends.json";
 
 
   /**
    * Attribute used in the session to store a list of group memberships.
    */
-  public static final String GROUPMEMBERSHIP = "userenv.grouplist";
-  public static final String NULLUSERENV = "userenv.null";
+  String GROUPMEMBERSHIP = "userenv.grouplist";
+  String NULLUSERENV = "userenv.null";
 
-
-  public static final String SUBJECT_PROVIDER_REGISTRY = "subjectstatement.provider";
+  String SUBJECT_PROVIDER_REGISTRY = "subjectstatement.provider";
   /**
    * The name of the registry used for this type of service.
    */
-  public static final String AUTHENTICATION_PROVIDER_REGISTRY = "authentication.provider.registry";
-  public static final String MANAGER_PROVIDER_REGISTRY = "authentication.manager.provider.registry";
+  String AUTHENTICATION_PROVIDER_REGISTRY = "authentication.provider.registry";
+  String MANAGER_PROVIDER_REGISTRY = "authentication.manager.provider.registry";
   /**
    * The name of the registry used for this type of service.
    */
-  public static final String USER_PROVIDER_REGISTRY = "user.provider.registry";
+  String USER_PROVIDER_REGISTRY = "user.provider.registry";
 
-  public static final String JSON_CLASSMAP = "jsonconverter.classmap";
+  String JSON_CLASSMAP = "jsonconverter.classmap";
 
-  public static final String OUTBOX = "outbox";
-
+  String OUTBOX = "outbox";
+  String MESSAGES = "messages";
 }
