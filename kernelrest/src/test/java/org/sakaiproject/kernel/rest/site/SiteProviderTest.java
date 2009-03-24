@@ -96,12 +96,14 @@ public class SiteProviderTest extends BaseRestUT {
   }
 
   @Test
-  public void testCreateNonAdmin() throws IOException, SiteException {
+  public void testCreateDenied() throws IOException, SiteException {
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     setupAnyTimes("user1", baos);
-    expect(siteService.createSite("/testsite/in/some/location", "project")).andThrow(
-        new SecurityException());
+    PermissionQuery createSiteQuery = createMock(PermissionQuery.class);
+    expect(permissionQueryService.getPermission("create.site")).andReturn(createSiteQuery);
+    authzResolverService.check("/testsite/in/some/location", createSiteQuery);
+    expectLastCall().andThrow(new SecurityException());
     replayMocks();
 
     try {
@@ -124,6 +126,12 @@ public class SiteProviderTest extends BaseRestUT {
     SiteBean siteBean = new SiteBean();
     siteBean.service(siteService);
     siteBean.setId("testSiteId");
+    PermissionQuery createSiteQuery = createMock(PermissionQuery.class);
+    expect(permissionQueryService.getPermission("create.site")).andReturn(createSiteQuery);
+    authzResolverService.check("/testsite/in/some/location", createSiteQuery);
+    expectLastCall();
+    authzResolverService.setRequestGrant("Create Site Granted");
+    expectLastCall();
     expect(siteService.createSite("/testsite/in/some/location", "project")).andReturn(
         siteBean);
     Capture<String> siteId = new Capture<String>();

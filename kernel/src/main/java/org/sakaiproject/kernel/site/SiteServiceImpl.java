@@ -108,7 +108,7 @@ public class SiteServiceImpl implements SiteService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.site.SiteService#getSite(java.lang.String)
    */
   public SiteBean getSite(String path) {
@@ -118,7 +118,7 @@ public class SiteServiceImpl implements SiteService {
       in = jcrNodeFactoryService.getInputStream(sitePath);
       String siteBody = IOUtils.readFully(in, "UTF-8");
       SiteBean bean = beanConverter.convertToObject(siteBody, SiteBean.class);
-      bean.location(sitePath);
+      bean.location(path);
       bean.service(this);
       return bean;
     } catch (UnsupportedEncodingException e) {
@@ -141,20 +141,20 @@ public class SiteServiceImpl implements SiteService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.site.SiteService#getSiteById(java.lang.String)
    */
   public SiteBean getSiteById(String siteId) {
     Query findById = entityManager.createNamedQuery(SiteIndexBean.Queries.FINDBY_ID);
+    LOG.info("Searching for Site ID [" + siteId + "]");
     findById.setParameter(SiteIndexBean.QueryParams.FINDBY_ID_ID, siteId);
     findById.setFirstResult(0);
     findById.setMaxResults(1);
     List<?> results = findById.getResultList();
     if (results.size() > 0) {
       SiteIndexBean index = (SiteIndexBean) results.get(0);
-      String sitePath = PathUtils.getParentReference(PathUtils.getParentReference(index
-          .getRef()));
-      System.err.println("Loading " + sitePath);
+      String sitePath = index.getRef();
+      LOG.info("Found Site " + siteId + " at " + sitePath);
       return getSite(sitePath);
     }
     return null;
@@ -162,7 +162,7 @@ public class SiteServiceImpl implements SiteService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.site.SiteService#siteExists(java.lang.String)
    */
   public boolean siteExists(String path) {
@@ -179,7 +179,7 @@ public class SiteServiceImpl implements SiteService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.site.SiteService#deleteSite(java.lang.String)
    */
   public void deleteSite(String id) {
@@ -188,9 +188,9 @@ public class SiteServiceImpl implements SiteService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @throws UnsupportedEncodingException
-   * 
+   *
    * @see org.sakaiproject.kernel.api.site.SiteService#saveSite(org.sakaiproject.kernel.model.SiteBean)
    */
   public void save(SiteBean siteBean) throws SiteException {
@@ -199,15 +199,25 @@ public class SiteServiceImpl implements SiteService {
     try {
 
       String path = siteBean.location();
-      // save the template
+
+      boolean isnew = false;
+      try {
+        Node n = jcrNodeFactoryService.getNode(path);
+        isnew = (n == null);
+      } catch (JCRNodeFactoryServiceException e) {
+        isnew = true;
+      }
       String siteBeanDef = beanConverter.convertToString(siteBean);
       LOG.info("Saving Site to " + path + " as " + siteBeanDef);
       bais = new ByteArrayInputStream(siteBeanDef.getBytes("UTF-8"));
-      jcrNodeFactoryService.setInputStream(path, bais, RestProvider.CONTENT_TYPE);
+      jcrNodeFactoryService.setInputStream(buildFilePath(path), bais,
+          RestProvider.CONTENT_TYPE);
 
       // make the private and shares spaces for the user owned by this used.
       jcrNodeFactoryService.setOwner(buildSiteFolder(path), siteBean.getOwners()[0]);
-
+      if (isnew) {
+        jcrNodeFactoryService.setOwner(path, siteBean.getOwners()[0]);
+      }
     } catch (UnsupportedEncodingException e) {
       LOG.error(e);
     } catch (JCRNodeFactoryServiceException e) {
@@ -225,7 +235,7 @@ public class SiteServiceImpl implements SiteService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.site.SiteService#createSite(java.lang.String,
    *      java.lang.String)
    */
@@ -235,7 +245,6 @@ public class SiteServiceImpl implements SiteService {
     }
     String userId = sessionManagerService.getCurrentUserId();
     String siteTemplatePath = getSiteTemplate(siteType);
-    String sitePath = buildFilePath(path);
 
     InputStream templateInputStream = null;
     try {
@@ -256,7 +265,7 @@ public class SiteServiceImpl implements SiteService {
       siteBean.setOwners(new String[] {userId});
       siteBean.setId(generateSiteUuid(path));
       siteBean.setType(siteType);
-      siteBean.location(sitePath);
+      siteBean.location(path);
       siteBean.service(this);
 
       return siteBean;
@@ -281,7 +290,7 @@ public class SiteServiceImpl implements SiteService {
 
   /**
    * Build the full path with file name to the group definition for a given site ID.
-   * 
+   *
    * @param id
    * @return
    */
@@ -295,6 +304,18 @@ public class SiteServiceImpl implements SiteService {
    */
   private String buildSiteFolder(String path) {
     return path + PATH_SITE;
+  }
+
+  public String locateSite(String groupDefFile) {
+    String path = PathUtils.normalizePath(groupDefFile);
+    if (path.endsWith(FILE_GROUPDEF)) {
+      path = PathUtils.getParentReference(path);
+      if (path.endsWith(PATH_SITE)) {
+        return PathUtils.getParentReference(path);
+      }
+    }
+    // not a site. cause a npe.
+    return null;
   }
 
   /**
@@ -325,7 +346,7 @@ public class SiteServiceImpl implements SiteService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.site.SiteService#getMemberList(java.lang.String,
    *      org.sakaiproject.kernel.util.rest.CollectionOptions)
    */
@@ -336,7 +357,7 @@ public class SiteServiceImpl implements SiteService {
 
     List<GroupMembershipBean> results = JpaUtils.getResultList(entityManager,
         "select g from GroupMembershipBean g where g.groupId = :groupId ", "g.",
-        ImmutableMap.of("groupId", (Object)siteBean.getId()), collectionOptions);
+        ImmutableMap.of("groupId", (Object) siteBean.getId()), collectionOptions);
 
     Map<String, Object> resultMap = Maps.newLinkedHashMap();
     for (GroupMembershipBean gmb : results) {

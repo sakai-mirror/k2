@@ -47,6 +47,8 @@ public interface PermissionQuery {
    * Remove statement key for administrative properties and nodes.
    */
   public static final String ADMIN_REMOVE = "aremove";
+  
+  public static final String CREATE_SITE = "create.site";
 
   /**
    * @return a list of statements that should be evaluated in order to represent this

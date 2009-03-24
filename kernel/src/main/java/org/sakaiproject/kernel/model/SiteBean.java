@@ -92,6 +92,7 @@ public class SiteBean extends GroupBean {
   }
 
   /**
+   * The location of the site that this bean refers to.
    * @param sitePath
    */
   public String location(String sitePath) {

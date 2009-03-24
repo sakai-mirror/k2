@@ -23,6 +23,7 @@ import com.google.inject.Inject;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
+import org.sakaiproject.kernel.api.authz.PermissionDeniedException;
 import org.sakaiproject.kernel.api.authz.PermissionQuery;
 import org.sakaiproject.kernel.api.authz.PermissionQueryService;
 import org.sakaiproject.kernel.api.rest.Documentable;
@@ -244,6 +245,11 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
     try {
       User u = getAuthenticatedUser();
       path = PathUtils.normalizePath(path);
+
+      authzResolverService.check(path, permissionQueryService
+          .getPermission(PermissionQuery.CREATE_SITE));
+      authzResolverService.setRequestGrant("Create Site Granted");
+
       SiteBean siteBean = siteService.createSite(path, type);
       siteBean.addOwner(u.getUuid());
       siteBean.setDescription(description);
@@ -254,10 +260,13 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
       userEnvironmentResolverService
           .addMembership(u.getUuid(), siteBean.getId(), "owner");
       siteBean.save();
+
     } catch (SiteException e) {
       throw new WebApplicationException(e, Status.CONFLICT);
     } catch (WebApplicationException e) {
       throw e;
+    } catch (PermissionDeniedException e) {
+      throw new WebApplicationException(e, Status.FORBIDDEN);
     } catch (Exception e) {
       throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
     }
@@ -623,7 +632,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.api.rest.Documentable#getRestDocumentation()
    */
   public RestDescription getRestDocumentation() {
@@ -632,7 +641,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.api.rest.JaxRsSingletonProvider#getJaxRsSingleton()
    */
   public Documentable getJaxRsSingleton() {
@@ -641,7 +650,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.api.Provider#getKey()
    */
   public String getKey() {
@@ -650,7 +659,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.api.Provider#getPriority()
    */
   public int getPriority() {
@@ -659,7 +668,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.webapp.Initialisable#destroy()
    */
   public void destroy() {
@@ -668,7 +677,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.webapp.Initialisable#init()
    */
   public void init() {

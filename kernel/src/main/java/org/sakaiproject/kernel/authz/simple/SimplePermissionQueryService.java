@@ -34,7 +34,8 @@ public class SimplePermissionQueryService implements PermissionQueryService {
       .newConcurrentHashMap();
   private static final String[] PERMISSION_NAMES = {PermissionQuery.READ,
       PermissionQuery.REMOVE, PermissionQuery.WRITE, PermissionQuery.ADMIN_READ,
-      PermissionQuery.ADMIN_REMOVE, PermissionQuery.ADMIN_WRITE};
+      PermissionQuery.ADMIN_REMOVE, PermissionQuery.ADMIN_WRITE,
+      PermissionQuery.CREATE_SITE};
   static {
     for (String permission : PERMISSION_NAMES) {
       SimplePermissionQuery q = new SimplePermissionQuery(permission);

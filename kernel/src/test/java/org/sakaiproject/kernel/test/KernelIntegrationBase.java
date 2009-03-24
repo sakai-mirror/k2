@@ -145,7 +145,7 @@ public class KernelIntegrationBase {
         }
       } catch (Exception ex) {
         kernelError = true;
-        throw new Error("Found uncommitted transaction at kernel start ");
+        throw new Error("Found uncommitted transaction at kernel start ",ex);
       }
       try {
         jcrService.logout();

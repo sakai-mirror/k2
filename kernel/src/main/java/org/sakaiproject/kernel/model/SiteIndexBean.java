@@ -68,10 +68,18 @@ public class SiteIndexBean {
     this.name = name;
   }
 
+  /**
+   * The path to where the site is stored.
+   * @return
+   */
   public String getRef() {
     return ref;
   }
 
+  /**
+   * The path to where the site is stored 
+   * @param ref
+   */
   public void setRef(String ref) {
     this.ref = ref;
   }

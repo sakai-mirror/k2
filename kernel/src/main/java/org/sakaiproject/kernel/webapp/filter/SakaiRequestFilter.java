@@ -149,6 +149,7 @@ public class SakaiRequestFilter implements Filter {
       }
       commit();
     } catch (SecurityException se) {
+      se.printStackTrace();
       rollback();
       // catch any Security exceptions and send a 401
       wresponse.reset();

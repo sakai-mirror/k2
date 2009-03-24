@@ -102,4 +102,10 @@ public interface SiteService {
    * @return a map of members meta data.
    */
   Map<String, Object> getMemberList(String path, CollectionOptions collectionOptions);
+
+  /**
+   * @param groupDefFile
+   * @return
+   */
+  String locateSite(String groupDefFile);
 }

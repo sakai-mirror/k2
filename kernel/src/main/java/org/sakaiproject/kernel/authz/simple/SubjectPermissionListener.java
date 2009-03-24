@@ -28,6 +28,7 @@ import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
+import org.sakaiproject.kernel.api.site.SiteService;
 import org.sakaiproject.kernel.jcr.api.JcrContentListener;
 import org.sakaiproject.kernel.model.GroupBean;
 import org.sakaiproject.kernel.model.RoleBean;
@@ -59,6 +60,7 @@ public class SubjectPermissionListener implements JcrContentListener {
   private final JCRNodeFactoryService jcrNodeFactoryService;
   private final EntityManager entityManager;
   private final SubjectPermissionService subjectPermissionService;
+  private final SiteService siteService;
 
   /**
    * @param entityManager
@@ -71,11 +73,13 @@ public class SubjectPermissionListener implements JcrContentListener {
       BeanConverter beanConverter,
       SessionManagerService sessionManagerService,
       SubjectPermissionService subjectPermissionService,
-      EntityManager entityManager) {
+      EntityManager entityManager,
+      SiteService siteService ) {
     this.jcrNodeFactoryService = jcrNodeFactoryService;
     this.beanConverter = beanConverter;
     this.subjectPermissionService = subjectPermissionService;
     this.entityManager = entityManager;
+    this.siteService = siteService;
   }
 
   /**
@@ -92,7 +96,6 @@ public class SubjectPermissionListener implements JcrContentListener {
         String groupBody = IOUtils.readFully(in, "UTF-8");
         if (groupBody != null && groupBody.length() > 0) {
           EntityTransaction transaction = entityManager.getTransaction();
-          System.err.println("SubjectPermissionListern: Thread is "+Thread.currentThread()+" entityManager is "+entityManager+" transaction "+transaction);
 
           if ( !transaction.isActive()) {
             transaction.begin();
@@ -204,7 +207,9 @@ public class SubjectPermissionListener implements JcrContentListener {
   }
 
   private void updateSiteIndex(String groupBody, String filePath) {
+    
     SiteBean site = beanConverter.convertToObject(groupBody, SiteBean.class);
+    String sitePath = siteService.locateSite(filePath);
     if (site.getId() != null) {
       // look for an existing index first.
       Query query = entityManager
@@ -216,12 +221,12 @@ public class SubjectPermissionListener implements JcrContentListener {
       if (sitesList.size() > 0) {
         index = (SiteIndexBean) sitesList.get(0);
         index.setName(site.getName());
-        index.setRef(filePath);
+        index.setRef(sitePath);
       } else {
         index = new SiteIndexBean();
         index.setId(site.getId());
         index.setName(site.getName());
-        index.setRef(filePath);
+        index.setRef(sitePath);
       }
       entityManager.persist(index);
 
