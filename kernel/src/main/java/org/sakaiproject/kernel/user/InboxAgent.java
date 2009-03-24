@@ -18,27 +18,21 @@
 
 package org.sakaiproject.kernel.user;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-
-import javax.jcr.query.Query;
-
 import com.google.inject.Inject;
 
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
-
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
-
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
-
 import org.sakaiproject.kernel.api.user.UserFactoryService;
 import org.sakaiproject.kernel.api.user.UserProvisionAgent;
-
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
-
 import org.sakaiproject.kernel.util.JcrUtils;
+
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+import javax.jcr.query.Query;
 
 public class InboxAgent implements UserProvisionAgent {
 
