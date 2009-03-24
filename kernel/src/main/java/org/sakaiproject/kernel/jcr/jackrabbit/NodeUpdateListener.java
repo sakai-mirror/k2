@@ -49,6 +49,7 @@ import javax.jcr.observation.ObservationManager;
 public class NodeUpdateListener implements EventListener, EventRegistration {
 
   private static final Log LOG = LogFactory.getLog(NodeUpdateListener.class);
+  private static final boolean debug = LOG.isDebugEnabled();
   private JCRService jcrService;
   private CacheManagerService cacheManagerService;
 
@@ -111,7 +112,9 @@ public class NodeUpdateListener implements EventListener, EventRegistration {
             Lock lock = jcrService.lock(n);
             try {
               n.setProperty(JCRConstants.JCR_CREATEDBY, e.getUserID());
-              LOG.info("Node created by " + e.getUserID());
+              if (debug) {
+                LOG.debug("Node created by " + e.getUserID());
+              }
               if (!n.hasProperty(JCRConstants.JCR_CREATED)) {
                 GregorianCalendar now = new GregorianCalendar();
                 n.setProperty(JCRConstants.JCR_CREATED, now);
@@ -125,7 +128,9 @@ public class NodeUpdateListener implements EventListener, EventRegistration {
               Lock lock = jcrService.lock(n);
               try {
                 n.setProperty(JCRConstants.JCR_MODIFIEDBY, e.getUserID());
-                LOG.info("Node modified by " + e.getUserID());
+                if (debug) {
+                  LOG.debug("Node modified by " + e.getUserID());
+                }
                 n.save();
               } finally {
                 lock.unlock();
@@ -137,7 +142,9 @@ public class NodeUpdateListener implements EventListener, EventRegistration {
                 Lock lock = jcrService.lock(n);
                 try {
                   n.setProperty(JCRConstants.JCR_MODIFIEDBY, e.getUserID());
-                  LOG.info("Node modified by " + e.getUserID() + " previously " + userId);
+                  if (debug) {
+                    LOG.debug("Node modified by " + e.getUserID() + " previously " + userId);
+                  }
                   n.save();
                 } finally {
                   lock.unlock();
