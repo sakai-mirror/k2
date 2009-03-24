@@ -63,7 +63,7 @@ public class MessagingModule extends AbstractModule {
         Scopes.SINGLETON);
 
     // create messaging service
-    bind(MessagingService.class).to(JmsMessagingService.class).in(
+    bind(MessagingService.class).to(JcrMessagingService.class).in(
         Scopes.SINGLETON);
   }
 }

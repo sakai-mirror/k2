@@ -355,4 +355,5 @@ public interface JCRConstants {
 
   public static final String JCR_LABELS = "sakaijcr:labels";
   public static final String JCR_MESSAGE_TYPE = "sakaijcr:messageType";
+  public static final String JCR_MESSAGE_RCPTS = "sakaijcr:messageRcpts";
 }

@@ -22,6 +22,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.name.Named;
 
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.mail.Email;
@@ -29,7 +30,7 @@ import org.sakaiproject.kernel.api.email.CommonsEmailHandler;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.messaging.MessagingException;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
-import org.sakaiproject.kernel.messaging.JmsMessagingService;
+import org.sakaiproject.kernel.messaging.JcrMessagingService;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -37,13 +38,14 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
-public class EmailMessagingService extends JmsMessagingService implements
+public class EmailMessagingService extends JcrMessagingService implements
     CommonsEmailHandler {
 
   private static final Log LOG = LogFactory.getLog(EmailMessagingService.class);
@@ -52,6 +54,7 @@ public class EmailMessagingService extends JmsMessagingService implements
   private Long clientId = Long.valueOf(1L); // /always use the synchronized getters
                                         // and setters
 
+  private ActiveMQConnectionFactory connectionFactory;
   private ArrayList<Connection> connections = new ArrayList<Connection>();
   private ConcurrentHashMap<String, Session> sessions = new ConcurrentHashMap<String, Session>();
 
@@ -74,10 +77,11 @@ public class EmailMessagingService extends JmsMessagingService implements
    */
   @Inject
   public EmailMessagingService(
-      @Named(JmsMessagingService.PROP_ACTIVEMQ_BROKER_URL) String brokerUrl,
+      @Named(JcrMessagingService.PROP_ACTIVEMQ_BROKER_URL) String brokerUrl,
       JCRNodeFactoryService jcrNodeFactory, BeanConverter beanConverter,
       Injector injector) {
-    super(brokerUrl, jcrNodeFactory, beanConverter, injector);
+    super(jcrNodeFactory, beanConverter, injector);
+    connectionFactory = new ActiveMQConnectionFactory(brokerUrl);
     try {
       // prob want to use username,pw here
       Connection conn = connectionFactory.createTopicConnection();
@@ -95,6 +99,18 @@ public class EmailMessagingService extends JmsMessagingService implements
     startConnections();
     createSessions();
 
+  }
+
+  public void setConnectionFactory(ActiveMQConnectionFactory connectionFactory) {
+    this.connectionFactory = connectionFactory;
+  }
+
+  public void setConnectionFactory(ConnectionFactory connectionFactory) {
+    this.connectionFactory = (ActiveMQConnectionFactory) connectionFactory;
+  }
+
+  public ConnectionFactory getConnectionFactory() {
+    return connectionFactory;
   }
 
   private void startConnections() {

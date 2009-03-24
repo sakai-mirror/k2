@@ -37,7 +37,7 @@ public class JmsSessionProvider implements Provider<Session> {
 
   @Inject
   public JmsSessionProvider(
-      @Named(JmsMessagingService.PROP_ACTIVEMQ_BROKER_URL) String url) {
+      @Named(JcrMessagingService.PROP_ACTIVEMQ_BROKER_URL) String url) {
     connectionFactory = new ActiveMQConnectionFactory(url);
   }
 

@@ -20,9 +20,7 @@ package org.sakaiproject.kernel.messaging;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.google.inject.name.Named;
 
-import org.apache.activemq.ActiveMQConnectionFactory;
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
@@ -36,40 +34,24 @@ import java.io.IOException;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
-import javax.jms.ConnectionFactory;
 
 /**
  *
  */
-public class JmsMessagingService implements MessagingService {
+public class JcrMessagingService implements MessagingService {
   public static final String PROP_ACTIVEMQ_BROKER_URL = "jms.brokerurl";
-
-  protected ActiveMQConnectionFactory connectionFactory = null;
 
   private Injector injector;
   private JCRNodeFactoryService jcrNodeFactory;
   private BeanConverter beanConverter;
 
   @Inject
-  public JmsMessagingService(@Named(PROP_ACTIVEMQ_BROKER_URL) String brokerUrl,
-      JCRNodeFactoryService jcrNodeFactory, BeanConverter beanConverter,
+  public JcrMessagingService(JCRNodeFactoryService jcrNodeFactory,
+      BeanConverter beanConverter,
       Injector injector) {
-    connectionFactory = new ActiveMQConnectionFactory(brokerUrl);
     this.jcrNodeFactory = jcrNodeFactory;
     this.injector = injector;
     this.beanConverter = beanConverter;
-  }
-
-  public JmsMessagingService(ActiveMQConnectionFactory connectionFactory) {
-    this.connectionFactory = connectionFactory;
-  }
-
-  public JmsMessagingService(ConnectionFactory connectionFactory) {
-    this.connectionFactory = (ActiveMQConnectionFactory) connectionFactory;
-  }
-
-  public ConnectionFactory getConnectionFactory() {
-    return connectionFactory;
   }
 
   /**
@@ -86,6 +68,7 @@ public class JmsMessagingService implements MessagingService {
           .getBytes("UTF-8"));
       Node n = jcrNodeFactory.setInputStream(path, bais, "application/json");
       n.setProperty(JCRConstants.JCR_MESSAGE_TYPE, msg.getType());
+      n.setProperty(JCRConstants.JCR_MESSAGE_RCPTS, msg.getTo());
     } catch (JCRNodeFactoryServiceException e) {
       // FIXME do something here
     } catch (RepositoryException e) {
