@@ -102,7 +102,7 @@ public class JCRVersionHistoryFunction extends JCRSDataFunction {
       List<JCRNodeMap> versions = Lists.newArrayList();
       for (VersionIterator vi = vh.getAllVersions(); vi.hasNext();) {
         Version v = vi.nextVersion();
-        JCRNodeMap nm = new JCRNodeMap(v, 0, rp);
+        JCRNodeMap nm = new JCRNodeMap(v, 1, rp);
         versions.add(nm);
       }
       resultMap.put("versions", versions);
