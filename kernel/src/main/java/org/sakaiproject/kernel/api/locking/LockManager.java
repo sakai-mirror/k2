@@ -28,6 +28,7 @@ public interface LockManager {
    * @return
    */
   Lock getLock(String id);
+
   /**
    * @param id
    * @param create
@@ -38,8 +39,14 @@ public interface LockManager {
   /**
    * @param id
    * @return
-   * @throws LockTimeoutException indicates that a lock was not achieved within the a timeout (30s)
+   * @throws LockTimeoutException
+   *           indicates that a lock was not achieved within the a timeout (30s)
    */
   Lock waitForLock(String id) throws LockTimeoutException;
+
+  /**
+   * clear the locks associated with this request.
+   */
+  void clearLocks();
 
 }

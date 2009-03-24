@@ -32,6 +32,7 @@ import org.apache.jackrabbit.core.config.ConfigurationException;
 import org.apache.jackrabbit.core.config.RepositoryConfig;
 import org.apache.jackrabbit.core.nodetype.NodeTypeManagerImpl;
 import org.sakaiproject.kernel.api.KernelConfigurationException;
+import org.sakaiproject.kernel.api.locking.LockManager;
 import org.sakaiproject.kernel.internal.api.InitializationAction;
 import org.sakaiproject.kernel.internal.api.KernelInitializtionException;
 import org.sakaiproject.kernel.jcr.jackrabbit.persistance.BundleDbSharedPersistenceManager;
@@ -159,6 +160,8 @@ public class RepositoryBuilder implements InitializationAction {
   private String nodeTypeConfiguration;
 
   private TransactionManager transactionManager;
+  
+  private LockManager lockManager;
 
   // private String repositoryConfig;
 
@@ -216,7 +219,7 @@ public class RepositoryBuilder implements InitializationAction {
       @Named(NAME_REPOSITORY_CONFIG_LOCATION) String repositoryConfigTemplate,
       @Named(NAME_NODE_TYPE_CONFIGURATION) String nodeTypeConfiguration,
       @Named(NAME_NAMESPACES_MAP) String namespacesConfiguration, Injector injector,
-      TransactionManager transactionManager) throws IOException, RepositoryException {
+      TransactionManager transactionManager, LockManager lockManager) throws IOException, RepositoryException {
 
     dbURL = dbURL.replaceAll("&(?!amp;)", "&amp;");
 
@@ -255,6 +258,7 @@ public class RepositoryBuilder implements InitializationAction {
     this.namespacesConfiguration = namespacesConfiguration;
     this.nodeTypeConfiguration = nodeTypeConfiguration;
     this.transactionManager = transactionManager;
+    this.lockManager = lockManager;
 
   }
 
@@ -279,7 +283,7 @@ public class RepositoryBuilder implements InitializationAction {
 
       RepositoryConfig rc = RepositoryConfig.create(bais, repositoryHome);
 
-      repository = new SakaiRepositoryImpl(rc, injector, transactionManager);
+      repository = new SakaiRepositoryImpl(rc, injector, transactionManager, lockManager);
 
       Runtime.getRuntime().addShutdownHook(new Thread() {
         /**

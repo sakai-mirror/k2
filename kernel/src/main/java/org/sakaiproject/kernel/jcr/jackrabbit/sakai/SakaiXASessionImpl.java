@@ -28,11 +28,18 @@ import org.apache.jackrabbit.core.config.WorkspaceConfig;
 import org.apache.jackrabbit.core.security.AMContext;
 import org.apache.jackrabbit.core.security.AccessManager;
 import org.apache.jackrabbit.core.security.AuthContext;
+import org.sakaiproject.kernel.api.locking.LockManager;
 
 import java.io.File;
 
 import javax.jcr.AccessDeniedException;
+import javax.jcr.InvalidItemStateException;
+import javax.jcr.ItemExistsException;
 import javax.jcr.RepositoryException;
+import javax.jcr.lock.LockException;
+import javax.jcr.nodetype.ConstraintViolationException;
+import javax.jcr.nodetype.NoSuchNodeTypeException;
+import javax.jcr.version.VersionException;
 import javax.security.auth.Subject;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
@@ -48,6 +55,7 @@ public class SakaiXASessionImpl extends XASessionImpl {
 
   private static final Log LOG = LogFactory.getLog(SakaiXASessionImpl.class);
   private Injector injector;
+  private LockManager lockManager;
   private static ThreadLocal<Injector> injectorHolder = new ThreadLocal<Injector>() {
     @Override
     protected Injector initialValue() {
@@ -64,11 +72,13 @@ public class SakaiXASessionImpl extends XASessionImpl {
    * @throws RepositoryException
    */
   public SakaiXASessionImpl(SakaiRepositoryImpl rep, Injector injector,
-      AuthContext loginContext, WorkspaceConfig wspConfig, TransactionManager transactionManager) throws AccessDeniedException,
-      RepositoryException {
+      AuthContext loginContext, WorkspaceConfig wspConfig,
+      TransactionManager transactionManager, LockManager lockManager)
+      throws AccessDeniedException, RepositoryException {
     super(prepareInjector(rep, injector), loginContext, wspConfig);
     setInjector(injector);
     bind(transactionManager);
+    this.lockManager = lockManager;
   }
 
   /**
@@ -88,6 +98,7 @@ public class SakaiXASessionImpl extends XASessionImpl {
 
   /**
    * {@inheritDoc}
+   *
    * @see org.apache.jackrabbit.core.XASessionImpl#logout()
    */
   @Override
@@ -97,17 +108,19 @@ public class SakaiXASessionImpl extends XASessionImpl {
 
   /**
    * {@inheritDoc}
+   *
    * @see java.lang.Object#finalize()
    */
   @Override
   protected void finalize() throws Throwable {
     try {
       logout();
-    } catch ( Exception ex ) {
+    } catch (Exception ex) {
       LOG.warn("Failed to logout of finalizing session");
     }
     super.finalize();
   }
+
   /**
    * @param transactionManager
    * @throws RepositoryException
@@ -195,5 +208,17 @@ public class SakaiXASessionImpl extends XASessionImpl {
     }
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @see org.apache.jackrabbit.core.SessionImpl#save()
+   */
+  @Override
+  public void save() throws AccessDeniedException, ItemExistsException,
+      ConstraintViolationException, InvalidItemStateException, VersionException,
+      LockException, NoSuchNodeTypeException, RepositoryException {
+    super.save();
+    lockManager.clearLocks();
+  }
 
 }

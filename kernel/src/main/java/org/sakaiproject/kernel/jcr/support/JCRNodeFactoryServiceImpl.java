@@ -203,6 +203,8 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
           break;
         }
       }
+      LOG.info("Locking Node on creation "+currentNode.getPath());
+      jcrService.lock(currentNode);
       for( ; i < pathElements.length; i++ ) {
         if (i < pathElements.length - 1 || JCRConstants.NT_FOLDER.equals(type)) {
           savedNode = pathElements[i];
@@ -343,7 +345,7 @@ public class JCRNodeFactoryServiceImpl implements JCRNodeFactoryService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService#setOwner(java.lang.String,
    *      java.lang.String)
    */

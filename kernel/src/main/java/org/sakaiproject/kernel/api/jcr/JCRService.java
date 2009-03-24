@@ -166,9 +166,14 @@ public interface JCRService {
    * The lock is scoped to the request but will auto expire after time or memory pressure.
    * @param node the node to be locked
    * @return the lock bound to this thread
-   * @throws RepositoryException 
-   * @throws LockTimeoutException 
+   * @throws RepositoryException
+   * @throws LockTimeoutException
    */
   Lock lock(Node node) throws RepositoryException, LockTimeoutException;
+
+  /**
+   * clear open locks on the session.
+   */
+  void clearLocks();
 
 }

@@ -29,6 +29,7 @@ import org.apache.jackrabbit.core.config.WorkspaceConfig;
 import org.apache.jackrabbit.core.fs.FileSystem;
 import org.apache.jackrabbit.core.security.AuthContext;
 import org.apache.jackrabbit.core.state.CacheManager;
+import org.sakaiproject.kernel.api.locking.LockManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,6 +55,7 @@ public class SakaiRepositoryImpl extends RepositoryImpl {
       return new HashMap<String, Session>();
     };
   };
+  private LockManager lockManager;
 
   /**
    * @param repConfig
@@ -61,12 +63,14 @@ public class SakaiRepositoryImpl extends RepositoryImpl {
    * @throws RepositoryException
    */
   public SakaiRepositoryImpl(RepositoryConfig repConfig, Injector injector,
-      TransactionManager transactionManager) throws RepositoryException {
+      TransactionManager transactionManager, LockManager lockManager) throws RepositoryException {
     super(repConfig);
     this.injector = injector;
     this.transactionManager = transactionManager;
+    this.lockManager = lockManager;
     long maxMemory = Runtime.getRuntime().maxMemory() / (1024 * 1024);
     setCacheSize(maxMemory);
+    
   }
 
   public void setCacheSize(long memoryMB) {
@@ -92,7 +96,7 @@ public class SakaiRepositoryImpl extends RepositoryImpl {
   protected SessionImpl createSessionInstance(AuthContext loginContext,
       WorkspaceConfig wspConfig) throws AccessDeniedException, RepositoryException {
     return new SakaiXASessionImpl(this, injector, loginContext, wspConfig,
-        transactionManager);
+        transactionManager, lockManager);
   }
 
   /**

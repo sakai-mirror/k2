@@ -218,4 +218,9 @@ public class UnboundJCRServiceImpl implements JCRService {
     return lockManager.getLock(lockable.getUUID());
   }
 
+  
+  public void clearLocks() {
+    lockManager.clearLocks();
+  }
+
 }

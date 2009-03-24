@@ -18,24 +18,19 @@
 
 package org.sakaiproject.kernel.jcr.jackrabbit;
 
+import org.sakaiproject.kernel.api.memory.ThreadBound;
+
 import javax.jcr.Credentials;
 import javax.jcr.LoginException;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.sakaiproject.kernel.api.memory.ThreadBound;
-
 public class SessionHolder implements ThreadBound {
-  @SuppressWarnings("unused")
-  private static final Log LOG = LogFactory.getLog(SessionHolder.class);
 
   private Session session = null;
 
   private boolean keepLoggedIn = false;
-
 
   public SessionHolder(RepositoryBuilder repositoryBuilder,
       Credentials repositoryCredentials, String workspace)
@@ -64,7 +59,11 @@ public class SessionHolder implements ThreadBound {
     }
   }
 
+
   public void keepLoggedIn() {
     keepLoggedIn = true;
   }
+  
+  
+
 }

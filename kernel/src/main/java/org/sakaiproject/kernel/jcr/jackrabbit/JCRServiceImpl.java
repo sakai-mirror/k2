@@ -35,6 +35,7 @@ import org.sakaiproject.kernel.api.memory.Cache;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.SakaiJCRCredentials;
+import org.sakaiproject.kernel.util.StringUtils;
 
 import java.util.List;
 
@@ -79,7 +80,7 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
 
   /**
    * @throws RepositoryException
-   *
+   * 
    */
   @Inject
   public JCRServiceImpl(RepositoryBuilder repositoryBuilder,
@@ -96,7 +97,7 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see org.sakaiproject.kernel.api.RequiresStop#stop()
    */
   public void stop() {
@@ -109,7 +110,7 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
   }
 
   public void save() throws RepositoryException {
-    if ( hasActiveSession() ) {
+    if (hasActiveSession()) {
       getSession().save();
     }
   }
@@ -149,7 +150,7 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
   /**
    * @return
    */
-  private Cache<Object> getRequestCache() {
+  private Cache<SessionHolder> getRequestCache() {
     if (requestScope) {
       return cacheManager.getCache(JCR_REQUEST_CACHE, CacheScope.REQUEST);
     } else {
@@ -160,7 +161,7 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see org.sakaiproject.kernel.api.jcr.JCRService#logout()
    */
   public void logout() throws LoginException, RepositoryException {
@@ -186,12 +187,25 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
    *
    */
   private void clearSessionHolder() {
-    getRequestCache().remove(JCR_SESSION_HOLDER);
+    Cache<SessionHolder> cache = getRequestCache();
+    SessionHolder sh = cache.get(JCR_SESSION_HOLDER);
+    if (sh != null) {
+      lockManager.clearLocks();
+      cache.remove(JCR_SESSION_HOLDER);
+    }
+  }
+
+  public void clearLocks() {
+    Cache<SessionHolder> cache = getRequestCache();
+    SessionHolder sh = cache.get(JCR_SESSION_HOLDER);
+    if (sh != null) {
+      lockManager.clearLocks();
+    }
   }
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see org.sakaiproject.kernel.api.jcr.JCRService#getRepository()
    */
   public Repository getRepository() {
@@ -200,7 +214,7 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see org.sakaiproject.kernel.api.jcr.JCRService#setCurrentSession(javax.jcr. Session)
    */
   public Session setSession(Session session) {
@@ -239,7 +253,7 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.api.jcr.JCRService#getDefaultWorkspace()
    */
   public String getDefaultWorkspace() {
@@ -248,7 +262,7 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.api.jcr.JCRService#getObservationManager()
    */
   public ObservationManager getObservationManager() {
@@ -280,6 +294,7 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
 
   /**
    * {@inheritDoc}
+   * 
    * @see org.sakaiproject.kernel.api.jcr.JCRService#isExternalEvent(javax.jcr.observation.Event)
    */
   public boolean isExternalEvent(Event event) {
@@ -289,7 +304,7 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
 
   /**
    * {@inheritDoc}
-   *
+   * 
    * @see org.sakaiproject.kernel.api.jcr.JCRService#getQueryManager()
    */
   public QueryManager getQueryManager() throws RepositoryException {
@@ -299,15 +314,23 @@ public class JCRServiceImpl implements JCRService, RequiresStop {
 
   /**
    * {@inheritDoc}
-   * @throws RepositoryException 
-   * @throws LockTimeoutException 
+   * 
+   * @throws RepositoryException
+   * @throws LockTimeoutException
    * @see org.sakaiproject.kernel.api.jcr.JCRService#lock(javax.jcr.Node)
    */
   public Lock lock(Node node) throws RepositoryException, LockTimeoutException {
     Node lockable = node;
-    while ( lockable.isNew() ) {
+    while (lockable.isNew()) {
       lockable = lockable.getParent();
     }
-    return lockManager.waitForLock(lockable.getUUID());
+    String lockId = null;
+    try {
+      lockId = StringUtils.sha1Hash(lockable.getPath());
+    } catch (Exception e) {
+      throw new RepositoryException("Failed to locate SHA1 Hash algoritm ", e);
+    }
+    Lock lock = lockManager.waitForLock(lockId);
+    return lock;
   }
 }

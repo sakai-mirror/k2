@@ -19,6 +19,8 @@ package org.sakaiproject.kernel.locking;
 
 import com.google.inject.Inject;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.locking.Lock;
 import org.sakaiproject.kernel.api.locking.LockManager;
 import org.sakaiproject.kernel.api.locking.LockTimeoutException;
@@ -44,6 +46,7 @@ public class LockManagerImpl implements LockManager {
    *
    */
   private static final String REQUEST_LOCKS = "lockmanager.requestmap";
+  private static final Log LOG = LogFactory.getLog(LockManagerImpl.class);
   private CacheManagerService cacheManagerService;
   private Cache<LockImpl> lockMap;
   private long instanceId;
@@ -89,8 +92,7 @@ public class LockManagerImpl implements LockManager {
         synchronized (monitor) {
           lock = lockMap.get(id);
           if (lock == null || !lock.isLocked()) {
-            Cache<LockImpl> requestLocks = cacheManagerService.getCache(REQUEST_LOCKS,
-                CacheScope.REQUEST);
+            Cache<LockImpl> requestLocks = getRequestLocks();
             lock = new LockImpl(id, random.nextLong(), threadId.get(), instanceId);
             lockMap.put(id, lock);
             requestLocks.put(id, lock);
@@ -103,12 +105,21 @@ public class LockManagerImpl implements LockManager {
   }
 
   /**
+   * @return
+   */
+  private Cache<LockImpl> getRequestLocks() {
+    return cacheManagerService.getCache(REQUEST_LOCKS,
+        CacheScope.REQUEST);
+  }
+
+  /**
    * Unlock only if the current thread is the owner.
    *
    * @param lock
    */
   protected void unlock(LockImpl lock) {
     if (lock.isOwner() && lock.isLocked()) {
+      LOG.info(Thread.currentThread() + " unlocked " + lock.getLocked());
       lock.setLocked(false);
       synchronized (monitor) {
         lockMap.remove(lock.getLocked());
@@ -138,15 +149,20 @@ public class LockManagerImpl implements LockManager {
   public Lock waitForLock(String id) throws LockTimeoutException {
     long sleepTime = 100;
     int tries = 0;
+    LOG.info(Thread.currentThread() + " locking " + id);
     while (tries++ < 300) {
       Lock lock = getLock(id);
       if (lock != null && lock.isOwner()) {
+        LOG.info(Thread.currentThread() + " lock Granted " + lock.getLocked());
         return lock;
       }
       if (sleepTime < 500) {
         sleepTime = sleepTime + 10;
       }
       try {
+        if (tries % 5 == 0) {
+          LOG.info(Thread.currentThread() + " locking " + id);
+        }
         if (tries % 100 == 0) {
           System.err.println(Thread.currentThread() + " Waiting for " + sleepTime
               + " ms " + tries);
@@ -155,8 +171,17 @@ public class LockManagerImpl implements LockManager {
       } catch (InterruptedException e) {
       }
     }
-    throw new LockTimeoutException("Failed to lock node "+id);
+    throw new LockTimeoutException("Failed to lock node " + id);
   }
 
+  /**
+   * {@inheritDoc}
+   * @see org.sakaiproject.kernel.api.locking.LockManager#clearLocks()
+   */
+  public void clearLocks() {
+    Cache<LockImpl> requestLocks = getRequestLocks();
+    // clearing the requestLocks will invoke unbind which will unlock.
+    requestLocks.clear();
+  }
 
 }

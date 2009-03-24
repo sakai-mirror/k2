@@ -99,6 +99,7 @@ public class JcrUtilsT {
   public void addLabel() throws Exception {
     Session session = jcrService.loginSystem();
     Node node = nodeFactory.getNode(randomFile1);
+    jcrService.lock(node);
     JcrUtils.addNodeLabel(node, "test label");
     session.save();
 
@@ -113,6 +114,7 @@ public class JcrUtilsT {
   public void addMultipleLabels() throws Exception {
     Session session = jcrService.loginSystem();
     Node node = nodeFactory.getNode(randomFile1);
+    jcrService.lock(node);
     JcrUtils.addNodeLabel(node, "test label");
     JcrUtils.addNodeLabel(node, "another test label");
     session.save();
@@ -217,7 +219,7 @@ public class JcrUtilsT {
                 Session session = jcrService.loginSystem();
                 Node node = (Node) session.getItem(randomFile1);
                 Lock lock = jcrService.lock(node);
-                LOG.info("Locked "+lock.getLocked());
+                LOG.info("Locked +++++++++++++++++++++++++++++"+lock.getLocked());
                 locked++;
                 assertEquals(1, locked);
                 try {
@@ -225,22 +227,20 @@ public class JcrUtilsT {
                 } catch (Exception e) {
 
                 }
-                session.save();
-                LOG.info("Unlocking "+lock.getLocked());
+                LOG.info("Unlocking ---------------------------"+lock.getLocked());
                 locked--;
                 assertEquals(0, locked);
-                lock.unlock();
+                session.save(); // save performs an unlock
                 Thread.sleep(100);
                 lock = jcrService.lock(node);
-                LOG.info("Locked "+lock.getLocked());
+                LOG.info("Locked +++++++++++++++++++++++++++++++2"+lock.getLocked());
                 locked++;
                 assertEquals(1, locked);
                 node.setProperty("sakaijcr:test", "new value" + random.nextLong());
-                session.save();
-                LOG.info("Unlocking "+lock.getLocked());
+                LOG.info("Unlocking -----------------------------2"+lock.getLocked());
                 locked--;
                 assertEquals(0, locked);
-                lock.unlock();
+                session.save(); // save performs an unlock
               } catch (Exception e) {
                 failed++;
                 e.printStackTrace();
