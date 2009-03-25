@@ -100,6 +100,7 @@ public class ResteasyServlet extends HttpServletDispatcher {
           if (doc == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
           } else {
+            response.setContentType("text/html");
             PrintWriter writer = response.getWriter();
             writer.write(doc.getRestDocumentation().toHtml());
             writer.flush();
