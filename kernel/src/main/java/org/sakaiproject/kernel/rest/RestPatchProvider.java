@@ -28,6 +28,7 @@ import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.user.UserFactoryService;
 import org.sakaiproject.kernel.util.IOUtils;
+import org.sakaiproject.kernel.util.PathUtils;
 import org.sakaiproject.kernel.util.StringUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.kernel.webapp.RestServiceFaultException;
@@ -223,6 +224,7 @@ public class RestPatchProvider implements RestProvider {
       UnsupportedEncodingException, IOException {
 
     String path = StringUtils.join(elements, 2, '/');
+    path = PathUtils.normalizePath(path);
     return saveProperties(path, new MapParams(request));
   }
 
@@ -245,6 +247,7 @@ public class RestPatchProvider implements RestProvider {
 
     String path = StringUtils.join(elements, 2, '/');
     path = userFactoryService.getUserSharedPrivatePath(user) + path;
+    path = PathUtils.normalizePath(path);
     return saveProperties(path, new MapParams(request));
   }
 
