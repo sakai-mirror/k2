@@ -59,7 +59,7 @@ public class JpaSmartNodeHandler extends AbstractSmartNodeHandler {
    */
   @SuppressWarnings("unchecked")
   public void handle(HttpServletRequest request, HttpServletResponse response,
-      Node node, String statement) throws RepositoryException, IOException {
+      Node node, Node smartNode, String statement) throws RepositoryException, IOException {
     javax.persistence.Query jpaQuery = entityManager.createQuery(statement);
     List results = jpaQuery.getResultList();
     /** FIXME make results into json */

@@ -60,7 +60,7 @@ public class NamedJpaSmartNodeHandler extends AbstractSmartNodeHandler {
    */
   @SuppressWarnings("unchecked")
   public void handle(HttpServletRequest request, HttpServletResponse response,
-      Node node, String statement) throws RepositoryException, IOException {
+      Node node, Node smartNode, String statement) throws RepositoryException, IOException {
     javax.persistence.Query jpaQuery = entityManager
         .createNamedQuery(statement);
     List results = jpaQuery.getResultList();

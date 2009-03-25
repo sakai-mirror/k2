@@ -117,7 +117,7 @@ public class InboxActionUnitT extends SmartNodeHandlerBaseT {
     JcrUtils.makeSmartNode(inboxNode, Query.XPATH, query);
     session.save();
 
-    xpathHandler.handle(request, response, inboxNode, query);
+    xpathHandler.handle(request, response, inboxNode, inboxNode, query);
 
     String json = outputStream.toString();
     System.err.println("Results: " + json);
@@ -137,7 +137,7 @@ public class InboxActionUnitT extends SmartNodeHandlerBaseT {
     JcrUtils.makeSmartNode(inboxNode, Query.XPATH, query);
     session.save();
 
-    sqlHandler.handle(request, response, inboxNode, query);
+    sqlHandler.handle(request, response, inboxNode, inboxNode, query);
 
     String json = outputStream.toString();
     System.err.println("Results: " + json);
@@ -153,6 +153,6 @@ public class InboxActionUnitT extends SmartNodeHandlerBaseT {
   public void inboxCount() throws Exception {
     String statement = "select count() from nt:file where jcr:path like "
         + prefix + "%";
-    sqlHandler.handle(request, response, inboxNode, statement);
+    sqlHandler.handle(request, response, inboxNode, inboxNode, statement);
   }
 }

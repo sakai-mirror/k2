@@ -79,7 +79,7 @@ public class SqlSmartNodeHandler extends JcrSmartNodeHandler {
    *      java.lang.String)
    */
   public void handle(HttpServletRequest request, HttpServletResponse response,
-      Node node, String statement) throws RepositoryException, IOException {
+      Node node, Node smartNode, String statement) throws RepositoryException, IOException {
     NodeIterator nodes = performQuery(Query.SQL, statement);
     JSONArray jsonArray = transform(nodes);
     writeUtf8(response, jsonArray);

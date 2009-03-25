@@ -20,6 +20,7 @@ package org.sakaiproject.kernel.jcr.smartNode;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
+import org.apache.derby.impl.sql.compile.HasNodeVisitor;
 import org.sakaiproject.kernel.api.jcr.SmartNodeHandler;
 
 import java.util.ArrayList;
@@ -40,12 +41,14 @@ public class SmartNodeHandlerListProvider implements
   public SmartNodeHandlerListProvider(XpathSmartNodeHandler xpathHandler,
       SqlSmartNodeHandler sqlHandler,
       JpaSmartNodeHandler jpaHandler,
-      NamedJpaSmartNodeHandler namedJpaHandler) {
+      NamedJpaSmartNodeHandler namedJpaHandler,
+      SiteSmartNodeHandler siteSmartNodeHandler) {
     handlers = new ArrayList<SmartNodeHandler>();
     handlers.add(xpathHandler);
     handlers.add(sqlHandler);
     handlers.add(jpaHandler);
     handlers.add(namedJpaHandler);
+    handlers.add(siteSmartNodeHandler);
   }
 
   /**

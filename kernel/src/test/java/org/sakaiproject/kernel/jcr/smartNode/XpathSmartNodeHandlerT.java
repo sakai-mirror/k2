@@ -80,7 +80,7 @@ public class XpathSmartNodeHandlerT extends SmartNodeHandlerBaseT {
     JcrUtils.makeSmartNode(baseFolder, Query.XPATH, statement);
     session.save();
 
-    handler.handle(request, response, baseFolder, statement);
+    handler.handle(request, response, baseFolder, baseFolder, statement);
 
     String json = outputStream.toString();
     System.err.println("Results: " + json);

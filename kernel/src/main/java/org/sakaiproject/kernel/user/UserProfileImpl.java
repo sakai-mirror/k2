@@ -98,7 +98,6 @@ public class UserProfileImpl implements UserProfile {
     String profile = beanConverter.convertToString(profileMap);
     String userProfilePath = userFactoryService.getUserProfilePath(uuid);
 
-    System.err.println("Saving Profile to " + userProfilePath + " as " + profile);
     ByteArrayInputStream bais = null;
     try {
       bais = new ByteArrayInputStream(profile.getBytes("UTF-8"));

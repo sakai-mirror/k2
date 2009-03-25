@@ -321,6 +321,12 @@ public interface JCRConstants {
   String ACL_OWNER = "acl:owner";
 
   String JCR_SMARTNODE = "sakaijcr:smartNode";
+  
+  /**
+   * true Indicates that the smart node at this point is inherited, false
+   * indicates that smart node propagation stops at this point.
+   */
+  String JCR_SMARTNODE_INHERIT = "sakaijcr:inheritSmartNode";
 
   // reserved namespace for items defined by built-in node types
   String NS_JCR_PREFIX = "jcr";

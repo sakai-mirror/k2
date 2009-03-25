@@ -38,6 +38,7 @@ import org.sakaiproject.kernel.api.jcr.SmartNodeHandler;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.util.PathUtils;
+import org.sakaiproject.kernel.util.StringUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.kernel.webapp.RestServiceFaultException;
 import org.sakaiproject.sdata.tool.api.HandlerSerialzer;
@@ -589,10 +590,11 @@ public class JCRHandler extends AbstractHandler {
               length = 0;
             }
           }
-        } else if (n.hasProperty(JCRConstants.JCR_SMARTNODE)) {
-          handleSmartNode(request, response, rp, n);
         } else {
-          doDefaultGet(request, response, rp, n);
+          boolean handled = handleSmartNode(request, response, rp, n);
+          if ( !handled ) {
+            doDefaultGet(request, response, rp, n);            
+          }
         }
       }
     } catch (UnauthorizedException ape) {
@@ -625,19 +627,44 @@ public class JCRHandler extends AbstractHandler {
     }
   }
 
-  private void handleSmartNode(final HttpServletRequest request,
+  private boolean handleSmartNode(final HttpServletRequest request,
       final HttpServletResponse response, final ResourceDefinition rp, final Node n)
       throws IOException, RepositoryException {
     boolean handled = false;
 
     try {
+      Node smartNode = n;
+      Node rootNode = n.getSession().getRootNode();
+      while(!rootNode.equals(smartNode)) {
+        if ( smartNode.hasProperty(JCRConstants.JCR_SMARTNODE) ) {
+          break;
+        }
+        if ( smartNode.hasProperty(JCRConstants.JCR_SMARTNODE_INHERIT) ) {
+          String inherit = smartNode.getProperty(JCRConstants.JCR_SMARTNODE_INHERIT).toString();
+          if ( !"true".equals(inherit) ) {
+            // smart node inheritance is blocked
+            return false;
+          }
+        }
+        smartNode = smartNode.getParent();
+      }
+      if ( smartNode != n ) {
+        if ( smartNode.hasProperty(JCRConstants.JCR_SMARTNODE_INHERIT) ) {
+          String inherit = smartNode.getProperty(JCRConstants.JCR_SMARTNODE_INHERIT).getString();
+          if ( !"true".equals(inherit) ) {
+            // this smart node is not inherited
+            return false;
+          }
+        } else {
+          return false;
+        }
+      }
       // get the action property from the node
-      Property prop = n.getProperty(JCRConstants.JCR_SMARTNODE);
-      String action = prop.getString();
-
-      int colonPos = action.indexOf(":");
-      String protocol = action.substring(0, colonPos);
-      String statement = action.substring(colonPos + 1);
+      String action = smartNode.getProperty(JCRConstants.JCR_SMARTNODE).getString();
+ 
+      String[] parsedAction = StringUtils.split(action, ':', 2);
+      String protocol = parsedAction[0];
+      String statement = parsedAction[1];
 
       // get the handler from the registry based on the protocol
       Registry<String, SmartNodeHandler> registry = registryService
@@ -646,17 +673,13 @@ public class JCRHandler extends AbstractHandler {
 
       // now handle the node
       if (handler != null) {
-        handler.handle(request, response, n, statement);
+        handler.handle(request, response, n, smartNode, statement);
         handled = true;
       }
     } catch (RepositoryException e) {
       // Log this then let default handler happen
     }
-
-    // do the default get if not handled
-    if (!handled) {
-      doDefaultGet(request, response, rp, n);
-    }
+    return handled;
   }
 
   private void doDefaultGet(final HttpServletRequest request,

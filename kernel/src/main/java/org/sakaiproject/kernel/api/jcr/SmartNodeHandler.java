@@ -39,6 +39,8 @@ public interface SmartNodeHandler extends Provider<String> {
    * @param response
    * @param node
    *          The node requested.
+   * @param smartNode
+   *          The node which triggered the smart operation. 
    * @param statement
    *          The smart node statement associated to the node. This statement
    *          will not contain the language the statement is written in.
@@ -48,7 +50,7 @@ public interface SmartNodeHandler extends Provider<String> {
    *           If there's a problem writing to the response.
    */
   void handle(HttpServletRequest request, HttpServletResponse response,
-      Node node, String statement) throws RepositoryException, IOException;
+      Node node, Node smartNode, String statement) throws RepositoryException, IOException;
 
   /**
    * Get the count of the results expected from a smart node.
