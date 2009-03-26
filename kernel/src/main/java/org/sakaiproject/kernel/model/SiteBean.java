@@ -110,7 +110,7 @@ public class SiteBean extends GroupBean {
   /**
    * @return
    */
-  public String location() {
+  public String getLocation() {
     return sitePath;
   }
 

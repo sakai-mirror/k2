@@ -198,7 +198,7 @@ public class SiteServiceImpl implements SiteService {
     ByteArrayInputStream bais = null;
     try {
 
-      String path = siteBean.location();
+      String path = siteBean.getLocation();
 
       boolean isnew = false;
       try {
