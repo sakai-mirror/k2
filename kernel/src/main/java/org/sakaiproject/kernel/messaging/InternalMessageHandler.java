@@ -20,6 +20,7 @@ package org.sakaiproject.kernel.messaging;
 
 import com.google.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.Registry;
@@ -28,12 +29,10 @@ import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.messaging.Message;
-import org.sakaiproject.kernel.api.messaging.MessageConverter;
 import org.sakaiproject.kernel.api.messaging.OutboxNodeHandler;
 import org.sakaiproject.kernel.api.user.UserFactoryService;
 
 import java.io.InputStream;
-import java.util.StringTokenizer;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
@@ -48,29 +47,25 @@ public class InternalMessageHandler implements OutboxNodeHandler {
 
   private final UserFactoryService userFactory;
   private final JCRNodeFactoryService nodeFactory;
-  private final MessageConverter msgConv;
 
   @Inject
   public InternalMessageHandler(RegistryService registryService,
-      UserFactoryService userFactory, JCRNodeFactoryService nodeFactory,
-      MessageConverter msgConv) {
+      UserFactoryService userFactory, JCRNodeFactoryService nodeFactory) {
     Registry<String, OutboxNodeHandler> registry = registryService
         .getRegistry(OutboxNodeHandler.REGISTRY);
     registry.add(this);
 
     this.userFactory = userFactory;
     this.nodeFactory = nodeFactory;
-    this.msgConv = msgConv;
   }
 
   public void handle(String userID, String filePath, String fileName, Node node) {
     try {
       Property prop = node.getProperty(JCRConstants.JCR_MESSAGE_RCPTS);
       String rcptsVal = prop.getString();
-      StringTokenizer rcpts = new StringTokenizer(rcptsVal, ",");
+      String[] rcpts = StringUtils.split(rcptsVal, ",");
 
-      while (rcpts.hasMoreTokens()) {
-        String rcpt = rcpts.nextToken();
+      for (String rcpt : rcpts) {
         /** FIXME set message path for the user. */
         String msgPath = userFactory.getNewMessagePath(rcpt);
         InputStream in = nodeFactory.getInputStream(node.getPath());

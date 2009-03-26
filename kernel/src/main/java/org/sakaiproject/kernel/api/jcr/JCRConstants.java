@@ -362,4 +362,5 @@ public interface JCRConstants {
   String JCR_LABELS = "sakaijcr:labels";
   String JCR_MESSAGE_TYPE = "sakaijcr:messageType";
   String JCR_MESSAGE_RCPTS = "sakaijcr:messageRcpts";
+  String JCR_MESSAGE_DATE = "sakaijcr:messageDate";
 }

@@ -18,6 +18,7 @@
 
 package org.sakaiproject.kernel.api.messaging;
 
+
 /**
  * Service to send messages in the system. Each message is generic but can be
  * handled different depending on properties and which queue/topc the message is
@@ -33,7 +34,7 @@ public interface MessagingService {
    *
    * @param msg
    */
-  void send(Message msg);
+  void send(Message msg) throws MessagingException;
 
   /**
    * Create a message

@@ -33,8 +33,6 @@ import javax.jcr.query.QueryResult;
  *
  */
 public abstract class JcrSmartNodeHandler extends AbstractSmartNodeHandler {
-  protected static final String COUNT_PARAM = "count";
-
   private JCRService jcrService;
 
   public JcrSmartNodeHandler(JCRService jcrService) {

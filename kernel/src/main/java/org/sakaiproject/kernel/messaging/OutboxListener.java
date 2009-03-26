@@ -75,5 +75,4 @@ public class OutboxListener implements JcrContentListener {
       }
     }
   }
-
 }

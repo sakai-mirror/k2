@@ -28,8 +28,9 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.mail.Email;
 import org.sakaiproject.kernel.api.email.CommonsEmailHandler;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
+import org.sakaiproject.kernel.api.messaging.MessageConverter;
 import org.sakaiproject.kernel.api.messaging.MessagingException;
-import org.sakaiproject.kernel.api.serialization.BeanConverter;
+import org.sakaiproject.kernel.api.user.UserFactoryService;
 import org.sakaiproject.kernel.messaging.JcrMessagingService;
 
 import java.io.ByteArrayOutputStream;
@@ -78,9 +79,9 @@ public class EmailMessagingService extends JcrMessagingService implements
   @Inject
   public EmailMessagingService(
       @Named(JcrMessagingService.PROP_ACTIVEMQ_BROKER_URL) String brokerUrl,
-      JCRNodeFactoryService jcrNodeFactory, BeanConverter beanConverter,
-      Injector injector) {
-    super(jcrNodeFactory, beanConverter, injector);
+      JCRNodeFactoryService jcrNodeFactory, MessageConverter msgConverter,
+      Injector injector, UserFactoryService userFactory) {
+    super(jcrNodeFactory, msgConverter, injector, userFactory);
     connectionFactory = new ActiveMQConnectionFactory(brokerUrl);
     try {
       // prob want to use username,pw here

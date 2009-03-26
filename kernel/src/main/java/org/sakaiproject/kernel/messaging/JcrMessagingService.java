@@ -21,16 +21,21 @@ package org.sakaiproject.kernel.messaging;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 
+import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.messaging.EmailMessage;
 import org.sakaiproject.kernel.api.messaging.Message;
+import org.sakaiproject.kernel.api.messaging.MessageConverter;
+import org.sakaiproject.kernel.api.messaging.MessagingException;
 import org.sakaiproject.kernel.api.messaging.MessagingService;
-import org.sakaiproject.kernel.api.serialization.BeanConverter;
+import org.sakaiproject.kernel.api.user.UserFactoryService;
+import org.sakaiproject.kernel.util.DateUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
@@ -43,15 +48,17 @@ public class JcrMessagingService implements MessagingService {
 
   private Injector injector;
   private JCRNodeFactoryService jcrNodeFactory;
-  private BeanConverter beanConverter;
+  private MessageConverter msgConverter;
+  private UserFactoryService userFactory;
 
   @Inject
   public JcrMessagingService(JCRNodeFactoryService jcrNodeFactory,
-      BeanConverter beanConverter,
-      Injector injector) {
+      MessageConverter msgConverter, Injector injector,
+      UserFactoryService userFactory) {
     this.jcrNodeFactory = jcrNodeFactory;
     this.injector = injector;
-    this.beanConverter = beanConverter;
+    this.msgConverter = msgConverter;
+    this.userFactory = userFactory;
   }
 
   /**
@@ -59,30 +66,58 @@ public class JcrMessagingService implements MessagingService {
    *
    * @see org.sakaiproject.kernel.api.messaging.MessagingService#send(javax.jms.Message)
    */
-  public void send(Message msg) {
-    // FIXME get the real path for the outbox
-    String path = "REPLACETHIS/userenv/messages/outbox";
+  public void send(Message msg) throws MessagingException {
+    // establish the send date and add it to the message
+    String date = DateUtils.rfc2822();
+    msg.setHeader(Message.Field.DATE, date);
+
+    // get the path for the outbox
+    // String path = userFactory.getNewMessagePath(msg.getFrom());
+    String path = userFactory.getMessagesPath(msg.getFrom())
+        + KernelConstants.OUTBOX;
     try {
-      String json = beanConverter.convertToString(msg);
+      // convert message to the storage format (json)
+      String json = msgConverter.toString(msg);
+
+      // create a sha-1 hash of the content to use as the message name
+      String msgName = org.sakaiproject.kernel.util.StringUtils.sha1Hash(json);
+
+      // create an input stream to the content and write to JCR
       ByteArrayInputStream bais = new ByteArrayInputStream(json
           .getBytes("UTF-8"));
-      Node n = jcrNodeFactory.setInputStream(path, bais, "application/json");
+      Node n = jcrNodeFactory.setInputStream(path + msgName, bais,
+          "application/json");
+
+      // set the type, recipients and date as node properties
       n.setProperty(JCRConstants.JCR_MESSAGE_TYPE, msg.getType());
       n.setProperty(JCRConstants.JCR_MESSAGE_RCPTS, msg.getTo());
+      n.setProperty(JCRConstants.JCR_MESSAGE_DATE, date);
     } catch (JCRNodeFactoryServiceException e) {
-      // FIXME do something here
+      throw new MessagingException(e.getMessage(), e);
     } catch (RepositoryException e) {
-      // FIXME do something here
+      throw new MessagingException(e.getMessage(), e);
     } catch (IOException e) {
-      // FIXME do something here
+      throw new MessagingException(e.getMessage(), e);
+    } catch (NoSuchAlgorithmException e) {
+      throw new MessagingException(e.getMessage(), e);
     }
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @see org.sakaiproject.kernel.api.messaging.MessagingService#createEmailMessage()
+   */
   public EmailMessage createEmailMessage() {
     EmailMessage em = injector.getInstance(EmailMessage.class);
     return em;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @see org.sakaiproject.kernel.api.messaging.MessagingService#createMessage()
+   */
   public Message createMessage() {
     Message m = injector.getInstance(Message.class);
     return m;

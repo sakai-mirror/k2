@@ -141,7 +141,7 @@ public class ActiveMQEmailDeliveryT {
     // the same varaible. SimpleEmail etc can each be used directly.
     List<Email> emails = new ArrayList<Email>();
     EmailMessagingService messagingService = new EmailMessagingService(vmURL,
-        null, null, null);
+        null, null, null, null);
     emails.add(new SimpleEmail(messagingService));
     emails.add(new MultiPartEmail(messagingService));
     emails.add(new HtmlEmail(messagingService));

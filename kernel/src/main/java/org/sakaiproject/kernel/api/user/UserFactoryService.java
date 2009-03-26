@@ -86,7 +86,6 @@ public interface UserFactoryService {
    */
   String getUserProfileTempate(String userType);
 
-
   /**
    * Get the users private path that will not be shared with other users.
    * @param uuid the user UUID
@@ -103,7 +102,7 @@ public interface UserFactoryService {
 
   /**
    * Get the path to messages for the entity identified.
-   * 
+   *
    * @param id
    * @return
    */
@@ -112,7 +111,7 @@ public interface UserFactoryService {
   /**
    * Get the path where a new message should be stored for the entity
    * identified.
-   * 
+   *
    * @param id
    * @return
    */

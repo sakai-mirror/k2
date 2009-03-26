@@ -48,7 +48,9 @@ public interface Message extends Serializable {
     /** field name for multipart attachments */
     PARTS("parts"),
     /** field name for body mime type */
-    MIME_TYPE("mimeType");
+    MIME_TYPE("mimeType"),
+    /** field name for the send date */
+    DATE("date");
 
     /**
      * the name of the field.
