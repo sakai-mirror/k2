@@ -27,7 +27,7 @@ import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
-import org.sakaiproject.kernel.api.messaging.OutboxNodeHandler;
+import org.sakaiproject.kernel.api.messaging.MessageHandler;
 import org.sakaiproject.kernel.jcr.api.JcrContentListener;
 
 import javax.jcr.Node;
@@ -41,13 +41,13 @@ public class OutboxListener implements JcrContentListener {
   private static final Log log = LogFactory.getLog(OutboxListener.class);
 
   private JCRNodeFactoryService jcrNodeFactory;
-  private Registry<String, OutboxNodeHandler> registry;
+  private Registry<String, MessageHandler> registry;
   private static final boolean DEBUG = log.isDebugEnabled();
 
   @Inject
   public OutboxListener(JCRNodeFactoryService jcrNodeFactory,
       RegistryService registryService) {
-    registry = registryService.getRegistry(OutboxNodeHandler.REGISTRY);
+    registry = registryService.getRegistry(MessageHandler.REGISTRY);
     this.jcrNodeFactory = jcrNodeFactory;
   }
 
@@ -70,7 +70,7 @@ public class OutboxListener implements JcrContentListener {
         Node n = jcrNodeFactory.getNode(filePath);
         Property msgTypeProp = n.getProperty(JCRConstants.JCR_MESSAGE_TYPE);
         String msgType = msgTypeProp.getString();
-        OutboxNodeHandler handler = registry.getMap().get(msgType);
+        MessageHandler handler = registry.getMap().get(msgType);
         if (handler != null) {
           if (DEBUG) {
             log.debug("Handling with " + msgType + ": " + handler);

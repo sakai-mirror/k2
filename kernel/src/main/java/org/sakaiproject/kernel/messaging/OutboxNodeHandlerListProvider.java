@@ -21,24 +21,24 @@ package org.sakaiproject.kernel.messaging;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
-import org.sakaiproject.kernel.api.messaging.OutboxNodeHandler;
+import org.sakaiproject.kernel.api.messaging.MessageHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class OutboxNodeHandlerListProvider implements
-    Provider<List<OutboxNodeHandler>> {
+    Provider<List<MessageHandler>> {
 
-  private ArrayList<OutboxNodeHandler> handlers;
+  private ArrayList<MessageHandler> handlers;
 
   @Inject
   public OutboxNodeHandlerListProvider(
       InternalMessageHandler internalOutgoingMessageHandler) {
-    handlers = new ArrayList<OutboxNodeHandler>();
+    handlers = new ArrayList<MessageHandler>();
     handlers.add(internalOutgoingMessageHandler);
   }
 
-  public List<OutboxNodeHandler> get() {
+  public List<MessageHandler> get() {
     return handlers;
   }
 }

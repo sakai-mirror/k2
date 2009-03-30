@@ -48,7 +48,7 @@ import org.sakaiproject.kernel.api.messaging.EmailMessage;
 import org.sakaiproject.kernel.api.messaging.Message;
 import org.sakaiproject.kernel.api.messaging.MessageConverter;
 import org.sakaiproject.kernel.api.messaging.MessagingService;
-import org.sakaiproject.kernel.api.messaging.OutboxNodeHandler;
+import org.sakaiproject.kernel.api.messaging.MessageHandler;
 import org.sakaiproject.kernel.api.presence.PresenceService;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
@@ -353,7 +353,7 @@ public class KernelModule extends AbstractModule {
         .asEagerSingleton();
 
     // bring in the outgoing message handler so it can register
-    TypeLiteral<List<OutboxNodeHandler>> outboxNodeHandlerList = new TypeLiteral<List<OutboxNodeHandler>>() {
+    TypeLiteral<List<MessageHandler>> outboxNodeHandlerList = new TypeLiteral<List<MessageHandler>>() {
     };
     bind(outboxNodeHandlerList).toProvider(OutboxNodeHandlerListProvider.class)
         .asEagerSingleton();

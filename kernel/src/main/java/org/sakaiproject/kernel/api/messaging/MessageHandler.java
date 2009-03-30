@@ -24,7 +24,7 @@ import javax.jcr.Node;
 /**
  *
  */
-public interface OutboxNodeHandler extends Provider<String> {
+public interface MessageHandler extends Provider<String> {
   public static final String REGISTRY = "outgoing.message";
 
   void handle(String userID, String filePath, String fileName, Node node);

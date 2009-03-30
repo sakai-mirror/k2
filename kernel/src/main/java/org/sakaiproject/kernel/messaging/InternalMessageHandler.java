@@ -31,7 +31,7 @@ import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.locking.LockTimeoutException;
 import org.sakaiproject.kernel.api.messaging.Message;
-import org.sakaiproject.kernel.api.messaging.OutboxNodeHandler;
+import org.sakaiproject.kernel.api.messaging.MessageHandler;
 import org.sakaiproject.kernel.api.user.UserFactoryService;
 import org.sakaiproject.kernel.util.JcrUtils;
 
@@ -42,7 +42,7 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Workspace;
 
-public class InternalMessageHandler implements OutboxNodeHandler {
+public class InternalMessageHandler implements MessageHandler {
 
   private static final Log log = LogFactory
       .getLog(InternalMessageHandler.class);
@@ -58,8 +58,8 @@ public class InternalMessageHandler implements OutboxNodeHandler {
   public InternalMessageHandler(RegistryService registryService,
       JCRService jcr, UserFactoryService userFactory,
       JCRNodeFactoryService nodeFactory) {
-    Registry<String, OutboxNodeHandler> registry = registryService
-        .getRegistry(OutboxNodeHandler.REGISTRY);
+    Registry<String, MessageHandler> registry = registryService
+        .getRegistry(MessageHandler.REGISTRY);
     registry.add(this);
     this.jcr = jcr;
     this.userFactory = userFactory;
