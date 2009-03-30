@@ -321,7 +321,7 @@ public interface JCRConstants {
   String ACL_OWNER = "acl:owner";
 
   String JCR_SMARTNODE = "sakaijcr:smartNode";
-  
+
   /**
    * true Indicates that the smart node at this point is inherited, false
    * indicates that smart node propagation stops at this point.
@@ -363,4 +363,5 @@ public interface JCRConstants {
   String JCR_MESSAGE_TYPE = "sakaijcr:messageType";
   String JCR_MESSAGE_RCPTS = "sakaijcr:messageRcpts";
   String JCR_MESSAGE_DATE = "sakaijcr:messageDate";
+  String JCR_MESSAGE_FROM = "sakaijcr:messageFrom";
 }

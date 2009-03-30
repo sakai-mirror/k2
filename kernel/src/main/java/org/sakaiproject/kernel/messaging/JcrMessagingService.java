@@ -71,25 +71,28 @@ public class JcrMessagingService implements MessagingService {
     String date = DateUtils.rfc2822();
     msg.setHeader(Message.Field.DATE, date);
 
-    // get the path for the outbox
-    // String path = userFactory.getNewMessagePath(msg.getFrom());
-    String path = userFactory.getMessagesPath(msg.getFrom())
-        + KernelConstants.OUTBOX;
     try {
       // convert message to the storage format (json)
       String json = msgConverter.toString(msg);
 
-      // create a sha-1 hash of the content to use as the message name
-      String msgName = org.sakaiproject.kernel.util.StringUtils.sha1Hash(json);
-
       // create an input stream to the content and write to JCR
       ByteArrayInputStream bais = new ByteArrayInputStream(json
           .getBytes("UTF-8"));
+
+      // get the path for the outbox
+      String path = userFactory.getMessagesPath(msg.getFrom()) + "/"
+          + KernelConstants.OUTBOX + "/";
+
+      // create a sha-1 hash of the content to use as the message name
+      String msgName = org.sakaiproject.kernel.util.StringUtils.sha1Hash(json);
+
+      // write the data to the node
       Node n = jcrNodeFactory.setInputStream(path + msgName, bais,
           "application/json");
 
       // set the type, recipients and date as node properties
       n.setProperty(JCRConstants.JCR_MESSAGE_TYPE, msg.getType());
+      n.setProperty(JCRConstants.JCR_MESSAGE_FROM, msg.getFrom());
       n.setProperty(JCRConstants.JCR_MESSAGE_RCPTS, msg.getTo());
       n.setProperty(JCRConstants.JCR_MESSAGE_DATE, date);
     } catch (JCRNodeFactoryServiceException e) {

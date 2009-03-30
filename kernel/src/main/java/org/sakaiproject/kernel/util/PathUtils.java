@@ -23,13 +23,21 @@ import org.apache.commons.logging.LogFactory;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Generate a path prefix based on the user id.
  *
  */
 public class PathUtils {
+  private static final DateFormat msgPrefix;
+
+  static {
+    msgPrefix = new SimpleDateFormat("yyyy/MM");
+  }
 
   /**
    *
@@ -61,8 +69,8 @@ public class PathUtils {
    * @see java.text.SimpleDateFormat for pattern definitions.
    */
   public static String getMessagePrefix() {
-    Calendar c = Calendar.getInstance();
-    String prefix = c.get(Calendar.YEAR) + "/" + c.get(Calendar.MONTH) + "/";
+    Date d = new Date();
+    String prefix = msgPrefix.format(d);
     return prefix;
   }
 

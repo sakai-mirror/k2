@@ -132,8 +132,9 @@ public class InboxActionUnitT extends SmartNodeHandlerBaseT {
 
   @Test
   public void inboxBySql() throws Exception {
-    String query = "select * from nt:base where jcr:path like '" + PREFIX
-        + "%' and " + JCRConstants.JCR_LABELS + " = '" + INBOX_LABEL + "'";
+    String query = "select * from " + JCRConstants.NT_BASE + " where "
+        + JCRConstants.JCR_PATH + " like '" + PREFIX + "%' and "
+        + JCRConstants.JCR_LABELS + " = '" + INBOX_LABEL + "'";
     JcrUtils.makeSmartNode(inboxNode, Query.XPATH, query);
     session.save();
 

@@ -42,6 +42,7 @@ public class OutboxListener implements JcrContentListener {
 
   private JCRNodeFactoryService jcrNodeFactory;
   private Registry<String, OutboxNodeHandler> registry;
+  private static final boolean DEBUG = log.isDebugEnabled();
 
   @Inject
   public OutboxListener(JCRNodeFactoryService jcrNodeFactory,
@@ -58,15 +59,25 @@ public class OutboxListener implements JcrContentListener {
    */
   public void onEvent(int type, String userID, String filePath, String fileName) {
     // make sure we deal only with outbox items
-    if (filePath.endsWith(KernelConstants.OUTBOX)) {
+    if (filePath.contains(KernelConstants.MESSAGES + "/"
+        + KernelConstants.OUTBOX)) {
+      if (DEBUG) {
+        log.debug("Handling outbox message [" + filePath + "]");
+      }
       try {
         // get the node, call up the appropriate handler and pass off based on
         // message type
-        Node n = jcrNodeFactory.getNode(filePath + fileName);
-        Property messageType = n.getProperty(JCRConstants.JCR_MESSAGE_TYPE);
-        OutboxNodeHandler handler = registry.getMap().get(messageType);
+        Node n = jcrNodeFactory.getNode(filePath);
+        Property msgTypeProp = n.getProperty(JCRConstants.JCR_MESSAGE_TYPE);
+        String msgType = msgTypeProp.getString();
+        OutboxNodeHandler handler = registry.getMap().get(msgType);
         if (handler != null) {
+          if (DEBUG) {
+            log.debug("Handling with " + msgType + ": " + handler);
+          }
           handler.handle(userID, filePath, fileName, n);
+        } else {
+          log.warn("No handler found for message type [" + msgType + "]");
         }
       } catch (JCRNodeFactoryServiceException e) {
         log.error(e.getMessage(), e);
