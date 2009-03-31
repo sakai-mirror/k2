@@ -147,6 +147,19 @@ public class ISO9075 {
     }
   }
 
+  public static String decodePath(String toEncode) {
+    String[] parts = StringUtils.split(toEncode, '/');
+    StringBuilder builder = new StringBuilder();
+    if (toEncode.startsWith("//")) {
+      builder.append("/");
+    }
+    for (String part : parts) {
+      String enc = decode(part);
+      builder.append("/").append(enc);
+    }
+    return builder.toString();
+  }
+
   public static String decode(String toDecode) {
     if ((toDecode == null) || (toDecode.length() < 7)
         || (toDecode.indexOf("_x") < 0)) {
