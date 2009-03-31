@@ -19,7 +19,6 @@ package org.sakaiproject.kernel.messaging;
 
 import static junit.framework.Assert.assertEquals;
 
-import org.apache.jackrabbit.util.ISO9075;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -28,11 +27,11 @@ import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
 import org.sakaiproject.kernel.api.jcr.JCRService;
-import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.messaging.Message;
 import org.sakaiproject.kernel.api.messaging.MessagingService;
 import org.sakaiproject.kernel.api.user.UserFactoryService;
 import org.sakaiproject.kernel.test.KernelIntegrationBase;
+import org.sakaiproject.kernel.util.ISO9075;
 
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryResult;
@@ -44,7 +43,6 @@ public class InternalMessageSendT {
   private static boolean shutdown;
   private static KernelManager km;
   private static MessagingService msgServ;
-  private static JCRNodeFactoryService nodeFactory;
   private static UserFactoryService userFactory;
   private static JCRService jcr;
   private Message msg;
@@ -55,7 +53,6 @@ public class InternalMessageSendT {
 
     km = new KernelManager();
     msgServ = km.getService(MessagingService.class);
-    nodeFactory = km.getService(JCRNodeFactoryService.class);
     userFactory = km.getService(UserFactoryService.class);
     jcr = km.getService(JCRService.class);
     jcr.loginSystem();
@@ -82,7 +79,7 @@ public class InternalMessageSendT {
    * 'sent'.</li>
    * <li>The message does not exist in the outbox of the sender.</li>
    * </ol>
-   *
+   * 
    * @throws Exception
    */
   @Test
@@ -110,6 +107,7 @@ public class InternalMessageSendT {
     // + JCRConstants.JCR_LABELS + " = 'inbox'";
     String queryString = "/" + ISO9075.encodePath(inPath) + "//element(*,"
         + JCRConstants.NT_FILE + ")[@" + JCRConstants.JCR_LABELS + "='inbox']";
+    System.err.println(queryString);
     Query query = jcr.getQueryManager().createQuery(queryString, Query.XPATH);
     QueryResult results = query.execute();
     assertEquals(1, results.getNodes().getSize());
