@@ -123,7 +123,7 @@ public class RestMySitesProvider implements RestProvider {
         "The number of items to display");// TODO
     DESCRIPTION
         .addHeader("none",
-            "The service neither looks for headers nor sets any non standatd headers");
+            "The service neither looks for headers nor sets any non standard headers");
     DESCRIPTION
         .addURLTemplate(
             "sites",

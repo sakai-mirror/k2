@@ -59,7 +59,7 @@ public class RestSnoopProvider implements RestProvider, Initialisable {
         "The service accepts any parameters, but does nothing with them");
     DESCRIPTION
         .addHeader("none",
-            "The service neither looks for headers nor sets any non standatd headers");
+            "The service neither looks for headers nor sets any non standard headers");
     DESCRIPTION
         .addURLTemplate("me*",
             "The service is selected by /rest/me any training path will be ignored");

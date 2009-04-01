@@ -129,7 +129,7 @@ public class RestMeProvider implements RestProvider, Initialisable {
                 + "expressed by the user and the " + "locale of the server. ");
     DESCRIPTION.addParameter("none", "The service accepts no parameters ");
     DESCRIPTION.addHeader("none",
-        "The service neither looks for headers nor sets any non standatd headers");
+        "The service neither looks for headers nor sets any non standard headers");
     DESCRIPTION
         .addURLTemplate("me",
             "The service is selected by /rest/me and provides the me json for the current user.");
