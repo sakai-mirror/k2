@@ -30,6 +30,7 @@ import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.user.UserFactoryService;
 import org.sakaiproject.kernel.api.user.UserProvisionAgent;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
+import org.sakaiproject.kernel.util.ISO9075;
 import org.sakaiproject.kernel.util.JcrUtils;
 
 import javax.jcr.Node;
@@ -61,9 +62,9 @@ public class InboxAgent implements UserProvisionAgent {
   }
 
   public void provision(UserEnvironment userEnv) {
-    String path = userFactoryService.getUserPrivatePath(userEnv.getUser()
-        .getUuid())
-        + INBOX_PATH;
+    String path = ISO9075.encodePath(userFactoryService
+        .getUserPrivatePath(userEnv.getUser().getUuid())
+        + INBOX_PATH);
     String query = "/" + path + "/element(*, " + JCRConstants.NT_FILE + ")[@"
         + JCRConstants.JCR_LABELS + "='" + INBOX_LABEL + "']";
     try {
