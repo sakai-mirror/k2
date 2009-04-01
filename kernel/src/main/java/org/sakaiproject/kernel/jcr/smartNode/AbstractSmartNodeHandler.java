@@ -37,4 +37,6 @@ public abstract class AbstractSmartNodeHandler implements SmartNodeHandler {
     ServletOutputStream output = response.getOutputStream();
     output.write(b);
   }
+
+protected static final String COUNT_KEY = "count";
 }

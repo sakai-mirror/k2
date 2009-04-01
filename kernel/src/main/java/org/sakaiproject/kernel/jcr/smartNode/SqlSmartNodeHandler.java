@@ -20,6 +20,7 @@ package org.sakaiproject.kernel.jcr.smartNode;
 import com.google.inject.Inject;
 
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
@@ -95,6 +96,8 @@ public class SqlSmartNodeHandler extends JcrSmartNodeHandler {
   public void count(HttpServletRequest request, HttpServletResponse response,
       Node node, String statement) throws RepositoryException, IOException {
     Long countResult = performCount(Query.SQL, statement);
-    writeUtf8(response, countResult);
+    JSONObject jso = new JSONObject();
+    jso.accumulate(COUNT_KEY, countResult);
+    writeUtf8(response, jso);
   }
 }
