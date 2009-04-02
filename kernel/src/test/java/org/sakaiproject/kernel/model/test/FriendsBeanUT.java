@@ -18,10 +18,12 @@
 
 package org.sakaiproject.kernel.model.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
@@ -30,13 +32,12 @@ import org.sakaiproject.kernel.model.FriendStatus;
 import org.sakaiproject.kernel.model.FriendsBean;
 import org.sakaiproject.kernel.serialization.json.BeanJsonLibConverter;
 import org.sakaiproject.kernel.util.ResourceLoader;
-import org.sakaiproject.kernel.util.StringUtils;
 
 import java.io.IOException;
 import java.util.List;
 
 /**
- * 
+ *
  */
 public class FriendsBeanUT {
 
@@ -56,8 +57,8 @@ public class FriendsBeanUT {
       FriendsBean friendsBean = converter.convertToObject(json,
           FriendsBean.class);
       String after = converter.convertToString(friendsBean);
-      assertEquals(StringUtils.stripBlanks(json), StringUtils
-          .stripBlanks(after));
+      assertEquals(StringUtils.deleteWhitespace(json), StringUtils
+          .deleteWhitespace(after));
       LOG.info("Loaded " + after);
     }
   }

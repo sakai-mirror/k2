@@ -21,9 +21,9 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.name.Named;
 
+import org.apache.commons.lang.StringUtils;
 import org.sakaiproject.kernel.api.authz.PermissionQuery;
 import org.sakaiproject.kernel.api.authz.PermissionQueryService;
-import org.sakaiproject.kernel.util.StringUtils;
 import org.sakaiproject.sdata.tool.JCRHandler;
 import org.sakaiproject.sdata.tool.api.SecurityAssertion;
 import org.sakaiproject.sdata.tool.util.PathSecurityAssertion;
@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 
+ *
  */
 public class JCRHandlerSecurityAssertion implements Provider<SecurityAssertion> {
 
@@ -42,7 +42,7 @@ public class JCRHandlerSecurityAssertion implements Provider<SecurityAssertion> 
    * @param baseLocation
    * @param baseReference
    * @param lockDefinition
-   * 
+   *
    */
   @Inject
   public JCRHandlerSecurityAssertion(
@@ -65,7 +65,7 @@ public class JCRHandlerSecurityAssertion implements Provider<SecurityAssertion> 
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see com.google.inject.Provider#get()
    */
   public SecurityAssertion get() {

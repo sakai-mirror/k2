@@ -23,9 +23,9 @@ import static org.junit.Assert.fail;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
-import org.sakaiproject.kernel.api.Exporter;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
 import org.sakaiproject.kernel.api.DependencyScope;
+import org.sakaiproject.kernel.api.Exporter;
 import org.sakaiproject.kernel.component.KernelImpl;
 import org.sakaiproject.kernel.component.core.Maven2ArtifactResolver;
 import org.sakaiproject.kernel.component.core.PackageRegistryServiceImpl;
@@ -38,7 +38,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 
 /**
- * 
+ *
  */
 public class SharedClassloaderTest {
 
@@ -62,15 +62,15 @@ public class SharedClassloaderTest {
 
     // Check the class in not visible
     try {
-      cc.loadClass("org.apache.commons.lang.text.StrTokenizer");
+      cc.loadClass("org.apache.commons.codec.binary.Base64");
       fail();
     } catch (ClassNotFoundException e) {
     }
 
     DependencyImpl cpdep = new DependencyImpl();
-    cpdep.setGroupId("commons-lang");
-    cpdep.setArtifactId("commons-lang");
-    cpdep.setVersion("2.3");
+    cpdep.setGroupId("commons-codec");
+    cpdep.setArtifactId("commons-codec");
+    cpdep.setVersion("1.3");
     cpdep.setScope(DependencyScope.SHARE);
 
     cc.addDependency(cpdep);
@@ -79,7 +79,7 @@ public class SharedClassloaderTest {
 
     // load something from the exported classloader
     try {
-      Class<?> c = cc.loadClass("org.apache.commons.lang.text.StrTokenizer");
+      Class<?> c = cc.loadClass("org.apache.commons.codec.binary.Base64");
       assertSame(cc, c.getClassLoader());
     } catch (ClassNotFoundException e) {
       fail();

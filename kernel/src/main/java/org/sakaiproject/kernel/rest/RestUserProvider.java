@@ -20,11 +20,11 @@ package org.sakaiproject.kernel.rest;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import org.apache.commons.lang.StringUtils;
 import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
-import org.sakaiproject.kernel.api.jcr.JCRService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.api.rest.RestProvider;
@@ -42,7 +42,6 @@ import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.jcr.jackrabbit.sakai.JCRIdPwEvidence;
 import org.sakaiproject.kernel.model.UserEnvironmentBean;
 import org.sakaiproject.kernel.user.jcr.JcrAuthenticationResolverProvider;
-import org.sakaiproject.kernel.util.StringUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.kernel.util.user.AnonUser;
 import org.sakaiproject.kernel.webapp.RestServiceFaultException;
@@ -84,7 +83,6 @@ public class RestUserProvider implements RestProvider {
   private AuthenticationManagerService authenticationManagerService;
   private ProfileResolverService profileResolverService;
   private AuthzResolverService authzResolverService;
-  private JCRService jcrService;
 
   /**
    * @param sessionManager
@@ -99,8 +97,7 @@ public class RestUserProvider implements RestProvider {
       AuthenticationManagerService authenticationManagerService,
       ProfileResolverService profileResolverService,
       @Named(KernelConstants.PROP_ANON_ACCOUNTING) boolean anonymousAccounting,
-      AuthzResolverService authzResolverService,
-      JCRService jcrService ) {
+      AuthzResolverService authzResolverService) {
     Registry<String, RestProvider> restRegistry = registryService
         .getRegistry(RestProvider.REST_REGISTRY);
     restRegistry.add(this);
@@ -114,7 +111,6 @@ public class RestUserProvider implements RestProvider {
     this.profileResolverService = profileResolverService;
     this.anonymousAccounting = anonymousAccounting;
     this.authzResolverService = authzResolverService;
-    this.jcrService = jcrService;
 
   }
 
@@ -266,7 +262,8 @@ public class RestUserProvider implements RestProvider {
           .getProperty(JcrAuthenticationResolverProvider.JCRPASSWORDHASH);
       if (storedPassword != null) {
         String storedPasswordString = storedPassword.getString();
-        String oldPasswordHash = StringUtils.sha1Hash(passwordOld);
+        String oldPasswordHash = org.sakaiproject.kernel.util.StringUtils
+            .sha1Hash(passwordOld);
         if (storedPasswordString != null) {
           if (!oldPasswordHash.equals(storedPasswordString)) {
             throw new RestServiceFaultException(HttpServletResponse.SC_CONFLICT,
@@ -348,7 +345,7 @@ public class RestUserProvider implements RestProvider {
         }
       }
     }
- 
+
       User u = userResolverService.resolve(externalId);
       if (u != null) {
         throw new RestServiceFaultException(HttpServletResponse.SC_CONFLICT,
@@ -374,12 +371,12 @@ public class RestUserProvider implements RestProvider {
       userProfile.setProperties(profileMap);
       userProfile.save();
 
- 
+
       Map<String, Object> r = new HashMap<String, Object>();
       r.put("response", "OK");
       r.put("uuid", u.getUuid());
       return r;
- 
+
   }
 
   static {

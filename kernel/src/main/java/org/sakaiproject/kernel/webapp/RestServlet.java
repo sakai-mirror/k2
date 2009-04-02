@@ -17,11 +17,11 @@
  */
 package org.sakaiproject.kernel.webapp;
 
+import org.apache.commons.lang.StringUtils;
 import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.rest.RestProvider;
-import org.sakaiproject.kernel.util.StringUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 
 import java.io.IOException;

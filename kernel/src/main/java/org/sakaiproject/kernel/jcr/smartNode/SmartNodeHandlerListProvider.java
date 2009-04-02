@@ -20,7 +20,6 @@ package org.sakaiproject.kernel.jcr.smartNode;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
-import org.apache.derby.impl.sql.compile.HasNodeVisitor;
 import org.sakaiproject.kernel.api.jcr.SmartNodeHandler;
 
 import java.util.ArrayList;

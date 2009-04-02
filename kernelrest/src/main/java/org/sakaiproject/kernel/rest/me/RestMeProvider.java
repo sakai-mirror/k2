@@ -20,6 +20,7 @@ package org.sakaiproject.kernel.rest.me;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
@@ -34,7 +35,6 @@ import org.sakaiproject.kernel.api.user.UserResolverService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.util.IOUtils;
-import org.sakaiproject.kernel.util.StringUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.kernel.util.user.AnonUser;
 import org.sakaiproject.kernel.util.user.NullUserEnvironment;
@@ -88,7 +88,7 @@ public class RestMeProvider implements RestProvider, Initialisable {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.webapp.Initialisable#init()
    */
   public void init() {
@@ -96,7 +96,7 @@ public class RestMeProvider implements RestProvider, Initialisable {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.webapp.Initialisable#destroy()
    */
   public void destroy() {
@@ -152,7 +152,7 @@ public class RestMeProvider implements RestProvider, Initialisable {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.RestProvider#dispatch(java.lang.String[],
    *      javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
    *      /x/y/z?searchOrder=1231231
@@ -177,7 +177,7 @@ public class RestMeProvider implements RestProvider, Initialisable {
 
   /**
    * Output another user, limited information set.
-   * 
+   *
    * @param elements
    *          the path elements of the request.
    * @param request
@@ -218,7 +218,7 @@ public class RestMeProvider implements RestProvider, Initialisable {
 
   /**
    * Output this user.
-   * 
+   *
    * @param elements
    *          the request path elements.
    * @param request
@@ -375,7 +375,7 @@ public class RestMeProvider implements RestProvider, Initialisable {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.RestProvider#getDescription()
    */
   public RestDescription getDescription() {
@@ -384,7 +384,7 @@ public class RestMeProvider implements RestProvider, Initialisable {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Provider#getKey()
    */
   public String getKey() {
@@ -393,7 +393,7 @@ public class RestMeProvider implements RestProvider, Initialisable {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Provider#getPriority()
    */
   public int getPriority() {

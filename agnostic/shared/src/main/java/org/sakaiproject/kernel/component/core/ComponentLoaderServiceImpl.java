@@ -19,6 +19,7 @@ package org.sakaiproject.kernel.component.core;
 
 import com.google.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.Artifact;
@@ -31,7 +32,6 @@ import org.sakaiproject.kernel.api.KernelConfigurationException;
 import org.sakaiproject.kernel.component.URLComponentSpecificationImpl;
 import org.sakaiproject.kernel.component.model.DependencyImpl;
 import org.sakaiproject.kernel.util.FileUtil;
-import org.sakaiproject.kernel.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,7 +62,7 @@ public class ComponentLoaderServiceImpl implements ComponentLoaderService {
    * @throws IOException
    * @throws ComponentSpecificationException
    * @throws KernelConfigurationException
-   * 
+   *
    */
   @Inject
   public ComponentLoaderServiceImpl(ComponentManager componentManager,
@@ -133,7 +133,7 @@ public class ComponentLoaderServiceImpl implements ComponentLoaderService {
     }
     final ClassLoader parent = pcl;
     // find all the instances
-    
+
     LOG.info("==============> Determining class search locations:");
     for ( URL location : locations.values() ) {
       LOG.info("-> searching in "+location.toString());
@@ -142,13 +142,13 @@ public class ComponentLoaderServiceImpl implements ComponentLoaderService {
     URLClassLoader uclassloader = AccessController.doPrivileged(new PrivilegedAction<URLClassLoader>() {
 
       public URLClassLoader run() {
-        return 
+        return
         new URLClassLoader(locations.values()
             .toArray(new URL[0]), parent);
      }
-      
+
     });
- 
+
     for ( URL u : uclassloader.getURLs() ) {
       LOG.info("URLClassLoader configured with: "+u);
     }
@@ -156,8 +156,8 @@ public class ComponentLoaderServiceImpl implements ComponentLoaderService {
         .getResources(COMPONENT_SPEC_XML); components.hasMoreElements();) {
       LOG.info("URLClassLoader found: "+components.nextElement());
     }
-    
-    
+
+
 
     Map<String,ComponentSpecification> specs = new HashMap<String,ComponentSpecification>();
     for (Enumeration<URL> components = uclassloader

@@ -17,9 +17,9 @@
  */
 package org.sakaiproject.kernel.authz.simple;
 
+import org.apache.commons.lang.StringUtils;
 import org.sakaiproject.kernel.api.UpdateFailedException;
 import org.sakaiproject.kernel.api.authz.SubjectStatement;
-import org.sakaiproject.kernel.util.StringUtils;
 
 /**
  *

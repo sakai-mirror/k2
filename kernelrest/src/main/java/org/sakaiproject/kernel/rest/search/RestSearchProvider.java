@@ -21,6 +21,7 @@ package org.sakaiproject.kernel.rest.search;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.Registry;
@@ -31,7 +32,6 @@ import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.util.IOUtils;
 import org.sakaiproject.kernel.util.JCRNodeMap;
-import org.sakaiproject.kernel.util.StringUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.kernel.webapp.Initialisable;
 import org.sakaiproject.kernel.webapp.RestServiceFaultException;
@@ -58,7 +58,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * 
+ *
  */
 public class RestSearchProvider implements RestProvider, Initialisable {
 
@@ -115,7 +115,7 @@ public class RestSearchProvider implements RestProvider, Initialisable {
   private Registry<String, RestProvider>  registry;
 
   /**
-   * 
+   *
    */
   @Inject
   public RestSearchProvider(RegistryService registryService,
@@ -131,7 +131,7 @@ public class RestSearchProvider implements RestProvider, Initialisable {
     this.jcrService = jcrService;
     this.beanConverter = beanConverter;
   }
-  
+
   /**
    * {@inheritDoc}
    * @see org.sakaiproject.kernel.webapp.Initialisable#destroy()
@@ -150,7 +150,7 @@ public class RestSearchProvider implements RestProvider, Initialisable {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.RestProvider#dispatch(java.lang.String[],
    *      javax.servlet.http.HttpServletRequest,
    *      javax.servlet.http.HttpServletResponse)
@@ -217,7 +217,8 @@ public class RestSearchProvider implements RestProvider, Initialisable {
     QueryManager queryManager = session.getWorkspace().getQueryManager();
 
     Query q = null;
-    String escapedQuery = StringUtils.escapeJCRSQL(query);
+    String escapedQuery = org.sakaiproject.kernel.util.StringUtils
+        .escapeJCRSQL(query);
     StringBuilder sb = new StringBuilder();
     sb.append("SELECT * FROM ").append(nodeType).append(" WHERE ");
     if (!StringUtils.isEmpty(path)) {
@@ -229,12 +230,13 @@ public class RestSearchProvider implements RestProvider, Initialisable {
         path = path + "/";
       }
       path = path + "%";
-      path = StringUtils.escapeJCRSQL(path);
+      path = org.sakaiproject.kernel.util.StringUtils.escapeJCRSQL(path);
       sb.append("jcr:path LIKE '").append(path).append("' AND ");
     }
     if (!StringUtils.isEmpty(mimeTypeSearch)) {
       mimeTypeSearch = mimeTypeSearch.trim();
-      mimeTypeSearch = StringUtils.escapeJCRSQL(mimeTypeSearch);
+      mimeTypeSearch = org.sakaiproject.kernel.util.StringUtils
+          .escapeJCRSQL(mimeTypeSearch);
       sb.append("jcr:mimeType = '").append(mimeTypeSearch).append("' AND ");
     }
     sb.append("CONTAINS(.,'").append(escapedQuery).append("' )");
@@ -254,14 +256,14 @@ public class RestSearchProvider implements RestProvider, Initialisable {
 
     try {
       q = queryManager.createQuery(sqlQuery, Query.SQL);
-     
+
     } catch (InvalidQueryException ex) {
       throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
           "Invalid query presented to content system: " + sqlQuery + " "
               + ex.getMessage(), ex);
     }
     long startMs = System.currentTimeMillis();
-    
+
     QueryResult result = q.execute();
     NodeIterator ni = result.getNodes();
     long endMs = System.currentTimeMillis();
@@ -278,10 +280,10 @@ public class RestSearchProvider implements RestProvider, Initialisable {
       startPos = ni.getPosition();
       endPos = startPos;
 
-      
+
       for (int i = start; (i < end) && (ni.hasNext()); i++) {
         Node n = ni.nextNode();
-        
+
         Node parentNode = n;
         if ( !n.isNodeType(JCRConstants.NT_FILE) && !n.isNodeType(JCRConstants.NT_FOLDER) ) {
           parentNode = n.getParent();
@@ -341,7 +343,7 @@ public class RestSearchProvider implements RestProvider, Initialisable {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.RestProvider#getDescription()
    */
   public RestDescription getDescription() {
@@ -350,7 +352,7 @@ public class RestSearchProvider implements RestProvider, Initialisable {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Provider#getKey()
    */
   public String getKey() {
@@ -359,7 +361,7 @@ public class RestSearchProvider implements RestProvider, Initialisable {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Provider#getPriority()
    */
   public int getPriority() {

@@ -24,7 +24,7 @@ import com.google.inject.Key;
 import com.google.inject.Module;
 import com.google.inject.TypeLiteral;
 
-import org.sakaiproject.kernel.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.List;
 

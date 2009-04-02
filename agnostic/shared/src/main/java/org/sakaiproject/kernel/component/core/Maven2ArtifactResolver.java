@@ -19,10 +19,10 @@ package org.sakaiproject.kernel.component.core;
 
 import com.google.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.sakaiproject.kernel.api.Artifact;
-import org.sakaiproject.kernel.api.ComponentSpecificationException;
 import org.sakaiproject.kernel.api.ArtifactResolverService;
-import org.sakaiproject.kernel.util.StringUtils;
+import org.sakaiproject.kernel.api.ComponentSpecificationException;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -31,14 +31,14 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 /**
- * 
+ *
  */
 public class Maven2ArtifactResolver implements ArtifactResolverService {
 
   private File repo;
 
   /**
-   * 
+   *
    */
   @Inject
   public Maven2ArtifactResolver() {
@@ -53,9 +53,9 @@ public class Maven2ArtifactResolver implements ArtifactResolverService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @throws ComponentSpecificationException
-   * 
+   *
    * @see org.sakaiproject.kernel.api.ArtifactResolverService#resolve(java.net.URL[],
    *      org.sakaiproject.kernel.api.Artifact)
    */
@@ -79,16 +79,16 @@ public class Maven2ArtifactResolver implements ArtifactResolverService {
     String type = classpathDependency.getType();
     if ( type == null ||  type.trim().length() == 0 ) {
       type = "jar";
-    } 
+    }
     type = type.trim();
-    
+
     String classifier = classpathDependency.getClassifier();
     if ( classifier != null && classifier.trim().length() > 0 ) {
       classifier = "-"+classifier.trim();
     } else {
       classifier = "";
     }
-    
+
     File resource = new File(new File(new File(groupId, artifactId), version),
         artifactId + "-" + version + classifier + "." + type);
     File localResource = new File(repo, resource.getPath());
@@ -97,15 +97,15 @@ public class Maven2ArtifactResolver implements ArtifactResolverService {
           "Resource does not exist locally " + classpathDependency
               + " resloved as " + localResource.getAbsolutePath());
     }
-    
+
     URI ui = localResource.toURI();
     if ((urls != null) && (ui != null)) {
       URI cui = null;
       for (URL clu : urls) {
-        try {  
-          cui = clu.toURI();  
+        try {
+          cui = clu.toURI();
         } catch (URISyntaxException e) {
-          throw new ComponentSpecificationException("Unable to create URI for  "    + clu.toString() 
+          throw new ComponentSpecificationException("Unable to create URI for  "    + clu.toString()
               + " in urls while resolving " + classpathDependency, e);
         }
         if (ui.equals(cui)) {
@@ -113,13 +113,13 @@ public class Maven2ArtifactResolver implements ArtifactResolverService {
         }
       }
     }
-    
+
     URL u = null;
     try {
         u = ui.toURL();
     } catch (MalformedURLException e) {
       throw new ComponentSpecificationException("Unable to create URL for  "
-          + classpathDependency, e);        
+          + classpathDependency, e);
     }
     return u;
   }

@@ -20,6 +20,7 @@ package org.sakaiproject.kernel.rest;
 
 import com.google.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
@@ -29,7 +30,6 @@ import org.sakaiproject.kernel.api.serialization.BeanConverter;
 import org.sakaiproject.kernel.api.user.UserFactoryService;
 import org.sakaiproject.kernel.util.IOUtils;
 import org.sakaiproject.kernel.util.PathUtils;
-import org.sakaiproject.kernel.util.StringUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.kernel.webapp.RestServiceFaultException;
 
@@ -223,7 +223,7 @@ public class RestPatchProvider implements RestProvider {
       throws RepositoryException, JCRNodeFactoryServiceException,
       UnsupportedEncodingException, IOException {
 
-    String path = StringUtils.join(elements, 2, '/');
+    String path = "/" + StringUtils.join(elements, "/", 2, elements.length);
     path = PathUtils.normalizePath(path);
     return saveProperties(path, new MapParams(request));
   }
@@ -245,7 +245,7 @@ public class RestPatchProvider implements RestProvider {
 
     String user = request.getRemoteUser();
 
-    String path = StringUtils.join(elements, 2, '/');
+    String path = StringUtils.join(elements, "/", 2, elements.length);
     path = userFactoryService.getUserSharedPrivatePath(user) + path;
     path = PathUtils.normalizePath(path);
     return saveProperties(path, new MapParams(request));
@@ -271,7 +271,7 @@ public class RestPatchProvider implements RestProvider {
       Map<String, Object> map = null;
       if (n != null) {
         in = jcrNodeFactoryService.getInputStream(path);
-        String content = IOUtils.readFully(in, StringUtils.UTF8);
+        String content = IOUtils.readFully(in, "UTF-8");
         try {
           in.close();
         } catch (IOException ex) {
@@ -288,7 +288,7 @@ public class RestPatchProvider implements RestProvider {
         }
       }
       String result = beanConverter.convertToString(map);
-      in = new ByteArrayInputStream(result.getBytes(StringUtils.UTF8));
+      in = new ByteArrayInputStream(result.getBytes("UTF-8"));
       n = jcrNodeFactoryService.setInputStream(path, in,
           RestProvider.CONTENT_TYPE);
 

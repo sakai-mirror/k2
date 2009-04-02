@@ -17,12 +17,12 @@
  */
 package org.sakaiproject.kernel.component.core;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.sakaiproject.kernel.api.Exporter;
 import org.sakaiproject.kernel.api.ComponentSpecificationException;
+import org.sakaiproject.kernel.api.Exporter;
 import org.sakaiproject.kernel.api.PackageRegistryService;
-import org.sakaiproject.kernel.util.StringUtils;
 
 import java.io.IOException;
 import java.net.URL;
@@ -44,7 +44,7 @@ public class PackageRegistryServiceImpl implements PackageRegistryService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @throws ComponentSpecificationException
    * @see org.sakaiproject.kernel.api.ExportedPackagedRegistryService#addExport(java.lang.String,
    *      java.lang.ClassLoader)
@@ -65,7 +65,7 @@ public class PackageRegistryServiceImpl implements PackageRegistryService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @throws ComponentSpecificationException
    * @see org.sakaiproject.kernel.api.ExportedPackagedRegistryService#addExport(java.lang.String,
    *      java.lang.ClassLoader)
@@ -86,9 +86,9 @@ public class PackageRegistryServiceImpl implements PackageRegistryService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @return
-   * 
+   *
    * @see org.sakaiproject.kernel.api.ExportedPackagedRegistryService#findClassloader(java.lang.String)
    */
   public Exporter findClassloader(String packageName) {
@@ -97,7 +97,7 @@ public class PackageRegistryServiceImpl implements PackageRegistryService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.PackageRegistryService#findResourceloader(java.lang.String)
    */
   public Exporter findResourceloader(String resource) {
@@ -106,7 +106,7 @@ public class PackageRegistryServiceImpl implements PackageRegistryService {
 
   /**
    * Find the exported by traversing the treemap
-   * 
+   *
    * @param elements
    *          the pathway to the exporter.
    * @return the most specific exporter or null if none.
@@ -125,7 +125,7 @@ public class PackageRegistryServiceImpl implements PackageRegistryService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.ExportedPackagedRegistryService#removeExport(java.lang.String)
    */
   public void removeExport(String stub) {
@@ -186,7 +186,7 @@ public class PackageRegistryServiceImpl implements PackageRegistryService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.PackageRegistryService#getExports()
    */
   public Map<String, String> getExports() {
@@ -209,7 +209,7 @@ public class PackageRegistryServiceImpl implements PackageRegistryService {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.PackageRegistryService#findExportedResources(java.lang.String)
    */
   public Enumeration<URL> findExportedResources(final String name) {

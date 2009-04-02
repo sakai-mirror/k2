@@ -19,12 +19,12 @@ package org.sakaiproject.kernel.component.model;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+import org.apache.commons.lang.StringUtils;
 import org.sakaiproject.kernel.api.Artifact;
 import org.sakaiproject.kernel.api.DependencyScope;
-import org.sakaiproject.kernel.util.StringUtils;
 
 /**
- * 
+ *
  */
 @XStreamAlias("dependency")
 public class DependencyImpl implements Artifact {
@@ -113,7 +113,7 @@ public class DependencyImpl implements Artifact {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Artifact#getType()
    */
   public String getType() {
@@ -130,7 +130,7 @@ public class DependencyImpl implements Artifact {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see java.lang.Object#toString()
    */
   @Override

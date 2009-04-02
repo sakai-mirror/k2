@@ -24,9 +24,9 @@ import com.google.common.collect.Sets;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
 
+import org.apache.commons.lang.StringUtils;
 import org.sakaiproject.kernel.api.site.SiteException;
 import org.sakaiproject.kernel.api.site.SiteService;
-import org.sakaiproject.kernel.util.StringUtils;
 
 import java.util.Map;
 import java.util.Set;
@@ -138,7 +138,7 @@ public class SiteBean extends GroupBean {
 
       // update the roles.
       for (String role : roles) {
-        String[] rolePermission = StringUtils.split(role, ':', 2);
+        String[] rolePermission = StringUtils.split(role, ":", 2);
         Set<String> rolePerms = permissions.get(rolePermission[0]);
         if (rolePerms == null) {
           rolePerms = Sets.newHashSet();
@@ -179,7 +179,7 @@ public class SiteBean extends GroupBean {
 
       // update the roles.
       for (String role : roles) {
-        String[] rolePermission = StringUtils.split(role, ':', 2);
+        String[] rolePermission = StringUtils.split(role, ":", 2);
         Set<String> rolePerms = permissions.get(rolePermission[0]);
         if (rolePerms != null) {
           rolePerms.remove(rolePermission[1]);

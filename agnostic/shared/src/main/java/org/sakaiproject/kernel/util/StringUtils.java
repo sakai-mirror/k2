@@ -29,95 +29,6 @@ public class StringUtils {
   private static final char[] TOHEX = "0123456789abcdef".toCharArray();
   public static final String UTF8 = "UTF8";
 
-  /**
-   * Split a <code>String</code> by a separator.
-   *
-   * @param st
-   *          What to split
-   * @param sep
-   *          What to split by
-   * @return
-   */
-  public static String[] split(String st, char sep) {
-    // return empty array for empty string
-    if (st == null || st.length() == 0) {
-      return new String[0];
-    }
-    // return empty array for string equal to separator
-    char[] pn = st.toCharArray();
-    if (pn.length == 1 && pn[0] == sep) {
-      return new String[0];
-    }
-    int n = 1;
-    int start = 0;
-    int end = pn.length;
-    // break after the first occurrence of sep to preserve a doubled separator
-    // at the beginning of the string
-    while (start < end && sep == pn[start]) {
-      start++;
-      break;
-    }
-     while (start < end && sep == pn[end - 1]) {
-      end--;
-      break;
-    }
-    for (int i = start; i < end; i++) {
-      if (sep == pn[i]) {
-        n++;
-      }
-    }
-    String[] e = new String[n];
-    int s = start;
-    int j = 0;
-    for (int i = start; i < end; i++) {
-      if (pn[i] == sep) {
-        e[j++] = new String(pn, s, i - s);
-        s = i + 1;
-      }
-    }
-    if (s < end) {
-      e[j++] = new String(pn, s, end - s);
-    }
-    return e;
-  }
-
-  /**
-   * @param resourceReference
-   * @param c
-   * @param i
-   * @return
-   */
-  public static String[] split(String st, char sep, int maxElements) {
-    char[] pn = st.toCharArray();
-    int n = 1;
-    int start = 0;
-    int end = pn.length;
-    while (start < end && sep == pn[start]) {
-      start++;
-    }
-    while (start < end && sep == pn[end - 1]) {
-      end--;
-    }
-    for (int i = start; i < end; i++) {
-      if (sep == pn[i]) {
-        n++;
-      }
-    }
-    String[] e = new String[Math.min(maxElements, n)];
-    int s = start;
-    int j = 0;
-    for (int i = start; i < end && j < e.length; i++) {
-      if (pn[i] == sep) {
-        e[j++] = new String(pn, s, i - s);
-        s = i + 1;
-      }
-    }
-    if (s < end && j < e.length) {
-      e[j++] = new String(pn, s, end - s);
-    }
-    return e;
-  }
-
   public static String sha1Hash(String tohash)
       throws UnsupportedEncodingException, NoSuchAlgorithmException {
     byte[] b = tohash.getBytes("UTF-8");
@@ -188,19 +99,8 @@ public class StringUtils {
   }
 
   /**
-   * Checks to see if the value is empty
-   *
-   * @param str
-   * @return
-   */
-  public static boolean isEmpty(String str) {
-    return (str == null || str.trim().length() == 0);
-  }
-
-  /**
-   * Builds a string based on the elements the the array. Please note that the
-   * separator will always be the first character returned. See commons-lang
-   * StringUtils for a join method that does not do this.
+   * Convenience method for calling join with a variable length argument rather
+   * than an array.
    *
    * @param elements
    *          the elements to build the string from
@@ -210,16 +110,8 @@ public class StringUtils {
    *          the separator character
    * @return a joined string starting with the separator.
    */
-  public static String join(String[] elements, int i, char c) {
-    StringBuilder sb = new StringBuilder();
-    if (elements != null && elements.length > 0) {
-      for (int j = i; j < elements.length; j++) {
-        sb.append(c).append(elements[j]);
-      }
-    } else {
-      sb.append(c);
-    }
-    return sb.toString();
+  public static String join(char c, String... elements) {
+    return org.apache.commons.lang.StringUtils.join(elements, c);
   }
 
   /**
@@ -244,23 +136,4 @@ public class StringUtils {
     }
     return sb.toString();
   }
-
-  /**
-   * Removes all space chars, usefull for test comparisons, not much use elsewhere.
-   * @param after
-   * @return
-   */
-  public static String stripBlanks(String before) {
-    char[] cb = before.toCharArray();
-    char[] ca = new char[cb.length];
-    int i = 0;
-    for ( char c: cb) {
-      if (!Character.isSpaceChar(c)) {
-        ca[i++] = c;
-      }
-    }
-    return new String(ca,0,i);
-  }
-
-
 }

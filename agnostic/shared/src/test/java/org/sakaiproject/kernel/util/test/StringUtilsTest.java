@@ -32,125 +32,6 @@ import java.security.NoSuchAlgorithmException;
  */
 public class StringUtilsTest {
   @Test
-  public void splitEmpty() {
-    String[] split = StringUtils.split(null, '/');
-    assertEquals(0, split.length);
-
-    split = StringUtils.split("", '/');
-    assertEquals(0, split.length);
-
-    split = StringUtils.split("/", '/');
-    assertEquals(0, split.length);
-  }
-
-  /**
-   * Test method for
-   * {@link org.sakaiproject.kernel.util.StringUtils#split(java.lang.String, char)}
-   * .
-   */
-  @Test
-  public void testSplit() {
-
-    String[] e = StringUtils
-        .split("a.test.of.something.that.should.be.ok", '.');
-    assertEquals(8, e.length);
-    assertEquals("a", e[0]);
-    assertEquals("test", e[1]);
-    assertEquals("of", e[2]);
-    assertEquals("something", e[3]);
-    assertEquals("that", e[4]);
-    assertEquals("should", e[5]);
-    assertEquals("be", e[6]);
-    assertEquals("ok", e[7]);
-    e = StringUtils.split("", '.');
-    assertEquals(0, e.length);
-    e = StringUtils.split(".a.test.of.something.that.should.be.ok", '.');
-    assertEquals(8, e.length);
-    assertEquals("a", e[0]);
-    assertEquals("test", e[1]);
-    assertEquals("of", e[2]);
-    assertEquals("something", e[3]);
-    assertEquals("that", e[4]);
-    assertEquals("should", e[5]);
-    assertEquals("be", e[6]);
-    assertEquals("ok", e[7]);
-    e = StringUtils.split(".a.test.of.something.that.should.be.ok.", '.');
-    assertEquals(8, e.length);
-    assertEquals("a", e[0]);
-    assertEquals("test", e[1]);
-    assertEquals("of", e[2]);
-    assertEquals("something", e[3]);
-    assertEquals("that", e[4]);
-    assertEquals("should", e[5]);
-    assertEquals("be", e[6]);
-    assertEquals("ok", e[7]);
-    e = StringUtils.split("a.test.of.something.that.should.be.ok.", '.');
-    assertEquals(8, e.length);
-    assertEquals("a", e[0]);
-    assertEquals("test", e[1]);
-    assertEquals("of", e[2]);
-    assertEquals("something", e[3]);
-    assertEquals("that", e[4]);
-    assertEquals("should", e[5]);
-    assertEquals("be", e[6]);
-    assertEquals("ok", e[7]);
-    e = StringUtils.split(".......that.......", '.');
-    assertEquals(13, e.length);
-    assertEquals("that", e[6]);
-    e = StringUtils.split(".......that..is.....", '.');
-    assertEquals(13, e.length);
-    assertEquals("that", e[6]);
-    assertEquals("", e[7]);
-    assertEquals("is", e[8]);
-  }
-
-  public void testSplitLimit() {
-    String[] e = StringUtils.split("a.test.of.something.that.should.be.ok",
-        '.', 100);
-    assertEquals(8, e.length);
-    assertEquals("a", e[0]);
-    assertEquals("test", e[1]);
-    assertEquals("of", e[2]);
-    assertEquals("something", e[3]);
-    assertEquals("that", e[4]);
-    assertEquals("should", e[5]);
-    assertEquals("be", e[6]);
-    assertEquals("ok", e[7]);
-    e = StringUtils.split(".a.test.of.something.that.should.be.ok", '.', 4);
-    assertEquals(4, e.length);
-    assertEquals("a", e[0]);
-    assertEquals("test", e[1]);
-    assertEquals("of", e[2]);
-    assertEquals("something", e[3]);
-    e = StringUtils.split(".a.test.of.something.that.should.be.ok.", '.', 2);
-    assertEquals(2, e.length);
-    assertEquals("a", e[0]);
-    assertEquals("test", e[1]);
-    e = StringUtils.split("a.test.of.something.that.should.be.ok.", '.', 8);
-    assertEquals(8, e.length);
-    assertEquals("a", e[0]);
-    assertEquals("test", e[1]);
-    assertEquals("of", e[2]);
-    assertEquals("something", e[3]);
-    assertEquals("that", e[4]);
-    assertEquals("should", e[5]);
-    assertEquals("be", e[6]);
-    assertEquals("ok", e[7]);
-    e = StringUtils.split(".......that.......", '.', 5);
-    assertEquals(1, e.length);
-    assertEquals("that", e[0]);
-    e = StringUtils.split(".......that..is.....", '.', 2);
-    assertEquals(2, e.length);
-    assertEquals("that", e[0]);
-    assertEquals("", e[1]);
-    e = StringUtils.split("..............", '.', 2);
-    assertEquals(0, e.length);
-
-    // StringUtils.byteToHex(base);
-    // StringUtils.sha1Hash(tohash);
-  }
-
-  @Test
   public void testByteToHex() {
     for (int i = 0; i < 256; i++) {
 
@@ -179,20 +60,6 @@ public class StringUtilsTest {
         .sha1Hash("password"));
     assertTrue(!"db2ae1644939bfbf8602a58bec78b39bfe660f58".equals(StringUtils
         .sha1Hash("password22")));
-  }
-
-  @Test
-  public void join() {
-    String str = " one two three";
-    String join = StringUtils.join(new String[] { "one", "two", "three" }, 0,
-        ' ');
-    assertEquals(str, join);
-
-    join = StringUtils.join(StringUtils.split(str, ' '), 0, ' ');
-    assertEquals(str, join);
-
-    join = StringUtils.join(StringUtils.split(str, ' '), 1, ' ');
-    assertEquals(" two three", join);
   }
 
   @Test
@@ -249,20 +116,5 @@ public class StringUtilsTest {
     assertEquals("one", arr[0]);
     assertEquals("two", arr[1]);
     assertEquals("three", arr[2]);
-  }
-
-  @Test
-  public void isEmpty() {
-    assertTrue(StringUtils.isEmpty(""));
-    assertTrue(StringUtils.isEmpty("  "));
-    assertTrue(StringUtils.isEmpty(null));
-    assertFalse(StringUtils.isEmpty("something"));
-    assertFalse(StringUtils.isEmpty(" something "));
-  }
-
-  @Test
-  public void stripBlanks() {
-    assertEquals("thisisatest", StringUtils.stripBlanks("this is a test"));
-    assertEquals("thisisatest", StringUtils.stripBlanks(" this isa test "));
   }
 }

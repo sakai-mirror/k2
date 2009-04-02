@@ -20,6 +20,8 @@ package org.sakaiproject.kernel.util;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.util.Map;
 
 /**
@@ -39,7 +41,7 @@ public class MapUtils {
     Map<String, String> m = Maps.newHashMap();
     String[] templates = StringUtils.split(values, ';');
     for (String template : templates) {
-      String[] nv = StringUtils.split(template, '=', 2);
+      String[] nv = StringUtils.split(template, "=", 2);
       m.put(nv[0].trim(), nv[1].trim());
     }
     return ImmutableMap.copyOf(m);

@@ -17,16 +17,19 @@
  */
 package org.sakaiproject.kernel.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.sakaiproject.kernel.util.PathUtils;
-import org.sakaiproject.kernel.util.StringUtils;
 
 /**
- * 
+ *
  */
 public class PathUtilsUT {
   private static final String[] USER_PATH_TEST = new String[] {null, "", "~test",
@@ -51,8 +54,9 @@ public class PathUtilsUT {
         assertNotNull(userPath);
         assertTrue(userPath.length() > 2);
       }
-      if (debug)
+      if (debug) {
         LOG.debug("User:" + user + ":" + userPath);
+      }
     }
   }
 
@@ -65,8 +69,9 @@ public class PathUtilsUT {
     for (String testPair : REFERENCE_PARENT_TEST) {
       String[] p = StringUtils.split(testPair, ':');
       String parent = PathUtils.getParentReference(p[0]);
-      if (debug)
+      if (debug) {
         LOG.debug("Checking " + testPair + " gave  " + parent);
+      }
       assertEquals(p[1], parent);
     }
   }

@@ -20,6 +20,7 @@ package org.sakaiproject.kernel.rest.site;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
@@ -38,7 +39,6 @@ import org.sakaiproject.kernel.api.user.User;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.model.SiteBean;
 import org.sakaiproject.kernel.util.PathUtils;
-import org.sakaiproject.kernel.util.StringUtils;
 import org.sakaiproject.kernel.util.rest.CollectionOptions;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.kernel.util.rest.CollectionOptions.PagingOptions;
@@ -632,7 +632,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.Documentable#getRestDocumentation()
    */
   public RestDescription getRestDocumentation() {
@@ -641,7 +641,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.JaxRsSingletonProvider#getJaxRsSingleton()
    */
   public Documentable getJaxRsSingleton() {
@@ -650,7 +650,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Provider#getKey()
    */
   public String getKey() {
@@ -659,7 +659,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Provider#getPriority()
    */
   public int getPriority() {
@@ -668,7 +668,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.webapp.Initialisable#destroy()
    */
   public void destroy() {
@@ -677,7 +677,7 @@ public class SiteProvider implements Documentable, JaxRsSingletonProvider, Initi
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.webapp.Initialisable#init()
    */
   public void init() {

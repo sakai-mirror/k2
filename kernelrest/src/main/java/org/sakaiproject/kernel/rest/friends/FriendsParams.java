@@ -17,15 +17,15 @@
  */
 package org.sakaiproject.kernel.rest.friends;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
-
+import org.apache.commons.lang.StringUtils;
 import org.sakaiproject.kernel.api.session.Session;
 import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.userenv.UserEnvironment;
 import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.model.FriendStatus;
-import org.sakaiproject.kernel.util.StringUtils;
 import org.sakaiproject.kernel.webapp.RestServiceFaultException;
+
+import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -77,7 +77,7 @@ public class FriendsParams {
       major = PathElement.valueOf(elements[1]);
     } catch (IllegalArgumentException ex) {
       throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
-          "The is invalid " + StringUtils.join(elements, 0, '/'));
+          "The is invalid /" + StringUtils.join(elements, '/'));
     }
     if (elements.length < major.nelements) {
       throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
@@ -88,7 +88,7 @@ public class FriendsParams {
         minor = PathElement.valueOf(elements[2]);
       } catch (IllegalArgumentException ex) {
         throw new RestServiceFaultException(HttpServletResponse.SC_BAD_REQUEST,
-            "The is invalid " + StringUtils.join(elements, 0, '/'));
+            "The is invalid /" + StringUtils.join(elements, '/'));
       }
     } else {
       minor = PathElement.UNDEFINED;

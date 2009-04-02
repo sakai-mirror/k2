@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.authz.AuthzResolverService;
@@ -40,7 +41,6 @@ import org.sakaiproject.kernel.model.FriendBean;
 import org.sakaiproject.kernel.model.FriendStatus;
 import org.sakaiproject.kernel.model.FriendsBean;
 import org.sakaiproject.kernel.model.FriendsIndexBean;
-import org.sakaiproject.kernel.util.StringUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.kernel.webapp.Initialisable;
 import org.sakaiproject.kernel.webapp.RestServiceFaultException;
@@ -204,7 +204,7 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.webapp.Initialisable#init()
    */
   public void init() {
@@ -212,7 +212,7 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.webapp.Initialisable#destroy()
    */
   public void destroy() {
@@ -221,7 +221,7 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.RestProvider#dispatch(java.lang.String[],
    *      javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
    */
@@ -587,7 +587,7 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.RestProvider#getDescription()
    */
   public RestDescription getDescription() {
@@ -596,7 +596,7 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Provider#getKey()
    */
   public String getKey() {
@@ -605,7 +605,7 @@ public class RestFriendsProvider implements RestProvider, Initialisable {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Provider#getPriority()
    */
   public int getPriority() {

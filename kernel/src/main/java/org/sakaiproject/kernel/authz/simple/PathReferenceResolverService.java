@@ -20,10 +20,10 @@ package org.sakaiproject.kernel.authz.simple;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import org.apache.commons.lang.StringUtils;
 import org.sakaiproject.kernel.api.authz.AccessControlStatement;
 import org.sakaiproject.kernel.api.authz.ReferenceResolverService;
 import org.sakaiproject.kernel.api.authz.ReferencedObject;
-import org.sakaiproject.kernel.util.StringUtils;
 
 import java.util.Map;
 
@@ -57,7 +57,7 @@ public class PathReferenceResolverService implements ReferenceResolverService {
   public ReferencedObject resolve(String resourceReference) {
     // Make sure we're getting a String from the resolver, Java won't check that
     // the type matches the definition
-    String[] locator = StringUtils.split(resourceReference, '/', 1);
+    String[] locator = StringUtils.split(resourceReference, "/", 1);
     if (locator != null && locator.length > 0 && locator[0] != null) {
       ReferenceResolverService resolver = resolvers.get(locator[0]);
       if (resolver != null) {

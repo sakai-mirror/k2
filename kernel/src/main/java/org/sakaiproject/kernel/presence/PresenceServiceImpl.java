@@ -21,11 +21,11 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.sakaiproject.kernel.api.memory.Cache;
 import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.memory.CacheScope;
 import org.sakaiproject.kernel.api.presence.PresenceService;
-import org.sakaiproject.kernel.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -92,7 +92,8 @@ public class PresenceServiceImpl implements PresenceService {
     long timeout = getTimeStamp() - PRESENCE_TTL;
     // load the current status or the defaults.
     if (currentStatus != null) {
-      String[] locationStatus = StringUtils.split(currentStatus, ':', STATUS_SIZE);
+      String[] locationStatus = StringUtils.split(currentStatus, ":",
+          STATUS_SIZE);
       if (locationStatus.length > TIMESTAMP_ELEMENT) {
         // timed out ?
         long lastTs = Long.parseLong(locationStatus[TIMESTAMP_ELEMENT]);
@@ -205,7 +206,7 @@ public class PresenceServiceImpl implements PresenceService {
     String[] locationStatus = new String[] { uuid, String.valueOf(now - 1), "none",
         "online" };
     if (currentStatus != null) {
-      locationStatus = StringUtils.split(currentStatus, ':', STATUS_SIZE);
+      locationStatus = StringUtils.split(currentStatus, ":", STATUS_SIZE);
 
     }
     // compare with non null current versions.
@@ -226,7 +227,7 @@ public class PresenceServiceImpl implements PresenceService {
           ls[i] = locationStatus[i];
         }
       }
-      String newStatus = StringUtils.join(ls, 0, ':');
+      String newStatus = ':' + StringUtils.join(ls, ':');
       if (!newStatus.equals(currentStatus)) {
         userStatusCache.put(uuid, newStatus);
       } else {

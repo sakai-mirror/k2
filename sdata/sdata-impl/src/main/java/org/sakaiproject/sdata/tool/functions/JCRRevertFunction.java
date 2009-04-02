@@ -20,7 +20,7 @@ package org.sakaiproject.sdata.tool.functions;
 
 import com.google.inject.Inject;
 
-import org.sakaiproject.kernel.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.sdata.tool.SDataAccessException;
 import org.sakaiproject.sdata.tool.api.Handler;
@@ -72,7 +72,7 @@ public class JCRRevertFunction extends JCRSDataFunction {
   }
 
   /**
-   * 
+   *
    */
   @Inject
   public JCRRevertFunction() {
@@ -80,7 +80,7 @@ public class JCRRevertFunction extends JCRSDataFunction {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.sdata.tool.api.SDataFunction#call(org.sakaiproject.sdata.tool.api.Handler,
    *      javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse,
    *      javax.jcr.Node, org.sakaiproject.sdata.tool.api.ResourceDefinition)
@@ -94,7 +94,7 @@ public class JCRRevertFunction extends JCRSDataFunction {
       if ( StringUtils.isEmpty(revertVersion)) {
         throw new SDataException(HttpServletResponse.SC_BAD_REQUEST,"You must provide a version to revert in the "+VERSION+" parameter");
       }
-      
+
       if (target.isCheckedOut()) {
         try {
           target.restore(revertVersion, false);
@@ -144,7 +144,7 @@ public class JCRRevertFunction extends JCRSDataFunction {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.sdata.tool.api.SDataFunction#getKey()
    */
   public String getKey() {
@@ -153,7 +153,7 @@ public class JCRRevertFunction extends JCRSDataFunction {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.sdata.tool.api.SDataFunction#getDescription()
    */
   public RestDescription getDescription() {

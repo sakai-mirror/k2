@@ -18,6 +18,7 @@
 package org.sakaiproject.kernel.webapp.filter;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.KernelManager;
@@ -25,7 +26,6 @@ import org.sakaiproject.kernel.api.user.Authentication;
 import org.sakaiproject.kernel.api.user.AuthenticationResolverService;
 import org.sakaiproject.kernel.api.user.ExternalTrustedPrincipal;
 import org.sakaiproject.kernel.api.user.IdPwPrincipal;
-import org.sakaiproject.kernel.util.StringUtils;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -199,7 +199,7 @@ public class SakaiAuthenticationFilter implements Filter {
       if (auth.startsWith("Basic")) {
         auth = auth.substring(5).trim();
         auth = new String(Base64.decodeBase64(auth.getBytes("UTF-8")), "UTF-8");
-        final String[] unpw = StringUtils.split(auth, ':', 2);
+        final String[] unpw = StringUtils.split(auth, ":", 2);
         if (unpw != null && unpw.length == 2 && unpw[0] != null
             && unpw[0].trim().length() > 0 && unpw[1] != null
             && unpw[1].trim().length() > 0) {

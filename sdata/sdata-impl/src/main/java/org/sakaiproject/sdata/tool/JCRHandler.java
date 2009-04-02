@@ -27,6 +27,7 @@ import org.apache.commons.fileupload.sdata.FileItemIterator;
 import org.apache.commons.fileupload.sdata.FileItemStream;
 import org.apache.commons.fileupload.sdata.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.sdata.util.Streams;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.Registry;
@@ -38,7 +39,6 @@ import org.sakaiproject.kernel.api.jcr.SmartNodeHandler;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryServiceException;
 import org.sakaiproject.kernel.util.PathUtils;
-import org.sakaiproject.kernel.util.StringUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.kernel.webapp.RestServiceFaultException;
 import org.sakaiproject.sdata.tool.api.HandlerSerialzer;
@@ -232,7 +232,7 @@ public class JCRHandler extends AbstractHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.sakaiproject.sdata.tool.api.Handler#doDelete(javax.servlet.http.
    * HttpServletRequest, javax.servlet.http.HttpServletResponse)
    */
@@ -310,7 +310,7 @@ public class JCRHandler extends AbstractHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.sakaiproject.sdata.tool.api.Handler#doHead(javax.servlet.http.
    * HttpServletRequest, javax.servlet.http.HttpServletResponse)
    */
@@ -365,7 +365,7 @@ public class JCRHandler extends AbstractHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.sakaiproject.sdata.tool.api.Handler#doPut(javax.servlet.http.
    * HttpServletRequest, javax.servlet.http.HttpServletResponse)
    */
@@ -477,7 +477,7 @@ public class JCRHandler extends AbstractHandler {
    */
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.sakaiproject.sdata.tool.api.Handler#doGet(javax.servlet.http.
    * HttpServletRequest, javax.servlet.http.HttpServletResponse)
    */
@@ -593,7 +593,7 @@ public class JCRHandler extends AbstractHandler {
         } else {
           boolean handled = handleSmartNode(request, response, rp, n);
           if ( !handled ) {
-            doDefaultGet(request, response, rp, n);            
+            doDefaultGet(request, response, rp, n);
           }
         }
       }
@@ -661,8 +661,8 @@ public class JCRHandler extends AbstractHandler {
       }
       // get the action property from the node
       String action = smartNode.getProperty(JCRConstants.JCR_SMARTNODE).getString();
- 
-      String[] parsedAction = StringUtils.split(action, ':', 2);
+
+      String[] parsedAction = StringUtils.split(action, ":", 2);
       String protocol = parsedAction[0];
       String statement = parsedAction[1];
 
@@ -832,7 +832,7 @@ public class JCRHandler extends AbstractHandler {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.sakaiproject.sdata.tool.api.Handler#doPost(javax.servlet.http.
    * HttpServletRequest, javax.servlet.http.HttpServletResponse)
    */

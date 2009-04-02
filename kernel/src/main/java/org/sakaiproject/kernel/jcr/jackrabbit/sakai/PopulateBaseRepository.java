@@ -21,6 +21,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.jcr.JCRConstants;
@@ -30,7 +31,6 @@ import org.sakaiproject.kernel.api.user.UserFactoryService;
 import org.sakaiproject.kernel.jcr.api.internal.RepositoryStartupException;
 import org.sakaiproject.kernel.jcr.api.internal.StartupAction;
 import org.sakaiproject.kernel.util.ResourceLoader;
-import org.sakaiproject.kernel.util.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -151,7 +151,8 @@ public class PopulateBaseRepository implements StartupAction {
           l = map.get("property-sha1");
           if (l != null) {
             for (String[] lv : l) {
-              n.setProperty(lv[1], StringUtils.sha1Hash(lv[2]));
+              n.setProperty(lv[1], org.sakaiproject.kernel.util.StringUtils
+                  .sha1Hash(lv[2]));
             }
           }
           l = map.get("content-property");

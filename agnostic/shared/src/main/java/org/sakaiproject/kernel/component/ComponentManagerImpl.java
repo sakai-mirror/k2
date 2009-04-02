@@ -17,6 +17,7 @@
  */
 package org.sakaiproject.kernel.component;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.api.Artifact;
@@ -29,7 +30,6 @@ import org.sakaiproject.kernel.api.Kernel;
 import org.sakaiproject.kernel.api.KernelConfigurationException;
 import org.sakaiproject.kernel.api.ServiceSpec;
 import org.sakaiproject.kernel.util.ResourceLoader;
-import org.sakaiproject.kernel.util.StringUtils;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -83,7 +83,7 @@ public class ComponentManagerImpl implements ComponentManager {
 
   /**
    * create the component manager with a reference to the kernel.
-   * 
+   *
    * @param kernel
    *          the kernel.
    */
@@ -94,10 +94,10 @@ public class ComponentManagerImpl implements ComponentManager {
 
   /**
    * Start the component manager.
-   * 
+   *
    * @throws KernelConfigurationException
    *           if there is a problem starting the component manager.
-   * 
+   *
    */
   public void start() throws KernelConfigurationException {
     LOG.info("==============> K2 system starting up!");
@@ -146,7 +146,7 @@ public class ComponentManagerImpl implements ComponentManager {
    * Start a component based on the specification. This will create a
    * classloader for the component, if required, then start all dependent
    * components and then start he component requested.
-   * 
+   *
    * @param spec
    *          the specification of a component to be started.
    * @return true of the component started.
@@ -221,7 +221,7 @@ public class ComponentManagerImpl implements ComponentManager {
   /**
    * Start a default set of components, how the default set is specified is an
    * implementation detail.
-   * 
+   *
    * @return true if the default set start was sucessfull.
    * @throws KernelConfigurationException
    */
@@ -274,7 +274,7 @@ public class ComponentManagerImpl implements ComponentManager {
 
   /**
    * Work out the start order of all.
-   * 
+   *
    * @param toStart
    *          the list of components to be started
    * @return a sorted list in start order of all the components that need to be
@@ -404,7 +404,7 @@ public class ComponentManagerImpl implements ComponentManager {
 
   /**
    * Stop all components.
-   * 
+   *
    * @return
    */
   protected boolean stopComponents() {
@@ -418,7 +418,7 @@ public class ComponentManagerImpl implements ComponentManager {
 
   /**
    * Stop a component.
-   * 
+   *
    * @param spec
    *          the specification of the component to stop.
    * @return true if the component was successfully stopped.
@@ -458,7 +458,7 @@ public class ComponentManagerImpl implements ComponentManager {
 
   /**
    * Load components ready for starting
-   * 
+   *
    * @param cs
    *          a list of component specifications to load
    */
@@ -481,7 +481,7 @@ public class ComponentManagerImpl implements ComponentManager {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @throws KernelConfigurationException
    * @throws ComponentSpecificationException
    * @see org.sakaiproject.kernel.api.ComponentManager#startComponents(java.util.List)

@@ -21,7 +21,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 import com.google.inject.Inject;
 
-import org.sakaiproject.kernel.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -62,7 +62,7 @@ public class GroupMembershipBean {
 
   public GroupMembershipBean(String userId, String subjectToken) {
     this.userId = userId;
-    String[] s = StringUtils.split(subjectToken, ':', 2);
+    String[] s = StringUtils.split(subjectToken, ":", 2);
     if (s.length > 0) {
       groupId = s[0];
       if (s.length > 1) {

@@ -20,6 +20,7 @@ package org.sakaiproject.kernel.authz.simple;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sakaiproject.kernel.KernelConstants;
@@ -44,7 +45,6 @@ import org.sakaiproject.kernel.api.userenv.UserEnvironmentResolverService;
 import org.sakaiproject.kernel.model.UserEnvironmentBean;
 import org.sakaiproject.kernel.user.jcr.JcrAuthenticationResolverProvider;
 import org.sakaiproject.kernel.util.IOUtils;
-import org.sakaiproject.kernel.util.StringUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -367,7 +367,7 @@ public class SimpleJcrUserEnvironmentResolverService implements
 
       // set the password
       userEnvNode.setProperty(JcrAuthenticationResolverProvider.JCRPASSWORDHASH,
-          StringUtils.sha1Hash(password));
+          org.sakaiproject.kernel.util.StringUtils.sha1Hash(password));
 
       // make the private and shares spaces for the user owned by this used.
       jcrNodeFactoryService.setOwner(userFactoryService.getUserPrivatePath(u.getUuid()),u.getUuid());
@@ -421,7 +421,8 @@ public class SimpleJcrUserEnvironmentResolverService implements
 
     String newSubject = siteId + ":" + membershipType;
     String[] subjects = newUserEnvironment.getSubjects();
-    subjects = StringUtils.addString(subjects, newSubject);
+    subjects = org.sakaiproject.kernel.util.StringUtils.addString(subjects,
+        newSubject);
     newUserEnvironment.setSubjects(subjects);
 
     save(newUserEnvironment);
@@ -438,7 +439,8 @@ public class SimpleJcrUserEnvironmentResolverService implements
 
     String newSubject = siteId + ":" + membershipType;
     String[] subjects = newUserEnvironment.getSubjects();
-    subjects = StringUtils.removeString(subjects, newSubject);
+    subjects = org.sakaiproject.kernel.util.StringUtils.removeString(subjects,
+        newSubject);
     newUserEnvironment.setSubjects(subjects);
 
     save(newUserEnvironment);

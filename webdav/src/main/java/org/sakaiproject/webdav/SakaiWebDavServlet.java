@@ -17,6 +17,7 @@
  */
 package org.sakaiproject.webdav;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.server.SessionProvider;
@@ -25,7 +26,6 @@ import org.apache.jackrabbit.webdav.simple.ResourceConfig;
 import org.apache.jackrabbit.webdav.simple.SimpleWebdavServlet;
 import org.sakaiproject.kernel.api.KernelManager;
 import org.sakaiproject.kernel.api.jcr.JCRService;
-import org.sakaiproject.kernel.util.StringUtils;
 
 import java.io.IOException;
 import java.net.URL;
@@ -48,7 +48,7 @@ import javax.servlet.http.HttpServletResponse;
 public class SakaiWebDavServlet extends SimpleWebdavServlet {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
   private static final Log LOG = LogFactory.getLog(SakaiWebDavServlet.class);
@@ -64,7 +64,7 @@ public class SakaiWebDavServlet extends SimpleWebdavServlet {
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see javax.servlet.GenericServlet#init(javax.servlet.ServletConfig)
    */
   @Override

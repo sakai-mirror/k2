@@ -17,6 +17,7 @@
  */
 package org.sakaiproject.kernel.util;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.xerces.util.XMLChar;
 
 import java.util.regex.Matcher;
@@ -24,7 +25,7 @@ import java.util.regex.Pattern;
 
 /**
  * Code swiped from JackRabbit with one minor change to string splitting.
- * 
+ *
  * Implements the encode and decode routines as specified for XML name to SQL
  * identifier conversion in ISO 9075-14:2003.<br/>
  * If a character <code>c</code> is not valid at a certain position in an XML

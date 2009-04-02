@@ -20,6 +20,7 @@ package org.sakaiproject.kernel.rest.presence;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.sakaiproject.kernel.api.Registry;
 import org.sakaiproject.kernel.api.RegistryService;
 import org.sakaiproject.kernel.api.presence.PresenceService;
@@ -30,7 +31,6 @@ import org.sakaiproject.kernel.api.session.SessionManagerService;
 import org.sakaiproject.kernel.api.social.FriendsResolverService;
 import org.sakaiproject.kernel.model.FriendBean;
 import org.sakaiproject.kernel.model.FriendsBean;
-import org.sakaiproject.kernel.util.StringUtils;
 import org.sakaiproject.kernel.util.rest.RestDescription;
 import org.sakaiproject.kernel.webapp.Initialisable;
 
@@ -44,7 +44,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 /**
- * 
+ *
  */
 @Path("/presence")
 public class PresenceProvider implements Documentable, JaxRsSingletonProvider,
@@ -73,7 +73,7 @@ public class PresenceProvider implements Documentable, JaxRsSingletonProvider,
   }
 
   /**
-   * 
+   *
    */
   @Inject
   public PresenceProvider(PresenceService presenceService,
@@ -85,7 +85,7 @@ public class PresenceProvider implements Documentable, JaxRsSingletonProvider,
     this.beanConverter = beanConverter;
     jaxRsSingletonRegistry = registryService
         .getRegistry(JaxRsSingletonProvider.JAXRS_SINGLETON_REGISTRY);
-    
+
     jaxRsSingletonRegistry.add(this);
 
   }
@@ -134,7 +134,7 @@ public class PresenceProvider implements Documentable, JaxRsSingletonProvider,
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.Documentable#getRestDocumentation()
    */
   public RestDescription getRestDocumentation() {
@@ -143,7 +143,7 @@ public class PresenceProvider implements Documentable, JaxRsSingletonProvider,
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.rest.JaxRsSingletonProvider#getJaxRsSingleton()
    */
   public Documentable getJaxRsSingleton() {
@@ -152,7 +152,7 @@ public class PresenceProvider implements Documentable, JaxRsSingletonProvider,
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Provider#getKey()
    */
   public String getKey() {
@@ -161,7 +161,7 @@ public class PresenceProvider implements Documentable, JaxRsSingletonProvider,
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.api.Provider#getPriority()
    */
   public int getPriority() {
@@ -170,7 +170,7 @@ public class PresenceProvider implements Documentable, JaxRsSingletonProvider,
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.webapp.Initialisable#destroy()
    */
   public void destroy() {
@@ -179,7 +179,7 @@ public class PresenceProvider implements Documentable, JaxRsSingletonProvider,
 
   /**
    * {@inheritDoc}
-   * 
+   *
    * @see org.sakaiproject.kernel.webapp.Initialisable#init()
    */
   public void init() {
