@@ -19,172 +19,185 @@ package org.sakaiproject.kernel.util;
 
 import org.apache.xerces.util.XMLChar;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
- * Code swiped from Alfresco. I would've stolen it from JackRabbit but this
- * version has less interesting bits around string splitting and no regular
- * expression usage.
+ * Code swiped from JackRabbit with one minor change to string splitting.
+ * 
+ * Implements the encode and decode routines as specified for XML name to SQL
+ * identifier conversion in ISO 9075-14:2003.<br/>
+ * If a character <code>c</code> is not valid at a certain position in an XML
+ * 1.0 NCName it is encoded in the form: '_x' + hexValueOf(c) + '_'
+ * <p/>
  */
 public class ISO9075 {
-  /*
-   * Mask for hex encoding
-   */
-  private static final int MASK = (1 << 4) - 1;
 
-  /*
-   * Digits used string encoding
-   */
-  private static final char[] DIGITS = { '0', '1', '2', '3', '4', '5', '6',
-      '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
-
-  /**
-   * Private constructor
-   *
-   */
+  /** Hidden constructor. */
   private ISO9075() {
-    super();
   }
 
-  public static String encodePath(String toEncode) {
-    String[] parts = StringUtils.split(toEncode, '/');
-    StringBuilder builder = new StringBuilder();
-    if (toEncode.startsWith("//")) {
-      builder.append("/");
-    }
-    for (String part : parts) {
-      String enc = encode(part);
-      builder.append("/").append(enc);
-    }
-    return builder.toString();
-  }
+  /** Pattern on an encoded character */
+  private static final Pattern ENCODE_PATTERN = Pattern
+      .compile("_x\\p{XDigit}{4}_");
+
+  /** Padding characters */
+  private static final char[] PADDING = new char[] { '0', '0', '0' };
+
+  /** All the possible hex digits */
+  private static final String HEX_DIGITS = "0123456789abcdefABCDEF";
 
   /**
-   * Encode a string according to ISO 9075
+   * Encodes <code>name</code> as specified in ISO 9075.
    *
-   * @param toEncode
-   * @return
+   * @param name
+   *          the <code>String</code> to encode.
+   * @return the encoded <code>String</code> or <code>name</code> if it does not
+   *         need encoding.
    */
-  public static String encode(String toEncode) {
-    if ((toEncode == null) || (toEncode.length() == 0)) {
-      return toEncode;
-    } else if (XMLChar.isValidName(toEncode) && (toEncode.indexOf("_x") == -1)
-        && (toEncode.indexOf(':') == -1)) {
-      return toEncode;
+  public static String encode(String name) {
+    // quick check for root node name
+    if (name.length() == 0) {
+      return name;
+    }
+    if (XMLChar.isValidName(name) && name.indexOf("_x") < 0) {
+      // already valid
+      return name;
     } else {
-      StringBuilder builder = new StringBuilder(toEncode.length());
-      for (int i = 0; i < toEncode.length(); i++) {
-        char c = toEncode.charAt(i);
-        // First requires special test
+      // encode
+      StringBuffer encoded = new StringBuffer();
+      for (int i = 0; i < name.length(); i++) {
         if (i == 0) {
-          if (XMLChar.isNCNameStart(c)) {
-            // The first character may be the _ at the start of an
-            // encoding pattern
-            if (matchesEncodedPattern(toEncode, i)) {
-              // Encode the first _
-              encode('_', builder);
+          // first character of name
+          if (XMLChar.isNameStart(name.charAt(i))) {
+            if (needsEscaping(name, i)) {
+              // '_x' must be encoded
+              encode('_', encoded);
             } else {
-              // Just append
-              builder.append(c);
+              encoded.append(name.charAt(i));
             }
           } else {
-            // Encode an invalid start character for an XML element
-            // name.
-            encode(c, builder);
+            // not valid as first character -> encode
+            encode(name.charAt(i), encoded);
           }
-        } else if (!XMLChar.isNCName(c)) {
-          encode(c, builder);
+        } else if (!XMLChar.isName(name.charAt(i))) {
+          encode(name.charAt(i), encoded);
         } else {
-          if (matchesEncodedPattern(toEncode, i)) {
-            // '_' must be encoded
-            encode('_', builder);
+          if (needsEscaping(name, i)) {
+            // '_x' must be encoded
+            encode('_', encoded);
           } else {
-            builder.append(c);
+            encoded.append(name.charAt(i));
           }
         }
       }
-      return builder.toString();
-    }
-
-  }
-
-  private static boolean matchesEncodedPattern(String string, int position) {
-    return (string.length() >= position + 6)
-        && (string.charAt(position) == '_')
-        && (string.charAt(position + 1) == 'x')
-        && isHexChar(string.charAt(position + 2))
-        && isHexChar(string.charAt(position + 3))
-        && isHexChar(string.charAt(position + 4))
-        && isHexChar(string.charAt(position + 5))
-        && (string.charAt(position + 6) == '_');
-  }
-
-  private static boolean isHexChar(char c) {
-    switch (c) {
-    case '0':
-    case '1':
-    case '2':
-    case '3':
-    case '4':
-    case '5':
-    case '6':
-    case '7':
-    case '8':
-    case '9':
-    case 'a':
-    case 'b':
-    case 'c':
-    case 'd':
-    case 'e':
-    case 'f':
-    case 'A':
-    case 'B':
-    case 'C':
-    case 'D':
-    case 'E':
-    case 'F':
-      return true;
-    default:
-      return false;
+      return encoded.toString();
     }
   }
 
-  public static String decodePath(String toEncode) {
-    String[] parts = StringUtils.split(toEncode, '/');
-    StringBuilder builder = new StringBuilder();
-    if (toEncode.startsWith("//")) {
-      builder.append("/");
-    }
-    for (String part : parts) {
-      String enc = decode(part);
-      builder.append("/").append(enc);
-    }
-    return builder.toString();
-  }
-
-  public static String decode(String toDecode) {
-    if ((toDecode == null) || (toDecode.length() < 7)
-        || (toDecode.indexOf("_x") < 0)) {
-      return toDecode;
-    }
-    StringBuffer decoded = new StringBuffer();
-    for (int i = 0, l = toDecode.length(); i < l; i++) {
-      if (matchesEncodedPattern(toDecode, i)) {
-        decoded.append(((char) Integer.parseInt(toDecode
-            .substring(i + 2, i + 6), 16)));
-        i += 6;
-      } else {
-        decoded.append(toDecode.charAt(i));
+  /**
+   * Encodes <code>path</code> as specified in ISO 9075. Please note that the
+   * character '<code>[</code>' is not encoded but rather interpreted as the
+   * start of an index in a path segment.
+   *
+   * @param path
+   *          the <code>String</code> to encode.
+   * @return the encoded <code>String</code>.
+   */
+  public static String encodePath(String path) {
+    String[] names = StringUtils.split(path, '/');
+    StringBuffer encoded = new StringBuffer(path.length());
+    for (int i = 0; i < names.length; i++) {
+      // detect index
+      String index = null;
+      int idx = names[i].indexOf('[');
+      if (idx != -1) {
+        index = names[i].substring(idx);
+        names[i] = names[i].substring(0, idx);
+      }
+      encoded.append(encode(names[i]));
+      if (index != null) {
+        encoded.append(index);
+      }
+      if (i < names.length - 1) {
+        encoded.append('/');
       }
     }
+    return encoded.toString();
+  }
+
+  /**
+   * Decodes the <code>name</code>.
+   *
+   * @param name
+   *          the <code>String</code> to decode.
+   * @return the decoded <code>String</code>.
+   */
+  public static String decode(String name) {
+    // quick check
+    if (name.indexOf("_x") < 0) {
+      // not encoded
+      return name;
+    }
+    StringBuffer decoded = new StringBuffer();
+    Matcher m = ENCODE_PATTERN.matcher(name);
+    while (m.find()) {
+      char ch = (char) Integer.parseInt(m.group().substring(2, 6), 16);
+      if (ch == '$' || ch == '\\') {
+        m.appendReplacement(decoded, "\\" + ch);
+      } else {
+        m.appendReplacement(decoded, Character.toString(ch));
+      }
+    }
+    m.appendTail(decoded);
     return decoded.toString();
   }
 
-  private static void encode(char c, StringBuilder builder) {
-    char[] buf = new char[] { '_', 'x', '0', '0', '0', '0', '_' };
-    int charPos = 6;
-    do {
-      buf[--charPos] = DIGITS[c & MASK];
-      c >>>= 4;
-    } while (c != 0);
-    builder.append(buf);
+  // -------------------------< internal >-------------------------------------
+
+  /**
+   * Encodes the character <code>c</code> as a String in the following form:
+   * <code>"_x" + hex value of c + "_"</code>. Where the hex value has four
+   * digits if the character with possibly leading zeros.
+   * <p/>
+   * Example: ' ' (the space character) is encoded to: _x0020_
+   *
+   * @param c
+   *          the character to encode
+   * @param b
+   *          the encoded character is appended to <code>StringBuffer</code>
+   *          <code>b</code>.
+   */
+  private static void encode(char c, StringBuffer b) {
+    b.append("_x");
+    String hex = Integer.toHexString(c);
+    b.append(PADDING, 0, 4 - hex.length());
+    b.append(hex);
+    b.append("_");
+  }
+
+  /**
+   * Returns true if <code>name.charAt(location)</code> is the underscore
+   * character and the following character sequence is 'xHHHH_' where H is a hex
+   * digit.
+   *
+   * @param name
+   *          the name to check.
+   * @param location
+   *          the location to look at.
+   * @throws ArrayIndexOutOfBoundsException
+   *           if location > name.length()
+   */
+  private static boolean needsEscaping(String name, int location)
+      throws ArrayIndexOutOfBoundsException {
+    if (name.charAt(location) == '_' && name.length() >= location + 6) {
+      return name.charAt(location + 1) == 'x'
+          && HEX_DIGITS.indexOf(name.charAt(location + 2)) != -1
+          && HEX_DIGITS.indexOf(name.charAt(location + 3)) != -1
+          && HEX_DIGITS.indexOf(name.charAt(location + 4)) != -1
+          && HEX_DIGITS.indexOf(name.charAt(location + 5)) != -1;
+    } else {
+      return false;
+    }
   }
 }

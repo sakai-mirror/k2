@@ -22,7 +22,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * 
+ *
  */
 public class StringUtils {
 
@@ -30,26 +30,37 @@ public class StringUtils {
   public static final String UTF8 = "UTF8";
 
   /**
-   * @param packageName
-   * @param c
+   * Split a <code>String</code> by a separator.
+   *
+   * @param st
+   *          What to split
+   * @param sep
+   *          What to split by
    * @return
    */
   public static String[] split(String st, char sep) {
-
-    if (st == null) {
+    // return empty array for empty string
+    if (st == null || st.length() == 0) {
       return new String[0];
     }
+    // return empty array for string equal to separator
     char[] pn = st.toCharArray();
-    if (pn.length == 0) {
+    if (pn.length == 1 && pn[0] == sep) {
       return new String[0];
     }
     int n = 1;
     int start = 0;
     int end = pn.length;
-    while (start < end && sep == pn[start])
+    // break after the first occurrence of sep to preserve a doubled separator
+    // at the beginning of the string
+    while (start < end && sep == pn[start]) {
       start++;
-    while (start < end && sep == pn[end - 1])
+      break;
+    }
+     while (start < end && sep == pn[end - 1]) {
       end--;
+      break;
+    }
     for (int i = start; i < end; i++) {
       if (sep == pn[i]) {
         n++;
@@ -81,10 +92,12 @@ public class StringUtils {
     int n = 1;
     int start = 0;
     int end = pn.length;
-    while (start < end && sep == pn[start])
+    while (start < end && sep == pn[start]) {
       start++;
-    while (start < end && sep == pn[end - 1])
+    }
+    while (start < end && sep == pn[end - 1]) {
       end--;
+    }
     for (int i = start; i < end; i++) {
       if (sep == pn[i]) {
         n++;
@@ -146,8 +159,12 @@ public class StringUtils {
   }
 
   /**
-   * @param owners
-   * @param owner
+   * Removes a <code>String</code> from a <code>String</code> array.
+   *
+   * @param a
+   *          Array to search and remove from if String found
+   * @param v
+   *          String to search for.
    * @return
    */
   public static String[] removeString(String[] a, String v) {
@@ -172,24 +189,24 @@ public class StringUtils {
 
   /**
    * Checks to see if the value is empty
-   * 
-   * @param firstName
+   *
+   * @param str
    * @return
    */
-  public static boolean isEmpty(String firstName) {
-    return (firstName == null || firstName.trim().length() == 0);
+  public static boolean isEmpty(String str) {
+    return (str == null || str.trim().length() == 0);
   }
 
   /**
    * Builds a string based on the elements the the array
-   * 
+   *
    * @param elements
    *          the elements to build the string from
    * @param i
-   *          the staring index.
+   *          the starting index.
    * @param c
-   *          the seperator character
-   * @return a joined string starting with the seperator.
+   *          the separator character
+   * @return a joined string starting with the separator.
    */
   public static String join(String[] elements, int i, char c) {
     StringBuilder sb = new StringBuilder();
@@ -197,7 +214,7 @@ public class StringUtils {
       sb.append(c).append(elements[j]);
     }
     if (sb.length() == 0) {
-      sb.append("/");
+      sb.append(c);
     }
     return sb.toString();
   }
