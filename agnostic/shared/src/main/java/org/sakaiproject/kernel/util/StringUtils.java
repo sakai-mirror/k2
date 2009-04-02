@@ -198,7 +198,9 @@ public class StringUtils {
   }
 
   /**
-   * Builds a string based on the elements the the array
+   * Builds a string based on the elements the the array. Please note that the
+   * separator will always be the first character returned. See commons-lang
+   * StringUtils for a join method that does not do this.
    *
    * @param elements
    *          the elements to build the string from
@@ -210,10 +212,11 @@ public class StringUtils {
    */
   public static String join(String[] elements, int i, char c) {
     StringBuilder sb = new StringBuilder();
-    for (int j = i; j < elements.length; j++) {
-      sb.append(c).append(elements[j]);
-    }
-    if (sb.length() == 0) {
+    if (elements != null && elements.length > 0) {
+      for (int j = i; j < elements.length; j++) {
+        sb.append(c).append(elements[j]);
+      }
+    } else {
       sb.append(c);
     }
     return sb.toString();
