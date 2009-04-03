@@ -44,8 +44,6 @@ import javax.jcr.RepositoryException;
  *
  */
 public class JcrMessagingService implements MessagingService {
-  public static final String PROP_ACTIVEMQ_BROKER_URL = "jms.brokerurl";
-
   private Injector injector;
   private JCRNodeFactoryService jcrNodeFactory;
   private MessageConverter msgConverter;

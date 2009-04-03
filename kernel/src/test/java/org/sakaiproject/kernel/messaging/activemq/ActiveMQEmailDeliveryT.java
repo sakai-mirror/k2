@@ -28,10 +28,13 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.sakaiproject.kernel.KernelConstants;
+import org.sakaiproject.kernel.KernelModule;
 import org.sakaiproject.kernel.messaging.email.EmailMessagingService;
 import org.sakaiproject.kernel.messaging.email.commons.HtmlEmail;
 import org.sakaiproject.kernel.messaging.email.commons.MultiPartEmail;
 import org.sakaiproject.kernel.messaging.email.commons.SimpleEmail;
+import org.sakaiproject.kernel.util.PropertiesLoader;
 import org.subethamail.wiser.Wiser;
 import org.subethamail.wiser.WiserMessage;
 
@@ -87,9 +90,17 @@ public class ActiveMQEmailDeliveryT {
       + "MultiPartEmail";
   private static String TEST_EMAIL_SUBJECT = "Test message";
   private static Properties props = new Properties();
+  private static Properties kernelProps;
+  private static String emailQueueName;
+  private static String emailType;
 
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
+    kernelProps = PropertiesLoader.load(ActiveMQEmailDeliveryT.class
+        .getClassLoader(), KernelModule.DEFAULT_PROPERTIES,
+        KernelModule.LOCAL_PROPERTIES, KernelModule.SYS_LOCAL_PROPERTIES);
+    emailQueueName = kernelProps.getProperty(KernelConstants.JMS_EMAIL_QUEUE);
+    emailType = kernelProps.getProperty(KernelConstants.JMS_EMAIL_TYPE);
     props.put("mail.smtp.host", "localhost");
     props.put("mail.smtp.port", "" + smtpTestPort);
   }
@@ -141,7 +152,7 @@ public class ActiveMQEmailDeliveryT {
     // the same varaible. SimpleEmail etc can each be used directly.
     List<Email> emails = new ArrayList<Email>();
     EmailMessagingService messagingService = new EmailMessagingService(vmURL,
-        null, null, null, null);
+        emailQueueName, emailType, null, null, null, null);
     emails.add(new SimpleEmail(messagingService));
     emails.add(new MultiPartEmail(messagingService));
     emails.add(new HtmlEmail(messagingService));
@@ -150,7 +161,7 @@ public class ActiveMQEmailDeliveryT {
       listenerSession = listenerConn.createSession(false,
           Session.AUTO_ACKNOWLEDGE);
       emailQueue = listenerSession
-          .createQueue(EmailMessagingService.EMAIL_QUEUE_NAME);
+          .createQueue(emailQueueName);
 
       consumer = listenerSession.createConsumer(emailQueue);
 
@@ -172,7 +183,7 @@ public class ActiveMQEmailDeliveryT {
     try {
       clientSession = clientConn.createSession(false, Session.AUTO_ACKNOWLEDGE);
       emailQueue = clientSession
-          .createQueue(EmailMessagingService.EMAIL_QUEUE_NAME);
+          .createQueue(emailQueueName);
       producer = clientSession.createProducer(emailQueue);
 
       clientConn.start();
@@ -233,7 +244,7 @@ public class ActiveMQEmailDeliveryT {
       try {
         om = clientSession.createObjectMessage(content);
 
-        om.setJMSType(EmailMessagingService.EMAIL_JSMTYPE);
+        om.setJMSType(emailType);
 
         LOG.info("Client: Sending test message....");
         producer.send(om);
@@ -364,7 +375,7 @@ public class ActiveMQEmailDeliveryT {
       LOG.info("---> in consumer message listener...");
 
       try {
-        if (EmailMessagingService.EMAIL_JSMTYPE.equals(message.getJMSType())
+        if (emailType.equals(message.getJMSType())
             && message instanceof ObjectMessage) {
           // avoiding selectors
           ObjectMessage m = (ObjectMessage) message;

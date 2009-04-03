@@ -15,23 +15,39 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package org.sakaiproject.kernel.messaging.email;
+package org.sakaiproject.kernel.messaging;
 
-import static org.junit.Assert.assertNull;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.inject.name.Named;
 
-import org.junit.Test;
-import org.sakaiproject.kernel.messaging.JmsSessionProvider;
+import org.apache.activemq.ActiveMQConnectionFactory;
+import org.sakaiproject.kernel.KernelConstants;
 
-import javax.jms.Session;
+import javax.jms.ConnectionFactory;
 
 /**
  *
  */
-public class JmsSessionProviderT {
-  @Test
-  public void getSession() {
-    JmsSessionProvider prov = new JmsSessionProvider("failover://vm://localhost?broker.persistent=true");
-    Session session = prov.get();
-    assertNull(session);
+public class JmsConnectionFactoryProvider implements
+    Provider<ConnectionFactory> {
+
+  private String brokerUrl;
+
+  @Inject
+  public JmsConnectionFactoryProvider(
+      @Named(KernelConstants.JMS_BROKER_URL) String brokerUrl) {
+    this.brokerUrl = brokerUrl;
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @see com.google.inject.Provider#get()
+   */
+  public ConnectionFactory get() {
+    ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(
+        brokerUrl);
+    return connectionFactory;
   }
 }

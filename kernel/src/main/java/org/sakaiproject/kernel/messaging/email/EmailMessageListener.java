@@ -90,11 +90,11 @@ public class EmailMessageListener implements MessageListener {
       ObjectMessage objMsg = (ObjectMessage) jmsMsg;
       try {
         // get the email message and break out the parts
-        EmailMessage email = (EmailMessage) objMsg.getObject();
+        Message email = (Message) objMsg.getObject();
         handleMessage(email);
       } catch (JMSException e) {
-        // log for now. We need to return a message to the sender that something
-        // died while processing this message
+        // TODO log for now. We need to return a message to the sender that
+        // something died while processing this message
         LOG.error(e.getMessage(), e);
       } catch (AddressException e) {
         LOG.error(e.getMessage(), e);
@@ -110,7 +110,7 @@ public class EmailMessageListener implements MessageListener {
     }
   }
 
-  public void handleMessage(EmailMessage email) throws AddressException,
+  public void handleMessage(Message email) throws AddressException,
       UnsupportedEncodingException, SendFailedException, MessagingException,
       IOException {
     String fromAddress = email.getHeader(Message.Field.FROM);
@@ -214,7 +214,7 @@ public class EmailMessageListener implements MessageListener {
    * @throws MessagingException
    *           If there is a problem setting the content to the mime part.
    */
-  private void setContent(MimePart mimePart, EmailMessage email)
+  private void setContent(MimePart mimePart, Message email)
       throws IOException, MessagingException {
     Object content = null;
     if (email.isBodyText()) {

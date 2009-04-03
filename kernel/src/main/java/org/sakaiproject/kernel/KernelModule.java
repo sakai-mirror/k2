@@ -47,8 +47,8 @@ import org.sakaiproject.kernel.api.memory.CacheManagerService;
 import org.sakaiproject.kernel.api.messaging.EmailMessage;
 import org.sakaiproject.kernel.api.messaging.Message;
 import org.sakaiproject.kernel.api.messaging.MessageConverter;
-import org.sakaiproject.kernel.api.messaging.MessagingService;
 import org.sakaiproject.kernel.api.messaging.MessageHandler;
+import org.sakaiproject.kernel.api.messaging.MessagingService;
 import org.sakaiproject.kernel.api.presence.PresenceService;
 import org.sakaiproject.kernel.api.rest.RestProvider;
 import org.sakaiproject.kernel.api.serialization.BeanConverter;
@@ -86,7 +86,7 @@ import org.sakaiproject.kernel.jcr.support.JCRNodeFactoryServiceImpl;
 import org.sakaiproject.kernel.locking.LockManagerImpl;
 import org.sakaiproject.kernel.memory.CacheManagerServiceImpl;
 import org.sakaiproject.kernel.messaging.EmailMessageImpl;
-import org.sakaiproject.kernel.messaging.JmsSessionProvider;
+import org.sakaiproject.kernel.messaging.JmsConnectionFactoryProvider;
 import org.sakaiproject.kernel.messaging.JsonMessageConverter;
 import org.sakaiproject.kernel.messaging.MessageImpl;
 import org.sakaiproject.kernel.messaging.OutboxNodeHandlerListProvider;
@@ -116,6 +116,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.jms.ConnectionFactory;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -336,8 +337,10 @@ public class KernelModule extends AbstractModule {
     bind(javax.mail.Session.class).toProvider(MailSessionProvider.class).in(
         Scopes.SINGLETON);
 
-    bind(javax.jms.Session.class).toProvider(JmsSessionProvider.class).in(
-        Scopes.SINGLETON);
+    // bind(javax.jms.Session.class).toProvider(JmsSessionProvider.class).in(
+    // Scopes.SINGLETON);
+    bind(ConnectionFactory.class)
+        .toProvider(JmsConnectionFactoryProvider.class).in(Scopes.SINGLETON);
 
     // messages
     bind(Message.class).to(MessageImpl.class);

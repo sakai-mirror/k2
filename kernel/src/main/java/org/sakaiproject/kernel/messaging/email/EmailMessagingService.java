@@ -26,6 +26,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.mail.Email;
+import org.sakaiproject.kernel.KernelConstants;
 import org.sakaiproject.kernel.api.email.CommonsEmailHandler;
 import org.sakaiproject.kernel.api.jcr.support.JCRNodeFactoryService;
 import org.sakaiproject.kernel.api.messaging.MessageConverter;
@@ -50,11 +51,11 @@ public class EmailMessagingService extends JcrMessagingService implements
     CommonsEmailHandler {
 
   private static final Log LOG = LogFactory.getLog(EmailMessagingService.class);
-  public static final String EMAIL_JSMTYPE = "kernel.jms.email";
-  public static final String EMAIL_QUEUE_NAME = "kernel.email";
   private Long clientId = Long.valueOf(1L); // /always use the synchronized getters
                                         // and setters
 
+  private String emailJmsType;
+  private String emailQueueName;
   private ActiveMQConnectionFactory connectionFactory;
   private ArrayList<Connection> connections = new ArrayList<Connection>();
   private ConcurrentHashMap<String, Session> sessions = new ConcurrentHashMap<String, Session>();
@@ -78,7 +79,9 @@ public class EmailMessagingService extends JcrMessagingService implements
    */
   @Inject
   public EmailMessagingService(
-      @Named(JcrMessagingService.PROP_ACTIVEMQ_BROKER_URL) String brokerUrl,
+      @Named(KernelConstants.JMS_BROKER_URL) String brokerUrl,
+      @Named(KernelConstants.JMS_EMAIL_QUEUE) String emailQueueName,
+      @Named(KernelConstants.JMS_EMAIL_TYPE) String emailJmsType,
       JCRNodeFactoryService jcrNodeFactory, MessageConverter msgConverter,
       Injector injector, UserFactoryService userFactory) {
     super(jcrNodeFactory, msgConverter, injector, userFactory);
@@ -176,10 +179,10 @@ public class EmailMessagingService extends JcrMessagingService implements
     Connection conn = connectionFactory.createTopicConnection();
     conn.setClientID(getNextId());
     Session clientSession = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
-    Destination emailTopic = clientSession.createTopic(EMAIL_QUEUE_NAME);
+    Destination emailTopic = clientSession.createTopic(emailQueueName);
     MessageProducer client = clientSession.createProducer(emailTopic);
     ObjectMessage mesg = clientSession.createObjectMessage(content);
-    mesg.setJMSType(EMAIL_JSMTYPE);
+    mesg.setJMSType(emailJmsType);
     client.send(mesg);
     // TODO finish this
     return null;

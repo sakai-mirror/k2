@@ -100,4 +100,8 @@ public interface KernelConstants {
 
   String OUTBOX = "outbox";
   String MESSAGES = "messages";
+
+  String JMS_BROKER_URL = "jms.brokerurl";
+  String JMS_EMAIL_TYPE = "jms.email.type";
+  String JMS_EMAIL_QUEUE = "jms.email.queue";
 }

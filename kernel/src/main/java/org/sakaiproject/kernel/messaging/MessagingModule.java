@@ -55,8 +55,8 @@ public class MessagingModule extends AbstractModule {
     }
 
     // create session for messaging
-    bind(javax.jms.Session.class).toProvider(JmsSessionProvider.class).in(
-        Scopes.SINGLETON);
+    // bind(javax.jms.Session.class).toProvider(JmsSessionProvider.class).in(
+    // Scopes.SINGLETON);
 
     // create session for mail
     bind(javax.mail.Session.class).toProvider(MailSessionProvider.class).in(
