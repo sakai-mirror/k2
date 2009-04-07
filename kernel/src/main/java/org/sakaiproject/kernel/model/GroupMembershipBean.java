@@ -63,7 +63,7 @@ public class GroupMembershipBean {
   public GroupMembershipBean(String userId, String subjectToken) {
     this.userId = userId;
     String[] s = StringUtils.split(subjectToken, ":", 2);
-    if (s.length > 0) {
+    if (s != null && s.length > 0) {
       groupId = s[0];
       if (s.length > 1) {
         roleId = s[1];

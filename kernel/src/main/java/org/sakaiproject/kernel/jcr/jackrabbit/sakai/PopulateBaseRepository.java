@@ -103,7 +103,7 @@ public class PopulateBaseRepository implements StartupAction {
         String[] pathSpec = StringUtils.split((String) r.getKey(), '@');
         String path = null;
         String parentOwner = null;
-        if (pathSpec.length > 1) {
+        if (pathSpec != null && pathSpec.length > 1) {
           if ("userenv".equals(pathSpec[1])) {
             path = userFactoryService.getUserEnvPath(pathSpec[0]);
           } else if ("profile".equals(pathSpec[1])) {
@@ -122,15 +122,17 @@ public class PopulateBaseRepository implements StartupAction {
           String[] content = StringUtils.split((String) r.getValue(), ';');
           // create a map of the parameters
           Map<String, List<String[]>> map = Maps.newHashMap();
-          for (String c : content) {
-            String[] b = StringUtils.split(c, '=');
-            if (b.length > 0) {
-              List<String[]> l = map.get(b[0]);
-              if (l == null) {
-                l = Lists.newArrayList();
-                map.put(b[0], l);
+          if (content != null) {
+            for (String c : content) {
+              String[] b = StringUtils.split(c, '=');
+              if (b != null && b.length > 0) {
+                List<String[]> l = map.get(b[0]);
+                if (l == null) {
+                  l = Lists.newArrayList();
+                  map.put(b[0], l);
+                }
+                l.add(b);
               }
-              l.add(b);
             }
           }
           List<String[]> l = map.get("mimeType");

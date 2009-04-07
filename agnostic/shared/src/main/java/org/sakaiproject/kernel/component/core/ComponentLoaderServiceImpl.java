@@ -77,50 +77,55 @@ public class ComponentLoaderServiceImpl implements ComponentLoaderService {
     // convert the location set into a list of URLs
     final Map<String,URL> locations = new HashMap<String,URL>();
     LOG.info("Components are located in: " + componentLocations);
-    for (String location : StringUtils.split(componentLocations, ';')) {
-      location = location.trim();
-      if (location.startsWith("maven-repo")) {
-        Artifact dep = DependencyImpl.fromString(location);
-        URL u = artifactResolverService.resolve(null, dep);
-        LOG.info("Added component: " + u);
-        locations.put(u.toString(),u);
-      } else if (location.endsWith(".jar")) {
-        if (location.indexOf("://") < 0) {
-          File f = new File(location);
-          if (!f.exists()) {
-            LOG.warn("Jar file " + f.getAbsolutePath()
-                + " does not exist, will be ignored ");
-          } else {
-            URL url = null;
-            try {
+    String[] compLocs = StringUtils.split(componentLocations, ';');
+    if (compLocs != null) {
+      for (String location : compLocs) {
+        location = location.trim();
+        if (location.startsWith("maven-repo")) {
+          Artifact dep = DependencyImpl.fromString(location);
+          URL u = artifactResolverService.resolve(null, dep);
+          LOG.info("Added component: " + u);
+          locations.put(u.toString(), u);
+        } else if (location.endsWith(".jar")) {
+          if (location.indexOf("://") < 0) {
+            File f = new File(location);
+            if (!f.exists()) {
+              LOG.warn("Jar file " + f.getAbsolutePath()
+                  + " does not exist, will be ignored ");
+            } else {
+              URL url = null;
+              try {
                 url = f.toURI().toURL();
                 LOG.info("Added component: " + url);
-                locations.put(url.toString(),url);
-            } catch (MalformedURLException e) {
-                LOG.warn("Component load failed, could not map file path to URL");
+                locations.put(url.toString(), url);
+              } catch (MalformedURLException e) {
+                LOG
+                    .warn("Component load failed, could not map file path to URL");
                 LOG.warn("Cause was: " + e.getMessage());
+              }
             }
+          } else {
+            LOG.info("Added component: " + location);
+            URL u = new URL(location);
+            locations.put(u.toString(), u);
           }
-        } else {
-          LOG.info("Added component: " + location);
-          URL u = new URL(location);
-          locations.put(u.toString(),u);
-        }
-      } else if (location.startsWith("classpath")) {
-        // resolve in the current classpath and add directly
-        fromClassloader = true;
-      } else if ( location.endsWith(COMPONENT_SPEC_XML) ) {
-          location = location.substring(0,location.length()-COMPONENT_SPEC_XML.length());
+        } else if (location.startsWith("classpath")) {
+          // resolve in the current classpath and add directly
+          fromClassloader = true;
+        } else if (location.endsWith(COMPONENT_SPEC_XML)) {
+          location = location.substring(0, location.length()
+              - COMPONENT_SPEC_XML.length());
           File f = new File(location);
           URL url = f.toURI().toURL();
           LOG.info("Added component: " + url);
-          locations.put(url.toString(),url);
-      } else {
-        LOG.info("Locating Components in " + location);
-        for (File f : FileUtil.findAll(location, ".jar")) {
-          URL url = f.toURI().toURL();
-          LOG.info("-> added component: " + url);
-          locations.put(url.toString(),url);
+          locations.put(url.toString(), url);
+        } else {
+          LOG.info("Locating Components in " + location);
+          for (File f : FileUtil.findAll(location, ".jar")) {
+            URL url = f.toURI().toURL();
+            LOG.info("-> added component: " + url);
+            locations.put(url.toString(), url);
+          }
         }
       }
     }

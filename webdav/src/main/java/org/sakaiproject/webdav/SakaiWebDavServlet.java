@@ -76,9 +76,11 @@ public class SakaiWebDavServlet extends SimpleWebdavServlet {
       filter = DEFAULT_FILTER;
     }
     String[] filters = StringUtils.split(filter, ';');
-    for (String f : filters) {
-      f = f.trim();
-      filterElement.put(f, f);
+    if (filters != null) {
+      for (String f : filters) {
+        f = f.trim();
+        filterElement.put(f, f);
+      }
     }
 
     KernelManager km = new KernelManager();
@@ -105,10 +107,12 @@ public class SakaiWebDavServlet extends SimpleWebdavServlet {
     final String pinfo = request.getPathInfo();
 
     String[] elements = StringUtils.split(pinfo, '/');
-    for (String e : elements) {
-      if (filterElement.containsKey(e)) {
-        response.sendError(HttpServletResponse.SC_FORBIDDEN);
-        return;
+    if (elements != null) {
+      for (String e : elements) {
+        if (filterElement.containsKey(e)) {
+          response.sendError(HttpServletResponse.SC_FORBIDDEN);
+          return;
+        }
       }
     }
 

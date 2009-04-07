@@ -108,20 +108,22 @@ public class ISO9075 {
   public static String encodePath(String path) {
     String[] names = StringUtils.split(path, '/');
     StringBuffer encoded = new StringBuffer(path.length());
-    for (int i = 0; i < names.length; i++) {
-      // detect index
-      String index = null;
-      int idx = names[i].indexOf('[');
-      if (idx != -1) {
-        index = names[i].substring(idx);
-        names[i] = names[i].substring(0, idx);
-      }
-      encoded.append(encode(names[i]));
-      if (index != null) {
-        encoded.append(index);
-      }
-      if (i < names.length - 1) {
-        encoded.append('/');
+    if (names != null) {
+      for (int i = 0; i < names.length; i++) {
+        // detect index
+        String index = null;
+        int idx = names[i].indexOf('[');
+        if (idx != -1) {
+          index = names[i].substring(idx);
+          names[i] = names[i].substring(0, idx);
+        }
+        encoded.append(encode(names[i]));
+        if (index != null) {
+          encoded.append(index);
+        }
+        if (i < names.length - 1) {
+          encoded.append('/');
+        }
       }
     }
     return encoded.toString();

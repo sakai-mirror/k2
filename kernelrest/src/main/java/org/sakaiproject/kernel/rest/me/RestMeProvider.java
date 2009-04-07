@@ -198,20 +198,23 @@ public class RestMeProvider implements RestProvider, Initialisable {
     outputStream.print("{ \"users\" : [ ");
 
     boolean first = true;
-    for (String userId : userIds) {
-      if (!first) {
-        outputStream.print(",");
+    if (userIds != null) {
+      for (String userId : userIds) {
+        if (!first) {
+          outputStream.print(",");
+        }
+        User user = userResolverService.resolveWithUUID(userId);
+        if (user == null) {
+          outputStream.print(beanConverter.convertToString(ImmutableMap.of(
+              "statusCode", "404", "userId", userId)));
+        } else {
+          outputStream.print("{ \"statusCode\": \"200\", \"restricted\": true");
+          outputPathPrefix(user.getUuid(), outputStream);
+          outputUserProfile(user.getUuid(), outputStream);
+          outputStream.print("}");
+        }
+        first = false;
       }
-      User user = userResolverService.resolveWithUUID(userId);
-      if (user == null) {
-        outputStream.print(beanConverter.convertToString(ImmutableMap.of("statusCode","404","userId",userId)));
-      } else {
-        outputStream.print("{ \"statusCode\": \"200\", \"restricted\": true");
-        outputPathPrefix(user.getUuid(), outputStream);
-        outputUserProfile(user.getUuid(), outputStream);
-        outputStream.print("}");
-      }
-      first = false;
     }
     outputStream.print("]}");
   }

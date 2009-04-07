@@ -33,6 +33,7 @@ import org.sakaiproject.kernel.jcr.api.internal.RepositoryStartupException;
 import org.sakaiproject.kernel.jcr.api.internal.StartupAction;
 import org.sakaiproject.kernel.util.PropertiesLoader;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -71,12 +72,16 @@ public class PopulateBaseRepositoryAcls implements StartupAction {
           ACLS_TO_LOAD);
       for (Entry<Object, Object> e : p.entrySet()) {
         String[] acl = StringUtils.split(String.valueOf(e.getKey()), ',');
-        List<AccessControlStatement> aclList = aclLists.get(acl[1]);
-        if (aclList == null) {
-          aclList = Lists.newArrayList();
-          aclLists.put(acl[1], aclList);
+        int pos = -1;
+        List<AccessControlStatement> aclList = new ArrayList<AccessControlStatement>();
+        if (acl != null && acl.length > 1) {
+          aclList = aclLists.get(acl[1]);
+          if (aclList == null) {
+            aclList = Lists.newArrayList();
+            aclLists.put(acl[1], aclList);
+          }
+          pos = Integer.parseInt(acl[0]);
         }
-        int pos = Integer.parseInt(acl[0]);
         while (pos >= 0 && aclList.size() <= pos) {
           aclList.add(null);
         }

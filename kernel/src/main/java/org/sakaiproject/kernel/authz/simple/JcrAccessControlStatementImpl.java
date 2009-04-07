@@ -51,15 +51,17 @@ public class JcrAccessControlStatementImpl implements AccessControlStatement {
     subject = JcrSubjectStatement.UNKNOWN;
     granted = false;
     propagating = false;
-    for (String val : values) {
-      if (val.startsWith(SUBJECT_PREFIX)) {
-        subject = new JcrSubjectStatement(val.substring(2));
-      } else if (val.startsWith(KEY_PREFIX)) {
-        key = val.substring(2);
-      } else if (val.startsWith(GRANTED_PREFIX)) {
-        granted = GRANTED.equals(val);
-      } else if (val.startsWith(PROPAGATING_PREFIX)) {
-        propagating = PROPAGATING.equals(val);
+    if (values != null) {
+      for (String val : values) {
+        if (val.startsWith(SUBJECT_PREFIX)) {
+          subject = new JcrSubjectStatement(val.substring(2));
+        } else if (val.startsWith(KEY_PREFIX)) {
+          key = val.substring(2);
+        } else if (val.startsWith(GRANTED_PREFIX)) {
+          granted = GRANTED.equals(val);
+        } else if (val.startsWith(PROPAGATING_PREFIX)) {
+          propagating = PROPAGATING.equals(val);
+        }
       }
     }
   }

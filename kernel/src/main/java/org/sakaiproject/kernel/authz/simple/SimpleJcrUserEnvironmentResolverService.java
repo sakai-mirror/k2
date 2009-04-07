@@ -267,9 +267,9 @@ public class SimpleJcrUserEnvironmentResolverService implements
       localeKey = userEnvironment.getLocale();
     }
     String[] locValues = StringUtils.split(localeKey, '_');
-    if (locValues.length > 1) {
+    if (locValues != null && locValues.length > 1) {
       loc = new Locale(locValues[0], locValues[1]);
-    } else if (locValues.length == 1) {
+    } else if (locValues != null && locValues.length == 1) {
       loc = new Locale(locValues[0]);
     } else if (browserLocale != null) {
       loc = browserLocale;

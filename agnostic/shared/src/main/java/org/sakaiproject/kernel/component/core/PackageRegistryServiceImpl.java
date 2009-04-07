@@ -52,13 +52,15 @@ public class PackageRegistryServiceImpl implements PackageRegistryService {
   public void addExport(String stub, Exporter exporter) {
     String[] elements = StringUtils.split(stub, '.');
     PackageExport p = root;
-    for (String element : elements) {
-      PackageExport np = p.get(element);
-      if (np == null) {
-        np = new PackageExport(element, p);
-        p.put(element, np);
+    if (elements != null) {
+      for (String element : elements) {
+        PackageExport np = p.get(element);
+        if (np == null) {
+          np = new PackageExport(element, p);
+          p.put(element, np);
+        }
+        p = np;
       }
-      p = np;
     }
     p.setClassExporter(exporter);
   }
@@ -73,13 +75,15 @@ public class PackageRegistryServiceImpl implements PackageRegistryService {
   public void addResource(String stub, Exporter exporter) {
     String[] elements = StringUtils.split(stub, '/');
     PackageExport p = root;
-    for (String element : elements) {
-      PackageExport np = p.get(element);
-      if (np == null) {
-        np = new PackageExport(element, p);
-        p.put(element, np);
+    if (elements != null) {
+      for (String element : elements) {
+        PackageExport np = p.get(element);
+        if (np == null) {
+          np = new PackageExport(element, p);
+          p.put(element, np);
+        }
+        p = np;
       }
-      p = np;
     }
     p.addResourceExporter(exporter);
   }
@@ -113,12 +117,14 @@ public class PackageRegistryServiceImpl implements PackageRegistryService {
    */
   private Exporter findExporter(String[] elements) {
     PackageExport p = root;
-    for (String element : elements) {
-      PackageExport np = p.get(element);
-      if (np == null) {
-        break;
+    if (elements != null) {
+      for (String element : elements) {
+        PackageExport np = p.get(element);
+        if (np == null) {
+          break;
+        }
+        p = np;
       }
-      p = np;
     }
     return p.getClassExporter();
   }
@@ -133,15 +139,17 @@ public class PackageRegistryServiceImpl implements PackageRegistryService {
     PackageExport p = root;
     PackageExport container = root;
     String key = null;
-    for (String element : elements) {
-      PackageExport np = p.get(element);
-      if (np == null) {
-        break;
-      }
-      container = p;
-      key = element;
-      p = np;
+    if (elements != null) {
+      for (String element : elements) {
+        PackageExport np = p.get(element);
+        if (np == null) {
+          break;
+        }
+        container = p;
+        key = element;
+        p = np;
 
+      }
     }
     if (key != null) {
       PackageExport child = container.get(key);
@@ -215,12 +223,14 @@ public class PackageRegistryServiceImpl implements PackageRegistryService {
   public Enumeration<URL> findExportedResources(final String name) {
     PackageExport p = root;
     String[] elements = StringUtils.split(name, '/');
-    for (String element : elements) {
-      PackageExport np = p.get(element);
-      if (np == null) {
-        break;
+    if (elements != null) {
+      for (String element : elements) {
+        PackageExport np = p.get(element);
+        if (np == null) {
+          break;
+        }
+        p = np;
       }
-      p = np;
     }
     List<Exporter> exporters = p.getResourceExporters();
     final Iterator<Exporter> iexporters = exporters.iterator();

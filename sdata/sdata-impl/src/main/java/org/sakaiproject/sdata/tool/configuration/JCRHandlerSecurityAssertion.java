@@ -55,10 +55,13 @@ public class JCRHandlerSecurityAssertion implements Provider<SecurityAssertion> 
     pathSecurityAssertion.setBasePath(baseSecuredPath);
     pathSecurityAssertion.setBaseResource(baseResource);
     Map<String, PermissionQuery> locks = new HashMap<String, PermissionQuery>();
-    for (String lockDef : StringUtils.split(lockDefinition, ';')) {
-      String[] l = StringUtils.split(lockDef, ':');
-      // permission query implementations are named.
-      locks.put(l[0], permissionService.getPermission(l[1]));
+    String[] lockDefs = StringUtils.split(lockDefinition, ';');
+    if (lockDefs != null) {
+      for (String lockDef : lockDefs) {
+        String[] l = StringUtils.split(lockDef, ':');
+        // permission query implementations are named.
+        locks.put(l[0], permissionService.getPermission(l[1]));
+      }
     }
     pathSecurityAssertion.setLocks(locks);
   }

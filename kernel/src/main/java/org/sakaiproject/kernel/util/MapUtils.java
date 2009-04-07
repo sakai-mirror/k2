@@ -40,9 +40,11 @@ public class MapUtils {
   public static Map<String, String> convertToImmutableMap(String values) {
     Map<String, String> m = Maps.newHashMap();
     String[] templates = StringUtils.split(values, ';');
-    for (String template : templates) {
-      String[] nv = StringUtils.split(template, "=", 2);
-      m.put(nv[0].trim(), nv[1].trim());
+    if (templates != null) {
+      for (String template : templates) {
+        String[] nv = StringUtils.split(template, "=", 2);
+        m.put(nv[0].trim(), nv[1].trim());
+      }
     }
     return ImmutableMap.copyOf(m);
   }

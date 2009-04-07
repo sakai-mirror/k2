@@ -72,16 +72,18 @@ public class InternalMessageHandler implements MessageHandler {
       String rcptsVal = prop.getString();
       String[] rcpts = StringUtils.split(rcptsVal, ",");
 
-      for (String rcpt : rcpts) {
-        /** set message path for the user. */
-        String msgPath = userFactory.getNewMessagePath(rcpt) + "/" + fileName;
-        if (DEBUG) {
-          log.debug("Writing " + filePath + " to " + msgPath);
+      if (rcpts != null) {
+        for (String rcpt : rcpts) {
+          /** set message path for the user. */
+          String msgPath = userFactory.getNewMessagePath(rcpt) + "/" + fileName;
+          if (DEBUG) {
+            log.debug("Writing " + filePath + " to " + msgPath);
+          }
+          InputStream in = nodeFactory.getInputStream(filePath);
+          Node n = nodeFactory.setInputStream(msgPath, in, "UTF-8");
+          JcrUtils.addNodeLabel(jcr, n, "inbox");
+          /** TODO remove any properties that are associated to the sender */
         }
-        InputStream in = nodeFactory.getInputStream(filePath);
-        Node n = nodeFactory.setInputStream(msgPath, in, "UTF-8");
-        JcrUtils.addNodeLabel(jcr, n, "inbox");
-        /** TODO remove any properties that are associated to the sender */
       }
       // move the original node to the common message store for the sender and
       // label it as "sent"

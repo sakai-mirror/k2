@@ -94,7 +94,7 @@ public class PresenceServiceImpl implements PresenceService {
     if (currentStatus != null) {
       String[] locationStatus = StringUtils.split(currentStatus, ":",
           STATUS_SIZE);
-      if (locationStatus.length > TIMESTAMP_ELEMENT) {
+      if (locationStatus != null && locationStatus.length > TIMESTAMP_ELEMENT) {
         // timed out ?
         long lastTs = Long.parseLong(locationStatus[TIMESTAMP_ELEMENT]);
         if (lastTs > timeout) {
@@ -212,19 +212,23 @@ public class PresenceServiceImpl implements PresenceService {
     // compare with non null current versions.
     String[] ls = new String[] { uuid, String.valueOf(now), location, status };
     boolean update = false;
-    for (int i = 0; i < locationStatus.length; i++) {
-      if (ls[i] != null) {
-        if (!locationStatus[i].equals(ls[i])) {
-          update = true;
+    if (locationStatus != null) {
+      for (int i = 0; i < locationStatus.length; i++) {
+        if (ls[i] != null) {
+          if (!locationStatus[i].equals(ls[i])) {
+            update = true;
+          }
         }
       }
     }
 
     if (update) {
       // set any null values to what they were previously
-      for (int i = 0; i < locationStatus.length; i++) {
-        if (ls[i] == null) {
-          ls[i] = locationStatus[i];
+      if (locationStatus != null) {
+        for (int i = 0; i < locationStatus.length; i++) {
+          if (ls[i] == null) {
+            ls[i] = locationStatus[i];
+          }
         }
       }
       String newStatus = ':' + StringUtils.join(ls, ':');

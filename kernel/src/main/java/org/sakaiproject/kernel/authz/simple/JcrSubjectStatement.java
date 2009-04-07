@@ -38,7 +38,7 @@ public class JcrSubjectStatement implements SubjectStatement {
     subjectToken = "";
     permissionToken = "";
     String[] parts = StringUtils.split(subjectStatement, ':');
-    if (parts.length == 0) {
+    if (parts == null || parts.length == 0) {
       throw new UpdateFailedException("The subject Statement ["
           + subjectStatement + "] is not a valid subject statement");
     }

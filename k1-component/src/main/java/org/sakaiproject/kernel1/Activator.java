@@ -74,11 +74,10 @@ public class Activator implements ComponentActivator {
    * possible to have more than one in a JVM
    */
   private Kernel kernel;
-  
+
   private Properties properties = new Properties();
-  
+
   private List<String> ifcClassNames = new ArrayList<String>();
-  
 
   /**
    * {@inheritDoc}
@@ -94,39 +93,37 @@ public class Activator implements ComponentActivator {
     InternalDateServiceImpl internalDateService = new InternalDateServiceImpl();
     HelloWorldService helloWorldService = new HelloWorldServiceImpl(
         internalDateService);
-    
-    org.sakaiproject.component.api.ComponentManager cm = null;
-    
-    long start = System.currentTimeMillis();
-	try {
-		LOG.info("START---------------------- Loading kernel 1");
-		cm = ComponentManager.getInstance();
-	} catch (Throwable t) {
-		LOG.error("Failed to Startup ", t);
-	}
-	LOG.info("END------------------------ Loaded kernel 1 in  "
-			+ (System.currentTimeMillis() - start) + "ms");
-	
-	
 
-	Properties localProperties = new Properties();
-	try {
-		InputStream is = ResourceLoader.openResource(K1_PROPERTIES, this.getClass().getClassLoader());
-		localProperties.load(is);
-	} catch (IOException e2) {
-		// TODO Auto-generated catch block
-		e2.printStackTrace();
-	}
-	
-	/** 
-	 * plagerized from k2 bootstrap module **
-	 */
-	
-    
+    org.sakaiproject.component.api.ComponentManager cm = null;
+
+    long start = System.currentTimeMillis();
+    try {
+      LOG.info("START---------------------- Loading kernel 1");
+      cm = ComponentManager.getInstance();
+    } catch (Throwable t) {
+      LOG.error("Failed to Startup ", t);
+    }
+    LOG.info("END------------------------ Loaded kernel 1 in  "
+        + (System.currentTimeMillis() - start) + "ms");
+
+    Properties localProperties = new Properties();
+    try {
+      InputStream is = ResourceLoader.openResource(K1_PROPERTIES, this
+          .getClass().getClassLoader());
+      localProperties.load(is);
+    } catch (IOException e2) {
+      // TODO Auto-generated catch block
+      e2.printStackTrace();
+    }
+
+    /**
+     * plagerized from k2 bootstrap module **
+     */
+
     for (Entry<Object, Object> o : localProperties.entrySet()) {
       String k = o.getKey().toString();
 
-	if (k.startsWith("+")) {
+      if (k.startsWith("+")) {
         String p = properties.getProperty(k.substring(1));
         if (p != null) {
           properties.put(k.substring(1), p + o.getValue());
@@ -139,156 +136,154 @@ public class Activator implements ComponentActivator {
     }
     LOG.info("Loaded " + localProperties.size() + " properties from "
         + K1_PROPERTIES);
-    
-    
-    /** 
+
+    /**
      * plagerized from the ComponentLoaderService
      */
-    
+
     ArtifactResolverService artifactResolverService = new Maven2ArtifactResolver();
-    
+
     List<URL> locations = new ArrayList<URL>();
-    for (String location : StringUtils.split(properties.getProperty(K1_COMPONENT_LOCATION), ';')) {
-      location = location.trim();
-      if (location.startsWith("maven-repo")) {
-        Artifact dep = DependencyImpl.fromString(location);
-        URL u = null;
-		try {
-			u = artifactResolverService.resolve(null, dep);
-		} catch (ComponentSpecificationException e) {
-			LOG.error("Can't resolve " + K1_COMPONENT_LOCATION
-							+ " property in file " + K1_PROPERTIES);
-			e.printStackTrace();
-		}
-        LOG.info("added k1 api bundle:" + u);
-        locations.add(u);
-      } else if (location.endsWith(".jar")) {
-        if (location.indexOf("://") < 0) {
-          File f = new File(location);
-          if (!f.exists()) {
-            LOG.warn("Jar file " + f.getAbsolutePath()
-                + " does not exist, will be ignored ");
+    String[] locs = StringUtils.split(properties
+        .getProperty(K1_COMPONENT_LOCATION), ';');
+    if (locs != null) {
+      for (String location : locs) {
+        location = location.trim();
+        if (location.startsWith("maven-repo")) {
+          Artifact dep = DependencyImpl.fromString(location);
+          URL u = null;
+          try {
+            u = artifactResolverService.resolve(null, dep);
+          } catch (ComponentSpecificationException e) {
+            LOG.error("Can't resolve " + K1_COMPONENT_LOCATION
+                + " property in file " + K1_PROPERTIES);
+            e.printStackTrace();
+          }
+          LOG.info("added k1 api bundle:" + u);
+          locations.add(u);
+        } else if (location.endsWith(".jar")) {
+          if (location.indexOf("://") < 0) {
+            File f = new File(location);
+            if (!f.exists()) {
+              LOG.warn("Jar file " + f.getAbsolutePath()
+                  + " does not exist, will be ignored ");
+            } else {
+              try {
+                location = "file://" + f.getCanonicalPath();
+                locations.add(new URL(location));
+                LOG.info("added k1 api bundle:" + location);
+              } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+              }
+            }
           } else {
+            LOG.info("added api bundle:" + location);
             try {
-				location = "file://" + f.getCanonicalPath();
-				locations.add(new URL(location));
-				LOG.info("added k1 api bundle:" + location);
-            } catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+              locations.add(new URL(location));
+            } catch (MalformedURLException e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+            }
           }
         } else {
-          LOG.info("added api bundle:" + location);
-          try {
-			locations.add(new URL(location));
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        }
-      } else {
-        LOG.info("Locating api bundle in " + location);
-        for (File f : FileUtil.findAll(location, ".jar")) {
-          String path = null;
-		try {
-			path = f.getCanonicalPath();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-          if (path.indexOf("://") < 0) {
-            path = "file://" + path;
+          LOG.info("Locating api bundle in " + location);
+          for (File f : FileUtil.findAll(location, ".jar")) {
+            String path = null;
+            try {
+              path = f.getCanonicalPath();
+            } catch (IOException e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+            }
+            if (path.indexOf("://") < 0) {
+              path = "file://" + path;
+            }
+            LOG.info("    added api bundle:" + path);
+            try {
+              locations.add(new URL(path));
+            } catch (MalformedURLException e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+            }
           }
-          LOG.info("    added api bundle:" + path);
-          try {
-			locations.add(new URL(path));
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
         }
       }
     }
     LOG.info("    bundle contains " + locations.size() + " uri's");
 
-    
     // find all the instances
     URLClassLoader uclassloader = new URLClassLoader(locations
         .toArray(new URL[0]), null);
-    
+
     /**
      * end plagerism.... for now
      */
     JarFile jar = null;
     for (URL url : locations) {
-    	try {
-			jar = new JarFile(new File(url.toURI()));
-			
-			Enumeration<JarEntry> entries = jar.entries();
-			
-			for(;entries.hasMoreElements();){
-				JarEntry entry = entries.nextElement();
-				if(entry !=null && entry.getName().endsWith(".class")){
-					ifcClassNames.add(entry.getName().replaceAll("/", "."));
-				}
-			}
-			
-			jar.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+      try {
+        jar = new JarFile(new File(url.toURI()));
+
+        Enumeration<JarEntry> entries = jar.entries();
+
+        for (; entries.hasMoreElements();) {
+          JarEntry entry = entries.nextElement();
+          if (entry != null && entry.getName().endsWith(".class")) {
+            ifcClassNames.add(entry.getName().replaceAll("/", "."));
+          }
+        }
+
+        jar.close();
+      } catch (FileNotFoundException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (URISyntaxException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
     }
-    
+
     // thats it. my service is ready to go, so lets register it
     // get the service manager
     ServiceManager serviceManager = kernel.getServiceManager();
-    
-    
-    
-    
+
     List<Class> ifcClasses = new ArrayList<Class>();
     String className = null;
-    for(Iterator<String> i = ifcClassNames.iterator();i.hasNext();){
-    	try {
-    		className = i.next();
-			ifcClasses.add(Class.forName(className));
-		} catch (ClassNotFoundException e) {
-			LOG.error("Can't find '" +className+ "' in the classpath");
-			i.remove(); /// with a sharp stick 
-			e.printStackTrace();
-		}
+    for (Iterator<String> i = ifcClassNames.iterator(); i.hasNext();) {
+      try {
+        className = i.next();
+        ifcClasses.add(Class.forName(className));
+      } catch (ClassNotFoundException e) {
+        LOG.error("Can't find '" + className + "' in the classpath");
+        i.remove(); // / with a sharp stick
+        e.printStackTrace();
+      }
     }
-    
-     
-	
 
-    for(Class clazz : ifcClasses){
-    	ServiceSpec serviceSpec = new ServiceSpec(clazz);
+    for (Class clazz : ifcClasses) {
+      ServiceSpec serviceSpec = new ServiceSpec(clazz);
 
-        // register the service
-        try {
-          serviceManager.registerService(serviceSpec, cm.get(clazz));
-        } catch (ServiceManagerException e) {
-          // oops something happened, re-throw as an activation issue
-          throw new ComponentActivatorException("Failed to register service ", e);
-        }
+      // register the service
+      try {
+        serviceManager.registerService(serviceSpec, cm.get(clazz));
+      } catch (ServiceManagerException e) {
+        // oops something happened, re-throw as an activation issue
+        throw new ComponentActivatorException("Failed to register service ", e);
+      }
 
     }
-    
-    // just for fun.. resolve the JCRService and get a reference to the respository.
+
+    // just for fun.. resolve the JCRService and get a reference to the
+    // respository.
     LOG.info("Getting JCR =============================");
-    JCRService service = serviceManager.getService(new ServiceSpec(JCRService.class));
+    JCRService service = serviceManager.getService(new ServiceSpec(
+        JCRService.class));
     Repository repo = service.getRepository();
-    for ( String k : repo.getDescriptorKeys() ) {
-      LOG.info("  JCR Repo Key "+k+"::"+repo.getDescriptor(k));
+    for (String k : repo.getDescriptorKeys()) {
+      LOG.info("  JCR Repo Key " + k + "::" + repo.getDescriptor(k));
     }
     LOG.info("Logged In OK-=============================");
 
@@ -317,13 +312,14 @@ public class Activator implements ComponentActivator {
    */
   public void deactivate() {
     // we need to remove the service (this is the short way of doing the above)
-    kernel.getServiceManager().deregisterService(new ServiceSpec(HelloWorldService.class));
+    kernel.getServiceManager().deregisterService(
+        new ServiceSpec(HelloWorldService.class));
   }
-/*jar tf ~/.m2/repository/org/sakaiproject/kernel/sakai-kernel-api/1.1-SNAPSHOT/sakai-kernel-api-1.1-SNAPSHOT.jar 
- *  | grep '\.class$' | awk -F'\/' '{printf "<export><name>";for (i=1; i<NF; i++) printf "."$i;printf "</name></export>";print""}' 
- *  | sort -u
- * 
- * 
- * 
- */
+  /*
+   * jar tf
+   * ~/.m2/repository/org/sakaiproject/kernel/sakai-kernel-api/1.1-SNAPSHOT
+   * /sakai-kernel-api-1.1-SNAPSHOT.jar | grep '\.class$' | awk -F'\/' '{printf
+   * "<export><name>";for (i=1; i<NF; i++) printf "."$i;printf
+   * "</name></export>";print""}' | sort -u
+   */
 }

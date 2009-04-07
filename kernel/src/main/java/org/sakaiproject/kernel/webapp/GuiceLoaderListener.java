@@ -57,10 +57,16 @@ public class GuiceLoaderListener {
     try {
       String[] moduleNames = StringUtils.split(sce.getServletContext()
           .getInitParameter(INIT_MODULES), ',');
-      Module[] modules = new Module[moduleNames.length];
-      for (int i = 0; i < moduleNames.length; i++) {
-        Class<Module> clazz = (Class<Module>) classloader.loadClass(moduleNames[i]);
-        modules[i] = clazz.newInstance();
+      Module[] modules = null;
+      if (moduleNames == null) {
+        modules = new Module[0];
+      } else {
+        modules = new Module[moduleNames.length];
+        for (int i = 0; i < moduleNames.length; i++) {
+          Class<Module> clazz = (Class<Module>) classloader
+              .loadClass(moduleNames[i]);
+          modules[i] = clazz.newInstance();
+        }
       }
       injector = Guice.createInjector(modules);
       TypeLiteral<List<Initialisable>> initializersType = new TypeLiteral<List<Initialisable>>() {

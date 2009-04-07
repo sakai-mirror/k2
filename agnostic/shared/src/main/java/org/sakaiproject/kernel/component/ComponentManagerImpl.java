@@ -248,19 +248,21 @@ public class ComponentManagerImpl implements ComponentManager {
       LOG.info("Starting " + dc);
       if (dc != null) {
         String[] defaultComponents = StringUtils.split(dc, ';');
-        for (String d : defaultComponents) {
-          d = d.trim();
-          if (d.length() > 0) {
-            ComponentSpecification spec = null;
-            if (d.startsWith("class:")) {
-              String activatorName = d.substring("class:".length());
-              Class<ComponentSpecification> aclazz = (Class<ComponentSpecification>) this
-                  .getClass().getClassLoader().loadClass(activatorName);
-              spec = aclazz.newInstance();
-            } else {
-              spec = new URLComponentSpecificationImpl(null, d);
+        if (defaultComponents != null) {
+          for (String d : defaultComponents) {
+            d = d.trim();
+            if (d.length() > 0) {
+              ComponentSpecification spec = null;
+              if (d.startsWith("class:")) {
+                String activatorName = d.substring("class:".length());
+                Class<ComponentSpecification> aclazz = (Class<ComponentSpecification>) this
+                    .getClass().getClassLoader().loadClass(activatorName);
+                spec = aclazz.newInstance();
+              } else {
+                spec = new URLComponentSpecificationImpl(null, d);
+              }
+              toStart.add(spec);
             }
-            toStart.add(spec);
           }
         }
       }
