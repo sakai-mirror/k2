@@ -21,16 +21,20 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.apache.commons.lang.time.FastDateFormat;
+
 /**
  * Utility methods for working with dates.
  */
 public class DateUtils {
-  private final static DateFormat rfc3339;
-  private final static DateFormat rfc2822;
+	private final static String RFC3339_FMT = "yyyy-MM-dd hh:mm:ssZ";
+	private final static String RFC2822_FMT = "EEE, dd MMM yyyy HH:mm:ss Z";
+  private final static FastDateFormat rfc3339;
+  private final static FastDateFormat rfc2822;
 
   static {
-    rfc3339 = new SimpleDateFormat("yyyy-MM-dd hh:mm:ssZ");
-    rfc2822 = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z");
+    rfc3339 = FastDateFormat.getInstance(RFC3339_FMT);
+    rfc2822 = FastDateFormat.getInstance(RFC2822_FMT);
   }
 
   /**
