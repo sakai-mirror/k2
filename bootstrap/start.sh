@@ -16,4 +16,4 @@ echo "SAKAI_KERNEL_PROPERTIES is set to $SAKAI_KERNEL_PROPERTIES"
 
 
 
-target/runtime/bin/catalina.sh jpda $*
+target/runtime/bin/catalina.sh $*
