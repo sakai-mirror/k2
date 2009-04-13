@@ -62,7 +62,7 @@ public class InboxAgent implements UserProvisionAgent {
   }
 
   public void provision(UserEnvironment userEnv) {
-    String path = ISO9075.encodePath(userFactoryService
+    String path = "/" + ISO9075.encodePath(userFactoryService
         .getUserPrivatePath(userEnv.getUser().getUuid())
         + INBOX_PATH);
     String query = "/" + path + "/element(*, " + JCRConstants.NT_FILE + ")[@"
