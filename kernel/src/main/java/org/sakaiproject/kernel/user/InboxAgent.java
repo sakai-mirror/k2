@@ -46,7 +46,8 @@ public class InboxAgent implements UserProvisionAgent {
 
   // FIXME Get these strings from somewhere instead of hardcoding them
   private static final String INBOX_LABEL = "inbox";
-  private static final String INBOX_PATH = "messages/inbox";
+  private static final String DELIVERY_ROOT = "messages";
+  private static final String INBOX_PATH = DELIVERY_ROOT + "/inbox";
 
   private UserFactoryService userFactoryService = null;
   private JCRNodeFactoryService nodeFactory = null;
@@ -62,13 +63,14 @@ public class InboxAgent implements UserProvisionAgent {
   }
 
   public void provision(UserEnvironment userEnv) {
-    String path = "/" + ISO9075.encodePath(userFactoryService
-        .getUserPrivatePath(userEnv.getUser().getUuid())
-        + INBOX_PATH);
-    String query = "/" + path + "/element(*, " + JCRConstants.NT_FILE + ")[@"
-        + JCRConstants.JCR_LABELS + "='" + INBOX_LABEL + "']";
+    String path = userFactoryService.getUserPrivatePath(userEnv.getUser()
+        .getUuid());
+    String query = "/jcr:root/" + ISO9075.encodePath(path + DELIVERY_ROOT)
+        + "//element(*, "
+        + JCRConstants.NT_FILE + ")"; // [@" + JCRConstants.JCR_LABELS + "='" +
+                                      // INBOX_LABEL + "']";
     try {
-      Node inbox = nodeFactory.createFolder(path);
+      Node inbox = nodeFactory.createFolder(path + INBOX_PATH);
       JcrUtils.makeSmartNode(inbox, Query.XPATH, query);
     } catch (JCRNodeFactoryServiceException e) {
       log.error(e);
