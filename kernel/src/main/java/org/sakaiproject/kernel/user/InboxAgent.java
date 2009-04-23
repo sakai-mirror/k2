@@ -66,9 +66,8 @@ public class InboxAgent implements UserProvisionAgent {
     String path = userFactoryService.getUserPrivatePath(userEnv.getUser()
         .getUuid());
     String query = "/jcr:root/" + ISO9075.encodePath(path + DELIVERY_ROOT)
-        + "//element(*, "
-        + JCRConstants.NT_FILE + ")"; // [@" + JCRConstants.JCR_LABELS + "='" +
-                                      // INBOX_LABEL + "']";
+        + "//element(*, " + JCRConstants.NT_FILE + ")[@"
+        + JCRConstants.JCR_LABELS + "='" + INBOX_LABEL + "']";
     try {
       Node inbox = nodeFactory.createFolder(path + INBOX_PATH);
       JcrUtils.makeSmartNode(inbox, Query.XPATH, query);
