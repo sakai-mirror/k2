@@ -178,7 +178,7 @@ public class RestCountProvider implements RestProvider, Initialisable {
     try {
       QueryManager queryManager = jcrService.getQueryManager();
       String queryPath = n.getPath();
-      queryPath = "/jcr:root" + ISO9075.encodePath(queryPath) + "//element(*,"
+      queryPath = "/jcr:root/" + ISO9075.encodePath(queryPath) + "//element(*,"
           + JCRConstants.NT_BASE + ")";
       Query query = queryManager.createQuery(queryPath, Query.XPATH);
 
